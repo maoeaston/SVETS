@@ -1,0 +1,24 @@
+# Secrets
+AIimages/config.json
+.env
+.env.*
+!.env.example
+
+# Runtime data
+data/
+*.db
+*.db-journal
+action_log.jsonl
+
+# Node.js
+node_modules/
+dist/
+out/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/settings.json
+.idea/
