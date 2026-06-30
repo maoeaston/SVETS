@@ -26,45 +26,13 @@
 
 ---
 
-## 文件结构（待建立）
+## 文件结构
 
-```
-SVETS/
-├── doc/                                    # 设计文档（已有）
-│   ├── 炫灿-职途向导系统_MVP_PRD_v1.0.4.md
-│   ├── xc-career-guide-mvp-schema-v0.1.7-consistency-guard.sql
-│   ├── xc-career-guide-json-field-schema-v1.0.0.md
-│   └── xc-career-guide-event-payload-schema-v1.0.0.md
-├── src/
-│   ├── main/                               # Electron 主进程
-│   │   ├── domain/                         # 领域服务
-│   │   │   ├── event-writer.ts             # 事件写入（action_log.jsonl + checksum）
-│   │   │   ├── reducer.ts                  # 事件 → SQLite 投影
-│   │   │   ├── strategy-loader.ts          # 策略加载与组卷
-│   │   │   ├── assessment-service.ts       # 测评流程
-│   │   │   ├── training-service.ts         # 训练流程
-│   │   │   ├── scoring-service.ts          # 评分计算
-│   │   │   └── report-generator.ts         # 报告生成
-│   │   ├── db/
-│   │   │   ├── schema.sql                  # 从 doc/ 复制
-│   │   │   └── connection.ts
-│   │   └── ipc/                            # 主进程 IPC handlers
-│   ├── renderer/                           # Vue3 渲染进程
-│   │   ├── views/
-│   │   │   ├── assessment/                 # 测评界面
-│   │   │   ├── training/                   # 训练界面（看学练做）
-│   │   │   ├── scoring/                    # 线下评分界面
-│   │   │   └── report/                     # 报告查看
-│   │   └── stores/                         # Pinia 状态管理
-│   └── shared/
-│       └── types/                          # 共享类型定义
-│           ├── json-schemas.ts             # 对应 doc/xc-career-guide-json-field-schema-v1.0.0.md
-│           └── event-payloads.ts           # 对应 doc/xc-career-guide-event-payload-schema-v1.0.0.md
-├── assets/                                 # 素材资源（视频、图片、步骤卡）
-└── data/                                   # 运行时数据（数据库、事件日志）
-    ├── action_log.jsonl
-    └── xc-career-guide.db
-```
+- 主进程：`src/main/` — `db/`（schema + connection）| `domain/`（event-writer 等领域服务）| `ipc/handlers/`
+- 渲染进程：`src/renderer/src/` — `views/` | `stores/`（Pinia）| `router/`
+- 共享类型：`src/shared/types/` — `event-payloads.ts` | `json-schemas.ts` | `ipc-api.ts`
+- 设计文档：`doc/` — PRD | schema SQL | JSON 字段规范 | 事件规范 | 功能 Mini-PRD（`doc/features/`）
+- Skill 命令：`.claude/commands/` — `vibe-feature.md` | `vibe-impl.md` | `vibe-review.md` | `vibe-accept.md`
 
 ---
 
@@ -186,13 +154,13 @@ SVETS/
 
 ---
 
-## 当前状态
+## 开发流程
 
-**阶段：** 前置设计完成，准备启动编码  
-**已完成：** PRD + Schema + JSON 规范 + 事件规范  
-**待补齐：** 教学素材（M2 前）、题库审核（优先"拆箱与上架"模块）  
-**下一步：** 搭建 Electron 脚手架 → 实现事件写入服务 → 实现 reducer
+每个新功能按以下步骤推进，不跳过 PRD 和实现文档直接写代码：
 
----
+1. `/vibe-feature` — 读取项目上下文，Writer 生成 Mini-PRD，Reviewer subagent 审查，存入 `doc/features/`
+2. `/vibe-impl` — 将 PRD 拆成步骤化实现文档，每步对应一个 commit，含测试设计
+3. 逐步实现 — 按实现文档执行，每步完成后运行 `/vibe-accept`（typecheck + build + vitest）
+4. 推送功能分支 — 所有步骤验收通过后推送，禁止直接推 main
 
-*最后更新：2026-06-30*
+高风险改动（FSM 路径 / safety_incident / schema 变更）额外运行 `/vibe-review` 进行双 AI 审查。
