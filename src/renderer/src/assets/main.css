@@ -1,0 +1,24 @@
+/* 全局基础样式 — 仅设定 box-model 和字体，不引入组件级样式 */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background-color: #f5f5f5;
+  -webkit-font-smoothing: antialiased;
+}

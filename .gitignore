@@ -10,10 +10,11 @@ data/
 *.db-journal
 action_log.jsonl
 
-# Node.js
+# Build output
 node_modules/
 dist/
 out/
+*.tsbuildinfo
 
 # OS
 .DS_Store

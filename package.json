@@ -1,0 +1,35 @@
+{
+  "name": "xc-career-guide",
+  "version": "1.0.0-alpha.1",
+  "description": "炫灿-职途向导系统 MVP — 本地化职业转衔训练平台",
+  "main": "./out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "typecheck": "vue-tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --ext .ts,.vue"
+  },
+  "dependencies": {
+    "@electron-toolkit/preload": "^3.0.2",
+    "@electron-toolkit/utils": "^4.0.0",
+    "better-sqlite3": "^12.11.1",
+    "pinia": "^2.2.0",
+    "uuid": "^14.0.0",
+    "vue": "^3.5.38",
+    "vue-router": "^4.4.0"
+  },
+  "devDependencies": {
+    "@electron-toolkit/tsconfig": "^1.0.1",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/uuid": "^11.0.0",
+    "@vitejs/plugin-vue": "^5.0.0",
+    "electron": "^41.2.0",
+    "electron-vite": "^5.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0",
+    "vue-tsc": "^2.0.0"
+  }
+}
