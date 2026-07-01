@@ -13,7 +13,15 @@ import { validateSensoryProfile } from '../../utils/validate-sensory-profile'
 import { assertCaller } from '../../utils/auth-context'
 import type {
   CreateStudentParams,
-  CreateStudentResult
+  CreateStudentResult,
+  StudentListParams,
+  StudentListResult,
+  GetStudentResult,
+  StudentSummary,
+  StudentDetail,
+  StudentGender,
+  StudentStatus,
+  SensoryProfileJson
 } from '../../../shared/types/student'
 
 function todayISO(): string {
@@ -135,6 +143,129 @@ export function createStudent(db: DBAdapter, params: CreateStudentParams): Creat
   return { success: true, studentId }
 }
 
+// --- 读路径：get + list ---
+
+interface StudentRow {
+  student_id: string
+  student_name: string
+  gender: string | null
+  birth_date: string | null
+  guardian_contact: string | null
+  sensory_profile_json: string | null
+  status: string
+  created_at: string
+  updated_at: string
+  username: string
+}
+
+function mapSummary(row: StudentRow): StudentSummary {
+  return {
+    studentId: row.student_id,
+    studentName: row.student_name,
+    status: row.status as StudentStatus,
+    gender: row.gender as StudentGender | null,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at
+  }
+}
+
+/**
+ * student:get 核心纯函数。JOIN user_account 取 username；sensory_profile_json
+ * 非空时 JSON.parse。**不过滤 status**——ARCHIVED 仍可查到（教师需查看历史档案）。
+ */
+export function getStudent(
+  db: DBAdapter,
+  params: { callerUserId: unknown; callerRole: unknown; studentId: unknown }
+): GetStudentResult {
+  const caller = assertCaller(db, params.callerUserId, params.callerRole)
+  if (!caller.ok) {
+    return { success: false, errorCode: 'FORBIDDEN' }
+  }
+  if (typeof params.studentId !== 'string' || params.studentId.length === 0) {
+    return { success: false, errorCode: 'NOT_FOUND' }
+  }
+  const row = db
+    .prepare(
+      `SELECT sp.student_id, sp.student_name, sp.gender, sp.birth_date, sp.guardian_contact,
+              sp.sensory_profile_json, sp.status, sp.created_at, sp.updated_at, ua.username
+         FROM student_profile sp
+         JOIN user_account ua ON ua.user_id = sp.student_id
+        WHERE sp.student_id = ?`
+    )
+    .get(params.studentId) as StudentRow | undefined
+  if (!row) {
+    return { success: false, errorCode: 'NOT_FOUND' }
+  }
+  let sensoryProfile: SensoryProfileJson | null = null
+  if (row.sensory_profile_json) {
+    try {
+      sensoryProfile = JSON.parse(row.sensory_profile_json) as SensoryProfileJson
+    } catch {
+      // 数据已落库但 JSON 解析失败——理论不应发生（写入前 stringify）。
+      // 不抛错，按 null 返回；上层可观察 sensoryProfile=null 判断「无感官画像」。
+      sensoryProfile = null
+    }
+  }
+  const detail: StudentDetail = {
+    ...mapSummary(row),
+    birthDate: row.birth_date,
+    guardianContact: row.guardian_contact,
+    sensoryProfile,
+    username: row.username
+  }
+  return { success: true, student: detail }
+}
+
+/**
+ * student:list 核心纯函数。
+ * - 默认只列 ACTIVE；includeArchived=true 加上 ARCHIVED（INACTIVE 不出现，PRD：保留不用）
+ * - 按 created_at DESC；每页 20 条
+ * - page 防御：非有限数 → 1；< 1 → 1；非整数 → 向下取整
+ * - search 在 student_name 上做 LIKE %kw%（不转义 % / _，MVP 接受）
+ */
+export function listStudents(db: DBAdapter, params: StudentListParams): StudentListResult {
+  const caller = assertCaller(db, params.callerUserId, params.callerRole)
+  if (!caller.ok) {
+    return { success: false, errorCode: 'FORBIDDEN' }
+  }
+
+  const statuses = params.includeArchived ? ['ACTIVE', 'ARCHIVED'] : ['ACTIVE']
+  const placeholders = statuses.map(() => '?').join(',')
+
+  const rawPage =
+    typeof params.page === 'number' && Number.isFinite(params.page) ? params.page : 1
+  const safePage = Math.max(1, Math.floor(rawPage))
+  const offset = (safePage - 1) * 20
+
+  const orderBy = 'ORDER BY sp.created_at DESC LIMIT 20 OFFSET ?'
+  let rows: StudentRow[]
+  if (typeof params.search === 'string' && params.search.length > 0) {
+    rows = db
+      .prepare(
+        `SELECT sp.student_id, sp.student_name, sp.gender, sp.birth_date, sp.guardian_contact,
+                sp.sensory_profile_json, sp.status, sp.created_at, sp.updated_at, ua.username
+           FROM student_profile sp
+           JOIN user_account ua ON ua.user_id = sp.student_id
+          WHERE sp.status IN (${placeholders}) AND sp.student_name LIKE ?
+          ${orderBy}`
+      )
+      .all(...statuses, `%${params.search}%`, offset) as StudentRow[]
+  } else {
+    rows = db
+      .prepare(
+        `SELECT sp.student_id, sp.student_name, sp.gender, sp.birth_date, sp.guardian_contact,
+                sp.sensory_profile_json, sp.status, sp.created_at, sp.updated_at, ua.username
+           FROM student_profile sp
+           JOIN user_account ua ON ua.user_id = sp.student_id
+          WHERE sp.status IN (${placeholders})
+          ${orderBy}`
+      )
+      .all(...statuses, offset) as StudentRow[]
+  }
+
+  return { success: true, items: rows.map(mapSummary), page: safePage }
+}
+
 // 生产默认 getDb：用 SqliteAdapter 包装 better-sqlite3 singleton。
 // Adapter 是无状态薄包装，不缓存（每次 IPC 新建一个，开销可忽略）。
 function defaultGetDb(): DBAdapter {
@@ -146,5 +277,14 @@ export function registerStudentHandlers(getDb: () => DBAdapter = defaultGetDb): 
 
   ipcMain.handle('student:create', (_e, params: CreateStudentParams) => {
     return createStudent(getDb(), params)
+  })
+  ipcMain.handle(
+    'student:get',
+    (_e, params: { callerUserId: string; callerRole: string; studentId: string }) => {
+      return getStudent(getDb(), params)
+    }
+  )
+  ipcMain.handle('student:list', (_e, params: StudentListParams) => {
+    return listStudents(getDb(), params)
   })
 }
