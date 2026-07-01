@@ -47,12 +47,16 @@ function logAuth(code: string, message: string): void {
   }
 }
 
-export function registerAuthHandlers(): void {
-  seedAuthErrorCodes()
+let authCodesSeeded = false
 
+export function registerAuthHandlers(): void {
   ipcMain.handle(
     'auth:login',
     (_event, params: { username: string; password: string }) => {
+      if (!authCodesSeeded) {
+        seedAuthErrorCodes()
+        authCodesSeeded = true
+      }
       const db = getDatabase()
 
       const row = db

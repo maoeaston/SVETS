@@ -42,7 +42,10 @@ async function handleLogin(): Promise<void> {
   loading.value = true
   error.value   = ''
   try {
-    const result = await window.api.auth.login(form.value)
+    const result = await window.api.auth.login({
+      username: form.value.username,
+      password: form.value.password
+    })
 
     if (!result.success) {
       error.value =
