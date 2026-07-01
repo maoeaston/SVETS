@@ -409,27 +409,38 @@ function defaultGetDb(): DBAdapter {
 }
 
 export function registerStudentHandlers(getDb: () => DBAdapter = defaultGetDb): void {
-  seedStudentErrorCodes(getDb())
+  // 延迟到首次 IPC 调用时 seed。registerStudentHandlers 由 import './ipc' 在模块
+  // 加载阶段触发，早于 app.whenReady → initDatabase()，故注册时不能立即访问 DB
+  //（否则 getDatabase 抛 "Not initialized"）。auth.ts 用同样的惰性模式。
+  let codesSeeded = false
+  function ensureSeeded(): DBAdapter {
+    const db = getDb()
+    if (!codesSeeded) {
+      seedStudentErrorCodes(db)
+      codesSeeded = true
+    }
+    return db
+  }
 
   ipcMain.handle('student:create', (_e, params: CreateStudentParams) => {
-    return createStudent(getDb(), params)
+    return createStudent(ensureSeeded(), params)
   })
   ipcMain.handle(
     'student:get',
     (_e, params: { callerUserId: string; callerRole: string; studentId: string }) => {
-      return getStudent(getDb(), params)
+      return getStudent(ensureSeeded(), params)
     }
   )
   ipcMain.handle('student:list', (_e, params: StudentListParams) => {
-    return listStudents(getDb(), params)
+    return listStudents(ensureSeeded(), params)
   })
   ipcMain.handle('student:update', (_e, params: UpdateStudentParams) => {
-    return updateStudent(getDb(), params)
+    return updateStudent(ensureSeeded(), params)
   })
   ipcMain.handle(
     'student:archive',
     (_e, params: { callerUserId: string; callerRole: string; studentId: string }) => {
-      return archiveStudent(getDb(), params)
+      return archiveStudent(ensureSeeded(), params)
     }
   )
 }
