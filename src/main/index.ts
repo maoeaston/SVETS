@@ -4,6 +4,12 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { initDatabase, closeDatabase } from './db/connection'
 import './ipc'
 
+// Explicitly set the app name so userData resolves to ~/.config/xc-career-guide/
+// regardless of how Electron is launched. Without this, launching out/main/index.js
+// directly (Playwright, future CI, packaged app paths) makes app.getName() return
+// "Electron" and userData falls into ~/.config/Electron/, colliding with other apps.
+app.setName('xc-career-guide')
+
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
     width: 1366,

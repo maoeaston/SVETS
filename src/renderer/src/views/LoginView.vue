@@ -9,7 +9,13 @@
         </div>
         <div class="field">
           <label for="password">密码</label>
-          <input id="password" v-model="form.password" type="password" autocomplete="current-password" required />
+          <input
+            id="password"
+            v-model="form.password"
+            type="password"
+            autocomplete="current-password"
+            required
+          />
         </div>
         <button type="submit" class="btn-primary" :disabled="loading">
           {{ loading ? '登录中…' : '登录' }}
@@ -23,23 +29,42 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
 
-const router = useRouter()
+const router    = useRouter()
+const authStore = useAuthStore()
 
-const form = ref({ username: '', password: '' })
+const form    = ref({ username: '', password: '' })
 const loading = ref(false)
-const error = ref('')
+const error   = ref('')
 
 async function handleLogin(): Promise<void> {
   loading.value = true
-  error.value = ''
+  error.value   = ''
   try {
-    // TODO: 调用 IPC handler 验证用户名密码，按角色跳转
-    // const result = await window.api.auth.login(form.value)
-    // if (result.role === 'TEACHER') router.push('/teacher')
-    // else if (result.role === 'STUDENT') router.push('/student')
-    console.warn('Login IPC not yet implemented')
-    error.value = '登录功能尚未连接后端，请等待 IPC 实现。'
+    const result = await window.api.auth.login({
+      username: form.value.username,
+      password: form.value.password
+    })
+
+    if (!result.success) {
+      error.value =
+        result.errorCode === 'ACCOUNT_DISABLED'
+          ? '账号已停用，请联系管理员'
+          : '用户名或密码错误'
+      return
+    }
+
+    authStore.setUser(result)
+
+    if (result.role === 'STUDENT') {
+      await router.push('/student')
+    } else {
+      // TEACHER 和 ADMIN 均进入教师端
+      await router.push('/teacher')
+    }
+  } catch {
+    error.value = '系统异常，请重试'
   } finally {
     loading.value = false
   }
