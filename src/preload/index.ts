@@ -10,6 +10,13 @@ const api = {
   auth: {
     login: (params: { username: string; password: string }) =>
       ipcRenderer.invoke('auth:login', params)
+  },
+  student: {
+    list: (params: unknown) => ipcRenderer.invoke('student:list', params),
+    get: (params: unknown) => ipcRenderer.invoke('student:get', params),
+    create: (params: unknown) => ipcRenderer.invoke('student:create', params),
+    update: (params: unknown) => ipcRenderer.invoke('student:update', params),
+    archive: (params: unknown) => ipcRenderer.invoke('student:archive', params)
   }
 }
 

@@ -1,6 +1,17 @@
 // 渲染进程可调用的 IPC API 接口声明
 // 每个功能模块在 src/main/ipc/handlers/ 中实现，此处同步声明类型
 
+import type {
+  CreateStudentParams,
+  CreateStudentResult,
+  UpdateStudentParams,
+  UpdateStudentResult,
+  ArchiveStudentResult,
+  GetStudentResult,
+  StudentListParams,
+  StudentListResult
+} from './student'
+
 export interface LoginSuccess {
   success: true
   userId: string
@@ -18,5 +29,20 @@ export type LoginResult = LoginSuccess | LoginError
 export interface IpcApi {
   auth: {
     login: (params: { username: string; password: string }) => Promise<LoginResult>
+  }
+  student: {
+    list: (params: StudentListParams) => Promise<StudentListResult>
+    get: (params: {
+      callerUserId: string
+      callerRole: string
+      studentId: string
+    }) => Promise<GetStudentResult>
+    create: (params: CreateStudentParams) => Promise<CreateStudentResult>
+    update: (params: UpdateStudentParams) => Promise<UpdateStudentResult>
+    archive: (params: {
+      callerUserId: string
+      callerRole: string
+      studentId: string
+    }) => Promise<ArchiveStudentResult>
   }
 }
