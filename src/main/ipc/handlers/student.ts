@@ -17,6 +17,9 @@ import type {
   StudentListParams,
   StudentListResult,
   GetStudentResult,
+  UpdateStudentParams,
+  UpdateStudentResult,
+  ArchiveStudentResult,
   StudentSummary,
   StudentDetail,
   StudentGender,
@@ -266,6 +269,139 @@ export function listStudents(db: DBAdapter, params: StudentListParams): StudentL
   return { success: true, items: rows.map(mapSummary), page: safePage }
 }
 
+// --- 写路径：update + archive ---
+
+// 字段白名单：键为 API 字段名，值为 DB 列名。
+// [!] 安全要点：绝不能把 patch 的 key 直接拼入 SQL（注入风险）。
+// 非白名单 key（如 username / password）静默忽略。
+const UPDATE_FIELDS = {
+  studentName: 'student_name',
+  gender: 'gender',
+  birthDate: 'birth_date',
+  guardianContact: 'guardian_contact',
+  sensoryProfile: 'sensory_profile_json'
+} as const
+type UpdateKey = keyof typeof UPDATE_FIELDS
+
+/**
+ * student:update 核心纯函数。逐字段更新白名单字段，每个字段单独 UPDATE。
+ * [!] 字段名来自固定常量 UPDATE_FIELDS，不来自 patch 的 key。
+ * - 目标不存在 → NOT_FOUND
+ * - 目标 ARCHIVED → ARCHIVED（不允许编辑已归档档案）
+ * - sensoryProfile 校验失败 → INVALID_SENSORY_PROFILE
+ * - birthDate 未来 → VALIDATION_ERROR
+ * - 空 patch（或只含非白名单字段）→ success，不写审计（无变更）
+ */
+export function updateStudent(db: DBAdapter, params: UpdateStudentParams): UpdateStudentResult {
+  const caller = assertCaller(db, params.callerUserId, params.callerRole)
+  if (!caller.ok) {
+    return { success: false, errorCode: 'FORBIDDEN' }
+  }
+  if (typeof params.studentId !== 'string' || params.studentId.length === 0) {
+    return { success: false, errorCode: 'NOT_FOUND' }
+  }
+
+  const target = db
+    .prepare('SELECT status FROM student_profile WHERE student_id = ?')
+    .get(params.studentId) as { status: string } | undefined
+  if (!target) {
+    return { success: false, errorCode: 'NOT_FOUND' }
+  }
+  if (target.status === 'ARCHIVED') {
+    return { success: false, errorCode: 'ARCHIVED' }
+  }
+
+  const patch = params.patch ?? {}
+  const applied: UpdateKey[] = []
+
+  for (const key of Object.keys(patch) as UpdateKey[]) {
+    if (!(key in UPDATE_FIELDS)) continue // 非白名单 key 静默忽略
+
+    let value: unknown = patch[key]
+
+    if (key === 'sensoryProfile') {
+      const sp = validateSensoryProfile(value)
+      if (!sp.ok) {
+        return { success: false, errorCode: 'INVALID_SENSORY_PROFILE' }
+      }
+      // null → DB null；非 null（含空对象 {}）→ JSON 字符串
+      value = value ? JSON.stringify(value) : null
+    }
+
+    if (key === 'birthDate' && typeof value === 'string' && value > todayISO()) {
+      return { success: false, errorCode: 'VALIDATION_ERROR' }
+    }
+
+    db.prepare(
+      `UPDATE student_profile SET ${UPDATE_FIELDS[key]} = ?, updated_at = datetime('now') WHERE student_id = ?`
+    ).run(value, params.studentId)
+    applied.push(key)
+  }
+
+  if (applied.length > 0) {
+    logStudentEvent(db, 'STUDENT_PROFILE_UPDATED', 'INFO', params.studentId, caller.row.user_id, {
+      fields: applied
+    })
+  }
+  return { success: true }
+}
+
+/**
+ * student:archive 核心纯函数。
+ * - 目标不存在 → NOT_FOUND
+ * - 目标已 ARCHIVED → 幂等 success（不写审计，避免重复噪音）
+ * - 事务：UPDATE student_profile status=ARCHIVED + UPDATE user_account status=DISABLED
+ *   [!] role='STUDENT' 锁：防止 student_id 与 user_id 因脏数据不一致时改错非 STUDENT 账号
+ */
+export function archiveStudent(
+  db: DBAdapter,
+  params: { callerUserId: unknown; callerRole: unknown; studentId: unknown }
+): ArchiveStudentResult {
+  const caller = assertCaller(db, params.callerUserId, params.callerRole)
+  if (!caller.ok) {
+    return { success: false, errorCode: 'FORBIDDEN' }
+  }
+  if (typeof params.studentId !== 'string' || params.studentId.length === 0) {
+    return { success: false, errorCode: 'NOT_FOUND' }
+  }
+
+  const target = db
+    .prepare('SELECT status FROM student_profile WHERE student_id = ?')
+    .get(params.studentId) as { status: string } | undefined
+  if (!target) {
+    return { success: false, errorCode: 'NOT_FOUND' }
+  }
+  if (target.status === 'ARCHIVED') {
+    return { success: true } // 幂等
+  }
+
+  const tx = db.transaction(() => {
+    db.prepare(
+      `UPDATE student_profile SET status = 'ARCHIVED', updated_at = datetime('now') WHERE student_id = ?`
+    ).run(params.studentId as string)
+    // [!] role='STUDENT' 锁：只改匹配的 STUDENT 账号
+    db.prepare(
+      `UPDATE user_account SET status = 'DISABLED', updated_at = datetime('now') WHERE user_id = ? AND role = 'STUDENT'`
+    ).run(params.studentId as string)
+  })
+
+  try {
+    tx()
+  } catch (err) {
+    logStudentEvent(
+      db,
+      'STUDENT_PROFILE_SYSTEM_ERROR',
+      'ERROR',
+      params.studentId as string,
+      caller.row.user_id,
+      { operation: 'archive', error: String(err) }
+    )
+    return { success: false, errorCode: 'SYSTEM_ERROR' }
+  }
+  logStudentEvent(db, 'STUDENT_PROFILE_ARCHIVED', 'INFO', params.studentId as string, caller.row.user_id, {})
+  return { success: true }
+}
+
 // 生产默认 getDb：用 SqliteAdapter 包装 better-sqlite3 singleton。
 // Adapter 是无状态薄包装，不缓存（每次 IPC 新建一个，开销可忽略）。
 function defaultGetDb(): DBAdapter {
@@ -287,4 +423,13 @@ export function registerStudentHandlers(getDb: () => DBAdapter = defaultGetDb): 
   ipcMain.handle('student:list', (_e, params: StudentListParams) => {
     return listStudents(getDb(), params)
   })
+  ipcMain.handle('student:update', (_e, params: UpdateStudentParams) => {
+    return updateStudent(getDb(), params)
+  })
+  ipcMain.handle(
+    'student:archive',
+    (_e, params: { callerUserId: string; callerRole: string; studentId: string }) => {
+      return archiveStudent(getDb(), params)
+    }
+  )
 }
