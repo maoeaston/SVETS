@@ -1,4 +1,4 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 /**
@@ -7,8 +7,10 @@ import { electronAPI } from '@electron-toolkit/preload'
  * 每新增一个功能通道，必须在此处显式声明。
  */
 const api = {
-  // 占位符 — 按功能模块逐步添加，例如：
-  // assessment: { start: (params) => ipcRenderer.invoke('assessment:start', params) }
+  auth: {
+    login: (params: { username: string; password: string }) =>
+      ipcRenderer.invoke('auth:login', params)
+  }
 }
 
 if (process.contextIsolated) {
