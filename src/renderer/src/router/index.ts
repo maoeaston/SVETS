@@ -12,7 +12,21 @@ const router = createRouter({
     {
       path: '/teacher',
       component: () => import('../views/teacher/TeacherLayout.vue'),
-      children: []
+      children: [
+        { path: '', redirect: '/teacher/students' },
+        {
+          path: 'students',
+          component: () => import('../views/teacher/StudentListView.vue')
+        },
+        {
+          path: 'students/new',
+          component: () => import('../views/teacher/StudentFormView.vue')
+        },
+        {
+          path: 'students/:id',
+          component: () => import('../views/teacher/StudentFormView.vue')
+        }
+      ]
     },
     {
       path: '/student',
