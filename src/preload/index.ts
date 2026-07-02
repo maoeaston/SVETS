@@ -25,6 +25,16 @@ const api = {
     createVersion: (params: unknown) => ipcRenderer.invoke('strategy:createVersion', params),
     update: (params: unknown) => ipcRenderer.invoke('strategy:update', params),
     setActive: (params: unknown) => ipcRenderer.invoke('strategy:setActive', params)
+  },
+  assessment: {
+    createSession: (params: unknown) => ipcRenderer.invoke('assessment:createSession', params),
+    getSession: (params: unknown) => ipcRenderer.invoke('assessment:getSession', params),
+    submitAnswer: (params: unknown) => ipcRenderer.invoke('assessment:submitAnswer', params),
+    emotionInterrupt: (params: unknown) => ipcRenderer.invoke('assessment:emotionInterrupt', params),
+    emotionResume: (params: unknown) => ipcRenderer.invoke('assessment:emotionResume', params),
+    abortSession: (params: unknown) => ipcRenderer.invoke('assessment:abortSession', params),
+    triggerRedline: (params: unknown) => ipcRenderer.invoke('assessment:triggerRedline', params),
+    calculateResult: (params: unknown) => ipcRenderer.invoke('assessment:calculateResult', params)
   }
 }
 

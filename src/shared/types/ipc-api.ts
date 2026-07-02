@@ -23,6 +23,24 @@ import type {
   SetStrategyActiveParams,
   SetStrategyActiveResult
 } from './strategy'
+import type {
+  CreateSessionParams,
+  CreateSessionResult,
+  GetSessionParams,
+  GetSessionResult,
+  SubmitAnswerParams,
+  SubmitAnswerResult,
+  EmotionInterruptParams,
+  EmotionInterruptResult,
+  EmotionResumeParams,
+  EmotionResumeResult,
+  AbortSessionParams,
+  AbortSessionResult,
+  TriggerRedlineParams,
+  TriggerRedlineResult,
+  CalculateResultParams,
+  CalculateResultResult
+} from './assessment'
 
 export interface LoginSuccess {
   success: true
@@ -75,5 +93,19 @@ export interface IpcApi {
     ) => Promise<CreateStrategyVersionResult>
     update: (params: UpdateStrategyParams) => Promise<UpdateStrategyResult>
     setActive: (params: SetStrategyActiveParams) => Promise<SetStrategyActiveResult>
+  }
+  assessment: {
+    createSession: (params: CreateSessionParams) => Promise<CreateSessionResult>
+    getSession: (params: GetSessionParams) => Promise<GetSessionResult>
+    submitAnswer: (params: SubmitAnswerParams) => Promise<SubmitAnswerResult>
+    emotionInterrupt: (
+      params: EmotionInterruptParams
+    ) => Promise<EmotionInterruptResult>
+    emotionResume: (params: EmotionResumeParams) => Promise<EmotionResumeResult>
+    abortSession: (params: AbortSessionParams) => Promise<AbortSessionResult>
+    triggerRedline: (params: TriggerRedlineParams) => Promise<TriggerRedlineResult>
+    calculateResult: (
+      params: CalculateResultParams
+    ) => Promise<CalculateResultResult>
   }
 }
