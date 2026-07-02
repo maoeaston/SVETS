@@ -1,5 +1,7 @@
 // 对应 doc/xc-career-guide-event-payload-schema-v1.0.0.md
 
+import type { AbilityTag } from './json-schemas'
+
 export type AggregateType =
   | 'ASSESSMENT_SESSION'
   | 'TRAINING_SESSION'
@@ -14,6 +16,7 @@ export type EventType =
   | 'ANSWER_SUBMITTED'
   | 'EMOTION_INTERRUPTED'
   | 'EMOTION_RESUMED'
+  | 'EMOTION_COLLAPSE_THRESHOLD_REACHED'
   | 'OFFLINE_SCORE_SUBMITTED'
   | 'REDLINE_TRIGGERED'
   | 'SESSION_COMPLETED'
@@ -99,6 +102,20 @@ export interface EmotionResumedPayload {
   session_id: string
   resumed_at: string
   resume_from_question_order?: number | null
+}
+
+export interface CollapseRecord {
+  interrupted_at: string
+  unresolved_since: string
+  current_question_order?: number | null
+}
+
+export interface EmotionCollapseThresholdReachedPayload {
+  session_id: string
+  collapse_count: number
+  threshold: number
+  collapse_history: CollapseRecord[]
+  triggered_at: string
 }
 
 export interface CriterionScore {
@@ -188,6 +205,25 @@ export interface ResultCalculatedPayload {
   level_result: string
   calculated_at: string
   calculated_by: string
+}
+
+export interface ModuleScore {
+  module_type: AbilityTag
+  raw_score: number
+  max_score: number
+  normalized_score: number
+}
+
+export interface AbilityScorePayload {
+  result_type: 'ABILITY_SCORE'
+  module_scores?: ModuleScore[]
+  online_raw_score: number
+  offline_raw_score: number
+  question_count: number
+  answered_count: number
+  emotion_collapse_count: number
+  module_veto_triggered_by?: AbilityTag | null
+  level_forced_by?: 'MODULE_VETO' | 'EMOTION_COLLAPSE' | null
 }
 
 export interface ReportGeneratedPayload {
