@@ -111,7 +111,12 @@ function makeEvent(
   }
 }
 
-function seedSafetyIncident(db: DBAdapter, incidentId: string, sessStudentId: string): void {
+function seedSafetyIncident(
+  db: DBAdapter,
+  incidentId: string,
+  sessStudentId: string,
+  triggeredBy?: string
+): void {
   // safety_incident.trigger_event_id 需先在 domain_event_projection 存在
   const triggerEventId = uuidv4()
   db.prepare(
@@ -125,7 +130,7 @@ function seedSafetyIncident(db: DBAdapter, incidentId: string, sessStudentId: st
        (incident_id, student_id, job_code, task_code, trigger_event_id,
         reason_code, triggered_by, context_phase, status)
      VALUES (?, ?, ?, ?, ?, 'BLADE_TOWARD_SELF', ?, 'ONLINE_ASSESSMENT', 'PENDING_DETAIL')`
-  ).run(incidentId, sessStudentId, jobCode, taskCode, triggerEventId, teacherId)
+  ).run(incidentId, sessStudentId, jobCode, taskCode, triggerEventId, triggeredBy ?? teacherId)
 }
 
 // 构造标准 SESSION_STARTED 事件（50 题：42 ONLINE + 8 OFFLINE）。
@@ -465,6 +470,106 @@ describe('applyAssessmentEvent — REDLINE_TRIGGERED', () => {
     expect(sess.status).toBe('REDLINE_HALTED')
     expect(sess.level_result).toBe('LEVEL_FAIL_BY_SAFETY')
     expect(sess.redline_incident_id).toBe(incidentId)
+  })
+
+  it('冷启动重放分支：session 非 REDLINE_HALTED 时 reducer 完整熔断 + 幂等', async () => {
+    // 独立 DB：drop batch-halt trigger 模拟冷启动（trigger 未跑，session 保持 ACTIVE），
+    // 使 reducer 走 applyRedlineTriggered 的 else 分支（完整 UPDATE，line 330-341）。
+    // 共享 db 实例不受影响。
+    const coldDb = await createTestDb()
+    coldDb.exec('DROP TRIGGER IF EXISTS trg_safety_incident_bind_open_assessments')
+    // 清 schema seed 的 strategy_baseline_shelver_v1（占 UNIQUE(type,job,version=1)）
+    coldDb.exec('DELETE FROM strategy_config')
+    try {
+      const cTeacher = seedCaller(coldDb, 'TEACHER')
+      const cStudent = seedStudent(coldDb)
+      const cStrategy = `cold-strat-${uuidv4().slice(0, 8)}`
+      seedStrategyConfig(coldDb, {
+        strategyId: cStrategy,
+        strategyType: 'BASELINE_ASSESSMENT',
+        jobCode,
+        version: strategyVersion
+      })
+      seedQuestionBank(coldDb, { jobCode })
+      const cQuestionIds = (
+        coldDb.prepare('SELECT question_id FROM question_bank LIMIT 50').all() as { question_id: string }[]
+      ).map(r => r.question_id)
+
+      const sessionId = uuidv4()
+      const startPayload: SessionStartedPayload = {
+        session_id: sessionId,
+        student_id: cStudent,
+        strategy_id: cStrategy,
+        strategy_type: 'BASELINE_ASSESSMENT',
+        strategy_version: strategyVersion,
+        job_code: jobCode,
+        task_code: taskCode,
+        online_question_count: 42,
+        offline_question_count: 8,
+        question_ids: cQuestionIds
+      }
+      const startEvent = makeEvent('SESSION_STARTED', sessionId, startPayload as unknown as Record<string, unknown>, {
+        actor_id: cTeacher
+      })
+      seedEvent(coldDb, startEvent)
+      applyAssessmentEvent(coldDb, startEvent)
+
+      // seedSafetyIncident：batch-halt trigger 已 drop，session 应保持 ACTIVE
+      const incidentId = uuidv4()
+      seedSafetyIncident(coldDb, incidentId, cStudent, cTeacher)
+      const beforeStatus = coldDb
+        .prepare('SELECT status FROM assessment_session WHERE session_id = ?')
+        .get(sessionId) as { status: string }
+      expect(beforeStatus.status).toBe('ACTIVE')
+
+      const redlinePayload: RedlineTriggeredPayload = {
+        session_id: sessionId,
+        incident_id: incidentId,
+        reason_code: 'BLADE_TOWARD_SELF',
+        context_phase: 'ONLINE_ASSESSMENT',
+        triggered_at: '2026-07-01T00:40:00.000Z'
+      }
+      const redlineEvent = makeEvent(
+        'REDLINE_TRIGGERED',
+        sessionId,
+        redlinePayload as unknown as Record<string, unknown>,
+        { event_sequence: 2 }
+      )
+      seedEvent(coldDb, redlineEvent)
+      applyAssessmentEvent(coldDb, redlineEvent)
+
+      // 冷启动分支完整熔断：reducer 自己设全部字段（非 trigger 代劳）
+      const sess = coldDb
+        .prepare(
+          'SELECT status, level_result, redline_incident_id, last_status_event_id FROM assessment_session WHERE session_id = ?'
+        )
+        .get(sessionId) as {
+        status: string
+        level_result: string
+        redline_incident_id: string
+        last_status_event_id: string
+      }
+      expect(sess.status).toBe('REDLINE_HALTED')
+      expect(sess.level_result).toBe('LEVEL_FAIL_BY_SAFETY')
+      expect(sess.redline_incident_id).toBe(incidentId)
+      expect(sess.last_status_event_id).toBe(redlineEvent.event_id)
+
+      // 幂等：再 apply 同事件 → last_status_event_id 匹配 → skip（字段不变）
+      applyAssessmentEvent(coldDb, redlineEvent)
+      const sess2 = coldDb
+        .prepare(
+          'SELECT status, level_result, redline_incident_id, last_status_event_id FROM assessment_session WHERE session_id = ?'
+        )
+        .get(sessionId) as {
+        status: string
+        level_result: string
+        redline_incident_id: string
+        last_status_event_id: string
+      }
+      expect(sess2).toEqual(sess)
+    } finally {
+      coldDb.close()
+    }
   })
 })
 
