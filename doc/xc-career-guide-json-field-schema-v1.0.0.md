@@ -88,7 +88,7 @@ interface TrueFalseVariant {
   "media_brief": "视频：正确双手托举姿势，刀刃朝外",
   "source": {
     "import_batch_id": "batch_20260630_001",
-    "source_file": "通用基础能力评估题库2026.6.30.csv",
+    "source_file": "通用基础能力评估题库.xlsx",
     "source_row": 12,
     "imported_at": "2026-06-30T08:00:00Z",
     "imported_by": "admin_001"
@@ -125,7 +125,7 @@ interface ChoiceOption {
   "expected_answer": "B",
   "assessment_point": "异常处理规则",
   "ability_tags": ["RULE_EXECUTION"],
-  "source": { "import_batch_id": "batch_20260630_001", "source_file": "通用基础能力评估题库2026.6.30.csv", "source_row": 35, "imported_at": "2026-06-30T08:00:00Z", "imported_by": "admin_001" }
+  "source": { "import_batch_id": "batch_20260630_001", "source_file": "通用基础能力评估题库.xlsx", "source_row": 35, "imported_at": "2026-06-30T08:00:00Z", "imported_by": "admin_001" }
 }
 ```
 
@@ -169,7 +169,7 @@ interface DropZone {
   "scoring_mode": "PARTIAL_CREDIT",
   "assessment_point": "货架分类认知",
   "ability_tags": ["COGNITION", "FINE_MOTOR"],
-  "source": { "import_batch_id": "batch_20260630_001", "source_file": "通用基础能力评估题库2026.6.30.csv", "source_row": 67, "imported_at": "2026-06-30T08:00:00Z", "imported_by": "admin_001" }
+  "source": { "import_batch_id": "batch_20260630_001", "source_file": "通用基础能力评估题库.xlsx", "source_row": 67, "imported_at": "2026-06-30T08:00:00Z", "imported_by": "admin_001" }
 }
 ```
 
@@ -201,7 +201,7 @@ interface RubricCriterion {
   ],
   "assessment_point": "实操综合能力",
   "ability_tags": ["FINE_MOTOR", "RULE_EXECUTION", "SAFETY_OPERATION"],
-  "source": { "import_batch_id": "batch_20260630_001", "source_file": "通用基础能力评估题库2026.6.30.csv", "source_row": 112, "imported_at": "2026-06-30T08:00:00Z", "imported_by": "admin_001" }
+  "source": { "import_batch_id": "batch_20260630_001", "source_file": "通用基础能力评估题库.xlsx", "source_row": 112, "imported_at": "2026-06-30T08:00:00Z", "imported_by": "admin_001" }
 }
 ```
 

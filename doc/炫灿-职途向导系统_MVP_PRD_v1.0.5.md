@@ -37,7 +37,7 @@ MVP 核心任务：拆箱与上架
 18. `schema.sql v0.1.7-consistency-guard` 已补齐 `REDLINE_HALTED` session 的 `redline_incident_id` 同学生同任务保护。
 19. `schema.sql v0.1.7-consistency-guard` 已将 `training_step_record.status` 统一为 `NOT_STARTED / IN_PROGRESS / COMPLETED / SKIPPED / FAILED`。
 20. 《软件大纲内容设计.md》作为产品总蓝图纳入本文档的版本边界说明；其中完整试卷系统、自定义组卷、PDF 导出与 4 大专项岗位模块不进入当前 MVP 主流程。
-21. `通用基础能力评估题库2026.6.30.csv` 可作为基础能力题库种子数据进入 `question_bank`，但默认以 `DRAFT` 状态入库，完成素材、答案与计分规则审核后才允许转为 `ACTIVE`。
+21. `通用基础能力评估题库.xlsx` 可作为基础能力题库种子数据进入 `question_bank`，但默认以 `DRAFT` 状态入库，完成素材、答案与计分规则审核后才允许转为 `ACTIVE`。
 22. **基础能力评估口径重平衡（v1.0.5）**：MVP 测评环节题量统一为线上 42 题 + 线下 8 题 = 50 题，每题 `0 / 1 / 2` 分，满分 100。原 §2.4「基础能力标准化模拟卷 18+5」与 §5.4「拆箱与上架任务测评 17+3 / 满分 40」两套口径合并为此一套。
 23. 6 大基础能力模块（精细动作、认知理解、规则执行、情绪调节、基础社交、安全操作）每模块选 7 道线上题（6×7=42）；线下 8 道实操题通过复合能力标签覆盖 6 大维度，不要求机械做到每维度 1 道。
 24. **结果等级改为新三档**：`LEVEL_COMPETENT`（基础能力胜任）`normalized_score >= 80`；`LEVEL_CONDITIONAL`（有条件胜任）`60 <= normalized_score < 80`；`LEVEL_NOT_COMPETENT`（完全不胜任）`normalized_score < 60`。原 `LEVEL_PASS / LEVEL_IMPROVE / LEVEL_FAIL` 枚举废止。`LEVEL_FAIL_BY_SAFETY` 作为安全红线覆盖等级保留，优先级高于一切分数判定。
@@ -611,7 +611,7 @@ MVP 支持四类题：
 
 ### 5.3.1 基础能力评估题库入库规则
 
-`通用基础能力评估题库2026.6.30.csv` 可作为基础能力评估题库的种子来源，但不得直接全量发布为正式可用题库。
+`通用基础能力评估题库.xlsx` 可作为基础能力评估题库的种子来源，但不得直接全量发布为正式可用题库。
 
 入库目标表：
 
