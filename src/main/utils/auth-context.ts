@@ -43,3 +43,64 @@ export function assertCaller(
   }
   return { ok: true, row }
 }
+
+/**
+ * 校验 STUDENT 身份（测评答题路径专用）。
+ * 与 assertCaller 同级风险：渲染进程可伪造 callerRole（PRD 风险点已记录，MVP 单进程可信）。
+ * 逻辑同 assertCaller 的 user_account 校验，但 callerRole 必须 = 'STUDENT'。
+ */
+export function assertStudent(
+  db: DBAdapter,
+  callerUserId: unknown,
+  callerRole: unknown
+): CallerCheck {
+  if (callerRole !== 'STUDENT') {
+    return { ok: false, errorCode: 'FORBIDDEN' }
+  }
+  if (typeof callerUserId !== 'string' || callerUserId.length === 0) {
+    return { ok: false, errorCode: 'FORBIDDEN' }
+  }
+  const row = db
+    .prepare('SELECT user_id, role, status FROM user_account WHERE user_id = ?')
+    .get(callerUserId) as CallerRow | undefined
+  if (!row || row.status !== 'ACTIVE' || row.role !== 'STUDENT') {
+    return { ok: false, errorCode: 'FORBIDDEN' }
+  }
+  return { ok: true, row }
+}
+
+interface SessionRow {
+  session_id: string
+  student_id: string
+  status: string
+}
+
+export type SessionOwnerOk = { ok: true; sessionRow: SessionRow }
+export type SessionOwnerErr = { ok: false; errorCode: 'FORBIDDEN' | 'NOT_FOUND' }
+export type SessionOwnerCheck = SessionOwnerOk | SessionOwnerErr
+
+/**
+ * 校验 caller 对 assessment_session 的所有权（防越权答题）。
+ * - callerUserId 应为 assertStudent 通过后的 student UUID（不再做类型校验）
+ * - sessionId 做防御性 unknown 校验（IPC 原始输入）
+ * - 不存在 → NOT_FOUND；存在但不属于 caller → FORBIDDEN
+ */
+export function assertSessionOwner(
+  db: DBAdapter,
+  callerUserId: string,
+  sessionId: unknown
+): SessionOwnerCheck {
+  if (typeof sessionId !== 'string' || sessionId.length === 0) {
+    return { ok: false, errorCode: 'NOT_FOUND' }
+  }
+  const sessionRow = db
+    .prepare('SELECT session_id, student_id, status FROM assessment_session WHERE session_id = ?')
+    .get(sessionId) as SessionRow | undefined
+  if (!sessionRow) {
+    return { ok: false, errorCode: 'NOT_FOUND' }
+  }
+  if (sessionRow.student_id !== callerUserId) {
+    return { ok: false, errorCode: 'FORBIDDEN' }
+  }
+  return { ok: true, sessionRow }
+}

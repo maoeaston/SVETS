@@ -9,6 +9,7 @@ import { hashPassword } from '../utils/password'
 import { MemoryAdapter } from './memory-adapter'
 import type { DBAdapter } from './interface'
 import type { StrategyInput } from '../../shared/types/strategy'
+import type { AbilityTag } from '../../shared/types/json-schemas'
 
 // 指向生产 schema 的单一源（src/main/db/schema.sql），与 connection.ts 同源。
 // [!] 历史教训：曾指向 doc/ 镜像副本，v0.1.8 迁移时漏改导致测试 schema 滞后于
@@ -173,5 +174,67 @@ export function seedStrategyReference(
           strategy_version, status, module_type, total_step_count, completed_step_count, created_by)
        VALUES (?, ?, ?, 'test-task', ?, ?, ?, 'COMPLETED', 'FINE_MOTOR', 1, 0, ?)`
     ).run(uuidv4(), studentId, sc.job_code, strategyId, sc.strategy_type, version, studentId)
+  }
+}
+
+/**
+ * 插入 user_account(STUDENT) + student_profile（同 UUID 复用，与 student.ts createStudent 一致），
+ * 返回 studentId（= userId）。over.userStatus 用于测 assertStudent 的 DISABLED 拒绝路径。
+ */
+export function seedStudent(
+  db: DBAdapter,
+  over: { studentName?: string; userStatus?: 'ACTIVE' | 'DISABLED' | 'ARCHIVED' } = {}
+): string {
+  const studentId = uuidv4()
+  const studentName = over.studentName ?? '测试学生'
+  const userStatus = over.userStatus ?? 'ACTIVE'
+  db.prepare(
+    `INSERT INTO user_account (user_id, username, password_hash, role, display_name, status)
+     VALUES (?, ?, ?, 'STUDENT', ?, ?)`
+  ).run(studentId, `student_${studentId.slice(0, 8)}`, hashPassword('x'), studentName, userStatus)
+  db.prepare(
+    `INSERT INTO student_profile (student_id, student_name, status)
+     VALUES (?, ?, 'ACTIVE')`
+  ).run(studentId, studentName)
+  return studentId
+}
+
+/**
+ * 批量 seed ACTIVE question_bank 行（mock 题库）。
+ * 默认：6 模块 × {online 3 题型 × 5 道 + OFFLINE_OPERATION × 3 道} = 108 道，
+ * 覆盖 baseStrategyInput 组卷需求（42 online + 8 offline）含余量。
+ * content_json / scoring_rule_json 为 seed 占位（schema 仅 NOT NULL，详细结构由 app 层校验）。
+ */
+const SEED_MODULES: AbilityTag[] = [
+  'FINE_MOTOR',
+  'COGNITION',
+  'RULE_EXECUTION',
+  'EMOTION_REGULATION',
+  'BASIC_SOCIAL',
+  'SAFETY_OPERATION'
+]
+const SEED_ONLINE_TYPES = ['TRUE_FALSE', 'SINGLE_CHOICE', 'DRAG'] as const
+
+export function seedQuestionBank(
+  db: DBAdapter,
+  over: { jobCode?: string; onlinePerModule?: number; offlinePerModule?: number } = {}
+): void {
+  const jobCode = over.jobCode ?? 'SUPERMARKET_SHELVER'
+  const onlineN = over.onlinePerModule ?? 5
+  const offlineN = over.offlinePerModule ?? 3
+  const stmt = db.prepare(
+    `INSERT INTO question_bank
+       (question_id, job_code, module_type, question_type, content_json, scoring_rule_json)
+     VALUES (?, ?, ?, ?, '{"seed":true}', '{"seed":true}')`
+  )
+  for (const moduleType of SEED_MODULES) {
+    for (const questionType of SEED_ONLINE_TYPES) {
+      for (let i = 0; i < onlineN; i++) {
+        stmt.run(uuidv4(), jobCode, moduleType, questionType)
+      }
+    }
+    for (let i = 0; i < offlineN; i++) {
+      stmt.run(uuidv4(), jobCode, moduleType, 'OFFLINE_OPERATION')
+    }
   }
 }
