@@ -374,20 +374,24 @@ INFO 级（审计 TEACHER 关键操作，与 strategy.ts 决策一致；学生�
 3. 校验 question_id ∈ 本 session 的 assessment_session_question 且 phase=ONLINE
 4. 校验该 question 无 VALID answer_record（ux_answer_record_one_valid_answer 兜底）→ 否则 ALREADY_ANSWERED
 5. **校验 answer_payload 结构**（按 question_type 分支，AGENTS.md "JSON 字段必须验证" 约束）：
-   - TRUE_FALSE：`{ selected: boolean }` 单字段
-   - SINGLE_CHOICE：`{ selected_option: string }` 且 ∈ question.content_json.options[].id
-   - DRAG：`{ slots: { slot_id: string; item_id: string }[] }` 长度 = question 槽位数
-   - 不匹配 → VALIDATION_ERROR（不落 answer_record，不写事件）
-6. 计算分数（按 question_type：TRUE_FALSE/SINGLE_CHOICE exact match / DRAG partial）→ score ∈ {0,1,2}
-7. 事务：writeEvent(ANSWER_SUBMITTED, payload 含 answer_payload) + INSERT answer_record（answer_payload_json 写入前再校验一次防 TOCTOU）+ applyAssessmentEvent（reducer 更新计数+current_question_id）
+   [!] 字段名以 `src/shared/types/event-payloads.ts` 的 `AnswerPayloadDetail` 为准
+   （含 `question_type` 判别字段）；下面每个题型是判别后的成员。
+   - TRUE_FALSE：`{ question_type: 'TRUE_FALSE', selected: boolean }`，对比 `content_json.expected_answer`
+   - SINGLE_CHOICE：`{ question_type: 'SINGLE_CHOICE', selected: string }` 且 ∈ `content_json.options[].key`，对比 `content_json.expected_answer`
+   - DRAG：`{ question_type: 'DRAG', placements: { item_id: string; zone_id: string }[] }`，长度 = `content_json.drag_items` 数，按 `content_json.drop_zones[].accepts` 判定每项对错
+   - 不匹配 / content_json 缺校验字段 → VALIDATION_ERROR（不落 answer_record，不写事件）
+6. 计分（按题型硬编码，不读 scoring_rule_json；该字段供 UI 标签用）：TRUE_FALSE/SINGLE_CHOICE exact（对=2/错=0）；DRAG 按 `content_json.scoring_mode`：全对=2，`PARTIAL_CREDIT` 且对的多于半数=1，其余=0 → score ∈ {0,1,2}
+7. 事务：writeEvent(ANSWER_SUBMITTED, payload 含 answer_payload) + applyAssessmentEvent（reducer 承担 INSERT answer_record + 计数前移；handler 不另 INSERT）
 
-`emotionInterrupt`（STUDENT）：writeEvent(EMOTION_INTERRUPTED) + UPDATE session status=EMOTION_INTERRUPTED
-`emotionResume`（TEACHER）：writeEvent(EMOTION_RESUMED) + UPDATE session status=ACTIVE
+`emotionInterrupt`（STUDENT）：允许从 ACTIVE 与 EMOTION_INTERRUPTED（escalating collapse，连续未恢复中断累加）；writeEvent(EMOTION_INTERRUPTED) + reducer 承担 status=EMOTION_INTERRUPTED + pause_count+1
+`emotionResume`（TEACHER）：仅 EMOTION_INTERRUPTED 可恢复；writeEvent(EMOTION_RESUMED) + reducer 承担 status=ACTIVE
 `abortSession`（TEACHER）：
-- 若累计未恢复中断数 +1 后达 emotion_collapse_threshold → 先写 EMOTION_COLLAPSE_THRESHOLD_REACHED 再写 SESSION_ABORTED
-- writeEvent(SESSION_ABORTED) + UPDATE session status=ABORTED
+- collapse_count = count(EMOTION_INTERRUPTED) − count(EMOTION_RESUMED)（事件溯源查询，同 aggregate）
+- 若 collapse_count ≥ emotion_collapse_threshold 且本 aggregate 未发过崩溃事件 → 先写 EMOTION_COLLAPSE_THRESHOLD_REACHED 再写 SESSION_ABORTED
+- writeEvent(SESSION_ABORTED) + reducer 承担 status=ABORTED
 
-[!] **崩溃计数来源**：handler 维护 session.pause_count？或从 domain_event_projection 查 EMOTION_INTERRUPTED 后无 EMOTION_RESUMED 的次数。后者更符合事件溯源原则（投影可重建），但有性能成本。**本步选事件溯源查询**（count EMOTION_INTERRUPTED - count EMOTION_RESUMED on same aggregate）。
+[!] **崩溃计数来源**：handler 维护 session.pause_count？或从 domain_event_projection 查 EMOTION_INTERRUPTED 后无 EMOTION_RESUMED 的次数。后者更符合事件溯源原则（投影可重建），但有性能成本。**本步选事件溯源查询**（count EMOTION_INTERRUPTED - count EMOTION_RESUMED on same aggregate）。注意 pause_count 只增不减（恢复不递减），故 pause_count ≠ collapse_count；"I R I R I" 序列 pause_count=3 但 collapse_count=1。
+[!] [!] impl.md 早期措辞 "累计未恢复中断数 +1 后达 threshold" 有歧义；以测试用例为准：collapse_count=3,threshold=3 触发（≥），collapse_count=2 不触发。
 
 **测试用例：**
 - submitAnswer 正常：answer_record 行 + ANSWER_SUBMITTED 事件 + online_completed_count +1

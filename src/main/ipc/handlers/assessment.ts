@@ -21,7 +21,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { DBAdapter } from '../../db/interface'
 import { SqliteAdapter } from '../../db/sqlite-adapter'
 import { getDatabase } from '../../db/connection'
-import { assertCaller } from '../../utils/auth-context'
+import { assertCaller, assertStudent, assertSessionOwner } from '../../utils/auth-context'
 import { writeEvent } from '../../domain/event-writer'
 import { applyAssessmentEvent } from '../../domain/assessment-reducer'
 import {
@@ -29,13 +29,31 @@ import {
   type QuestionBankRow
 } from '../../domain/paper-generator'
 import type { AbilityTag, QuestionPolicyJson } from '../../../shared/types/json-schemas'
-import type { SessionStartedPayload } from '@shared/types/event-payloads'
+import type {
+  SessionStartedPayload,
+  AnswerSubmittedPayload,
+  EmotionInterruptedPayload,
+  EmotionResumedPayload,
+  EmotionCollapseThresholdReachedPayload,
+  CollapseRecord,
+  SessionAbortedPayload
+} from '@shared/types/event-payloads'
 import type {
   AssessmentStrategyType,
   CreateSessionParams,
   CreateSessionResult,
   CreateSessionSuccess,
-  SessionQuestionView
+  SessionQuestionView,
+  SubmitAnswerParams,
+  SubmitAnswerResult,
+  SubmitAnswerSuccess,
+  EmotionInterruptParams,
+  EmotionInterruptResult,
+  EmotionResumeParams,
+  EmotionResumeResult,
+  AbortSessionParams,
+  AbortSessionResult,
+  AssessmentErrorCode
 } from '../../../shared/types/assessment'
 
 // MVP 固定 6 模块（AbilityTag 全集）。questionPolicy.required_modules 缺失时用此默认。
@@ -57,6 +75,61 @@ const OPEN_SESSION_STATUSES = [
   'SUSPENDED_REVIEW_REQUIRED',
   'OFFLINE_PENDING'
 ] as const
+
+/**
+ * STUDENT 答题路径的 session.status → 错误码映射。
+ * ACTIVE → null（可答）；EMOTION_INTERRUPTED → SESSION_PAUSED；
+ * REDLINE_HALTED → SESSION_HALTED；其余（INIT/COMPLETED/ABORTED/...）→ SESSION_NOT_ACTIVE。
+ */
+function statusToAnswerErrorCode(status: string): AssessmentErrorCode | null {
+  switch (status) {
+    case 'ACTIVE':
+      return null
+    case 'EMOTION_INTERRUPTED':
+      return 'SESSION_PAUSED'
+    case 'REDLINE_HALTED':
+      return 'SESSION_HALTED'
+    default:
+      return 'SESSION_NOT_ACTIVE'
+  }
+}
+
+/**
+ * STUDENT 情绪中断路径的 status 映射。
+ * ACTIVE / EMOTION_INTERRUPTED → 允许（后者代表中断中再次崩溃，collapse 累加）；
+ * REDLINE_HALTED → SESSION_HALTED；其余 → SESSION_NOT_ACTIVE。
+ */
+function statusToInterruptErrorCode(status: string): AssessmentErrorCode | null {
+  switch (status) {
+    case 'ACTIVE':
+    case 'EMOTION_INTERRUPTED':
+      return null
+    case 'REDLINE_HALTED':
+      return 'SESSION_HALTED'
+    default:
+      return 'SESSION_NOT_ACTIVE'
+  }
+}
+
+/**
+ * TEACHER 终止路径的 status 映射。
+ * 所有非终态（INIT/ACTIVE/EMOTION_INTERRUPTED/SUSPENDED_REVIEW_REQUIRED/OFFLINE_PENDING）→ 允许；
+ * REDLINE_HALTED → SESSION_HALTED；COMPLETED/ABORTED → SESSION_NOT_ACTIVE。
+ */
+function statusToAbortErrorCode(status: string): AssessmentErrorCode | null {
+  switch (status) {
+    case 'INIT':
+    case 'ACTIVE':
+    case 'EMOTION_INTERRUPTED':
+    case 'SUSPENDED_REVIEW_REQUIRED':
+    case 'OFFLINE_PENDING':
+      return null
+    case 'REDLINE_HALTED':
+      return 'SESSION_HALTED'
+    default:
+      return 'SESSION_NOT_ACTIVE'
+  }
+}
 
 // --- 错误码 seed + 审计 ---
 
@@ -394,6 +467,520 @@ export function createSession(db: DBAdapter, params: CreateSessionParams): Creat
   return result
 }
 
+// --- submitAnswer ---
+
+/**
+ * assessment:submitAnswer 核心纯函数（STUDENT）。
+ *
+ * 核心路径（impl.md Step 7）：
+ *   assertStudent + assertSessionOwner → 校验 status=ACTIVE
+ *   → 校验 question ∈ session ONLINE → 校验无 VALID answer_record
+ *   → 校验 answerPayload 结构 + content_json 一致性 → 计分
+ *   → db.transaction{ writeEvent(ANSWER_SUBMITTED) + applyAssessmentEvent }
+ *
+ * reducer（applyAnswerSubmitted）承担 INSERT answer_record + session 计数前移。
+ * handler 不另 INSERT/UPDATE。
+ *
+ * [!] answerPayload 字段名以 event-payloads.ts 为准（selected / placements），
+ * 非 impl.md Step 7 文本的 selected_option / slots（文档不一致，待同步）。
+ *
+ * [!] 计分逻辑按题型硬编码（doc §2：exact 2/0、drag partial 2/1/0），
+ * 不读 scoring_rule_json（该字段供教师界面标签展示用，非运行期评分输入）。
+ *
+ * 失败码：
+ * - FORBIDDEN：非 STUDENT / 账号非 ACTIVE / session 不属于 caller
+ * - NOT_FOUND：session 不存在
+ * - SESSION_NOT_ACTIVE / SESSION_PAUSED / SESSION_HALTED：status 非 ACTIVE
+ * - QUESTION_NOT_IN_SESSION：question_id 不在本 session 或非 ONLINE
+ * - ALREADY_ANSWERED：已存在 VALID answer_record（ux_answer_record_one_valid_answer 兜底）
+ * - VALIDATION_ERROR：answerPayload 结构错 / question_type 不匹配 / content_json 缺字段或缺校验数据
+ * - ANSWER_PERSIST_FAILED：事务异常（写审计）
+ */
+export function submitAnswer(db: DBAdapter, params: SubmitAnswerParams): SubmitAnswerResult {
+  // 1. STUDENT 身份校验
+  const caller = assertStudent(db, params.callerUserId, params.callerRole)
+  if (!caller.ok) {
+    return { success: false, errorCode: 'FORBIDDEN' }
+  }
+
+  // 2. session 所有权（NOT_FOUND / FORBIDDEN）
+  const owner = assertSessionOwner(db, caller.row.user_id, params.sessionId)
+  if (!owner.ok) {
+    return { success: false, errorCode: owner.errorCode }
+  }
+
+  // 3. status 必须 ACTIVE
+  const statusErr = statusToAnswerErrorCode(owner.sessionRow.status)
+  if (statusErr) {
+    return { success: false, errorCode: statusErr }
+  }
+
+  // 4. questionId 基础校验
+  if (typeof params.questionId !== 'string' || params.questionId.length === 0) {
+    return { success: false, errorCode: 'VALIDATION_ERROR' }
+  }
+
+  // 5. question ∈ 本 session 的 ONLINE 题 + 读 question_bank.content_json（计分依赖）
+  const sq = db
+    .prepare(
+      `SELECT sq.question_phase, sq.question_type AS sq_type, sq.question_order,
+              qb.content_json
+         FROM assessment_session_question sq
+         JOIN question_bank qb ON qb.question_id = sq.question_id
+        WHERE sq.session_id = ? AND sq.question_id = ?`
+    )
+    .get(params.sessionId, params.questionId) as
+    | { question_phase: string; sq_type: string; question_order: number; content_json: string }
+    | undefined
+  if (!sq || sq.question_phase !== 'ONLINE') {
+    return { success: false, errorCode: 'QUESTION_NOT_IN_SESSION' }
+  }
+
+  // 6. 无 VALID answer_record（schema ux_answer_record_one_valid_answer 兜底；前置 SELECT 返回友好码）
+  const existing = db
+    .prepare(
+      `SELECT answer_id FROM answer_record
+        WHERE session_id = ? AND question_id = ? AND status = 'VALID'`
+    )
+    .get(params.sessionId, params.questionId) as { answer_id: string } | undefined
+  if (existing) {
+    return { success: false, errorCode: 'ALREADY_ANSWERED' }
+  }
+
+  // 7. answerPayload 结构 + content_json 一致性 + 计分
+  const payload = params.answerPayload
+  if (payload.question_type !== sq.sq_type) {
+    return { success: false, errorCode: 'VALIDATION_ERROR' }
+  }
+
+  let content: Record<string, unknown>
+  try {
+    content = JSON.parse(sq.content_json)
+  } catch {
+    return { success: false, errorCode: 'VALIDATION_ERROR' }
+  }
+
+  let isCorrect: boolean
+  let score: 0 | 1 | 2
+
+  if (payload.question_type === 'TRUE_FALSE') {
+    if (typeof payload.selected !== 'boolean') {
+      return { success: false, errorCode: 'VALIDATION_ERROR' }
+    }
+    if (typeof content.expected_answer !== 'boolean') {
+      return { success: false, errorCode: 'VALIDATION_ERROR' }
+    }
+    isCorrect = payload.selected === content.expected_answer
+    score = isCorrect ? 2 : 0
+  } else if (payload.question_type === 'SINGLE_CHOICE') {
+    if (typeof payload.selected !== 'string' || payload.selected.length === 0) {
+      return { success: false, errorCode: 'VALIDATION_ERROR' }
+    }
+    if (
+      !Array.isArray(content.options) ||
+      !content.options.every(
+        (o) => o !== null && typeof o === 'object' && typeof (o as { key?: unknown }).key === 'string'
+      )
+    ) {
+      return { success: false, errorCode: 'VALIDATION_ERROR' }
+    }
+    const validKeys = (content.options as { key: string }[]).map((o) => o.key)
+    if (!validKeys.includes(payload.selected)) {
+      return { success: false, errorCode: 'VALIDATION_ERROR' }
+    }
+    if (typeof content.expected_answer !== 'string') {
+      return { success: false, errorCode: 'VALIDATION_ERROR' }
+    }
+    isCorrect = payload.selected === content.expected_answer
+    score = isCorrect ? 2 : 0
+  } else {
+    // DRAG
+    if (
+      !Array.isArray(payload.placements) ||
+      !payload.placements.every(
+        (p) =>
+          p !== null &&
+          typeof p === 'object' &&
+          typeof (p as { item_id?: unknown }).item_id === 'string' &&
+          typeof (p as { zone_id?: unknown }).zone_id === 'string'
+      )
+    ) {
+      return { success: false, errorCode: 'VALIDATION_ERROR' }
+    }
+    const placements = payload.placements
+    if (!Array.isArray(content.drag_items) || !Array.isArray(content.drop_zones)) {
+      return { success: false, errorCode: 'VALIDATION_ERROR' }
+    }
+    const dragItems = content.drag_items as { item_id?: unknown }[]
+    const dropZones = content.drop_zones as { zone_id?: unknown; accepts?: unknown }[]
+    if (
+      !dragItems.every((i) => typeof i.item_id === 'string') ||
+      !dropZones.every((z) => typeof z.zone_id === 'string' && Array.isArray(z.accepts))
+    ) {
+      return { success: false, errorCode: 'VALIDATION_ERROR' }
+    }
+    const placedIds = placements.map((p) => p.item_id)
+    // 每个 item 恰好放置一次（数量 = 可拖元素数，且无重复）
+    if (placedIds.length !== dragItems.length) {
+      return { success: false, errorCode: 'VALIDATION_ERROR' }
+    }
+    if (new Set(placedIds).size !== placedIds.length) {
+      return { success: false, errorCode: 'VALIDATION_ERROR' }
+    }
+    const validItemIds = new Set(dragItems.map((i) => i.item_id as string))
+    if (!placedIds.every((id) => validItemIds.has(id))) {
+      return { success: false, errorCode: 'VALIDATION_ERROR' }
+    }
+    const validZoneIds = new Set(dropZones.map((z) => z.zone_id as string))
+    if (!placements.every((p) => validZoneIds.has(p.zone_id))) {
+      return { success: false, errorCode: 'VALIDATION_ERROR' }
+    }
+    // 计分：每个 placement 的 item_id 是否落在 accepts 它的 zone
+    const correctCount = placements.filter((p) => {
+      const zone = dropZones.find((z) => (z.zone_id as string) === p.zone_id)
+      return zone ? (zone.accepts as string[]).includes(p.item_id) : false
+    }).length
+    const total = placements.length
+    const allCorrect = correctCount === total
+    isCorrect = allCorrect
+    if (allCorrect) {
+      score = 2
+    } else if (content.scoring_mode === 'PARTIAL_CREDIT' && correctCount > total / 2) {
+      score = 1
+    } else {
+      score = 0
+    }
+  }
+
+  // 8. 事务：writeEvent(ANSWER_SUBMITTED) + applyAssessmentEvent
+  const answerId = uuidv4()
+  const submittedAt = new Date().toISOString()
+  const eventPayload: AnswerSubmittedPayload = {
+    session_id: params.sessionId,
+    answer_id: answerId,
+    question_id: params.questionId,
+    question_type: payload.question_type,
+    answer_payload: payload,
+    is_correct: isCorrect,
+    score,
+    question_order: sq.question_order,
+    submitted_at: submittedAt
+  }
+
+  try {
+    const tx = db.transaction(() => {
+      const event = writeEvent({
+        aggregateType: 'ASSESSMENT_SESSION',
+        aggregateId: params.sessionId,
+        eventType: 'ANSWER_SUBMITTED',
+        payload: eventPayload as unknown as Record<string, unknown>,
+        actorId: caller.row.user_id,
+        actorRole: 'STUDENT'
+      })
+      applyAssessmentEvent(db, event)
+    })
+    tx()
+  } catch (err) {
+    logAssessmentEvent(db, 'ANSWER_PERSIST_FAILED', 'ERROR', params.sessionId, caller.row.user_id, {
+      operation: 'submitAnswer',
+      error: String(err),
+      questionId: params.questionId
+    })
+    return { success: false, errorCode: 'ANSWER_PERSIST_FAILED' }
+  }
+
+  const result: SubmitAnswerSuccess = {
+    success: true,
+    answerId,
+    isCorrect,
+    score
+  }
+  return result
+}
+
+// --- emotionInterrupt ---
+
+/**
+ * assessment:emotionInterrupt 核心纯函数（STUDENT）。
+ *
+ * 学生情绪崩溃中断。允许从 ACTIVE 与 EMOTION_INTERRUPTED（escalating collapse，
+ * 连续未恢复中断累加，是达到 emotion_collapse_threshold 的唯一路径）。
+ *
+ * reducer applyEmotionInterrupted 承担 status=EMOTION_INTERRUPTED + pause_count+1。
+ *
+ * 失败码：FORBIDDEN / NOT_FOUND / SESSION_NOT_ACTIVE / SESSION_HALTED / EMOTION_TRANSITION_FAILED
+ */
+export function emotionInterrupt(db: DBAdapter, params: EmotionInterruptParams): EmotionInterruptResult {
+  // 1. STUDENT 身份校验
+  const caller = assertStudent(db, params.callerUserId, params.callerRole)
+  if (!caller.ok) {
+    return { success: false, errorCode: 'FORBIDDEN' }
+  }
+
+  // 2. session 所有权
+  const owner = assertSessionOwner(db, caller.row.user_id, params.sessionId)
+  if (!owner.ok) {
+    return { success: false, errorCode: owner.errorCode }
+  }
+
+  // 3. status 必须 ACTIVE 或 EMOTION_INTERRUPTED
+  const err = statusToInterruptErrorCode(owner.sessionRow.status)
+  if (err) {
+    return { success: false, errorCode: err }
+  }
+
+  // 4. 写事件 + 投影
+  const payload: EmotionInterruptedPayload = {
+    session_id: params.sessionId,
+    interrupted_at: new Date().toISOString(),
+    current_question_order: params.currentQuestionOrder ?? null,
+    reason: params.reason ?? null
+  }
+  try {
+    const tx = db.transaction(() => {
+      const event = writeEvent({
+        aggregateType: 'ASSESSMENT_SESSION',
+        aggregateId: params.sessionId,
+        eventType: 'EMOTION_INTERRUPTED',
+        payload: payload as unknown as Record<string, unknown>,
+        actorId: caller.row.user_id,
+        actorRole: 'STUDENT'
+      })
+      applyAssessmentEvent(db, event)
+    })
+    tx()
+  } catch (e) {
+    logAssessmentEvent(db, 'EMOTION_TRANSITION_FAILED', 'ERROR', params.sessionId, caller.row.user_id, {
+      operation: 'emotionInterrupt',
+      error: String(e)
+    })
+    return { success: false, errorCode: 'EMOTION_TRANSITION_FAILED' }
+  }
+  return { success: true }
+}
+
+// --- emotionResume ---
+
+/**
+ * assessment:emotionResume 核心纯函数（TEACHER）。
+ *
+ * 教师安抚后恢复。仅 EMOTION_INTERRUPTED 态可恢复；其余 → SESSION_NOT_ACTIVE。
+ * reducer applyEmotionResumed 承担 status=ACTIVE + 清 pause_started_at。
+ *
+ * 失败码：FORBIDDEN / NOT_FOUND / SESSION_NOT_ACTIVE / EMOTION_TRANSITION_FAILED
+ */
+export function emotionResume(db: DBAdapter, params: EmotionResumeParams): EmotionResumeResult {
+  // 1. TEACHER 身份校验
+  const caller = assertCaller(db, params.callerUserId, params.callerRole)
+  if (!caller.ok) {
+    return { success: false, errorCode: 'FORBIDDEN' }
+  }
+
+  // 2. session 存在（TEACHER 不做所有权校验：单租户，任何教师可恢复任何学生 session）
+  if (typeof params.sessionId !== 'string' || params.sessionId.length === 0) {
+    return { success: false, errorCode: 'NOT_FOUND' }
+  }
+  const sess = db
+    .prepare('SELECT status FROM assessment_session WHERE session_id = ?')
+    .get(params.sessionId) as { status: string } | undefined
+  if (!sess) {
+    return { success: false, errorCode: 'NOT_FOUND' }
+  }
+
+  // 3. status 必须 EMOTION_INTERRUPTED（恢复非中断态无意义）
+  if (sess.status !== 'EMOTION_INTERRUPTED') {
+    return { success: false, errorCode: 'SESSION_NOT_ACTIVE' }
+  }
+
+  // 4. 写事件 + 投影
+  const payload: EmotionResumedPayload = {
+    session_id: params.sessionId,
+    resumed_at: new Date().toISOString(),
+    resume_from_question_order: params.resumeFromQuestionOrder ?? null
+  }
+  try {
+    const tx = db.transaction(() => {
+      const event = writeEvent({
+        aggregateType: 'ASSESSMENT_SESSION',
+        aggregateId: params.sessionId,
+        eventType: 'EMOTION_RESUMED',
+        payload: payload as unknown as Record<string, unknown>,
+        actorId: caller.row.user_id,
+        actorRole: 'TEACHER'
+      })
+      applyAssessmentEvent(db, event)
+    })
+    tx()
+  } catch (e) {
+    logAssessmentEvent(db, 'EMOTION_TRANSITION_FAILED', 'ERROR', params.sessionId, caller.row.user_id, {
+      operation: 'emotionResume',
+      error: String(e)
+    })
+    return { success: false, errorCode: 'EMOTION_TRANSITION_FAILED' }
+  }
+  return { success: true }
+}
+
+// --- abortSession ---
+
+/**
+ * 计算 collapse_history：取最近 collapseCount 条未恢复的 EMOTION_INTERRUPTED 事件。
+ * FIFO 配对原则下，已恢复的是最早若干条，未恢复的是最后 collapseCount 条。
+ * unresolved_since 解释为 interrupted_at（自该中断起一直未恢复）。
+ */
+function buildCollapseHistory(
+  db: DBAdapter,
+  sessionId: string,
+  collapseCount: number
+): CollapseRecord[] {
+  if (collapseCount <= 0) return []
+  const rows = db
+    .prepare(
+      `SELECT payload_json FROM domain_event_projection
+        WHERE aggregate_id = ? AND event_type = 'EMOTION_INTERRUPTED'
+        ORDER BY event_sequence DESC LIMIT ?`
+    )
+    .all(sessionId, collapseCount) as { payload_json: string }[]
+  return rows.reverse().map((r) => {
+    const p = JSON.parse(r.payload_json) as EmotionInterruptedPayload
+    return {
+      interrupted_at: p.interrupted_at,
+      unresolved_since: p.interrupted_at,
+      current_question_order: p.current_question_order ?? null
+    }
+  })
+}
+
+/**
+ * assessment:abortSession 核心纯函数（TEACHER）。
+ *
+ * 教师终止会话。若 collapse_count ≥ emotion_collapse_threshold → 先写
+ * EMOTION_COLLAPSE_THRESHOLD_REACHED 再写 SESSION_ABORTED（崩溃兜底）。
+ *
+ * [!] collapse_count 来源（impl.md Step 7 决策）：事件溯源查询
+ *   count(EMOTION_INTERRUPTED) - count(EMOTION_RESUMED)
+ *   而非 session.pause_count 冗余字段（投影可重建，符合事件溯源原则）。
+ * [!] impl.md "累计未恢复中断数 +1 后达 threshold" 措辞与测试用例矛盾：
+ *   测试明确 collapse_count=3,threshold=3 触发；=2 不触发。以测试为准（≥ 触发）。
+ *
+ * 失败码：FORBIDDEN / NOT_FOUND / SESSION_NOT_ACTIVE / SESSION_HALTED / ASSESSMENT_SYSTEM_ERROR
+ */
+export function abortSession(db: DBAdapter, params: AbortSessionParams): AbortSessionResult {
+  // 1. TEACHER 身份校验
+  const caller = assertCaller(db, params.callerUserId, params.callerRole)
+  if (!caller.ok) {
+    return { success: false, errorCode: 'FORBIDDEN' }
+  }
+
+  // 2. session 存在 + 读 status / 策略引用
+  if (typeof params.sessionId !== 'string' || params.sessionId.length === 0) {
+    return { success: false, errorCode: 'NOT_FOUND' }
+  }
+  const sess = db
+    .prepare('SELECT status, strategy_id, strategy_version FROM assessment_session WHERE session_id = ?')
+    .get(params.sessionId) as
+    | { status: string; strategy_id: string; strategy_version: number }
+    | undefined
+  if (!sess) {
+    return { success: false, errorCode: 'NOT_FOUND' }
+  }
+
+  // 3. status 非终态
+  const err = statusToAbortErrorCode(sess.status)
+  if (err) {
+    return { success: false, errorCode: err }
+  }
+
+  // 4. 读 emotion_collapse_threshold（策略锁定值）
+  const strat = db
+    .prepare('SELECT emotion_collapse_threshold FROM strategy_config WHERE strategy_id = ? AND version = ?')
+    .get(sess.strategy_id, sess.strategy_version) as
+    | { emotion_collapse_threshold: number }
+    | undefined
+  const threshold = strat?.emotion_collapse_threshold ?? 3
+
+  // 5. collapse_count = 事件溯源查询（EMOTION_INTERRUPTED - EMOTION_RESUMED）
+  const counts = db
+    .prepare(
+      `SELECT
+         SUM(CASE WHEN event_type = 'EMOTION_INTERRUPTED' THEN 1 ELSE 0 END) AS interrupted,
+         SUM(CASE WHEN event_type = 'EMOTION_RESUMED' THEN 1 ELSE 0 END) AS resumed
+       FROM domain_event_projection
+       WHERE aggregate_id = ? AND event_type IN ('EMOTION_INTERRUPTED', 'EMOTION_RESUMED')`
+    )
+    .get(params.sessionId) as { interrupted: number | null; resumed: number | null }
+  const collapseCount = (counts.interrupted ?? 0) - (counts.resumed ?? 0)
+
+  // 6. 防御性：是否已写过崩溃事件（abort 后终态，理论不重入；防 collapse_count 越界重复发）
+  const collapseAlreadyEmitted = db
+    .prepare(
+      `SELECT 1 FROM domain_event_projection
+        WHERE aggregate_id = ? AND event_type = 'EMOTION_COLLAPSE_THRESHOLD_REACHED'`
+    )
+    .get(params.sessionId)
+
+  const abortedAt = new Date().toISOString()
+  const collapseTriggered = collapseCount >= threshold && !collapseAlreadyEmitted
+
+  // 7. 事务：崩溃事件（如触发）+ SESSION_ABORTED
+  try {
+    const tx = db.transaction(() => {
+      if (collapseTriggered) {
+        const collapsePayload: EmotionCollapseThresholdReachedPayload = {
+          session_id: params.sessionId,
+          collapse_count: collapseCount,
+          threshold,
+          collapse_history: buildCollapseHistory(db, params.sessionId, collapseCount),
+          triggered_at: abortedAt
+        }
+        const collapseEvent = writeEvent({
+          aggregateType: 'ASSESSMENT_SESSION',
+          aggregateId: params.sessionId,
+          eventType: 'EMOTION_COLLAPSE_THRESHOLD_REACHED',
+          payload: collapsePayload as unknown as Record<string, unknown>,
+          actorId: caller.row.user_id,
+          actorRole: 'TEACHER'
+        })
+        // reducer 对此事件 no-op（崩溃计数来源于事件流，无投影副作用）
+        applyAssessmentEvent(db, collapseEvent)
+      }
+      const abortPayload: SessionAbortedPayload = {
+        session_id: params.sessionId,
+        aborted_at: abortedAt,
+        aborted_by: caller.row.user_id,
+        reason: params.reason ?? null
+      }
+      const abortEvent = writeEvent({
+        aggregateType: 'ASSESSMENT_SESSION',
+        aggregateId: params.sessionId,
+        eventType: 'SESSION_ABORTED',
+        payload: abortPayload as unknown as Record<string, unknown>,
+        actorId: caller.row.user_id,
+        actorRole: 'TEACHER'
+      })
+      applyAssessmentEvent(db, abortEvent)
+    })
+    tx()
+  } catch (e) {
+    logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', params.sessionId, caller.row.user_id, {
+      operation: 'abortSession',
+      error: String(e),
+      collapseCount,
+      threshold
+    })
+    return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
+  }
+
+  // 8. 审计 SESSION_ABORTED（INFO，TEACHER 关键操作）
+  logAssessmentEvent(db, 'SESSION_ABORTED', 'INFO', params.sessionId, caller.row.user_id, {
+    collapseTriggered,
+    collapseCount,
+    threshold
+  })
+
+  return { success: true }
+}
+
 // 生产默认 getDb：用 SqliteAdapter 包装 better-sqlite3 singleton。
 // Adapter 是无状态薄包装，不缓存（每次 IPC 新建一个，开销可忽略）。
 function defaultGetDb(): DBAdapter {
@@ -407,9 +994,9 @@ function defaultGetDb(): DBAdapter {
  * 阶段触发，早于 app.whenReady → initDatabase()，故注册时不能立即访问 DB
  * （否则 getDatabase 抛 "Not initialized"）。与 student.ts / strategy.ts 同模式。
  *
- * Step 6b 仅注册 createSession；getSession / submitAnswer / emotionInterrupt /
- * emotionResume / abortSession / triggerRedline / calculateResult 在 Step 7/8 注册。
- * preload 已声明全部通道，未注册的调用会 reject（标准 Electron 行为）。
+ * Step 6b 注册 createSession；Step 7 注册 submitAnswer / emotionInterrupt /
+ * emotionResume / abortSession；getSession / triggerRedline / calculateResult
+ * 在 Step 8 注册。preload 已声明全部通道，未注册的调用会 reject（标准 Electron 行为）。
  */
 export function registerAssessmentHandlers(getDb: () => DBAdapter = defaultGetDb): void {
   let codesSeeded = false
@@ -424,5 +1011,21 @@ export function registerAssessmentHandlers(getDb: () => DBAdapter = defaultGetDb
 
   ipcMain.handle('assessment:createSession', (_e, params: CreateSessionParams) => {
     return createSession(ensureSeeded(), params)
+  })
+
+  ipcMain.handle('assessment:submitAnswer', (_e, params: SubmitAnswerParams) => {
+    return submitAnswer(ensureSeeded(), params)
+  })
+
+  ipcMain.handle('assessment:emotionInterrupt', (_e, params: EmotionInterruptParams) => {
+    return emotionInterrupt(ensureSeeded(), params)
+  })
+
+  ipcMain.handle('assessment:emotionResume', (_e, params: EmotionResumeParams) => {
+    return emotionResume(ensureSeeded(), params)
+  })
+
+  ipcMain.handle('assessment:abortSession', (_e, params: AbortSessionParams) => {
+    return abortSession(ensureSeeded(), params)
   })
 }
