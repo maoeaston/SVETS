@@ -463,6 +463,14 @@ INFO 级（审计 TEACHER 关键操作，与 strategy.ts 决策一致；学生�
 
 **commit message：** `feat(assessment): trigger redline + safety-overridden result record`
 
+**实测结论（Step 8 实现）：**
+- 22 测试用例全绿（impl.md 8 项 + 边界 + ADMIN + 计算幂等等）
+- 实测发现 impl.md 未明示的边界：handler 对**终态 session**（COMPLETED/ABORTED）触发红线时，schema trigger 不熔断，`persistRedlineResult` 在事务内检测 `status !== 'REDLINE_HALTED'` 抛错回滚 → 返回 `REDLINE_TRIGGER_SYSTEM_ERROR`（错误码语义错位）。补加 `statusToRedlineErrorCode` 前置校验：开放态允许 / REDLINE_HALTED → `SESSION_HALTED` / 终态 → `SESSION_NOT_ACTIVE`。与 `statusToAbortErrorCode` 同模式。
+- **MemoryAdapter.transaction 不支持 SAVEPOINT**（sql.js BEGIN/COMMIT/ROLLBACK 平铺）。设计调整：`persistRedlineResult` 是不开事务的辅助纯函数（与 reducer 同模式），由 triggerRedline / calculateResult 各自的 transaction 包裹。两 handler 路径各自完整。
+- calculateResult 注册 IPC + 纯函数 export。本 Step 仅支持红线场景（session.status === 'REDLINE_HALTED'）；正常完成路径（COMPLETED + 线下评分）由后续 Step 扩展。幂等：已有 result_record 直接返回。
+- result_record 落盘使用 `judgeLevel({safetyTriggered:true})` 强制 LEVEL_FAIL_BY_SAFETY，但 `normalized_score` 仍从 answer_record 算真实模块分（0-100 之间，schema CHECK 要求）。
+- 批量熔断实测：同 student+task 不同 strategy_type（BASELINE+MOCK）的两个 session 都被 schema trigger 熔断；result_record 仅对 handler 指定的 target session 落盘（persistRedlineResult 单次调用，未遍历批量 session —— 后续若需对所有熔断 session 落盘可扩展）。
+
 ---
 
 ### Step 9：渲染层（学生答题 + 教师发起/列表 + Pinia store + router）

@@ -36,8 +36,14 @@ import type {
   EmotionResumedPayload,
   EmotionCollapseThresholdReachedPayload,
   CollapseRecord,
-  SessionAbortedPayload
+  SessionAbortedPayload,
+  RedlineTriggeredPayload,
+  ResultCalculatedPayload,
+  SafetyIncidentCreatedPayload,
+  AbilityScorePayload,
+  ModuleScore
 } from '@shared/types/event-payloads'
+import { judgeLevel, type ModuleScoreInput, type JudgeLevelInput } from '../../domain/level-judge'
 import type {
   AssessmentStrategyType,
   CreateSessionParams,
@@ -53,6 +59,12 @@ import type {
   EmotionResumeResult,
   AbortSessionParams,
   AbortSessionResult,
+  TriggerRedlineParams,
+  TriggerRedlineResult,
+  TriggerRedlineSuccess,
+  CalculateResultParams,
+  CalculateResultResult,
+  CalculateResultSuccess,
   AssessmentErrorCode
 } from '../../../shared/types/assessment'
 
@@ -75,6 +87,32 @@ const OPEN_SESSION_STATUSES = [
   'SUSPENDED_REVIEW_REQUIRED',
   'OFFLINE_PENDING'
 ] as const
+
+// safety_incident.reason_code 枚举（schema.sql:812 CHECK 约束，镜像保持同步）。
+// [!] 修改时同步 schema.sql + doc 事件规范；schema CHECK 是兜底，handler 前置校验避免脏 jsonl。
+const SAFETY_REASON_CODES = new Set<string>([
+  'BLADE_TOWARD_SELF',
+  'BLADE_TOWARD_OTHERS',
+  'DANGEROUS_CLIMBING',
+  'THROWING_OBJECT',
+  'AGGRESSIVE_BEHAVIOR',
+  'OTHER_SAFETY_RISK'
+])
+
+// safety_incident.context_phase 枚举（schema.sql:826 CHECK 约束）。
+// [!] impl.md Step 8 风险点 10：context_phase 不含 BASELINE_ASSESSMENT
+// （那属于 strategy_type）。BASELINE_ASSESSMENT 会被 schema CHECK 拦截。
+const SAFETY_CONTEXT_PHASES = new Set<string>([
+  'ONLINE_ASSESSMENT',
+  'TRAINING_WATCH',
+  'TRAINING_LEARN',
+  'TRAINING_PRACTICE',
+  'TRAINING_DO',
+  'OFFLINE_SCORING',
+  'TOOL_PREPARATION',
+  'BREAK_OR_TRANSITION',
+  'OTHER'
+])
 
 /**
  * STUDENT 答题路径的 session.status → 错误码映射。
@@ -981,6 +1019,502 @@ export function abortSession(db: DBAdapter, params: AbortSessionParams): AbortSe
   return { success: true }
 }
 
+// --- 红线触发 + 结果落盘共享辅助（triggerRedline / calculateResult 复用） ---
+
+interface SessionForRedlineRow {
+  student_id: string
+  job_code: string
+  task_code: string
+  strategy_id: string
+  strategy_version: number
+  status: string
+  redline_incident_id: string | null
+}
+
+/**
+ * 读 assessment_session 红线落盘所需字段。返回 undefined 表示 session 不存在。
+ */
+function readSessionForRedline(db: DBAdapter, sessionId: string): SessionForRedlineRow | undefined {
+  return db
+    .prepare(
+      `SELECT student_id, job_code, task_code, strategy_id, strategy_version,
+              status, redline_incident_id
+         FROM assessment_session
+        WHERE session_id = ?`
+    )
+    .get(sessionId) as SessionForRedlineRow | undefined
+}
+
+/**
+ * 计算红线场景的 moduleScores：从 answer_record 求每模块 raw / max。
+ * 红线场景下 levelResult 强制 LEVEL_FAIL_BY_SAFETY，但 normalizedScore 仍需真实值
+ * （写入 result_record.normalized_score CHECK 0-100）。
+ *
+ * 线下评分未到时不计入 OFFLINE_OPERATION；只统计 ONLINE 题已答记录。
+ * 未答模块返回 raw=0/max=0（不进 moduleScores 数组，避免 max=0 除零）。
+ */
+function computeRedlineModuleScores(
+  db: DBAdapter,
+  sessionId: string
+): ModuleScoreInput[] {
+  const rows = db
+    .prepare(
+      `SELECT sq.module_type,
+              COALESCE(SUM(ar.score), 0) AS raw,
+              COUNT(ar.question_id) AS answered
+         FROM assessment_session_question sq
+         LEFT JOIN answer_record ar
+           ON ar.session_id = sq.session_id
+          AND ar.question_id = sq.question_id
+          AND ar.status = 'VALID'
+        WHERE sq.session_id = ? AND sq.question_phase = 'ONLINE'
+        GROUP BY sq.module_type`
+    )
+    .all(sessionId) as { module_type: string; raw: number; answered: number }[]
+
+  const scores: ModuleScoreInput[] = []
+  for (const r of rows) {
+    const max = r.answered * 2 // 每题最高 2 分（doc §2 计分规则）
+    if (max > 0) {
+      scores.push({
+        module: r.module_type as ModuleScoreInput['module'],
+        raw: r.raw,
+        max
+      })
+    }
+  }
+  return scores
+}
+
+/**
+ * 读红线 result_record 落盘所需的 strategy_config 字段（judgeLevel 全部入参）。
+ * 红线场景下 safetyTriggered=true 直接返回 LEVEL_FAIL_BY_SAFETY，
+ * 但 JudgeLevelInput 仍要求 emotionCollapseThreshold / moduleVetoThreshold 等。
+ */
+function readStrategyForJudge(
+  db: DBAdapter,
+  strategyId: string,
+  strategyVersion: number
+): JudgeLevelInput | null {
+  const s = db
+    .prepare(
+      `SELECT module_veto_threshold, emotion_collapse_threshold,
+              competent_threshold, conditional_threshold
+         FROM strategy_config
+        WHERE strategy_id = ? AND version = ?`
+    )
+    .get(strategyId, strategyVersion) as
+    | {
+        module_veto_threshold: number
+        emotion_collapse_threshold: number
+        competent_threshold: number
+        conditional_threshold: number
+      }
+    | undefined
+  if (!s) return null
+  return {
+    moduleScores: [],
+    emotionCollapseCount: 0,
+    emotionCollapseThreshold: s.emotion_collapse_threshold,
+    moduleVetoThreshold: s.module_veto_threshold,
+    competentThreshold: s.competent_threshold,
+    conditionalThreshold: s.conditional_threshold,
+    safetyTriggered: true
+  }
+}
+
+/**
+ * 落盘红线 result_record + 写 RESULT_CALCULATED 事件 + applyReducer。
+ * **不开事务**——由调用方（triggerRedline / calculateResult）的 transaction 包裹。
+ * 复用 reduce 路径 applyResultCalculated（幂等：result_id 存在则 skip）。
+ *
+ * 调用前置条件：session 已 REDLINE_HALTED + redline_incident_id 已填。
+ *
+ * @returns resultId（用于 calculateResult 返回值）或抛错（事务由调用方回滚）。
+ */
+function persistRedlineResult(
+  db: DBAdapter,
+  session: SessionForRedlineRow,
+  sessionId: string,
+  triggeredBy: string
+): string {
+  const strategyInput = readStrategyForJudge(db, session.strategy_id, session.strategy_version)
+  if (!strategyInput) {
+    throw new Error(
+      `persistRedlineResult: strategy_config (${session.strategy_id}, v${session.strategy_version}) missing`
+    )
+  }
+  // 注入真实 moduleScores（红线场景下 level 强制 FAIL_BY_SAFETY，但 normalizedScore 用真实分）
+  strategyInput.moduleScores = computeRedlineModuleScores(db, sessionId)
+
+  const judge = judgeLevel(strategyInput)
+  const resultId = uuidv4()
+  const calculatedAt = new Date().toISOString()
+
+  // result_payload_json（AbilityScorePayload）：红线场景下仍记真实模块分快照
+  const abilityPayload: AbilityScorePayload = {
+    result_type: 'ABILITY_SCORE',
+    module_scores: judge.moduleVetoTriggeredBy
+      ? undefined
+      : strategyInput.moduleScores.map(
+          (m): ModuleScore => ({
+            module_type: m.module,
+            raw_score: m.raw,
+            max_score: m.max,
+            normalized_score: m.max > 0 ? (m.raw / m.max) * 100 : 0
+          })
+        ),
+    online_raw_score: strategyInput.moduleScores.reduce((s, m) => s + m.raw, 0),
+    offline_raw_score: 0,
+    question_count: strategyInput.moduleScores.reduce((s, m) => s + m.max / 2, 0),
+    answered_count: strategyInput.moduleScores.reduce((s, m) => s + m.max / 2, 0),
+    emotion_collapse_count: 0,
+    module_veto_triggered_by: judge.moduleVetoTriggeredBy,
+    level_forced_by: null
+  }
+
+  const eventPayload: ResultCalculatedPayload = {
+    result_id: resultId,
+    result_type: 'ABILITY_SCORE',
+    source_type: 'ASSESSMENT_SESSION',
+    source_id: sessionId,
+    student_id: session.student_id,
+    job_code: session.job_code,
+    task_code: session.task_code,
+    raw_score: abilityPayload.online_raw_score,
+    max_score: abilityPayload.module_scores?.reduce((s, m) => s + m.max_score, 0) ?? null,
+    normalized_score: judge.normalizedScore,
+    level_result: judge.levelResult,
+    calculated_at: calculatedAt,
+    calculated_by: triggeredBy
+  }
+
+  // writeEvent + reducer 都加入调用方事务（singleton connection / sql.js 同 conn）
+  const event = writeEvent({
+    aggregateType: 'ASSESSMENT_SESSION',
+    aggregateId: sessionId,
+    eventType: 'RESULT_CALCULATED',
+    payload: eventPayload as unknown as Record<string, unknown>,
+    actorId: triggeredBy,
+    actorRole: 'TEACHER'
+  })
+  // reducer 内已 SELECT session.redline_incident_id 填充 result_record
+  applyAssessmentEvent(db, event)
+
+  // reducer 暂未写 result_payload_json（schema 列可空）；用 UPDATE 补 AbilityScorePayload 快照
+  db.prepare('UPDATE result_record SET result_payload_json = ? WHERE result_id = ?').run(
+    JSON.stringify(abilityPayload),
+    resultId
+  )
+
+  return resultId
+}
+
+/**
+ * TEACHER 触发红线路径的 status 映射。
+ * 开放态（INIT/ACTIVE/EMOTION_INTERRUPTED/SUSPENDED_REVIEW_REQUIRED/OFFLINE_PENDING）→ 允许；
+ * REDLINE_HALTED → SESSION_HALTED；COMPLETED/ABORTED → SESSION_NOT_ACTIVE。
+ * 与 statusToAbortErrorCode 同模式，但红线不允许从 OFFLINE_PENDING 之外的待复核态进入
+ * （SUSPENDED_REVIEW_REQUIRED 仍可被红线熔断覆盖）。
+ */
+function statusToRedlineErrorCode(status: string): AssessmentErrorCode | null {
+  switch (status) {
+    case 'INIT':
+    case 'ACTIVE':
+    case 'EMOTION_INTERRUPTED':
+    case 'SUSPENDED_REVIEW_REQUIRED':
+    case 'OFFLINE_PENDING':
+      return null
+    case 'REDLINE_HALTED':
+      return 'SESSION_HALTED'
+    default:
+      return 'SESSION_NOT_ACTIVE'
+  }
+}
+
+// --- triggerRedline ---
+
+/**
+ * assessment:triggerRedline 核心纯函数（TEACHER / ADMIN）。
+ *
+ * 触发安全红线 → 批量熔断同 student+task 的所有开放 session → 落盘 result_record
+ * （LEVEL_FAIL_BY_SAFETY）。
+ *
+ * [!] schema trigger 链（handler 不重复实现，理解其行为）：
+ *   1. handler writeEvent(SAFETY_INCIDENT_CREATED) → INSERT safety_incident(PENDING_DETAIL)
+ *   2. trg_safety_incident_bind_open_assessments AFTER INSERT：
+ *      批量 UPDATE 同 student+task 开放 session → REDLINE_HALTED +
+ *      level_result=LEVEL_FAIL_BY_SAFETY + 写 safety_incident_binding
+ *   3. trg_assessment_session_redline_incident_same_student_task_update AFTER UPDATE：
+ *      校验 REDLINE_HALTED 必须有匹配 incident
+ *   4. handler writeEvent(REDLINE_TRIGGERED) + applyReducer（补 redline_incident_id
+ *      / 事件指针；session 已被 trigger 改成 REDLINE_HALTED）
+ *   5. handler 调 persistRedlineResult → result_record(safety_overridden=1, LEVEL_FAIL_BY_SAFETY)
+ *
+ * [!] handler **不应**：手动 UPDATE session 为 REDLINE_HALTED（被 trigger 拦）、
+ * 不写 safety_incident 直接写 result_record（trigger 校验 redline_incident_id）。
+ *
+ * [!] 事务边界：所有写操作必须在一个事务内，否则中途失败留下孤岛 safety_incident。
+ * MemoryAdapter.transaction 不支持 SAVEPOINT，故 persistRedlineResult 不开自己的事务
+ * （由本函数的 transaction 嵌入）。
+ *
+ * 失败码：
+ * - FORBIDDEN：非 TEACHER/ADMIN / 账号非 ACTIVE
+ * - NOT_FOUND：session 不存在
+ * - VALIDATION_ERROR：reasonCode/contextPhase 不在 schema 枚举内（事务前校验，避免被 CHECK ABORT 后留脏 jsonl）
+ * - REDLINE_TRIGGER_SYSTEM_ERROR：事务异常（写审计）
+ */
+export function triggerRedline(db: DBAdapter, params: TriggerRedlineParams): TriggerRedlineResult {
+  // 1. TEACHER 或 ADMIN 身份校验
+  const caller = assertCaller(db, params.callerUserId, params.callerRole)
+  if (!caller.ok) {
+    return { success: false, errorCode: 'FORBIDDEN' }
+  }
+
+  // 2. sessionId 基础校验
+  if (typeof params.sessionId !== 'string' || params.sessionId.length === 0) {
+    return { success: false, errorCode: 'NOT_FOUND' }
+  }
+
+  // 3. reasonCode / contextPhase 枚举前置校验（schema CHECK 兜底；前置避免脏 jsonl）
+  if (!SAFETY_REASON_CODES.has(params.reasonCode)) {
+    return { success: false, errorCode: 'VALIDATION_ERROR' }
+  }
+  if (!SAFETY_CONTEXT_PHASES.has(params.contextPhase)) {
+    return { success: false, errorCode: 'VALIDATION_ERROR' }
+  }
+
+  // 4. session 存在 + 反查 student/job/task（safety_incident 必填）
+  const session = readSessionForRedline(db, params.sessionId)
+  if (!session) {
+    return { success: false, errorCode: 'NOT_FOUND' }
+  }
+
+  // 4.1 status 必须开放态（schema trigger 批量熔断不含终态；对终态 session 触发
+  // 红线会让 persistRedlineResult 在事务内抛错回滚，前置校验返回明确错误码）。
+  const statusErr = statusToRedlineErrorCode(session.status)
+  if (statusErr) {
+    return { success: false, errorCode: statusErr }
+  }
+
+  const incidentId = uuidv4()
+  const occurredAt = new Date().toISOString()
+
+  // 5. 大事务：SAFETY_INCIDENT_CREATED → INSERT safety_incident → REDLINE_TRIGGERED → result_record
+  try {
+    const tx = db.transaction(() => {
+      // 5.1 writeEvent(SAFETY_INCIDENT_CREATED) 拿 event_id（safety_incident.trigger_event_id UNIQUE FK）
+      const safetyPayload: SafetyIncidentCreatedPayload = {
+        incident_id: incidentId,
+        student_id: session.student_id,
+        job_code: session.job_code,
+        task_code: session.task_code,
+        reason_code: params.reasonCode,
+        context_phase: params.contextPhase,
+        occurred_at: occurredAt,
+        reported_by: caller.row.user_id
+      }
+      const safetyEvent = writeEvent({
+        aggregateType: 'SAFETY_INCIDENT',
+        aggregateId: incidentId,
+        eventType: 'SAFETY_INCIDENT_CREATED',
+        payload: safetyPayload as unknown as Record<string, unknown>,
+        actorId: caller.row.user_id,
+        actorRole: caller.row.role as 'TEACHER' | 'ADMIN'
+      })
+
+      // 5.2 INSERT safety_incident(PENDING_DETAIL) → 触发 schema trigger 批量熔断
+      db.prepare(
+        `INSERT INTO safety_incident
+           (incident_id, student_id, job_code, task_code, trigger_event_id,
+            reason_code, triggered_by, context_phase, occurred_at,
+            status, requires_review_before_next_session)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING_DETAIL', 1)`
+      ).run(
+        incidentId,
+        session.student_id,
+        session.job_code,
+        session.task_code,
+        safetyEvent.event_id,
+        params.reasonCode,
+        caller.row.user_id,
+        params.contextPhase,
+        occurredAt
+      )
+
+      // 5.3 writeEvent(REDLINE_TRIGGERED, aggregate=ASSESSMENT_SESSION, payload.incident_id)
+      // schema trigger 已熔断 session（status 改 REDLINE_HALTED）；本事件 + reducer
+      // 补 redline_incident_id（COALESCE）+ 事件指针。冷启动重放下 reducer 兜底完整熔断。
+      const redlinePayload: RedlineTriggeredPayload = {
+        session_id: params.sessionId,
+        incident_id: incidentId,
+        reason_code: params.reasonCode,
+        context_phase: params.contextPhase,
+        triggered_at: occurredAt
+      }
+      const redlineEvent = writeEvent({
+        aggregateType: 'ASSESSMENT_SESSION',
+        aggregateId: params.sessionId,
+        eventType: 'REDLINE_TRIGGERED',
+        payload: redlinePayload as unknown as Record<string, unknown>,
+        actorId: caller.row.user_id,
+        actorRole: caller.row.role as 'TEACHER' | 'ADMIN'
+      })
+      applyAssessmentEvent(db, redlineEvent)
+
+      // 5.4 落盘 result_record（LEVEL_FAIL_BY_SAFETY）。
+      // 重读 session 拿 trigger 填充后的 redline_incident_id（reducer 也读，但此处确保 latest）。
+      const refreshed = readSessionForRedline(db, params.sessionId)
+      if (!refreshed || refreshed.status !== 'REDLINE_HALTED') {
+        // 不应发生（trigger 已熔断）；防御性抛错让事务回滚
+        throw new Error(
+          `triggerRedline: session not REDLINE_HALTED after safety_incident INSERT (status=${refreshed?.status})`
+        )
+      }
+      if (!refreshed.redline_incident_id) {
+        throw new Error(
+          'triggerRedline: session.redline_incident_id missing after trigger bind'
+        )
+      }
+      persistRedlineResult(db, refreshed, params.sessionId, caller.row.user_id)
+    })
+    tx()
+  } catch (e) {
+    logAssessmentEvent(db, 'REDLINE_TRIGGER_SYSTEM_ERROR', 'ERROR', params.sessionId, caller.row.user_id, {
+      operation: 'triggerRedline',
+      error: String(e),
+      incidentId,
+      reasonCode: params.reasonCode,
+      contextPhase: params.contextPhase
+    })
+    return { success: false, errorCode: 'REDLINE_TRIGGER_SYSTEM_ERROR' }
+  }
+
+  // 6. 审计 REDLINE_TRIGGERED（INFO，TEACHER/ADMIN 关键操作）
+  logAssessmentEvent(db, 'REDLINE_TRIGGERED', 'INFO', params.sessionId, caller.row.user_id, {
+    incidentId,
+    reasonCode: params.reasonCode,
+    contextPhase: params.contextPhase,
+    studentId: session.student_id,
+    taskCode: session.task_code
+  })
+
+  const result: TriggerRedlineSuccess = {
+    success: true,
+    incidentId,
+    sessionId: params.sessionId
+  }
+  return result
+}
+
+// --- calculateResult ---
+
+/**
+ * assessment:calculateResult 核心纯函数（TEACHER / ADMIN）。
+ *
+ * MVP Step 8 仅支持红线场景：session.status === 'REDLINE_HALTED'。
+ * 正常完成路径（COMPLETED + 线下评分）由后续 Step 扩展。
+ *
+ * 幂等行为：
+ * - 已存在 result_record（triggerRedline 已落）→ SELECT 返回已有 resultId
+ * - 不存在 → 写 RESULT_CALCULATED + applyReducer
+ *
+ * 失败码：
+ * - FORBIDDEN：非 TEACHER/ADMIN
+ * - NOT_FOUND：session 不存在
+ * - SESSION_NOT_ACTIVE：status 非 REDLINE_HALTED（MVP 范围只支持红线场景）
+ * - ASSESSMENT_SYSTEM_ERROR：事务异常（写审计）
+ */
+export function calculateResult(db: DBAdapter, params: CalculateResultParams): CalculateResultResult {
+  // 1. TEACHER/ADMIN 身份
+  const caller = assertCaller(db, params.callerUserId, params.callerRole)
+  if (!caller.ok) {
+    return { success: false, errorCode: 'FORBIDDEN' }
+  }
+
+  // 2. session 存在
+  if (typeof params.sessionId !== 'string' || params.sessionId.length === 0) {
+    return { success: false, errorCode: 'NOT_FOUND' }
+  }
+  const session = readSessionForRedline(db, params.sessionId)
+  if (!session) {
+    return { success: false, errorCode: 'NOT_FOUND' }
+  }
+
+  // 3. MVP 仅支持红线场景
+  if (session.status !== 'REDLINE_HALTED') {
+    return { success: false, errorCode: 'SESSION_NOT_ACTIVE' }
+  }
+
+  // 4. 幂等检查：已有 result_record（同 source_type+source_id+result_type）→ 返回已有
+  const existing = db
+    .prepare(
+      `SELECT result_id, level_result, normalized_score
+         FROM result_record
+        WHERE source_aggregate_type = 'ASSESSMENT_SESSION'
+          AND source_aggregate_id = ?
+          AND result_type = 'ABILITY_SCORE'
+          AND is_current = 1`
+    )
+    .get(params.sessionId) as
+    | { result_id: string; level_result: string; normalized_score: number }
+    | undefined
+
+  if (existing) {
+    const r: CalculateResultSuccess = {
+      success: true,
+      resultId: existing.result_id,
+      levelResult: existing.level_result,
+      normalizedScore: existing.normalized_score
+    }
+    return r
+  }
+
+  // 5. 事务：落盘 result_record（红线场景）
+  try {
+    const tx = db.transaction(() => {
+      persistRedlineResult(db, session, params.sessionId, caller.row.user_id)
+    })
+    tx()
+  } catch (e) {
+    logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', params.sessionId, caller.row.user_id, {
+      operation: 'calculateResult',
+      error: String(e)
+    })
+    return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
+  }
+
+  // 6. 读回刚落的行返回
+  const fresh = db
+    .prepare(
+      `SELECT result_id, level_result, normalized_score
+         FROM result_record
+        WHERE source_aggregate_type = 'ASSESSMENT_SESSION'
+          AND source_aggregate_id = ?
+          AND result_type = 'ABILITY_SCORE'
+          AND is_current = 1`
+    )
+    .get(params.sessionId) as
+    | { result_id: string; level_result: string; normalized_score: number }
+    | undefined
+  if (!fresh) {
+    // 事务成功但读不到 —— 不应发生；按系统异常报错
+    logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', params.sessionId, caller.row.user_id, {
+      operation: 'calculateResult',
+      error: 'result_record missing after persistRedlineResult commit'
+    })
+    return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
+  }
+
+  const result: CalculateResultSuccess = {
+    success: true,
+    resultId: fresh.result_id,
+    levelResult: fresh.level_result,
+    normalizedScore: fresh.normalized_score
+  }
+  return result
+}
+
 // 生产默认 getDb：用 SqliteAdapter 包装 better-sqlite3 singleton。
 // Adapter 是无状态薄包装，不缓存（每次 IPC 新建一个，开销可忽略）。
 function defaultGetDb(): DBAdapter {
@@ -995,8 +1529,8 @@ function defaultGetDb(): DBAdapter {
  * （否则 getDatabase 抛 "Not initialized"）。与 student.ts / strategy.ts 同模式。
  *
  * Step 6b 注册 createSession；Step 7 注册 submitAnswer / emotionInterrupt /
- * emotionResume / abortSession；getSession / triggerRedline / calculateResult
- * 在 Step 8 注册。preload 已声明全部通道，未注册的调用会 reject（标准 Electron 行为）。
+ * emotionResume / abortSession；Step 8 注册 triggerRedline / calculateResult。
+ * getSession 待后续 Step。preload 已声明全部通道，未注册的调用会 reject（标准 Electron 行为）。
  */
 export function registerAssessmentHandlers(getDb: () => DBAdapter = defaultGetDb): void {
   let codesSeeded = false
@@ -1027,5 +1561,13 @@ export function registerAssessmentHandlers(getDb: () => DBAdapter = defaultGetDb
 
   ipcMain.handle('assessment:abortSession', (_e, params: AbortSessionParams) => {
     return abortSession(ensureSeeded(), params)
+  })
+
+  ipcMain.handle('assessment:triggerRedline', (_e, params: TriggerRedlineParams) => {
+    return triggerRedline(ensureSeeded(), params)
+  })
+
+  ipcMain.handle('assessment:calculateResult', (_e, params: CalculateResultParams) => {
+    return calculateResult(ensureSeeded(), params)
   })
 }
