@@ -1,6 +1,6 @@
 # 炫灿-职途向导系统 MVP
 
-**工程基线：** schema v0.1.7-consistency-guard | PRD v1.0.4  
+**工程基线：** schema v0.1.9-strategy-composite-pk | PRD v1.0.5  
 **技术栈：** Electron + Vue3 + TypeScript + SQLite  
 **MVP 范围：** 一岗位（超市理货员）| 一任务（拆箱与上架）| 一闭环（测评→训练→评分→报告）
 
@@ -64,6 +64,12 @@
 - `TRAINING_COMPLETION` - 训练完成度（完成率百分比）
 - `OPERATION_PASS_RATE` - 实操达标率（各维度 0/1/2 分）
 - 三者独立计算、独立展示，禁止合成"总分"
+
+### 字段/枚举变更的下游全仓扫描
+- 修改 `strategy_config` 字段名、`level_result` 枚举值、schema 版本号或 PRD 版本号后，必须对每个旧 token 执行 `grep -rn` 跨 `src/` + `doc/`
+- 每个命中点逐一判定：需更新 / 历史性引用（patch notes、迁移说明、决策记录——应保留）
+- 不能只改"显然的几份文档"（PRD / JSON 字段规范 / 功能文档）；事件 payload 规范、共享类型定义、AGENTS.md 工程基线、`.continue-here.md` 决策记录都在扫描范围内
+- 起因：v0.1.8 修订时差点漏掉 `event-payload-schema` 文档的 `EMOTION_COLLAPSE_THRESHOLD_REACHED` 同步，靠 review 才发现
 
 ---
 
@@ -136,7 +142,7 @@
 
 - 提交信息使用语义化前缀（feat / fix / refactor / chore / docs / test）
 - 禁止使用 `--no-verify` 绕过 pre-commit hook，除非用户明确要求
-- 禁止直接推送到 main 分支，始终推送到功能分支
+- 单人开发，不走 PR：功能分支验收通过后本地 squash merge 到 main，直接推 main 备份
 
 ## Secrets 规范
 
@@ -161,6 +167,6 @@
 1. `/vibe-feature` — 读取项目上下文，Writer 生成 Mini-PRD，Reviewer subagent 审查，存入 `doc/features/`
 2. `/vibe-impl` — 将 PRD 拆成步骤化实现文档，每步对应一个 commit，含测试设计
 3. 逐步实现 — 按实现文档执行，每步完成后运行 `/vibe-accept`（typecheck + build + vitest）
-4. 推送功能分支 — 所有步骤验收通过后推送，禁止直接推 main
+4. 合并到 main — 所有步骤验收通过后本地 squash merge 到 main 并推送（单人开发，不走 PR）
 
 高风险改动（FSM 路径 / safety_incident / schema 变更）额外运行 `/vibe-review` 进行双 AI 审查。

@@ -17,6 +17,14 @@ const api = {
     create: (params: unknown) => ipcRenderer.invoke('student:create', params),
     update: (params: unknown) => ipcRenderer.invoke('student:update', params),
     archive: (params: unknown) => ipcRenderer.invoke('student:archive', params)
+  },
+  strategy: {
+    list: (params: unknown) => ipcRenderer.invoke('strategy:list', params),
+    get: (params: unknown) => ipcRenderer.invoke('strategy:get', params),
+    listVersions: (params: unknown) => ipcRenderer.invoke('strategy:listVersions', params),
+    createVersion: (params: unknown) => ipcRenderer.invoke('strategy:createVersion', params),
+    update: (params: unknown) => ipcRenderer.invoke('strategy:update', params),
+    setActive: (params: unknown) => ipcRenderer.invoke('strategy:setActive', params)
   }
 }
 

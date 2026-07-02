@@ -1,9 +1,11 @@
 # 炫灿-职途向导系统 JSON 字段规范
 
 版本：v1.0.0  
-工程基线：`schema.sql v0.1.7-consistency-guard`，`PRD v1.0.4`  
+工程基线：`schema.sql v0.1.8-base-ability-rebalance`，`PRD v1.0.5`  
 文档状态：草案（首期落地实施前置文档）  
-最后更新：2026-06-30
+最后更新：2026-07-01  
+
+> 2026-07-01 修订：`scoring_policy_json` 内部键 `pass_threshold / improve_threshold` 随 schema v0.1.8 表字段一并更名为 `competent_threshold / conditional_threshold`；`module_veto_threshold / emotion_collapse_threshold` 提升为 `strategy_config` 表级字段后从 JSON 移除；`level_rules.level` 枚举切换为 `LEVEL_COMPETENT / LEVEL_CONDITIONAL / LEVEL_NOT_COMPETENT`。
 
 ---
 
@@ -379,16 +381,20 @@ interface QuestionPolicyJson {
 }
 ```
 
-**示例（BASELINE_ASSESSMENT 单模块）：**
+**示例（BASELINE_ASSESSMENT 基础能力评估，v1.0.5 42+8 口径）：**
 ```json
 {
-  "module_scope": "SINGLE_MODULE",
+  "module_scope": "CROSS_MODULE",
   "question_ratio": {
-    "TRUE_FALSE": 7,
-    "SINGLE_CHOICE": 6,
-    "DRAG": 4,
-    "OFFLINE_OPERATION": 3
+    "TRUE_FALSE": 14,
+    "SINGLE_CHOICE": 14,
+    "DRAG": 14,
+    "OFFLINE_OPERATION": 8
   },
+  "required_modules": [
+    "FINE_MOTOR", "COGNITION", "RULE_EXECUTION",
+    "EMOTION_REGULATION", "BASIC_SOCIAL", "SAFETY_OPERATION"
+  ],
   "difficulty_distribution": {
     "1": 0.3,
     "3": 0.5,
@@ -399,15 +405,17 @@ interface QuestionPolicyJson {
 }
 ```
 
-**示例（MOCK_EXAM 跨模块）：**
+> v1.0.5 起 BASELINE_ASSESSMENT 与 MOCK_EXAM 共用同一套基础能力评估口径（线上 42 = 6 模块 × 每模块 7，线下 8，满分 100），详见 PRD §2.4。每模块 7 题由组卷算法按 `required_modules` 与 `online_question_count = 42` 强制保证，无需在 JSON 内单独声明。
+
+**示例（MOCK_EXAM 标准化模拟卷，同口径）：**
 ```json
 {
   "module_scope": "CROSS_MODULE",
   "question_ratio": {
-    "TRUE_FALSE": 6,
-    "SINGLE_CHOICE": 6,
-    "DRAG": 6,
-    "OFFLINE_OPERATION": 5
+    "TRUE_FALSE": 14,
+    "SINGLE_CHOICE": 14,
+    "DRAG": 14,
+    "OFFLINE_OPERATION": 8
   },
   "required_modules": [
     "FINE_MOTOR", "COGNITION", "RULE_EXECUTION",
@@ -430,9 +438,6 @@ interface ScoringPolicyJson {
   score_values: [0, 1, 2];           // 固定值，对应 schema CHECK
   normalization: 'raw_score/max_score*100'; // 固定公式
 
-  pass_threshold: number;            // 百分制达标阈值，对应 strategy_config.pass_threshold
-  improve_threshold: number;         // 百分制需改进阈值
-
   safety_override_enabled: boolean;  // 安全红线覆盖是否启用
 
   level_rules: LevelRule[];          // 等级判定规则，从高到低排列
@@ -441,27 +446,33 @@ interface ScoringPolicyJson {
 interface LevelRule {
   min: number;                       // 含
   max: number;                       // 含（最高 100）
-  level: 'LEVEL_PASS' | 'LEVEL_IMPROVE' | 'LEVEL_FAIL';
+  level: 'LEVEL_COMPETENT' | 'LEVEL_CONDITIONAL' | 'LEVEL_NOT_COMPETENT';
 }
 ```
+
+> v0.1.8 起，下列阈值提升为 `strategy_config` 表级字段，**不再承载于本 JSON**：
+> - `competent_threshold`（对应 `LEVEL_COMPETENT` 阈值，默认 80）
+> - `conditional_threshold`（对应 `LEVEL_CONDITIONAL` 阈值，默认 60）
+> - `module_veto_threshold`（模块否决阈值，默认 0.5，任一模块得分率低于此值强制 `LEVEL_NOT_COMPETENT`）
+> - `emotion_collapse_threshold`（情绪崩溃兜底次数，默认 3）
+>
+> `level_rules` 中的 `min/max` 必须与 `competent_threshold / conditional_threshold` 表字段一致，应用层校验时需交叉比对。
 
 **示例：**
 ```json
 {
   "score_values": [0, 1, 2],
   "normalization": "raw_score/max_score*100",
-  "pass_threshold": 70,
-  "improve_threshold": 40,
   "safety_override_enabled": true,
   "level_rules": [
-    { "min": 70, "max": 100, "level": "LEVEL_PASS" },
-    { "min": 40, "max": 69, "level": "LEVEL_IMPROVE" },
-    { "min": 0,  "max": 39, "level": "LEVEL_FAIL" }
+    { "min": 80, "max": 100, "level": "LEVEL_COMPETENT" },
+    { "min": 60, "max": 79,  "level": "LEVEL_CONDITIONAL" },
+    { "min": 0,  "max": 59,  "level": "LEVEL_NOT_COMPETENT" }
   ]
 }
 ```
 
-> 注意：`LEVEL_FAIL_BY_SAFETY` 不通过 `level_rules` 判定，由主进程在安全红线触发时强制写入，优先级高于所有分数。
+> 注意：`LEVEL_FAIL_BY_SAFETY` 不通过 `level_rules` 判定，由主进程在安全红线触发时强制写入，优先级高于一切分数与兜底判定。`LEVEL_NOT_COMPETENT` 可由分数阈值、模块兜底或情绪崩溃兜底三条路径得出。
 
 ---
 
@@ -479,8 +490,10 @@ interface StrategySnapshotJson {
   online_question_count: number;
   offline_question_count: number;
   max_score: number;
-  pass_threshold: number;
-  improve_threshold: number;
+  competent_threshold: number;
+  conditional_threshold: number;
+  module_veto_threshold: number;
+  emotion_collapse_threshold: number;
   question_policy_json: QuestionPolicyJson;
   scoring_policy_json: ScoringPolicyJson;
   supports_redline_halt: boolean;
@@ -570,6 +583,10 @@ interface AbilityScorePayload {
   offline_raw_score: number;
   question_count: number;
   answered_count: number;
+  // v1.0.5 / PRD §5.4 第 9 步：以下字段必须随结果持久化，不得只存最终等级
+  emotion_collapse_count: number;    // 本会话累计情绪崩溃次数（0 表示未触发兜底）
+  module_veto_triggered_by?: AbilityTag | null; // 触发模块否决的模块（null 表示未触发）
+  level_forced_by?: 'MODULE_VETO' | 'EMOTION_COLLAPSE' | null; // 等级是否被兜底强制（null 表示纯分数判定）
 }
 
 interface ModuleScore {
@@ -691,7 +708,7 @@ interface TrainingSummary {
 | `content_json` | `question_type` 与 `question_bank.question_type` 一致；`expected_answer` 在审核完成后非空 |
 | `scoring_rule_json` | `max_score` 为 2；`scoring_type` 与 `question_type` 匹配 |
 | `question_policy_json` | 各 `question_ratio` 之和等于 `online_question_count + offline_question_count` |
-| `scoring_policy_json` | `pass_threshold > improve_threshold`；`level_rules` 覆盖 [0, 100] 无盲区无重叠 |
+| `scoring_policy_json` | `level_rules` 的 `min/max` 与表字段 `competent_threshold / conditional_threshold` 一致；`level` 枚举仅含 `LEVEL_COMPETENT / LEVEL_CONDITIONAL / LEVEL_NOT_COMPETENT`；覆盖 [0, 100] 无盲区无重叠 |
 | `sensory_profile_json` | 枚举值在允许范围内 |
 | `report_content_json` | 生成时 `result_record.is_current = 1` 的结果已全部载入；`safety_overridden` 状态已同步 |
 

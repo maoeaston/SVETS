@@ -11,6 +11,18 @@ import type {
   StudentListParams,
   StudentListResult
 } from './student'
+import type {
+  StrategyListParams,
+  StrategyListResult,
+  GetStrategyResult,
+  ListStrategyVersionsResult,
+  CreateStrategyVersionParams,
+  CreateStrategyVersionResult,
+  UpdateStrategyParams,
+  UpdateStrategyResult,
+  SetStrategyActiveParams,
+  SetStrategyActiveResult
+} from './strategy'
 
 export interface LoginSuccess {
   success: true
@@ -44,5 +56,24 @@ export interface IpcApi {
       callerRole: string
       studentId: string
     }) => Promise<ArchiveStudentResult>
+  }
+  strategy: {
+    list: (params: StrategyListParams) => Promise<StrategyListResult>
+    get: (params: {
+      callerUserId: string
+      callerRole: string
+      strategyId: string
+      version: number
+    }) => Promise<GetStrategyResult>
+    listVersions: (params: {
+      callerUserId: string
+      callerRole: string
+      strategyId: string
+    }) => Promise<ListStrategyVersionsResult>
+    createVersion: (
+      params: CreateStrategyVersionParams
+    ) => Promise<CreateStrategyVersionResult>
+    update: (params: UpdateStrategyParams) => Promise<UpdateStrategyResult>
+    setActive: (params: SetStrategyActiveParams) => Promise<SetStrategyActiveResult>
   }
 }

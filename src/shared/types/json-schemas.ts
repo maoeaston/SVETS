@@ -128,15 +128,15 @@ export interface QuestionPolicyJson {
 export interface LevelRule {
   min: number
   max: number
-  level: 'LEVEL_PASS' | 'LEVEL_IMPROVE' | 'LEVEL_FAIL'
+  level: 'LEVEL_COMPETENT' | 'LEVEL_CONDITIONAL' | 'LEVEL_NOT_COMPETENT'
 }
 
 // strategy_config.scoring_policy_json
+// v0.1.8 起 competent_threshold / conditional_threshold / module_veto_threshold
+// / emotion_collapse_threshold 提升为 strategy_config 表级字段，不再承载于本 JSON。
 export interface ScoringPolicyJson {
   score_values: [0, 1, 2]
   normalization: 'raw_score/max_score*100'
-  pass_threshold: number
-  improve_threshold: number
   safety_override_enabled: boolean
   level_rules: LevelRule[]
 }

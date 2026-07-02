@@ -1,9 +1,11 @@
 # 炫灿-职途向导系统 事件载荷规范
 
 版本：v1.0.0  
-工程基线：`schema.sql v0.1.7-consistency-guard`，`PRD v1.0.4`  
+工程基线：`schema.sql v0.1.8-base-ability-rebalance`，`PRD v1.0.5`  
 文档状态：草案（首期落地实施前置文档）  
-最后更新：2026-06-30
+最后更新：2026-07-01  
+
+> 2026-07-01 修订：新增 `EMOTION_COLLAPSE_THRESHOLD_REACHED` 事件（PRD v1.0.5 §4.6 / §8.7），对应情绪崩溃兜底强制 `LEVEL_NOT_COMPETENT` 的领域事件。
 
 ---
 
@@ -54,6 +56,7 @@ type EventType =
   | 'ANSWER_SUBMITTED'
   | 'EMOTION_INTERRUPTED'
   | 'EMOTION_RESUMED'
+  | 'EMOTION_COLLAPSE_THRESHOLD_REACHED'
   | 'OFFLINE_SCORE_SUBMITTED'
   | 'REDLINE_TRIGGERED'
   | 'SESSION_COMPLETED'
@@ -215,6 +218,30 @@ interface SessionAbortedPayload {
   reason?: string | null;            // 中止原因
 }
 ```
+
+### 2.9 EMOTION_COLLAPSE_THRESHOLD_REACHED
+
+同一 `assessment_session` 内累计情绪崩溃次数（§4.4「我遇到困难了」触发后**未恢复**而终止当前测评的次数）达到 `strategy_config.emotion_collapse_threshold`（默认 3）。触发后等级强制为 `LEVEL_NOT_COMPETENT`（PRD v1.0.5 §4.6 / §7.4）。
+
+该事件与 `EMOTION_INTERRUPTED`（§2.3，单次可恢复中断）的区别：单次中断恢复不计入崩溃次数；只有中断后未恢复才累计为一次崩溃。达到阈值时由系统强制写入本事件，优先级低于 `REDLINE_TRIGGERED`（安全红线仍覆盖一切）。
+
+```typescript
+interface EmotionCollapseThresholdReachedPayload {
+  session_id: string;
+  collapse_count: number;            // 累计崩溃次数（触发时 = threshold）
+  threshold: number;                 // strategy_config.emotion_collapse_threshold 配置值
+  collapse_history: CollapseRecord[];// 每次崩溃的审计记录，长度 = collapse_count
+  triggered_at: string;              // 达到阈值、写入本事件的时刻（ISO 8601 UTC）
+}
+
+interface CollapseRecord {
+  interrupted_at: string;            // 该次 EMOTION_INTERRUPTED 发生时刻
+  unresolved_since: string;          // 确认为崩溃（未恢复）的时刻
+  current_question_order?: number | null; // 崩溃发生时正在作答的题目序号
+}
+```
+
+> 写入本事件后，后续 `RESULT_CALCULATED` 的 `level_result` 必须为 `LEVEL_NOT_COMPETENT`，且 `result_record.result_payload_json`（ABILITY_SCORE）的 `emotion_collapse_count` 与 `level_forced_by='EMOTION_COLLAPSE'` 必须同步落盘（见 JSON 字段规范 §10）。
 
 ---
 
@@ -578,6 +605,7 @@ function calculateChecksum(payload) {
 | ANSWER_SUBMITTED | ASSESSMENT_SESSION | session_id |
 | EMOTION_INTERRUPTED | ASSESSMENT_SESSION | session_id |
 | EMOTION_RESUMED | ASSESSMENT_SESSION | session_id |
+| EMOTION_COLLAPSE_THRESHOLD_REACHED | ASSESSMENT_SESSION | session_id |
 | OFFLINE_SCORE_SUBMITTED | ASSESSMENT_SESSION | session_id |
 | REDLINE_TRIGGERED | ASSESSMENT_SESSION | session_id |
 | SESSION_COMPLETED | ASSESSMENT_SESSION | session_id |

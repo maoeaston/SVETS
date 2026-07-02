@@ -1,5 +1,5 @@
 -- ============================================================================
--- 炫灿-职途向导系统 MVP schema.sql v0.1.7-consistency-guard
+-- 炫灿-职途向导系统 MVP schema.sql v0.1.9-strategy-composite-pk
 -- Architecture baseline:
 --   1. Lightweight event sourcing + SQLite projection.
 --   2. action_log.jsonl is the source of truth; SQLite is a query snapshot.
@@ -66,6 +66,52 @@
 --   3. Align training_step_record.status with PRD v1.0.3:
 --      NOT_STARTED / IN_PROGRESS / COMPLETED / SKIPPED / FAILED. ACTIVE is replaced
 --      by IN_PROGRESS and VOID is removed.
+--
+-- v0.1.8-base-ability-rebalance patch notes:
+--   1. Rename strategy_config.pass_threshold -> competent_threshold (DEFAULT 70 -> 80)
+--      and improve_threshold -> conditional_threshold (DEFAULT 40 -> 60).
+--      Semantic realignment: LEVEL_COMPETENT / LEVEL_CONDITIONAL thresholds.
+--   2. Promote module_veto_threshold (REAL DEFAULT 0.5) and emotion_collapse_threshold
+--      (INTEGER DEFAULT 3) from scoring_policy_json keys to first-class table columns.
+--      scoring_policy_json no longer carries these two keys; the table column is the
+--      authoritative source. level_rules remains in scoring_policy_json.
+--   3. Replace level_result enum values across assessment_session and result_record:
+--      LEVEL_PASS / LEVEL_IMPROVE / LEVEL_FAIL -> LEVEL_COMPETENT / LEVEL_CONDITIONAL
+--      / LEVEL_NOT_COMPETENT. LEVEL_FAIL_BY_SAFETY is unchanged. PRD v1.0.5 §7.3 does
+--      not require backward-compatible string mapping; code must switch in one pass.
+--   4. Update seed strategies to v1.0.5 base-ability spec: online 42 (6 modules x 7),
+--      offline 8, max_score 100, competent_threshold 80, conditional_threshold 60.
+--      BASELINE_ASSESSMENT and MOCK_EXAM now share the same base-ability spec per
+--      PRD v1.0.5 §2.4 ("no longer distinguished").
+--   5. Update trg_strategy_config_referenced_version_semantic_immutable to reference
+--      the renamed columns and protect the two new promoted columns.
+--   6. JSON internal keys in scoring_policy_json are renamed in lockstep with the
+--      table columns (competent_threshold / conditional_threshold) for vocabulary
+--      consistency; the two promoted keys are removed from the JSON.
+--   PRD v1.0.5 §7.6 rule 13 is the authoritative source for this revision.
+--
+-- v0.1.9-strategy-composite-pk patch notes:
+--   1. strategy_config PK change: strategy_id TEXT PRIMARY KEY (single-column,
+--      per-version) -> PRIMARY KEY (strategy_id, version) (composite, family-level
+--      strategy_id). Aligns schema with PRD feature 5.2 "一族一 strategy_id" model:
+--      one strategy_id per (strategy_type, job_code) family; new version shares the
+--      same strategy_id with incremented version column.
+--   2. assessment_session / training_session FK change: column-level single-column
+--      FK on strategy_id -> table-level composite FK (strategy_id, strategy_version)
+--      REFERENCES strategy_config(strategy_id, version). Sessions now lock precisely
+--      to a family+version row.
+--   3. result_record.strategy_id loses its FK: this table has no strategy_version
+--      column, so a single-column FK would target a non-unique parent key under the
+--      composite PK. Downgraded to plain TEXT; integrity is handler-enforced (the
+--      source session carries the full version lock).
+--   4. UNIQUE(strategy_type, job_code, version) retained as DB-level backstop for
+--      the handler-level "one strategy_id per (type, job_code)" rule
+--      (DUPLICATE_JOB_STRATEGY).
+--   5. Triggers trg_*_strategy_config_match_* join strategy_config on 4 columns
+--      (strategy_id, strategy_type, job_code, version); composite PK makes these
+--      joins efficient and they remain semantically correct.
+--   PRD feature 5.2 (doc/features/strategy-config-prd.md §策略族模型) is the
+--   authoritative source for the family-model semantics.
 -- ----------------------------------------------------------------------------
 
 PRAGMA foreign_keys = ON;
@@ -119,6 +165,26 @@ INSERT OR IGNORE INTO schema_migration (
   '2026-06-30_mvp_schema_v0_1_7_consistency_guard',
   '0.1.7-consistency-guard',
   'MVP schema v0.1.7-consistency-guard: enforce strategy reference consistency, redline incident same student-task guards, and training step enum alignment'
+);
+
+INSERT OR IGNORE INTO schema_migration (
+  migration_id,
+  schema_version,
+  description
+) VALUES (
+  '2026-07-01_mvp_schema_v0_1_8_base_ability_rebalance',
+  '0.1.8-base-ability-rebalance',
+  'MVP schema v0.1.8-base-ability-rebalance: rename strategy_config threshold columns to competent/conditional (DEFAULT 80/60), promote module_veto_threshold and emotion_collapse_threshold to table columns, replace level_result enum with LEVEL_COMPETENT/CONDITIONAL/NOT_COMPETENT, update seed strategies to 42+8/max100 spec per PRD v1.0.5 §2.4/§7.6'
+);
+
+INSERT OR IGNORE INTO schema_migration (
+  migration_id,
+  schema_version,
+  description
+) VALUES (
+  '2026-07-02_mvp_schema_v0_1_9_strategy_composite_pk',
+  '0.1.9-strategy-composite-pk',
+  'MVP schema v0.1.9-strategy-composite-pk: strategy_config PK strategy_id -> (strategy_id, version) composite to support PRD feature 5.2 one-strategy_id-per-family model; assessment_session/training_session FK upgraded to composite (strategy_id, strategy_version); result_record.strategy_id FK dropped (no version column, would be non-unique parent key); UNIQUE(type,job,version) retained as DUPLICATE_JOB_STRATEGY backstop'
 );
 
 -- ----------------------------------------------------------------------------
@@ -180,7 +246,7 @@ CREATE INDEX IF NOT EXISTS idx_student_profile_status
 --   may add non-null strategy_snapshot_json if stronger standalone replay is needed.
 
 CREATE TABLE IF NOT EXISTS strategy_config (
-  strategy_id                 TEXT PRIMARY KEY,
+  strategy_id                 TEXT NOT NULL,
   strategy_type               TEXT NOT NULL CHECK (strategy_type IN (
                                 'BASELINE_ASSESSMENT',
                                 'MOCK_EXAM',
@@ -193,8 +259,17 @@ CREATE TABLE IF NOT EXISTS strategy_config (
   offline_question_count      INTEGER NOT NULL CHECK (offline_question_count >= 0),
   max_score                   INTEGER NOT NULL CHECK (max_score > 0),
 
-  pass_threshold              REAL NOT NULL DEFAULT 70 CHECK (pass_threshold >= 0 AND pass_threshold <= 100),
-  improve_threshold           REAL NOT NULL DEFAULT 40 CHECK (improve_threshold >= 0 AND improve_threshold <= 100),
+  competent_threshold         REAL NOT NULL DEFAULT 80 CHECK (competent_threshold >= 0 AND competent_threshold <= 100),
+  conditional_threshold       REAL NOT NULL DEFAULT 60 CHECK (conditional_threshold >= 0 AND conditional_threshold <= 100),
+
+  -- Module veto: any single module score rate below this forces LEVEL_NOT_COMPETENT.
+  -- Default 0.5 = 50%. PRD v1.0.5 §7.4 module-level veto.
+  module_veto_threshold       REAL NOT NULL DEFAULT 0.5 CHECK (module_veto_threshold >= 0 AND module_veto_threshold <= 1),
+
+  -- Emotion collapse backstop: cumulative emotion-collapse count within one
+  -- assessment_session reaching this forces LEVEL_NOT_COMPETENT.
+  -- PRD v1.0.5 §4.6 / §7.4. Single recoverable interruptions do not count.
+  emotion_collapse_threshold  INTEGER NOT NULL DEFAULT 3 CHECK (emotion_collapse_threshold >= 1),
 
   -- JSON strings. App layer validates detailed schema.
   question_policy_json        TEXT NOT NULL,
@@ -210,7 +285,11 @@ CREATE TABLE IF NOT EXISTS strategy_config (
   created_at                  TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at                  TEXT NOT NULL DEFAULT (datetime('now')),
 
-  CHECK (pass_threshold > improve_threshold),
+  CHECK (competent_threshold > conditional_threshold),
+  -- v0.1.9: 复合主键 (strategy_id, version)。一族多版本共享 strategy_id
+  --（PRD「一族一 strategy_id」模型）。UNIQUE(type,job,version) 兜底防止
+  -- 不同 strategy_id 复用同 (type,job,version) 组合。
+  PRIMARY KEY (strategy_id, version),
   UNIQUE (strategy_type, job_code, version)
 );
 
@@ -362,7 +441,7 @@ CREATE INDEX IF NOT EXISTS idx_domain_event_projection_applied
 CREATE TABLE IF NOT EXISTS assessment_session (
   session_id                    TEXT PRIMARY KEY,
   student_id                    TEXT NOT NULL REFERENCES student_profile(student_id),
-  strategy_id                   TEXT NOT NULL REFERENCES strategy_config(strategy_id),
+  strategy_id                   TEXT NOT NULL,
   strategy_type                 TEXT NOT NULL CHECK (strategy_type IN (
                                  'BASELINE_ASSESSMENT',
                                  'MOCK_EXAM'
@@ -399,9 +478,9 @@ CREATE TABLE IF NOT EXISTS assessment_session (
   max_score                     INTEGER CHECK (max_score IS NULL OR max_score > 0),
   normalized_score              REAL CHECK (normalized_score IS NULL OR (normalized_score >= 0 AND normalized_score <= 100)),
   level_result                  TEXT CHECK (level_result IS NULL OR level_result IN (
-                                 'LEVEL_PASS',
-                                 'LEVEL_IMPROVE',
-                                 'LEVEL_FAIL',
+                                 'LEVEL_COMPETENT',
+                                 'LEVEL_CONDITIONAL',
+                                 'LEVEL_NOT_COMPETENT',
                                  'LEVEL_FAIL_BY_SAFETY'
                                )),
 
@@ -429,7 +508,10 @@ CREATE TABLE IF NOT EXISTS assessment_session (
       AND redline_incident_id IS NOT NULL
       AND length(trim(redline_incident_id)) > 0
     )
-  )
+  ),
+  -- v0.1.9: 复合 FK——session 锁定到具体 (strategy_id, strategy_version)。
+  -- strategy_config 复合 PK(strategy_id, version) 是此 FK 的父键。
+  FOREIGN KEY (strategy_id, strategy_version) REFERENCES strategy_config(strategy_id, version)
 );
 
 CREATE INDEX IF NOT EXISTS idx_assessment_session_student_status
@@ -552,7 +634,8 @@ CREATE TABLE IF NOT EXISTS training_session (
   task_code                    TEXT NOT NULL CHECK (length(trim(task_code)) > 0),
   -- Kept nullable in DDL for minimal v0.1.7 migration churn, but INSERT/UPDATE
   -- triggers below forbid NULL and require a matching strategy_config row.
-  strategy_id                  TEXT REFERENCES strategy_config(strategy_id),
+  -- v0.1.9: 复合 FK 在表级声明（见 CREATE TABLE 末尾）。
+  strategy_id                  TEXT,
   -- Training sessions always use TRAINING_PRACTICE. strategy_version is locked at
   -- creation time so historical training results remain reproducible even if
   -- strategy_config changes later. strategy_snapshot_json is nullable in MVP to
@@ -608,7 +691,10 @@ CREATE TABLE IF NOT EXISTS training_session (
       redline_incident_id IS NOT NULL
       AND length(trim(redline_incident_id)) > 0
     )
-  )
+  ),
+  -- v0.1.9: 复合 FK（strategy_id 可空；NULL 时 SQL 标准跳过 FK 检查，由上面
+  -- trg_training_session_strategy_config_match_insert/update 触发器强制非空+匹配）。
+  FOREIGN KEY (strategy_id, strategy_version) REFERENCES strategy_config(strategy_id, version)
 );
 
 CREATE INDEX IF NOT EXISTS idx_training_session_student_status
@@ -866,7 +952,10 @@ CREATE TABLE IF NOT EXISTS result_record (
                           )),
   source_aggregate_id     TEXT NOT NULL,
 
-  strategy_id             TEXT REFERENCES strategy_config(strategy_id),
+  -- v0.1.9: result_record 不存 strategy_version，strategy_config 复合 PK 下
+  -- 单列 strategy_id 不再是唯一父键。降为普通 TEXT，完整性由写入 handler 软保证
+  --（result_record 是投影，源头 source_aggregate_id 指向 session，session 有完整版本锁定）。
+  strategy_id             TEXT,
   strategy_type           TEXT CHECK (strategy_type IS NULL OR strategy_type IN (
                             'BASELINE_ASSESSMENT',
                             'MOCK_EXAM',
@@ -886,9 +975,9 @@ CREATE TABLE IF NOT EXISTS result_record (
   max_score               REAL,
   normalized_score        REAL NOT NULL CHECK (normalized_score >= 0 AND normalized_score <= 100),
   level_result            TEXT CHECK (level_result IS NULL OR level_result IN (
-                            'LEVEL_PASS',
-                            'LEVEL_IMPROVE',
-                            'LEVEL_FAIL',
+                            'LEVEL_COMPETENT',
+                            'LEVEL_CONDITIONAL',
+                            'LEVEL_NOT_COMPETENT',
                             'LEVEL_FAIL_BY_SAFETY'
                           )),
 
@@ -1857,8 +1946,10 @@ AND (
   OR OLD.online_question_count IS NOT NEW.online_question_count
   OR OLD.offline_question_count IS NOT NEW.offline_question_count
   OR OLD.max_score IS NOT NEW.max_score
-  OR OLD.pass_threshold IS NOT NEW.pass_threshold
-  OR OLD.improve_threshold IS NOT NEW.improve_threshold
+  OR OLD.competent_threshold IS NOT NEW.competent_threshold
+  OR OLD.conditional_threshold IS NOT NEW.conditional_threshold
+  OR OLD.module_veto_threshold IS NOT NEW.module_veto_threshold
+  OR OLD.emotion_collapse_threshold IS NOT NEW.emotion_collapse_threshold
   OR OLD.question_policy_json IS NOT NEW.question_policy_json
   OR OLD.scoring_policy_json IS NOT NEW.scoring_policy_json
   OR OLD.supports_redline_halt IS NOT NEW.supports_redline_halt
@@ -1871,7 +1962,9 @@ BEGIN
 END;
 
 -- ----------------------------------------------------------------------------
--- 15. Recommended seed strategies for MVP
+-- 15. Recommended seed strategies for MVP (v0.1.8 base-ability spec)
+--     PRD v1.0.5 §2.4: BASELINE_ASSESSMENT and MOCK_EXAM share the same
+--     base-ability item spec (online 42 = 6 modules x 7, offline 8, max 100).
 --     These IDs can be replaced by deterministic UUIDs in implementation.
 -- ----------------------------------------------------------------------------
 
@@ -1883,8 +1976,10 @@ INSERT OR IGNORE INTO strategy_config (
   online_question_count,
   offline_question_count,
   max_score,
-  pass_threshold,
-  improve_threshold,
+  competent_threshold,
+  conditional_threshold,
+  module_veto_threshold,
+  emotion_collapse_threshold,
   question_policy_json,
   scoring_policy_json,
   supports_redline_halt,
@@ -1896,14 +1991,16 @@ INSERT OR IGNORE INTO strategy_config (
   'strategy_baseline_shelver_v1',
   'BASELINE_ASSESSMENT',
   'SUPERMARKET_SHELVER',
-  '理货员单模块基线测评 v1',
-  17,
+  '理货员基础能力评估 v1',
+  42,
+  8,
+  100,
+  80,
+  60,
+  0.5,
   3,
-  40,
-  70,
-  40,
-  '{"module_scope":"SINGLE_MODULE","question_ratio":{"TRUE_FALSE":7,"SINGLE_CHOICE":6,"DRAG":4,"OFFLINE_OPERATION":3}}',
-  '{"score_values":[0,1,2],"normalization":"raw_score/max_score*100","pass_threshold":70,"improve_threshold":40,"safety_override_enabled":true}',
+  '{"module_scope":"CROSS_MODULE","question_ratio":{"TRUE_FALSE":14,"SINGLE_CHOICE":14,"DRAG":14,"OFFLINE_OPERATION":8},"required_modules":["FINE_MOTOR","COGNITION","RULE_EXECUTION","EMOTION_REGULATION","BASIC_SOCIAL","SAFETY_OPERATION"]}',
+  '{"score_values":[0,1,2],"normalization":"raw_score/max_score*100","safety_override_enabled":true,"level_rules":[{"min":80,"max":100,"level":"LEVEL_COMPETENT"},{"min":60,"max":79,"level":"LEVEL_CONDITIONAL"},{"min":0,"max":59,"level":"LEVEL_NOT_COMPETENT"}]}',
   1,
   1,
   1,
@@ -1919,8 +2016,10 @@ INSERT OR IGNORE INTO strategy_config (
   online_question_count,
   offline_question_count,
   max_score,
-  pass_threshold,
-  improve_threshold,
+  competent_threshold,
+  conditional_threshold,
+  module_veto_threshold,
+  emotion_collapse_threshold,
   question_policy_json,
   scoring_policy_json,
   supports_redline_halt,
@@ -1932,14 +2031,16 @@ INSERT OR IGNORE INTO strategy_config (
   'strategy_mock_shelver_v1',
   'MOCK_EXAM',
   'SUPERMARKET_SHELVER',
-  '理货员全流程综合模拟考 v1',
-  18,
-  5,
-  46,
-  70,
-  40,
-  '{"module_scope":"CROSS_MODULE","online_total":18,"offline_total":5,"required_modules":["FINE_MOTOR","COGNITION","RULE_EXECUTION","EMOTION_REGULATION","BASIC_SOCIAL","SAFETY_OPERATION"]}',
-  '{"score_values":[0,1,2],"normalization":"raw_score/max_score*100","pass_threshold":70,"improve_threshold":40,"safety_override_enabled":true}',
+  '理货员基础能力标准化模拟卷 v1',
+  42,
+  8,
+  100,
+  80,
+  60,
+  0.5,
+  3,
+  '{"module_scope":"CROSS_MODULE","question_ratio":{"TRUE_FALSE":14,"SINGLE_CHOICE":14,"DRAG":14,"OFFLINE_OPERATION":8},"required_modules":["FINE_MOTOR","COGNITION","RULE_EXECUTION","EMOTION_REGULATION","BASIC_SOCIAL","SAFETY_OPERATION"]}',
+  '{"score_values":[0,1,2],"normalization":"raw_score/max_score*100","safety_override_enabled":true,"level_rules":[{"min":80,"max":100,"level":"LEVEL_COMPETENT"},{"min":60,"max":79,"level":"LEVEL_CONDITIONAL"},{"min":0,"max":59,"level":"LEVEL_NOT_COMPETENT"}]}',
   1,
   1,
   1,
@@ -1948,5 +2049,5 @@ INSERT OR IGNORE INTO strategy_config (
 );
 
 -- ============================================================================
--- End of schema.sql v0.1.7-consistency-guard
+-- End of schema.sql v0.1.9-strategy-composite-pk
 -- ============================================================================
