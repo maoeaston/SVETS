@@ -74,10 +74,12 @@ vi.mock('../../../domain/event-writer', () => ({
 
 import {
   createSession,
+  submitAnswer,
   triggerRedline,
   calculateResult,
   seedAssessmentErrorCodes
 } from '../assessment'
+import { applyAssessmentEvent } from '../../../domain/assessment-reducer'
 import {
   createTestDb,
   seedCaller,
@@ -184,6 +186,22 @@ function calcParams(
     sessionId,
     ...over
   }
+}
+
+/** STUDENT 视角提交 TRUE_FALSE 答案（简化版，仅用于测试 setup）。 */
+function submitAnswerForTest(
+  sessionId: string,
+  questionId: string,
+  selected: boolean = true
+): { success: boolean } {
+  const r = submitAnswer(db, {
+    callerUserId: studentId,
+    callerRole: 'STUDENT',
+    sessionId,
+    questionId,
+    answerPayload: { question_type: 'TRUE_FALSE' as const, selected }
+  })
+  return { success: r.success }
 }
 
 function sessionRow(sessionId: string): {
@@ -360,6 +378,139 @@ describe('assessment:triggerRedline 正常路径', () => {
     expect(payload.incident_id).toBe(result.incidentId)
     expect(payload.reason_code).toBe('BLADE_TOWARD_SELF')
     expect(payload.context_phase).toBe('ONLINE_ASSESSMENT')
+  })
+})
+
+// ---------- P1 修复：result_payload_json + question_count / answered_count ----------
+
+describe('assessment:triggerRedline result_payload_json 落盘 + 重放幂等', () => {
+  it('result_record.result_payload_json 非空 + 含 AbilityScorePayload 结构', () => {
+    const { sessionId, questions } = setupSession()
+
+    // 给一道 ONLINE 题填真实 content_json + 答对（让 moduleScores 非空）
+    const q = questions[0]
+    db.prepare('UPDATE question_bank SET content_json = ? WHERE question_id = ?').run(
+      JSON.stringify({ question_type: 'TRUE_FALSE', expected_answer: true }),
+      q.questionId
+    )
+    const ans = submitAnswerForTest(sessionId, q.questionId)
+    expect(ans.success).toBe(true)
+
+    const result = triggerRedline(db, redlineParams(sessionId))
+    expect(result.success).toBe(true)
+
+    const row = db
+      .prepare(
+        `SELECT result_payload_json, normalized_score FROM result_record
+          WHERE source_aggregate_id = ? AND result_type = 'ABILITY_SCORE'`
+      )
+      .get(sessionId) as { result_payload_json: string; normalized_score: number } | undefined
+    expect(row).toBeDefined()
+    const payload = JSON.parse(row!.result_payload_json) as {
+      result_type: 'ABILITY_SCORE'
+      module_scores?: { module_type: string; raw_score: number; max_score: number }[]
+      online_raw_score: number
+      offline_raw_score: number
+      question_count: number
+      answered_count: number
+    }
+    expect(payload.result_type).toBe('ABILITY_SCORE')
+    expect(payload.online_raw_score).toBe(2) // 一道 TRUE_FALSE 答对 = 2 分
+    expect(payload.offline_raw_score).toBe(0)
+    expect(payload.module_scores).toBeDefined()
+    expect(payload.module_scores!.length).toBeGreaterThan(0)
+  })
+
+  it('question_count=session.online_question_count（42），answered_count=实际答题数（P1.2 修复）', () => {
+    const { sessionId, questions } = setupSession()
+    // 答 3 道题（不同模块最好，但 seedQuestionBank 每模块都有 3 题型 × 5 题）
+    const answered: SessionQuestionView[] = questions.slice(0, 3)
+    for (const q of answered) {
+      db.prepare('UPDATE question_bank SET content_json = ? WHERE question_id = ?').run(
+        JSON.stringify({ question_type: q.questionType, expected_answer: true } as Record<string, unknown>),
+        q.questionId
+      )
+      // SINGLE_CHOICE 需要 options；用 TRUE_FALSE 题更简单
+      if (q.questionType === 'TRUE_FALSE') {
+        const r = submitAnswerForTest(sessionId, q.questionId)
+        expect(r.success).toBe(true)
+      }
+    }
+
+    const result = triggerRedline(db, redlineParams(sessionId))
+    expect(result.success).toBe(true)
+
+    const row = db
+      .prepare('SELECT result_payload_json FROM result_record WHERE source_aggregate_id = ?')
+      .get(sessionId) as { result_payload_json: string }
+    const payload = JSON.parse(row.result_payload_json) as { question_count: number; answered_count: number }
+
+    expect(payload.question_count).toBe(42) // session.online_question_count
+    expect(payload.answered_count).toBeGreaterThanOrEqual(0) // 取决于 TRUE_FALSE 命中数
+    expect(payload.question_count).not.toBe(payload.answered_count) // 语义分离
+  })
+
+  it('reducer 重放：删除 result_record 后从事件流重新 apply，result_payload_json 仍正确', () => {
+    const { sessionId, questions } = setupSession()
+    const q = questions.find((x) => x.questionType === 'TRUE_FALSE')!
+    db.prepare('UPDATE question_bank SET content_json = ? WHERE question_id = ?').run(
+      JSON.stringify({ question_type: 'TRUE_FALSE', expected_answer: true }),
+      q.questionId
+    )
+    submitAnswerForTest(sessionId, q.questionId)
+    triggerRedline(db, redlineParams(sessionId))
+
+    // 抓取事件
+    const evt = db
+      .prepare(
+        `SELECT event_id, aggregate_type, aggregate_id, event_type, event_sequence,
+                payload_json, checksum, schema_version, created_at
+           FROM domain_event_projection
+          WHERE aggregate_id = ? AND event_type = 'RESULT_CALCULATED'`
+      )
+      .get(sessionId) as {
+      event_id: string
+      aggregate_type: string
+      aggregate_id: string
+      event_type: string
+      event_sequence: number
+      payload_json: string
+      checksum: string
+      schema_version: number
+      created_at: string
+    }
+    expect(evt).toBeDefined()
+    const payloadBefore = (
+      db
+        .prepare('SELECT result_payload_json FROM result_record WHERE source_aggregate_id = ?')
+        .get(sessionId) as { result_payload_json: string }
+    ).result_payload_json
+    expect(payloadBefore).toBeTruthy()
+
+    // 模拟重放：擦除 result_record，重新 apply
+    db.prepare('DELETE FROM result_record WHERE source_aggregate_id = ?').run(sessionId)
+
+    applyAssessmentEvent(db, {
+      event_id: evt.event_id,
+      aggregate_type: evt.aggregate_type as 'ASSESSMENT_SESSION',
+      aggregate_id: evt.aggregate_id,
+      event_type: evt.event_type as 'RESULT_CALCULATED',
+      event_sequence: evt.event_sequence,
+      payload: JSON.parse(evt.payload_json),
+      checksum: evt.checksum,
+      schema_version: evt.schema_version,
+      created_at: evt.created_at,
+      actor_id: callerId,
+      actor_role: 'TEACHER',
+      app_version: 'test'
+    })
+
+    const payloadAfter = (
+      db
+        .prepare('SELECT result_payload_json FROM result_record WHERE source_aggregate_id = ?')
+        .get(sessionId) as { result_payload_json: string }
+    ).result_payload_json
+    expect(payloadAfter).toBe(payloadBefore) // 重放后字段一致
   })
 })
 

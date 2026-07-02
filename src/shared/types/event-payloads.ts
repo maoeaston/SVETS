@@ -205,6 +205,11 @@ export interface ResultCalculatedPayload {
   level_result: string
   calculated_at: string
   calculated_by: string
+  // result_record.result_payload_json 的来源（schema.sql:989 列可空）。
+  // 事件溯源原则：投影字段必须可从事件流重建，故 breakdown 跟随事件 payload
+  // 而非 handler 后置 UPDATE。ABILITY_SCORE 类型由 persistRedlineResult 填充
+  // AbilityScorePayload；TRAINING_COMPLETION / OPERATION_PASS_RATE 由后续 Step 填充。
+  breakdown?: AbilityScorePayload | null
 }
 
 export interface ModuleScore {

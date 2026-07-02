@@ -114,6 +114,10 @@ const SAFETY_CONTEXT_PHASES = new Set<string>([
   'OTHER'
 ])
 
+// 每道 ONLINE 题的最高分（doc §2：TRUE_FALSE/SINGLE_CHOICE exact 2/0，DRAG 2/1/0）。
+// 用于从 answer_record.score 反推题数（max_score = answered * MAX_SCORE_PER_QUESTION）。
+const MAX_SCORE_PER_QUESTION = 2
+
 /**
  * STUDENT 答题路径的 session.status → 错误码映射。
  * ACTIVE → null（可答）；EMOTION_INTERRUPTED → SESSION_PAUSED；
@@ -1074,7 +1078,7 @@ function computeRedlineModuleScores(
 
   const scores: ModuleScoreInput[] = []
   for (const r of rows) {
-    const max = r.answered * 2 // 每题最高 2 分（doc §2 计分规则）
+    const max = r.answered * MAX_SCORE_PER_QUESTION
     if (max > 0) {
       scores.push({
         module: r.module_type as ModuleScoreInput['module'],
@@ -1130,6 +1134,10 @@ function readStrategyForJudge(
  *
  * 调用前置条件：session 已 REDLINE_HALTED + redline_incident_id 已填。
  *
+ * result_payload_json 通过 ResultCalculatedPayload.breakdown 流入事件 payload，
+ * reducer applyResultCalculated 在 INSERT 时一并写入（事件溯源原则：投影可从事件流
+ * 重建，避免 handler 事务后 UPDATE 在回滚后留下 NULL 字段）。
+ *
  * @returns resultId（用于 calculateResult 返回值）或抛错（事务由调用方回滚）。
  */
 function persistRedlineResult(
@@ -1151,26 +1159,42 @@ function persistRedlineResult(
   const resultId = uuidv4()
   const calculatedAt = new Date().toISOString()
 
-  // result_payload_json（AbilityScorePayload）：红线场景下仍记真实模块分快照
+  // question_count 从 session 行读（红线可能在中途触发，已答题数 < 总题数）
+  // answered_count 从 answer_record COUNT（VALID 状态）
+  const sessionCounts = db
+    .prepare(
+      `SELECT s.online_question_count AS total,
+              (SELECT COUNT(*) FROM answer_record ar
+                WHERE ar.session_id = s.session_id AND ar.status = 'VALID') AS answered
+         FROM assessment_session s
+        WHERE s.session_id = ?`
+    )
+    .get(sessionId) as { total: number; answered: number } | undefined
+  if (!sessionCounts) {
+    throw new Error(`persistRedlineResult: session ${sessionId} missing during count`)
+  }
+
+  // result_payload_json（AbilityScorePayload）：红线场景下仍记真实模块分快照。
+  // 红线场景 judge.moduleVetoTriggeredBy 永远 null（safetyTriggered 优先级最高），
+  // module_scores 直接填充。
   const abilityPayload: AbilityScorePayload = {
     result_type: 'ABILITY_SCORE',
-    module_scores: judge.moduleVetoTriggeredBy
-      ? undefined
-      : strategyInput.moduleScores.map(
-          (m): ModuleScore => ({
-            module_type: m.module,
-            raw_score: m.raw,
-            max_score: m.max,
-            normalized_score: m.max > 0 ? (m.raw / m.max) * 100 : 0
-          })
-        ),
+    module_scores: strategyInput.moduleScores.map(
+      (m): ModuleScore => ({
+        module_type: m.module,
+        raw_score: m.raw,
+        max_score: m.max,
+        normalized_score: m.max > 0 ? (m.raw / m.max) * 100 : 0
+      })
+    ),
     online_raw_score: strategyInput.moduleScores.reduce((s, m) => s + m.raw, 0),
+    // 线下评分未到，OFFLINE_OPERATION 不计入（红线场景学生不可能已答线下题）
     offline_raw_score: 0,
-    question_count: strategyInput.moduleScores.reduce((s, m) => s + m.max / 2, 0),
-    answered_count: strategyInput.moduleScores.reduce((s, m) => s + m.max / 2, 0),
+    question_count: sessionCounts.total,
+    answered_count: sessionCounts.answered,
     emotion_collapse_count: 0,
     module_veto_triggered_by: judge.moduleVetoTriggeredBy,
-    level_forced_by: null
+    level_forced_by: judge.levelForcedBy
   }
 
   const eventPayload: ResultCalculatedPayload = {
@@ -1186,7 +1210,8 @@ function persistRedlineResult(
     normalized_score: judge.normalizedScore,
     level_result: judge.levelResult,
     calculated_at: calculatedAt,
-    calculated_by: triggeredBy
+    calculated_by: triggeredBy,
+    breakdown: abilityPayload
   }
 
   // writeEvent + reducer 都加入调用方事务（singleton connection / sql.js 同 conn）
@@ -1198,14 +1223,9 @@ function persistRedlineResult(
     actorId: triggeredBy,
     actorRole: 'TEACHER'
   })
-  // reducer 内已 SELECT session.redline_incident_id 填充 result_record
+  // reducer 内 SELECT session.redline_incident_id 填充 result_record +
+  // 写入 result_payload_json（来自 payload.breakdown）
   applyAssessmentEvent(db, event)
-
-  // reducer 暂未写 result_payload_json（schema 列可空）；用 UPDATE 补 AbilityScorePayload 快照
-  db.prepare('UPDATE result_record SET result_payload_json = ? WHERE result_id = ?').run(
-    JSON.stringify(abilityPayload),
-    resultId
-  )
 
   return resultId
 }

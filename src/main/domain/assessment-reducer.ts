@@ -345,6 +345,9 @@ function applyRedlineTriggered(db: DBAdapter, event: ActionLogEntry): void {
 // 幂等：result_record.result_id 存在则 skip。
 // safety_overridden / redline_incident_id：level_result=LEVEL_FAIL_BY_SAFETY 时从 session
 //   读 redline_incident_id（result_record CHECK 要求三字段一致）。
+// result_payload_json：从 payload.breakdown 读（事件溯源原则：投影可从事件流重建，
+//   handler 不依赖事务后 UPDATE 补字段）。ABILITY_SCORE 类型由 handler 填 breakdown；
+//   TRAINING_COMPLETION / OPERATION_PASS_RATE 暂不填，落 NULL。
 function applyResultCalculated(db: DBAdapter, event: ActionLogEntry): void {
   const p = event.payload as unknown as ResultCalculatedPayload
   const existing = db
@@ -365,9 +368,9 @@ function applyResultCalculated(db: DBAdapter, event: ActionLogEntry): void {
     `INSERT INTO result_record
        (result_id, student_id, result_type, source_aggregate_type, source_aggregate_id,
         job_code, raw_score, max_score, normalized_score, level_result,
-        safety_overridden, redline_incident_id,
+        safety_overridden, redline_incident_id, result_payload_json,
         generated_event_id, generated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   ).run(
     p.result_id,
     p.student_id,
@@ -381,6 +384,7 @@ function applyResultCalculated(db: DBAdapter, event: ActionLogEntry): void {
     p.level_result,
     isFailBySafety ? 1 : 0,
     redlineIncidentId,
+    p.breakdown ? JSON.stringify(p.breakdown) : null,
     event.event_id,
     p.calculated_at
   )

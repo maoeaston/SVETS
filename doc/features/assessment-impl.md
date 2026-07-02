@@ -471,6 +471,13 @@ INFO 级（审计 TEACHER 关键操作，与 strategy.ts 决策一致；学生�
 - result_record 落盘使用 `judgeLevel({safetyTriggered:true})` 强制 LEVEL_FAIL_BY_SAFETY，但 `normalized_score` 仍从 answer_record 算真实模块分（0-100 之间，schema CHECK 要求）。
 - 批量熔断实测：同 student+task 不同 strategy_type（BASELINE+MOCK）的两个 session 都被 schema trigger 熔断；result_record 仅对 handler 指定的 target session 落盘（persistRedlineResult 单次调用，未遍历批量 session —— 后续若需对所有熔断 session 落盘可扩展）。
 
+**[!] /vibe-review 后修复（P1）：**
+- **`result_payload_json` 重放丢失修复**：原实现 handler 在事务内 UPDATE 写 abilityPayload，但 reducer `applyResultCalculated` 不读该字段，冷启动重放后字段为 NULL（报告模块分丢失）。修复：`ResultCalculatedPayload` 加 `breakdown?: AbilityScorePayload | null`，handler 把 abilityPayload 放进事件 payload，reducer 在 INSERT 时一并写入。删除 handler 后置 UPDATE。新增 reducer 重放测试验证字段一致。
+- **`question_count` / `answered_count` 语义修复**：原实现两字段同值（因 `computeRedlineModuleScores` 过滤未答模块 + `m.max/2` 隐式反推题数）。修复：`question_count` 从 `session.online_question_count` 读（42），`answered_count` 从 `answer_record COUNT(*)` 读，加 `MAX_SCORE_PER_QUESTION = 2` 显式常量。红线中途触发时两字段语义分离。
+- **死代码清理**：`judge.moduleVetoTriggeredBy ? undefined : ...` 三元判断永远走 else（红线场景 moduleVetoTriggeredBy 永远 null），简化为直接构造数组；`level_forced_by: null` 改用 `judge.levelForcedBy`（红线场景仍 null，但保持一致性）。
+
+**测试规模：** 25 测试全绿（22 + 3 P1 验证：result_payload_json 结构 / question_count=42 / reducer 重放幂等）。
+
 ---
 
 ### Step 9：渲染层（学生答题 + 教师发起/列表 + Pinia store + router）
