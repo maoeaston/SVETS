@@ -83,12 +83,16 @@ export interface SessionDetail {
 }
 
 // --- createSession（TEACHER）---
+// [!] taskCode 是 Step 6a 遗漏：schema assessment_session.task_code NOT NULL，
+// PRD §17 要求 TEACHER 传 task（MVP 单任务"拆箱与上架"）。Step 6b 补上。
+// jobCode 不在参数中——从 strategy_config.job_code 派生（岗位属策略属性，非调用者选择）。
 export interface CreateSessionParams {
   callerUserId: string
   callerRole: string
   studentId: string
   strategyId: string
   strategyVersion: number
+  taskCode: string
 }
 
 export interface CreateSessionSuccess {
