@@ -28,6 +28,8 @@ import type {
   CreateSessionResult,
   GetSessionParams,
   GetSessionResult,
+  ListSessionsParams,
+  ListSessionsResult,
   SubmitAnswerParams,
   SubmitAnswerResult,
   EmotionInterruptParams,
@@ -97,6 +99,7 @@ export interface IpcApi {
   assessment: {
     createSession: (params: CreateSessionParams) => Promise<CreateSessionResult>
     getSession: (params: GetSessionParams) => Promise<GetSessionResult>
+    listSessions: (params: ListSessionsParams) => Promise<ListSessionsResult>
     submitAnswer: (params: SubmitAnswerParams) => Promise<SubmitAnswerResult>
     emotionInterrupt: (
       params: EmotionInterruptParams

@@ -29,6 +29,7 @@ const api = {
   assessment: {
     createSession: (params: unknown) => ipcRenderer.invoke('assessment:createSession', params),
     getSession: (params: unknown) => ipcRenderer.invoke('assessment:getSession', params),
+    listSessions: (params: unknown) => ipcRenderer.invoke('assessment:listSessions', params),
     submitAnswer: (params: unknown) => ipcRenderer.invoke('assessment:submitAnswer', params),
     emotionInterrupt: (params: unknown) => ipcRenderer.invoke('assessment:emotionInterrupt', params),
     emotionResume: (params: unknown) => ipcRenderer.invoke('assessment:emotionResume', params),

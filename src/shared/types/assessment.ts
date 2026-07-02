@@ -109,9 +109,67 @@ export interface GetSessionParams {
   sessionId: string
 }
 
+// 当前题目正文（脱敏后）。expected_answer / is_correct 由主进程剥离，
+// 渲染层不可见。题型分支字段（options / dragItems / variants）按 questionType 出现。
+export interface SessionQuestionContent {
+  questionId: string
+  questionOrder: number
+  questionPhase: 'ONLINE' | 'OFFLINE'
+  moduleType: AbilityTag
+  questionType: 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG'
+  prompt: string
+  assessmentPoint: string
+  // SINGLE_CHOICE 选项（已脱敏，无 is_correct）
+  options?: { key: string; text: string }[]
+  // DRAG 拖拽配置
+  dragItems?: { itemId: string; label: string }[]
+  dropZones?: { zoneId: string; label: string }[]
+  scoringMode?: 'ALL_OR_NOTHING' | 'PARTIAL_CREDIT'
+  // question_bank.media_asset_id（题目主图）
+  mediaAssetId?: string | null
+  mediaBrief?: string | null
+  // TRUE_FALSE variants（图片变体，已脱敏，无 expected_answer）
+  variants?: { variantId: string; mediaAssetId: string | null; mediaBrief: string }[]
+}
+
 export interface GetSessionSuccess {
   success: true
   session: SessionDetail
+  // currentQuestionId 非空时返回脱敏后的题目正文；解析失败或 currentQuestionId 为空 → null
+  currentQuestion: SessionQuestionContent | null
+}
+
+// --- listSessions（教师端列表：返回全部非终态 session）---
+export interface ListSessionsParams {
+  callerUserId: string
+  callerRole: string
+  // 可选筛选；不传 = 全部学生（TEACHER/ADMIN 视角）
+  studentId?: string
+}
+
+export interface SessionListItem {
+  sessionId: string
+  studentId: string
+  studentName: string
+  strategyId: string
+  strategyType: AssessmentStrategyType
+  strategyVersion: number
+  jobCode: string
+  taskCode: string
+  status: SessionStatus
+  onlineQuestionCount: number
+  onlineCompletedCount: number
+  currentQuestionId: string | null
+  pauseCount: number
+  redlineIncidentId: string | null
+  lastInterruptionReason: string | null
+  createdAt: string
+  startedAt: string | null
+}
+
+export interface ListSessionsSuccess {
+  success: true
+  items: SessionListItem[]
 }
 
 // --- submitAnswer（STUDENT）---
@@ -190,6 +248,7 @@ export interface CalculateResultSuccess {
 // --- Result（discriminated union，与 student.ts / strategy.ts 同模式）---
 export type CreateSessionResult = CreateSessionSuccess | AssessmentOpError
 export type GetSessionResult = GetSessionSuccess | AssessmentOpError
+export type ListSessionsResult = ListSessionsSuccess | AssessmentOpError
 export type SubmitAnswerResult = SubmitAnswerSuccess | AssessmentOpError
 export type EmotionInterruptResult = { success: true } | AssessmentOpError
 export type EmotionResumeResult = { success: true } | AssessmentOpError

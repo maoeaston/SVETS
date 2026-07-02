@@ -50,6 +50,16 @@ import type {
   CreateSessionResult,
   CreateSessionSuccess,
   SessionQuestionView,
+  SessionDetail,
+  SessionStatus,
+  SessionQuestionContent,
+  GetSessionParams,
+  GetSessionResult,
+  GetSessionSuccess,
+  ListSessionsParams,
+  ListSessionsResult,
+  ListSessionsSuccess,
+  SessionListItem,
   SubmitAnswerParams,
   SubmitAnswerResult,
   SubmitAnswerSuccess,
@@ -1535,6 +1545,281 @@ export function calculateResult(db: DBAdapter, params: CalculateResultParams): C
   return result
 }
 
+// ============================================================================
+// Step 9a：Read handlers — getSession + listSessions（纯读路径，不写事件）
+// ============================================================================
+
+interface SessionFullRow {
+  session_id: string
+  student_id: string
+  strategy_id: string
+  strategy_type: string
+  strategy_version: number
+  job_code: string
+  task_code: string
+  status: string
+  online_question_count: number
+  offline_question_count: number
+  online_completed_count: number
+  current_question_id: string | null
+  pause_count: number
+  pause_started_at: string | null
+  last_interruption_reason: string | null
+  redline_incident_id: string | null
+  level_result: string | null
+  started_at: string | null
+  completed_at: string | null
+  created_at: string
+}
+
+interface SessionQuestionJoinRow {
+  question_id: string
+  question_order: number
+  question_phase: string
+  module_type: string
+  question_type: string
+  content_json: string
+  media_asset_id: string | null
+}
+
+interface SessionListJoinRow {
+  session_id: string
+  student_id: string
+  student_name: string
+  strategy_id: string
+  strategy_type: string
+  strategy_version: number
+  job_code: string
+  task_code: string
+  status: string
+  online_question_count: number
+  online_completed_count: number
+  current_question_id: string | null
+  pause_count: number
+  redline_incident_id: string | null
+  last_interruption_reason: string | null
+  created_at: string
+  started_at: string | null
+}
+
+/**
+ * 读当前题目正文（脱敏后）。expected_answer / is_correct 由本函数剥离。
+ * content_json 损坏或题型不匹配 → null（不破坏 getSession）。
+ */
+function readCurrentQuestionContent(
+  db: DBAdapter,
+  sessionId: string,
+  questionId: string
+): SessionQuestionContent | null {
+  const row = db
+    .prepare(
+      `SELECT sq.question_id, sq.question_order, sq.question_phase, sq.module_type,
+              sq.question_type, qb.content_json, qb.media_asset_id
+         FROM assessment_session_question sq
+         JOIN question_bank qb ON qb.question_id = sq.question_id
+        WHERE sq.session_id = ? AND sq.question_id = ?`
+    )
+    .get(sessionId, questionId) as SessionQuestionJoinRow | undefined
+  if (!row) return null
+
+  let content: Record<string, unknown>
+  try {
+    content = JSON.parse(row.content_json)
+  } catch {
+    console.warn(`[getSession] content_json parse failed: questionId=${questionId}`)
+    return null
+  }
+
+  const base = {
+    questionId: row.question_id,
+    questionOrder: row.question_order,
+    questionPhase: row.question_phase as 'ONLINE' | 'OFFLINE',
+    moduleType: row.module_type as AbilityTag,
+    questionType: row.question_type as 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG',
+    prompt: typeof content.prompt === 'string' ? content.prompt : '',
+    assessmentPoint: typeof content.assessment_point === 'string' ? content.assessment_point : '',
+    mediaAssetId: row.media_asset_id ?? null,
+    mediaBrief: typeof content.media_brief === 'string' ? content.media_brief : null
+  }
+
+  if (base.questionType === 'TRUE_FALSE') {
+    const variants = Array.isArray(content.variants)
+      ? content.variants
+          .filter((v): v is Record<string, unknown> => v !== null && typeof v === 'object')
+          .map((v) => ({
+            variantId: typeof v.variant_id === 'string' ? v.variant_id : '',
+            mediaAssetId:
+              v.media_asset_id != null && typeof v.media_asset_id === 'string'
+                ? v.media_asset_id
+                : null,
+            mediaBrief: typeof v.media_brief === 'string' ? v.media_brief : ''
+            // [!] 刻意不读 v.expected_answer —— 脱敏
+          }))
+      : undefined
+    return { ...base, variants }
+  }
+
+  if (base.questionType === 'SINGLE_CHOICE') {
+    const options = Array.isArray(content.options)
+      ? content.options
+          .filter((o): o is Record<string, unknown> => o !== null && typeof o === 'object')
+          .map((o) => ({
+            key: typeof o.key === 'string' ? o.key : '',
+            text: typeof o.text === 'string' ? o.text : ''
+            // [!] 刻意不读 o.is_correct —— 脱敏
+          }))
+      : undefined
+    return { ...base, options }
+  }
+
+  if (base.questionType === 'DRAG') {
+    const dragItems = Array.isArray(content.drag_items)
+      ? content.drag_items
+          .filter((d): d is Record<string, unknown> => d !== null && typeof d === 'object')
+          .map((d) => ({
+            itemId: typeof d.item_id === 'string' ? d.item_id : '',
+            label: typeof d.label === 'string' ? d.label : ''
+          }))
+      : undefined
+    const dropZones = Array.isArray(content.drop_zones)
+      ? content.drop_zones
+          .filter((z): z is Record<string, unknown> => z !== null && typeof z === 'object')
+          .map((z) => ({
+            zoneId: typeof z.zone_id === 'string' ? z.zone_id : '',
+            label: typeof z.label === 'string' ? z.label : ''
+          }))
+      : undefined
+    const scoringMode =
+      content.scoring_mode === 'ALL_OR_NOTHING' || content.scoring_mode === 'PARTIAL_CREDIT'
+        ? content.scoring_mode
+        : undefined
+    return { ...base, dragItems, dropZones, scoringMode }
+  }
+
+  // OFFLINE_OPERATION 不应出现在 currentQuestion（线上答题路径）
+  return null
+}
+
+/**
+ * 读单个 session + 当前题目正文。
+ * - STUDENT 仅可读自己的 session（assertStudent + assertSessionOwner）
+ * - TEACHER/ADMIN 可读任意 session
+ * - 不基于 status 拦截；终态 session 仍可读
+ * - content_json 损坏 → currentQuestion = null（不破坏读路径）
+ */
+export function getSession(db: DBAdapter, params: GetSessionParams): GetSessionResult {
+  if (params.callerRole === 'STUDENT') {
+    const stu = assertStudent(db, params.callerUserId, params.callerRole)
+    if (!stu.ok) return { success: false, errorCode: 'FORBIDDEN' }
+    const owner = assertSessionOwner(db, stu.row.user_id, params.sessionId)
+    if (!owner.ok) return { success: false, errorCode: owner.errorCode }
+  } else {
+    const call = assertCaller(db, params.callerUserId, params.callerRole)
+    if (!call.ok) return { success: false, errorCode: 'FORBIDDEN' }
+  }
+
+  const row = db
+    .prepare(
+      // [!] schema assessment_session 无 created_at 列（v0.1.9 遗漏）；用 updated_at
+      // 替代。updated_at 默认 datetime('now') 且无 trigger 自动刷新，等同创建时间。
+      `SELECT session_id, student_id, strategy_id, strategy_type, strategy_version,
+              job_code, task_code, status,
+              online_question_count, offline_question_count, online_completed_count,
+              current_question_id, pause_count, pause_started_at,
+              last_interruption_reason, redline_incident_id, level_result,
+              started_at, completed_at, updated_at AS created_at
+         FROM assessment_session
+        WHERE session_id = ?`
+    )
+    .get(params.sessionId) as SessionFullRow | undefined
+  if (!row) return { success: false, errorCode: 'NOT_FOUND' }
+
+  const session: SessionDetail = {
+    sessionId: row.session_id,
+    studentId: row.student_id,
+    strategyId: row.strategy_id,
+    strategyType: row.strategy_type as AssessmentStrategyType,
+    strategyVersion: row.strategy_version,
+    jobCode: row.job_code,
+    taskCode: row.task_code,
+    status: row.status as SessionStatus,
+    onlineQuestionCount: row.online_question_count,
+    offlineQuestionCount: row.offline_question_count,
+    onlineCompletedCount: row.online_completed_count,
+    currentQuestionId: row.current_question_id,
+    pauseCount: row.pause_count,
+    pauseStartedAt: row.pause_started_at,
+    lastInterruptionReason: row.last_interruption_reason,
+    redlineIncidentId: row.redline_incident_id,
+    levelResult: row.level_result,
+    startedAt: row.started_at,
+    completedAt: row.completed_at,
+    createdAt: row.created_at
+  }
+
+  let currentQuestion: SessionQuestionContent | null = null
+  if (row.current_question_id) {
+    currentQuestion = readCurrentQuestionContent(db, params.sessionId, row.current_question_id)
+  }
+
+  const result: GetSessionSuccess = { success: true, session, currentQuestion }
+  return result
+}
+
+/**
+ * 列出全部非终态 session（OPEN_SESSION_STATUSES）。
+ * TEACHER/ADMIN only；STUDENT → FORBIDDEN。
+ * 可选 studentId 筛选；不传 = 全部学生。
+ */
+export function listSessions(db: DBAdapter, params: ListSessionsParams): ListSessionsResult {
+  const call = assertCaller(db, params.callerUserId, params.callerRole)
+  if (!call.ok) return { success: false, errorCode: 'FORBIDDEN' }
+
+  const placeholders = OPEN_SESSION_STATUSES.map(() => '?').join(', ')
+  const statusWhere = `s.status IN (${placeholders})`
+  const selectClause = `SELECT s.session_id, s.student_id, sp.student_name,
+              s.strategy_id, s.strategy_type, s.strategy_version,
+              s.job_code, s.task_code, s.status,
+              s.online_question_count, s.online_completed_count,
+              s.current_question_id, s.pause_count,
+              s.redline_incident_id, s.last_interruption_reason,
+              s.updated_at AS created_at, s.started_at
+         FROM assessment_session s
+         JOIN student_profile sp ON sp.student_id = s.student_id`
+  const orderClause = `ORDER BY s.updated_at DESC`
+
+  const rows = params.studentId
+    ? (db
+        .prepare(`${selectClause} WHERE s.student_id = ? AND ${statusWhere} ${orderClause}`)
+        .all(params.studentId, ...OPEN_SESSION_STATUSES) as SessionListJoinRow[])
+    : (db
+        .prepare(`${selectClause} WHERE ${statusWhere} ${orderClause}`)
+        .all(...OPEN_SESSION_STATUSES) as SessionListJoinRow[])
+
+  const items: SessionListItem[] = rows.map((r) => ({
+    sessionId: r.session_id,
+    studentId: r.student_id,
+    studentName: r.student_name,
+    strategyId: r.strategy_id,
+    strategyType: r.strategy_type as AssessmentStrategyType,
+    strategyVersion: r.strategy_version,
+    jobCode: r.job_code,
+    taskCode: r.task_code,
+    status: r.status as SessionStatus,
+    onlineQuestionCount: r.online_question_count,
+    onlineCompletedCount: r.online_completed_count,
+    currentQuestionId: r.current_question_id,
+    pauseCount: r.pause_count,
+    redlineIncidentId: r.redline_incident_id,
+    lastInterruptionReason: r.last_interruption_reason,
+    createdAt: r.created_at,
+    startedAt: r.started_at
+  }))
+
+  const result: ListSessionsSuccess = { success: true, items }
+  return result
+}
+
 // 生产默认 getDb：用 SqliteAdapter 包装 better-sqlite3 singleton。
 // Adapter 是无状态薄包装，不缓存（每次 IPC 新建一个，开销可忽略）。
 function defaultGetDb(): DBAdapter {
@@ -1549,8 +1834,8 @@ function defaultGetDb(): DBAdapter {
  * （否则 getDatabase 抛 "Not initialized"）。与 student.ts / strategy.ts 同模式。
  *
  * Step 6b 注册 createSession；Step 7 注册 submitAnswer / emotionInterrupt /
- * emotionResume / abortSession；Step 8 注册 triggerRedline / calculateResult。
- * getSession 待后续 Step。preload 已声明全部通道，未注册的调用会 reject（标准 Electron 行为）。
+ * emotionResume / abortSession；Step 8 注册 triggerRedline / calculateResult；
+ * Step 9a 注册 getSession / listSessions（纯读路径）。
  */
 export function registerAssessmentHandlers(getDb: () => DBAdapter = defaultGetDb): void {
   let codesSeeded = false
@@ -1589,5 +1874,13 @@ export function registerAssessmentHandlers(getDb: () => DBAdapter = defaultGetDb
 
   ipcMain.handle('assessment:calculateResult', (_e, params: CalculateResultParams) => {
     return calculateResult(ensureSeeded(), params)
+  })
+
+  ipcMain.handle('assessment:getSession', (_e, params: GetSessionParams) => {
+    return getSession(ensureSeeded(), params)
+  })
+
+  ipcMain.handle('assessment:listSessions', (_e, params: ListSessionsParams) => {
+    return listSessions(ensureSeeded(), params)
   })
 }
