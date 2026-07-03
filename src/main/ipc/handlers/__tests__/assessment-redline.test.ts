@@ -146,7 +146,19 @@ interface SetupResult {
   questions: SessionQuestionView[]
 }
 
-function setupSession(opts: { student?: string; strategyIdOverride?: string } = {}): SetupResult {
+function setupSession(opts: {
+  student?: string
+  strategyIdOverride?: string
+  contentByType?: Partial<Record<'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG', Record<string, unknown>>>
+} = {}): SetupResult {
+  if (opts.contentByType) {
+    for (const [type, content] of Object.entries(opts.contentByType)) {
+      db.prepare('UPDATE question_bank SET content_json = ? WHERE question_type = ?').run(
+        JSON.stringify(content),
+        type
+      )
+    }
+  }
   const useStrategyId = opts.strategyIdOverride ?? strategyId
   const result = createSession(db, {
     callerUserId: callerId,
@@ -223,17 +235,20 @@ function sessionRow(sessionId: string): {
 function resultRecord(sessionId: string):
   | {
       result_id: string
+      raw_score: number | null
+      max_score: number | null
       level_result: string
       safety_overridden: number
       redline_incident_id: string
       normalized_score: number
+      completion_ratio: number | null
       is_current: number
     }
   | undefined {
   return db
     .prepare(
-      `SELECT result_id, level_result, safety_overridden, redline_incident_id,
-              normalized_score, is_current
+      `SELECT result_id, raw_score, max_score, level_result, safety_overridden, redline_incident_id,
+              normalized_score, completion_ratio, is_current
          FROM result_record
         WHERE source_aggregate_type = 'ASSESSMENT_SESSION'
           AND source_aggregate_id = ?
@@ -242,13 +257,59 @@ function resultRecord(sessionId: string):
     .get(sessionId) as
     | {
         result_id: string
+        raw_score: number | null
+        max_score: number | null
         level_result: string
         safety_overridden: number
         redline_incident_id: string
         normalized_score: number
+        completion_ratio: number | null
         is_current: number
       }
     | undefined
+}
+
+function seedOfflineScore(
+  sessionId: string,
+  scope: 'OFFLINE_ABILITY' | 'TASK_OPERATION',
+  score: 0 | 1 | 2
+): void {
+  const event = db
+    .prepare(
+      `SELECT event_id FROM domain_event_projection
+        WHERE aggregate_type = 'ASSESSMENT_SESSION' AND aggregate_id = ?
+        ORDER BY event_sequence
+        LIMIT 1`
+    )
+    .get(sessionId) as { event_id: string }
+
+  const question =
+    scope === 'OFFLINE_ABILITY'
+      ? (db
+          .prepare(
+            `SELECT question_id FROM assessment_session_question
+              WHERE session_id = ? AND question_phase = 'OFFLINE'
+              ORDER BY question_order
+              LIMIT 1`
+          )
+          .get(sessionId) as { question_id: string })
+      : null
+
+  db.prepare(
+    `INSERT INTO offline_score_record
+       (offline_score_id, session_id, question_id, score_scope, task_operation_code,
+        score, scoring_rubric_json, scored_by, scored_event_id, status)
+     VALUES (?, ?, ?, ?, ?, ?, '{}', ?, ?, 'VALID')`
+  ).run(
+    uuidv4(),
+    sessionId,
+    question?.question_id ?? null,
+    scope,
+    scope === 'TASK_OPERATION' ? 'unbox_check' : null,
+    score,
+    callerId,
+    event.event_id
+  )
 }
 
 function incidentExists(incidentId: string): boolean {
@@ -279,6 +340,7 @@ afterAll(() => {
 })
 
 beforeEach(() => {
+  db.exec('DELETE FROM offline_score_record')
   db.exec('DELETE FROM answer_record')
   db.exec('DELETE FROM assessment_session_question')
   db.exec('DELETE FROM safety_incident_binding')
@@ -385,14 +447,12 @@ describe('assessment:triggerRedline 正常路径', () => {
 
 describe('assessment:triggerRedline result_payload_json 落盘 + 重放幂等', () => {
   it('result_record.result_payload_json 非空 + 含 AbilityScorePayload 结构', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({
+      contentByType: { TRUE_FALSE: { question_type: 'TRUE_FALSE', expected_answer: true } }
+    })
 
     // 给一道 ONLINE 题填真实 content_json + 答对（让 moduleScores 非空）
     const q = questions[0]
-    db.prepare('UPDATE question_bank SET content_json = ? WHERE question_id = ?').run(
-      JSON.stringify({ question_type: 'TRUE_FALSE', expected_answer: true }),
-      q.questionId
-    )
     const ans = submitAnswerForTest(sessionId, q.questionId)
     expect(ans.success).toBe(true)
 
@@ -421,15 +481,13 @@ describe('assessment:triggerRedline result_payload_json 落盘 + 重放幂等', 
     expect(payload.module_scores!.length).toBeGreaterThan(0)
   })
 
-  it('question_count=session.online_question_count（42），answered_count=实际答题数（P1.2 修复）', () => {
-    const { sessionId, questions } = setupSession()
+  it('question_count=50，answered_count=实际答题数，completion_ratio 按全卷计算', () => {
+    const { sessionId, questions } = setupSession({
+      contentByType: { TRUE_FALSE: { question_type: 'TRUE_FALSE', expected_answer: true } }
+    })
     // 答 3 道题（不同模块最好，但 seedQuestionBank 每模块都有 3 题型 × 5 题）
     const answered: SessionQuestionView[] = questions.slice(0, 3)
     for (const q of answered) {
-      db.prepare('UPDATE question_bank SET content_json = ? WHERE question_id = ?').run(
-        JSON.stringify({ question_type: q.questionType, expected_answer: true } as Record<string, unknown>),
-        q.questionId
-      )
       // SINGLE_CHOICE 需要 options；用 TRUE_FALSE 题更简单
       if (q.questionType === 'TRUE_FALSE') {
         const r = submitAnswerForTest(sessionId, q.questionId)
@@ -443,20 +501,81 @@ describe('assessment:triggerRedline result_payload_json 落盘 + 重放幂等', 
     const row = db
       .prepare('SELECT result_payload_json FROM result_record WHERE source_aggregate_id = ?')
       .get(sessionId) as { result_payload_json: string }
-    const payload = JSON.parse(row.result_payload_json) as { question_count: number; answered_count: number }
+    const payload = JSON.parse(row.result_payload_json) as {
+      question_count: number
+      answered_count: number
+      completion_ratio: number
+    }
 
-    expect(payload.question_count).toBe(42) // session.online_question_count
+    expect(payload.question_count).toBe(50)
     expect(payload.answered_count).toBeGreaterThanOrEqual(0) // 取决于 TRUE_FALSE 命中数
+    expect(payload.completion_ratio).toBe(payload.answered_count / 50)
     expect(payload.question_count).not.toBe(payload.answered_count) // 语义分离
   })
 
+  it('红线发生时已有 OFFLINE_ABILITY 评分：offline_raw_score/raw_score/normalized_score/completion_ratio 计入该题', () => {
+    const { sessionId } = setupSession()
+    seedOfflineScore(sessionId, 'OFFLINE_ABILITY', 2)
+
+    const result = triggerRedline(db, redlineParams(sessionId))
+    expect(result.success).toBe(true)
+
+    const rr = resultRecord(sessionId)
+    expect(rr).toBeDefined()
+    expect(rr!.raw_score).toBe(2)
+    expect(rr!.max_score).toBe(100)
+    expect(rr!.normalized_score).toBe(2)
+    expect(rr!.completion_ratio).toBe(1 / 50)
+
+    const event = db
+      .prepare(
+        `SELECT payload_json FROM domain_event_projection
+          WHERE aggregate_id = ? AND event_type = 'RESULT_CALCULATED'`
+      )
+      .get(sessionId) as { payload_json: string }
+    const eventPayload = JSON.parse(event.payload_json) as {
+      raw_score: number
+      normalized_score: number
+      breakdown: { offline_raw_score: number; answered_count: number; completion_ratio: number }
+    }
+    expect(eventPayload.raw_score).toBe(2)
+    expect(eventPayload.normalized_score).toBe(2)
+    expect(eventPayload.breakdown.offline_raw_score).toBe(2)
+    expect(eventPayload.breakdown.answered_count).toBe(1)
+    expect(eventPayload.breakdown.completion_ratio).toBe(1 / 50)
+  })
+
+  it('TASK_OPERATION 评分不影响红线 ABILITY_SCORE 的 offline_raw_score 和 completion_ratio', () => {
+    const { sessionId } = setupSession()
+    seedOfflineScore(sessionId, 'TASK_OPERATION', 2)
+
+    const result = triggerRedline(db, redlineParams(sessionId))
+    expect(result.success).toBe(true)
+
+    const rr = resultRecord(sessionId)
+    expect(rr).toBeDefined()
+    expect(rr!.raw_score).toBe(0)
+    expect(rr!.normalized_score).toBe(0)
+    expect(rr!.completion_ratio).toBe(0)
+
+    const row = db
+      .prepare('SELECT result_payload_json FROM result_record WHERE source_aggregate_id = ?')
+      .get(sessionId) as { result_payload_json: string }
+    const payload = JSON.parse(row.result_payload_json) as {
+      offline_raw_score: number
+      answered_count: number
+      completion_ratio: number
+    }
+    expect(payload.offline_raw_score).toBe(0)
+    expect(payload.answered_count).toBe(0)
+    expect(payload.completion_ratio).toBe(0)
+  })
+
   it('reducer 重放：删除 result_record 后从事件流重新 apply，result_payload_json 仍正确', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({
+      contentByType: { TRUE_FALSE: { question_type: 'TRUE_FALSE', expected_answer: true } }
+    })
     const q = questions.find((x) => x.questionType === 'TRUE_FALSE')!
-    db.prepare('UPDATE question_bank SET content_json = ? WHERE question_id = ?').run(
-      JSON.stringify({ question_type: 'TRUE_FALSE', expected_answer: true }),
-      q.questionId
-    )
     submitAnswerForTest(sessionId, q.questionId)
     triggerRedline(db, redlineParams(sessionId))
 

@@ -118,6 +118,14 @@ const SAFETY_CONTEXT_PHASES = new Set<string>(SAFETY_CONTEXT_PHASES_SRC.map((p) 
 // 每道 ONLINE 题的最高分（doc §2：TRUE_FALSE/SINGLE_CHOICE/DRAG 均为二值 2/0）。
 // 用于从 answer_record.score 反推题数（max_score = answered * MAX_SCORE_PER_QUESTION）。
 const MAX_SCORE_PER_QUESTION = 2
+const BASE_ABILITY_MODULES: AbilityTag[] = [
+  'FINE_MOTOR',
+  'COGNITION',
+  'RULE_EXECUTION',
+  'EMOTION_REGULATION',
+  'BASIC_SOCIAL',
+  'SAFETY_OPERATION'
+]
 
 /**
  * STUDENT 答题路径的 session.status → 错误码映射。
@@ -1075,18 +1083,12 @@ function computeRedlineModuleScores(
     )
     .all(sessionId) as { module_type: string; raw: number; answered: number }[]
 
-  const scores: ModuleScoreInput[] = []
-  for (const r of rows) {
-    const max = r.answered * MAX_SCORE_PER_QUESTION
-    if (max > 0) {
-      scores.push({
-        module: r.module_type as ModuleScoreInput['module'],
-        raw: r.raw,
-        max
-      })
-    }
-  }
-  return scores
+  const byModule = new Map(rows.map((r) => [r.module_type, r.raw]))
+  return BASE_ABILITY_MODULES.map((module) => ({
+    module,
+    raw: byModule.get(module) ?? 0,
+    max: 7 * MAX_SCORE_PER_QUESTION
+  }))
 }
 
 /**
@@ -1158,13 +1160,17 @@ function persistRedlineResult(
   const resultId = uuidv4()
   const calculatedAt = new Date().toISOString()
 
-  // question_count 从 session 行读（红线可能在中途触发，已答题数 < 总题数）
-  // answered_count 从 answer_record COUNT（VALID 状态）
+  // question_count 从 session 行读（红线可能在中途触发，已答题数 < 总题数）。
+  // completion_ratio 按 50 题总量计算，未答/未评计 0。
   const sessionCounts = db
     .prepare(
-      `SELECT s.online_question_count AS total,
+      `SELECT (s.online_question_count + s.offline_question_count) AS total,
               (SELECT COUNT(*) FROM answer_record ar
-                WHERE ar.session_id = s.session_id AND ar.status = 'VALID') AS answered
+                WHERE ar.session_id = s.session_id AND ar.status = 'VALID')
+              +
+              (SELECT COUNT(*) FROM offline_score_record os
+                WHERE os.session_id = s.session_id AND os.status = 'VALID'
+                  AND os.score_scope = 'OFFLINE_ABILITY') AS answered
          FROM assessment_session s
         WHERE s.session_id = ?`
     )
@@ -1172,10 +1178,23 @@ function persistRedlineResult(
   if (!sessionCounts) {
     throw new Error(`persistRedlineResult: session ${sessionId} missing during count`)
   }
+  const offlineScore = db
+    .prepare(
+      `SELECT COALESCE(SUM(score), 0) AS raw
+         FROM offline_score_record
+        WHERE session_id = ?
+          AND status = 'VALID'
+          AND score_scope = 'OFFLINE_ABILITY'`
+    )
+    .get(sessionId) as { raw: number } | undefined
+  const offlineRawScore = offlineScore?.raw ?? 0
 
   // result_payload_json（AbilityScorePayload）：红线场景下仍记真实模块分快照。
   // 红线场景 judge.moduleVetoTriggeredBy 永远 null（safetyTriggered 优先级最高），
   // module_scores 直接填充。
+  const onlineRawScore = strategyInput.moduleScores.reduce((s, m) => s + m.raw, 0)
+  const rawScore = onlineRawScore + offlineRawScore
+  const normalizedScore = Math.max(0, Math.min(100, rawScore))
   const abilityPayload: AbilityScorePayload = {
     result_type: 'ABILITY_SCORE',
     module_scores: strategyInput.moduleScores.map(
@@ -1186,11 +1205,12 @@ function persistRedlineResult(
         normalized_score: m.max > 0 ? (m.raw / m.max) * 100 : 0
       })
     ),
-    online_raw_score: strategyInput.moduleScores.reduce((s, m) => s + m.raw, 0),
-    // 线下评分未到，OFFLINE_OPERATION 不计入（红线场景学生不可能已答线下题）
-    offline_raw_score: 0,
+    online_raw_score: onlineRawScore,
+    // 仅计入基础能力线下评分；TASK_OPERATION 属 OPERATION_PASS_RATE，不进入 ABILITY_SCORE。
+    offline_raw_score: offlineRawScore,
     question_count: sessionCounts.total,
     answered_count: sessionCounts.answered,
+    completion_ratio: sessionCounts.total > 0 ? sessionCounts.answered / sessionCounts.total : 0,
     emotion_collapse_count: 0,
     module_veto_triggered_by: judge.moduleVetoTriggeredBy,
     level_forced_by: judge.levelForcedBy
@@ -1204,10 +1224,11 @@ function persistRedlineResult(
     student_id: session.student_id,
     job_code: session.job_code,
     task_code: session.task_code,
-    raw_score: abilityPayload.online_raw_score,
-    max_score: abilityPayload.module_scores?.reduce((s, m) => s + m.max_score, 0) ?? null,
-    normalized_score: judge.normalizedScore,
+    raw_score: rawScore,
+    max_score: 100,
+    normalized_score: normalizedScore,
     level_result: judge.levelResult,
+    completion_ratio: abilityPayload.completion_ratio,
     calculated_at: calculatedAt,
     calculated_by: triggeredBy,
     breakdown: abilityPayload
