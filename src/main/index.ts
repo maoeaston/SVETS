@@ -1,8 +1,23 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, protocol } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { initDatabase, closeDatabase } from './db/connection'
+import { registerAppAssetProtocol } from './protocol/app-asset'
 import './ipc'
+
+// 注册 app:// 为 privileged scheme。必须在 app.whenReady() 之前调用，且整个进程只能调一次。
+// 没有这一步，<img src="app://asset/..."> 会被 Chromium 当作不安全协议直接拦截。
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'app',
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      corsEnabled: true
+    }
+  }
+])
 
 // Explicitly set the app name so userData resolves to ~/.config/xc-career-guide/
 // regardless of how Electron is launched. Without this, launching out/main/index.js
@@ -49,6 +64,7 @@ app.whenReady().then(() => {
   })
 
   initDatabase()
+  registerAppAssetProtocol()
   createWindow()
 
   app.on('activate', () => {
