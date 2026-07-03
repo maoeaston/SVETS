@@ -25,6 +25,14 @@ const router = createRouter({
         {
           path: 'students/:id',
           component: () => import('../views/teacher/StudentFormView.vue')
+        },
+        {
+          path: 'assessments',
+          component: () => import('../views/teacher/AssessmentListView.vue')
+        },
+        {
+          path: 'assessments/new',
+          component: () => import('../views/teacher/AssessmentCreateView.vue')
         }
       ]
     },
@@ -64,7 +72,16 @@ const router = createRouter({
     {
       path: '/student',
       component: () => import('../views/student/StudentLayout.vue'),
-      children: []
+      children: [
+        {
+          path: '',
+          component: () => import('../views/student/StudentHomeView.vue')
+        },
+        {
+          path: 'assessment/:sessionId',
+          component: () => import('../views/student/AssessmentView.vue')
+        }
+      ]
     }
   ]
 })

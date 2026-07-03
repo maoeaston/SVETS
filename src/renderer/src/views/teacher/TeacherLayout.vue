@@ -5,6 +5,8 @@
       <nav class="nav">
         <RouterLink to="/teacher/students" class="nav-item">学生列表</RouterLink>
         <RouterLink to="/teacher/students/new" class="nav-item">新建学生</RouterLink>
+        <RouterLink to="/teacher/assessments" class="nav-item">测评列表</RouterLink>
+        <RouterLink to="/teacher/assessments/new" class="nav-item">发起测评</RouterLink>
         <RouterLink v-if="auth.role === 'ADMIN'" to="/admin/strategies" class="nav-item">策略配置</RouterLink>
       </nav>
     </aside>
