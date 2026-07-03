@@ -524,7 +524,8 @@ AssessmentListView（教师）：列出 ACTIVE/EMOTION_INTERRUPTED/OFFLINE_PENDI
 - **学生入口实现**：StudentLayout 从 placeholder 改为带 sidebar + RouterView 外壳；新增 StudentHomeView.vue（默认 `/student` 子路由）调 listMySessions 展示卡片列表，点击进入 AssessmentView。
 - **AssessmentView 题型分支**：TRUE_FALSE / SINGLE_CHOICE 用 radio；DRAG 简化为 select-per-item（MVP 阶段；真正 HTML5 拖拽 UI 后续迭代，计分逻辑 handler 已正确实现）。
 - **AssessmentListView 教师操作**：每行 inline 按钮（恢复/终止/触发红线）；红线触发用内嵌下拉选 reasonCode + contextPhase（一次只展开一行），与 `SAFETY_REASON_CODES` / `SAFETY_CONTEXT_PHASES` schema 枚举同步。
-- **测试规模**：13 单测（startSession 正常/幂等/ANSWER_SUBMITTED 之后不覆盖/FORBIDDEN/NOT_FOUND/SESSION_PAUSED/SESSION_HALTED/SESSION_NOT_ACTIVE/他人 session + listMySessions 4 项）。typecheck + build + 全量回归（353/353）通过。
+- **测试规模**：13 单测（startSession 正常/幂等/ANSWER_SUBMITTED 之后不覆盖/FORBIDDEN/NOT_FOUND/SESSION_PAUSED/SESSION_HALTED/SESSION_NOT_ACTIVE/他人 session + listMySessions 4 项）+ reducer 直接幂等 3 单测（apply 两次 / ANSWER_SUBMITTED 后重放不覆盖 / session 不存在静默 skip）。typecheck + build + 全量回归（356/356）通过。
+- **/vibe-review 修复**：①P1.1 store.startSession/submitAnswer/emotionInterrupt 在 loadSession 失败时仍返回 ok:true → propagate 刷新结果让 view 决策；②P1.2 reducer 缺直接幂等单测（仅通过 handler short-circuit 间接覆盖）→ 补 3 个直接构造 ActionLogEntry 调 applyAssessmentEvent 的单测覆盖冷启动回放场景。P2 共 5 项作为后续小重构。
 - **未验证项**：5.3 题库未交付，端到端真实答题验证推迟。手工冒烟需 5.3 题库就位后补。
 
 ---
