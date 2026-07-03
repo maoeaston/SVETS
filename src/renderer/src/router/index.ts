@@ -86,7 +86,9 @@ const router = createRouter({
   ]
 })
 
-// 全局路由守卫：/teacher 和 /student 前缀下所有路由均需登录
+// 全局路由守卫：登录 + role-prefix 检查。
+// [!] role 检查避免教师误访问学生答题页等场景触发 handler FORBIDDEN（handler 兜底，
+// 但 UX 差——用户看到"无权限"而非"页面不存在"）。
 router.beforeEach((to) => {
   const authStore = useAuthStore()
   const protectedPrefixes = ['/teacher', '/student', '/admin']
@@ -94,6 +96,23 @@ router.beforeEach((to) => {
 
   if (needsAuth && !authStore.isLoggedIn) {
     return { path: '/login' }
+  }
+
+  // role 与前缀匹配：ADMIN 复用 /teacher layout（MVP 决策），故 /teacher 允许 TEACHER + ADMIN
+  if (authStore.isLoggedIn && authStore.role) {
+    const role = authStore.role
+    if (to.path.startsWith('/student') && role !== 'STUDENT') {
+      // role ∈ {TEACHER, ADMIN} → 回 /teacher
+      return { path: '/teacher' }
+    }
+    if (to.path.startsWith('/teacher') && role !== 'TEACHER' && role !== 'ADMIN') {
+      // role === STUDENT → 回 /student
+      return { path: '/student' }
+    }
+    if (to.path.startsWith('/admin') && role !== 'ADMIN') {
+      // role ∈ {STUDENT, TEACHER} → 回 /teacher
+      return { path: '/teacher' }
+    }
   }
 })
 

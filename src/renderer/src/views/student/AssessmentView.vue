@@ -47,6 +47,15 @@
       </button>
     </div>
 
+    <!-- 所有 ONLINE 题已答完，等待教师评分/线下评分阶段 -->
+    <div
+      v-else-if="session.status === 'ACTIVE' && allOnlineAnswered"
+      class="all-answered-state"
+    >
+      <p class="state-msg">已完成所有线上题目</p>
+      <p class="state-hint">请等待教师安排线下评分</p>
+    </div>
+
     <!-- 正常答题（ACTIVE + currentQuestion） -->
     <div v-else-if="session.status === 'ACTIVE' && currentQuestion" class="question-block">
       <div class="question-meta">
@@ -151,6 +160,14 @@ const progressPercent = computed(() => {
   return Math.round(
     (session.value.onlineCompletedCount / session.value.onlineQuestionCount) * 100
   )
+})
+
+/** 所有 ONLINE 题已答完：reducer applyAnswerSubmitted 答完最后一题时 current_question_id
+ *  保持指向最后一题、status 仍 ACTIVE（不自动转 OFFLINE_PENDING）。识别此态显示等待提示，
+ *  避免学生看到已答题目、重新提交得到 ALREADY_ANSWERED 死循环。 */
+const allOnlineAnswered = computed(() => {
+  if (!session.value) return false
+  return session.value.onlineCompletedCount >= session.value.onlineQuestionCount
 })
 
 const canSubmit = computed(() => {

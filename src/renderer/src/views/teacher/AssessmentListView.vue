@@ -94,6 +94,10 @@ import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 import { useAssessmentStore } from '../../stores/assessment'
 import type { SessionListItem, SessionStatus, AssessmentErrorCode } from '@shared/types/assessment'
+import {
+  SAFETY_REASON_CODES as REASON_CODES,
+  SAFETY_CONTEXT_PHASES as CONTEXT_PHASES
+} from '@shared/types/safety'
 
 const auth = useAuthStore()
 const store = useAssessmentStore()
@@ -106,29 +110,6 @@ const actingSessionId = ref<string | null>(null)
 const redlineOpenFor = ref<string | null>(null)
 const redlineReason = ref('')
 const redlinePhase = ref('ONLINE_ASSESSMENT') // 默认线上测评场景
-
-// schema safety_incident.reason_code 枚举（与 src/main/ipc/handlers/assessment.ts:SAFETY_REASON_CODES 同步）
-const REASON_CODES = [
-  { value: 'BLADE_TOWARD_SELF', label: '刀具朝向自己' },
-  { value: 'BLADE_TOWARD_OTHERS', label: '刀具朝向他人' },
-  { value: 'DANGEROUS_CLIMBING', label: '危险攀爬' },
-  { value: 'THROWING_OBJECT', label: '抛掷物品' },
-  { value: 'AGGRESSIVE_BEHAVIOR', label: '攻击性行为' },
-  { value: 'OTHER_SAFETY_RISK', label: '其他安全风险' }
-] as const
-
-// schema safety_incident.context_phase 枚举（与 SAFETY_CONTEXT_PHASES 同步）
-const CONTEXT_PHASES = [
-  { value: 'ONLINE_ASSESSMENT', label: '线上测评' },
-  { value: 'TRAINING_WATCH', label: '训练-观察' },
-  { value: 'TRAINING_LEARN', label: '训练-学习' },
-  { value: 'TRAINING_PRACTICE', label: '训练-练习' },
-  { value: 'TRAINING_DO', label: '训练-实操' },
-  { value: 'OFFLINE_SCORING', label: '线下评分' },
-  { value: 'TOOL_PREPARATION', label: '工具准备' },
-  { value: 'BREAK_OR_TRANSITION', label: '休息/过渡' },
-  { value: 'OTHER', label: '其他' }
-] as const
 
 const items = computed<SessionListItem[]>(() => store.sessionList)
 
