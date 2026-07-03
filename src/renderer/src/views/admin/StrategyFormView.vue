@@ -2,18 +2,44 @@
   <div class="strategy-form">
     <header class="header">
       <div class="title-group">
-        <RouterLink :to="backHref" class="back-link">← 返回</RouterLink>
-        <h2 class="title">{{ modeTitle }}</h2>
+        <RouterLink
+          :to="backHref"
+          class="back-link"
+        >
+          ← 返回
+        </RouterLink>
+        <h2 class="title">
+          {{ modeTitle }}
+        </h2>
       </div>
     </header>
 
-    <p v-if="loadError" class="error-msg" role="alert">{{ loadError }}</p>
-    <p v-if="missingLevelRules" class="warn-msg" role="alert">
+    <p
+      v-if="loadError"
+      class="error-msg"
+      role="alert"
+    >
+      {{ loadError }}
+    </p>
+    <p
+      v-if="missingLevelRules"
+      class="warn-msg"
+      role="alert"
+    >
       该版本 scoring_policy_json 缺 level_rules（历史 seed 遗留），保存前请补全下方「评分等级规则」。
     </p>
-    <p v-if="errorMsg" class="error-msg" role="alert">{{ errorMsg }}</p>
+    <p
+      v-if="errorMsg"
+      class="error-msg"
+      role="alert"
+    >
+      {{ errorMsg }}
+    </p>
 
-    <form v-if="!loadError" @submit.prevent="submit">
+    <form
+      v-if="!loadError"
+      @submit.prevent="submit"
+    >
       <fieldset class="block">
         <legend>基础</legend>
         <div class="grid">
@@ -26,12 +52,18 @@
               maxlength="64"
               :readonly="!isCreate"
               placeholder="如 baseline-assessment-v1"
-            />
-            <small v-if="!isCreate" class="hint">新建族后不可改</small>
+            >
+            <small
+              v-if="!isCreate"
+              class="hint"
+            >新建族后不可改</small>
           </label>
           <label class="field">
             <span>策略类型 <span class="required">*</span></span>
-            <select v-model="form.strategyType" :disabled="!isCreate">
+            <select
+              v-model="form.strategyType"
+              :disabled="!isCreate"
+            >
               <option value="BASELINE_ASSESSMENT">能力测评</option>
               <option value="MOCK_EXAM">模拟考试</option>
               <option value="TRAINING_PRACTICE">训练</option>
@@ -46,21 +78,33 @@
               maxlength="64"
               :readonly="!isCreate"
               placeholder="如 SUPERMARKET_SHELVER"
-            />
+            >
           </label>
           <label class="field">
             <span>策略名 <span class="required">*</span></span>
-            <input v-model="form.strategyName" type="text" required maxlength="100" />
+            <input
+              v-model="form.strategyName"
+              type="text"
+              required
+              maxlength="100"
+            >
           </label>
           <label class="field">
             <span>版本</span>
-            <input :value="`v${form.version}`" type="text" readonly />
+            <input
+              :value="`v${form.version}`"
+              type="text"
+              readonly
+            >
             <small class="hint">{{ versionHint }}</small>
           </label>
           <label class="field field-toggle">
             <span>启用状态</span>
             <label class="toggle">
-              <input v-model="form.isActive" type="checkbox" />
+              <input
+                v-model="form.isActive"
+                type="checkbox"
+              >
               <span>{{ form.isActive ? '启用' : '停用' }}</span>
             </label>
           </label>
@@ -72,15 +116,30 @@
         <div class="grid grid-3">
           <label class="field">
             <span>线上题量 <span class="required">*</span></span>
-            <input v-model.number="form.onlineQuestionCount" type="number" min="0" required />
+            <input
+              v-model.number="form.onlineQuestionCount"
+              type="number"
+              min="0"
+              required
+            >
           </label>
           <label class="field">
             <span>线下题量 <span class="required">*</span></span>
-            <input v-model.number="form.offlineQuestionCount" type="number" min="0" required />
+            <input
+              v-model.number="form.offlineQuestionCount"
+              type="number"
+              min="0"
+              required
+            >
           </label>
           <label class="field">
             <span>满分 <span class="required">*</span></span>
-            <input v-model.number="form.maxScore" type="number" min="1" required />
+            <input
+              v-model.number="form.maxScore"
+              type="number"
+              min="1"
+              required
+            >
           </label>
         </div>
       </fieldset>
@@ -90,19 +149,40 @@
         <div class="grid grid-4">
           <label class="field">
             <span>达标阈值 <span class="required">*</span></span>
-            <input v-model.number="form.competentThreshold" type="number" min="0" required />
+            <input
+              v-model.number="form.competentThreshold"
+              type="number"
+              min="0"
+              required
+            >
           </label>
           <label class="field">
             <span>条件通过阈值 <span class="required">*</span></span>
-            <input v-model.number="form.conditionalThreshold" type="number" min="0" required />
+            <input
+              v-model.number="form.conditionalThreshold"
+              type="number"
+              min="0"
+              required
+            >
           </label>
           <label class="field">
             <span>模块否决阈值</span>
-            <input v-model.number="form.moduleVetoThreshold" type="number" min="0" max="1" step="0.1" />
+            <input
+              v-model.number="form.moduleVetoThreshold"
+              type="number"
+              min="0"
+              max="1"
+              step="0.1"
+            >
           </label>
           <label class="field">
             <span>情绪崩溃阈值</span>
-            <input v-model.number="form.emotionCollapseThreshold" type="number" min="0" step="1" />
+            <input
+              v-model.number="form.emotionCollapseThreshold"
+              type="number"
+              min="0"
+              step="1"
+            >
           </label>
         </div>
         <p class="hint">
@@ -127,19 +207,35 @@
           <div class="grid grid-4">
             <label class="field">
               <span>判断题</span>
-              <input v-model.number="form.questionPolicy.question_ratio.TRUE_FALSE" type="number" min="0" />
+              <input
+                v-model.number="form.questionPolicy.question_ratio.TRUE_FALSE"
+                type="number"
+                min="0"
+              >
             </label>
             <label class="field">
               <span>单选题</span>
-              <input v-model.number="form.questionPolicy.question_ratio.SINGLE_CHOICE" type="number" min="0" />
+              <input
+                v-model.number="form.questionPolicy.question_ratio.SINGLE_CHOICE"
+                type="number"
+                min="0"
+              >
             </label>
             <label class="field">
               <span>拖拽题</span>
-              <input v-model.number="form.questionPolicy.question_ratio.DRAG" type="number" min="0" />
+              <input
+                v-model.number="form.questionPolicy.question_ratio.DRAG"
+                type="number"
+                min="0"
+              >
             </label>
             <label class="field">
               <span>线下操作题</span>
-              <input v-model.number="form.questionPolicy.question_ratio.OFFLINE_OPERATION" type="number" min="0" />
+              <input
+                v-model.number="form.questionPolicy.question_ratio.OFFLINE_OPERATION"
+                type="number"
+                min="0"
+              >
             </label>
           </div>
           <small :class="ratioSumOk ? 'hint' : 'hint hint-warn'">
@@ -149,12 +245,16 @@
         <div class="field">
           <span>必含模块（多选）</span>
           <div class="checkbox-row">
-            <label v-for="tag in ABILITY_TAGS" :key="tag" class="checkbox">
+            <label
+              v-for="tag in ABILITY_TAGS"
+              :key="tag"
+              class="checkbox"
+            >
               <input
                 :checked="form.questionPolicy.required_modules.includes(tag)"
                 type="checkbox"
                 @change="toggleRequiredModule(tag)"
-              />
+              >
               <span>{{ tag }}</span>
             </label>
           </div>
@@ -164,7 +264,7 @@
           <textarea
             v-model="form.questionPolicy.difficulty_distribution_input"
             rows="2"
-            placeholder='{"EASY":0.5,"MEDIUM":0.3,"HARD":0.2}'
+            placeholder="{&quot;EASY&quot;:0.5,&quot;MEDIUM&quot;:0.3,&quot;HARD&quot;:0.2}"
           />
         </label>
       </fieldset>
@@ -174,16 +274,27 @@
         <div class="grid grid-3">
           <div class="field">
             <span>评分值</span>
-            <input value="0 / 1 / 2（固定）" type="text" readonly />
+            <input
+              value="0 / 1 / 2（固定）"
+              type="text"
+              readonly
+            >
           </div>
           <div class="field">
             <span>归一化公式</span>
-            <input value="raw_score/max_score*100" type="text" readonly />
+            <input
+              value="raw_score/max_score*100"
+              type="text"
+              readonly
+            >
           </div>
           <div class="field field-toggle">
             <span>安全覆盖</span>
             <label class="toggle">
-              <input v-model="form.scoringPolicy.safety_override_enabled" type="checkbox" />
+              <input
+                v-model="form.scoringPolicy.safety_override_enabled"
+                type="checkbox"
+              >
               <span>{{ form.scoringPolicy.safety_override_enabled ? '启用' : '关闭' }}</span>
             </label>
           </div>
@@ -191,16 +302,36 @@
         <div class="level-rules">
           <div class="level-rules-header">
             <span class="ratio-label">评分等级规则（level_rules）<span class="required">*</span></span>
-            <button type="button" class="btn-small" @click="addLevelRule">添加等级</button>
+            <button
+              type="button"
+              class="btn-small"
+              @click="addLevelRule"
+            >
+              添加等级
+            </button>
           </div>
-          <div v-for="(rule, idx) in form.scoringPolicy.level_rules" :key="idx" class="level-rule-row">
+          <div
+            v-for="(rule, idx) in form.scoringPolicy.level_rules"
+            :key="idx"
+            class="level-rule-row"
+          >
             <label class="field">
               <span>min</span>
-              <input v-model.number="rule.min" type="number" min="0" :max="form.maxScore" />
+              <input
+                v-model.number="rule.min"
+                type="number"
+                min="0"
+                :max="form.maxScore"
+              >
             </label>
             <label class="field">
               <span>max</span>
-              <input v-model.number="rule.max" type="number" min="0" :max="form.maxScore" />
+              <input
+                v-model.number="rule.max"
+                type="number"
+                min="0"
+                :max="form.maxScore"
+              >
             </label>
             <label class="field">
               <span>等级</span>
@@ -210,7 +341,13 @@
                 <option value="LEVEL_NOT_COMPETENT">未达标</option>
               </select>
             </label>
-            <button type="button" class="btn-small btn-danger-small" @click="removeLevelRule(idx)">删除</button>
+            <button
+              type="button"
+              class="btn-small btn-danger-small"
+              @click="removeLevelRule(idx)"
+            >
+              删除
+            </button>
           </div>
         </div>
       </fieldset>
@@ -221,21 +358,30 @@
           <div class="field field-toggle">
             <span>支持红线中止</span>
             <label class="toggle">
-              <input v-model="form.supportsRedlineHalt" type="checkbox" />
+              <input
+                v-model="form.supportsRedlineHalt"
+                type="checkbox"
+              >
               <span>{{ form.supportsRedlineHalt ? '是' : '否' }}</span>
             </label>
           </div>
           <div class="field field-toggle">
             <span>允许情绪中断</span>
             <label class="toggle">
-              <input v-model="form.allowsEmotionInterrupt" type="checkbox" />
+              <input
+                v-model="form.allowsEmotionInterrupt"
+                type="checkbox"
+              >
               <span>{{ form.allowsEmotionInterrupt ? '是' : '否' }}</span>
             </label>
           </div>
           <div class="field field-toggle">
             <span>需线下评分</span>
             <label class="toggle">
-              <input v-model="form.requiresOfflineScoring" type="checkbox" />
+              <input
+                v-model="form.requiresOfflineScoring"
+                type="checkbox"
+              >
               <span>{{ form.requiresOfflineScoring ? '是' : '否' }}</span>
             </label>
           </div>
@@ -243,10 +389,19 @@
       </fieldset>
 
       <div class="form-actions">
-        <button type="submit" class="btn-primary" :disabled="submitting">
+        <button
+          type="submit"
+          class="btn-primary"
+          :disabled="submitting"
+        >
           {{ submitting ? '保存中…' : submitLabel }}
         </button>
-        <RouterLink :to="backHref" class="btn-cancel">取消</RouterLink>
+        <RouterLink
+          :to="backHref"
+          class="btn-cancel"
+        >
+          取消
+        </RouterLink>
       </div>
     </form>
   </div>

@@ -1,9 +1,16 @@
 <template>
   <div class="student-shell">
     <aside class="sidebar">
-      <div class="brand">职途向导 · 学生端</div>
+      <div class="brand">
+        职途向导 · 学生端
+      </div>
       <nav class="nav">
-        <RouterLink to="/student" class="nav-item">我的测评</RouterLink>
+        <RouterLink
+          to="/student"
+          class="nav-item"
+        >
+          我的测评
+        </RouterLink>
       </nav>
     </aside>
     <div class="main">
@@ -11,7 +18,12 @@
         <div class="topbar-spacer" />
         <div class="user-info">
           <span>{{ auth.displayName ?? '未登录' }}</span>
-          <button class="btn-logout" @click="handleLogout">退出</button>
+          <button
+            class="btn-logout"
+            @click="handleLogout"
+          >
+            退出
+          </button>
         </div>
       </header>
       <section class="content">

@@ -1,15 +1,31 @@
 <template>
   <div class="assessment-list">
     <header class="header">
-      <h2 class="title">进行中的测评</h2>
+      <h2 class="title">
+        进行中的测评
+      </h2>
       <div class="actions">
-        <RouterLink to="/teacher/assessments/new" class="btn-primary">发起测评</RouterLink>
+        <RouterLink
+          to="/teacher/assessments/new"
+          class="btn-primary"
+        >
+          发起测评
+        </RouterLink>
       </div>
     </header>
 
-    <p v-if="errorMsg" class="error-msg" role="alert">{{ errorMsg }}</p>
+    <p
+      v-if="errorMsg"
+      class="error-msg"
+      role="alert"
+    >
+      {{ errorMsg }}
+    </p>
 
-    <table v-if="!loading && items.length > 0" class="table">
+    <table
+      v-if="!loading && items.length > 0"
+      class="table"
+    >
       <thead>
         <tr>
           <th>学生</th>
@@ -17,11 +33,16 @@
           <th>状态</th>
           <th>进度</th>
           <th>开始时间</th>
-          <th class="col-action">操作</th>
+          <th class="col-action">
+            操作
+          </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="row in items" :key="row.sessionId">
+        <tr
+          v-for="row in items"
+          :key="row.sessionId"
+        >
           <td>{{ row.studentName }}</td>
           <td>
             <div>{{ formatType(row.strategyType) }}</div>
@@ -31,13 +52,19 @@
             <span :class="['tag', statusTagClass(row.status)]">
               {{ formatStatus(row.status) }}
             </span>
-            <div v-if="row.redlineIncidentId" class="muted">
+            <div
+              v-if="row.redlineIncidentId"
+              class="muted"
+            >
               红线：{{ row.redlineIncidentId.slice(0, 8) }}
             </div>
           </td>
           <td>
             {{ row.onlineCompletedCount }} / {{ row.onlineQuestionCount }}
-            <span v-if="row.pauseCount > 0" class="muted">（中断 {{ row.pauseCount }} 次）</span>
+            <span
+              v-if="row.pauseCount > 0"
+              class="muted"
+            >（中断 {{ row.pauseCount }} 次）</span>
           </td>
           <td>{{ formatTime(row.startedAt ?? row.createdAt) }}</td>
           <td class="col-action">
@@ -47,45 +74,90 @@
               class="btn-inline btn-resume"
               :disabled="actingSessionId === row.sessionId"
               @click="handleResume(row.sessionId)"
-            >恢复</button>
+            >
+              恢复
+            </button>
 
             <!-- 触发红线（小弹层 / 简化为内嵌下拉） -->
             <template v-if="redlineOpenFor === row.sessionId">
-              <select v-model="redlineReason" class="redline-select">
-                <option value="">选择原因…</option>
-                <option v-for="r in REASON_CODES" :key="r.value" :value="r.value">{{ r.label }}</option>
+              <select
+                v-model="redlineReason"
+                class="redline-select"
+              >
+                <option value="">
+                  选择原因…
+                </option>
+                <option
+                  v-for="r in REASON_CODES"
+                  :key="r.value"
+                  :value="r.value"
+                >
+                  {{ r.label }}
+                </option>
               </select>
-              <select v-model="redlinePhase" class="redline-select">
-                <option value="">选择场景…</option>
-                <option v-for="p in CONTEXT_PHASES" :key="p.value" :value="p.value">{{ p.label }}</option>
+              <select
+                v-model="redlinePhase"
+                class="redline-select"
+              >
+                <option value="">
+                  选择场景…
+                </option>
+                <option
+                  v-for="p in CONTEXT_PHASES"
+                  :key="p.value"
+                  :value="p.value"
+                >
+                  {{ p.label }}
+                </option>
               </select>
               <button
                 class="btn-inline btn-redline-confirm"
                 :disabled="!redlineReason || !redlinePhase || actingSessionId === row.sessionId"
                 @click="handleRedline(row.sessionId)"
-              >确认红线</button>
-              <button class="btn-inline" @click="closeRedline">取消</button>
+              >
+                确认红线
+              </button>
+              <button
+                class="btn-inline"
+                @click="closeRedline"
+              >
+                取消
+              </button>
             </template>
             <button
               v-else
               class="btn-inline btn-redline"
               :disabled="actingSessionId === row.sessionId"
               @click="openRedline(row.sessionId)"
-            >触发红线</button>
+            >
+              触发红线
+            </button>
 
             <!-- 终止 -->
             <button
               class="btn-inline btn-abort"
               :disabled="actingSessionId === row.sessionId"
               @click="handleAbort(row.sessionId, row.studentName)"
-            >终止</button>
+            >
+              终止
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <p v-else-if="loading" class="loading">加载中…</p>
-    <p v-else class="empty">暂无进行中的测评</p>
+    <p
+      v-else-if="loading"
+      class="loading"
+    >
+      加载中…
+    </p>
+    <p
+      v-else
+      class="empty"
+    >
+      暂无进行中的测评
+    </p>
   </div>
 </template>
 

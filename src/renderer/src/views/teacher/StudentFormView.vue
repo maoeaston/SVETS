@@ -1,31 +1,76 @@
 <template>
   <div class="student-form">
     <header class="header">
-      <h2 class="title">{{ isEdit ? '编辑学生档案' : '新建学生档案' }}</h2>
-      <RouterLink to="/teacher/students" class="back-link">← 返回列表</RouterLink>
+      <h2 class="title">
+        {{ isEdit ? '编辑学生档案' : '新建学生档案' }}
+      </h2>
+      <RouterLink
+        to="/teacher/students"
+        class="back-link"
+      >
+        ← 返回列表
+      </RouterLink>
     </header>
 
-    <p v-if="loadError" class="error-msg" role="alert">{{ loadError }}</p>
-    <p v-if="errorMsg" class="error-msg" role="alert">{{ errorMsg }}</p>
+    <p
+      v-if="loadError"
+      class="error-msg"
+      role="alert"
+    >
+      {{ loadError }}
+    </p>
+    <p
+      v-if="errorMsg"
+      class="error-msg"
+      role="alert"
+    >
+      {{ errorMsg }}
+    </p>
 
-    <form v-if="!loadError" @submit.prevent="submit">
-      <fieldset v-if="!isEdit" class="block">
+    <form
+      v-if="!loadError"
+      @submit.prevent="submit"
+    >
+      <fieldset
+        v-if="!isEdit"
+        class="block"
+      >
         <legend>登录账号</legend>
         <div class="grid">
           <label class="field">
             <span>用户名 <span class="required">*</span></span>
-            <input v-model="form.username" type="text" required maxlength="32" />
+            <input
+              v-model="form.username"
+              type="text"
+              required
+              maxlength="32"
+            >
           </label>
           <label class="field">
             <span>初始密码 <span class="required">*</span></span>
-            <input v-model="form.password" type="password" required minlength="6" />
+            <input
+              v-model="form.password"
+              type="password"
+              required
+              minlength="6"
+            >
           </label>
           <label class="field">
             <span>确认密码 <span class="required">*</span></span>
-            <input v-model="form.confirmPassword" type="password" required minlength="6" />
+            <input
+              v-model="form.confirmPassword"
+              type="password"
+              required
+              minlength="6"
+            >
           </label>
         </div>
-        <p v-if="isEdit" class="hint">编辑模式下用户名 / 密码不可修改</p>
+        <p
+          v-if="isEdit"
+          class="hint"
+        >
+          编辑模式下用户名 / 密码不可修改
+        </p>
       </fieldset>
 
       <fieldset class="block">
@@ -33,7 +78,12 @@
         <div class="grid">
           <label class="field">
             <span>姓名 <span class="required">*</span></span>
-            <input v-model="form.studentName" type="text" required maxlength="50" />
+            <input
+              v-model="form.studentName"
+              type="text"
+              required
+              maxlength="50"
+            >
           </label>
           <label class="field">
             <span>性别</span>
@@ -47,11 +97,18 @@
           </label>
           <label class="field">
             <span>出生日期</span>
-            <input v-model="form.birthDate" type="date" />
+            <input
+              v-model="form.birthDate"
+              type="date"
+            >
           </label>
           <label class="field">
             <span>监护人联系方式</span>
-            <input v-model="form.guardianContact" type="text" maxlength="32" />
+            <input
+              v-model="form.guardianContact"
+              type="text"
+              maxlength="32"
+            >
           </label>
         </div>
       </fieldset>
@@ -98,16 +155,28 @@
         </div>
         <label class="field field-full">
           <span>回避标签（逗号分隔，如：NOISY_SUPERMARKET, BRIGHT_LIGHT）</span>
-          <input v-model="form.sp.avoidTagsInput" type="text" placeholder="NOISY_SUPERMARKET, BRIGHT_LIGHT" />
+          <input
+            v-model="form.sp.avoidTagsInput"
+            type="text"
+            placeholder="NOISY_SUPERMARKET, BRIGHT_LIGHT"
+          >
         </label>
         <label class="field field-full">
           <span>备注</span>
-          <textarea v-model="form.sp.notes" rows="3" maxlength="500" />
+          <textarea
+            v-model="form.sp.notes"
+            rows="3"
+            maxlength="500"
+          />
         </label>
       </fieldset>
 
       <div class="form-actions">
-        <button type="submit" class="btn-primary" :disabled="submitting">
+        <button
+          type="submit"
+          class="btn-primary"
+          :disabled="submitting"
+        >
           {{ submitting ? '保存中…' : isEdit ? '保存修改' : '创建档案' }}
         </button>
         <button
@@ -116,7 +185,9 @@
           class="btn-danger"
           :disabled="submitting"
           @click="handleArchive"
-        >归档学生</button>
+        >
+          归档学生
+        </button>
       </div>
     </form>
   </div>

@@ -1,11 +1,24 @@
 <template>
   <div class="assessment-create">
     <header class="header">
-      <h2 class="title">发起测评</h2>
-      <RouterLink to="/teacher/assessments" class="back-link">← 返回列表</RouterLink>
+      <h2 class="title">
+        发起测评
+      </h2>
+      <RouterLink
+        to="/teacher/assessments"
+        class="back-link"
+      >
+        ← 返回列表
+      </RouterLink>
     </header>
 
-    <p v-if="errorMsg" class="error-msg" role="alert">{{ errorMsg }}</p>
+    <p
+      v-if="errorMsg"
+      class="error-msg"
+      role="alert"
+    >
+      {{ errorMsg }}
+    </p>
 
     <form @submit.prevent="submit">
       <!-- 学生选择 -->
@@ -18,11 +31,14 @@
               v-model="searchInput"
               type="text"
               placeholder="按姓名搜索"
-            />
+            >
           </label>
           <label class="field">
             <span>选择学生 <span class="required">*</span></span>
-            <select v-model="form.studentId" required>
+            <select
+              v-model="form.studentId"
+              required
+            >
               <option value="">— 请选择 —</option>
               <option
                 v-for="s in studentOptions"
@@ -32,7 +48,12 @@
             </select>
           </label>
         </div>
-        <p v-if="studentOptions.length === 0 && searchInput" class="hint">无匹配学生</p>
+        <p
+          v-if="studentOptions.length === 0 && searchInput"
+          class="hint"
+        >
+          无匹配学生
+        </p>
       </fieldset>
 
       <!-- 策略 + 版本 -->
@@ -41,7 +62,11 @@
         <div class="grid">
           <label class="field">
             <span>策略 <span class="required">*</span></span>
-            <select v-model="form.strategyId" required @change="onStrategyChange">
+            <select
+              v-model="form.strategyId"
+              required
+              @change="onStrategyChange"
+            >
               <option value="">— 请选择 —</option>
               <option
                 v-for="s in strategyOptions"
@@ -52,7 +77,10 @@
           </label>
           <label class="field">
             <span>版本 <span class="required">*</span></span>
-            <select v-model.number="form.strategyVersion" required>
+            <select
+              v-model.number="form.strategyVersion"
+              required
+            >
               <option :value="0">— 请选择 —</option>
               <option
                 v-for="v in versionOptions"
@@ -70,23 +98,45 @@
         <div class="grid">
           <label class="field">
             <span>岗位</span>
-            <input :value="form.jobCode" type="text" readonly />
+            <input
+              :value="form.jobCode"
+              type="text"
+              readonly
+            >
           </label>
           <label class="field">
             <span>任务</span>
-            <input :value="form.taskCode" type="text" readonly />
+            <input
+              :value="form.taskCode"
+              type="text"
+              readonly
+            >
           </label>
         </div>
-        <p class="hint">MVP 范围：单一岗位（超市理货员）+ 单一任务（拆箱与上架），暂不支持选择</p>
+        <p class="hint">
+          MVP 范围：单一岗位（超市理货员）+ 单一任务（拆箱与上架），暂不支持选择
+        </p>
       </fieldset>
 
-      <div v-if="createdSessionId" class="success-box">
+      <div
+        v-if="createdSessionId"
+        class="success-box"
+      >
         测评创建成功！sessionId：<code>{{ createdSessionId }}</code>
-        <RouterLink :to="`/teacher/assessments`" class="link">前往列表查看</RouterLink>
+        <RouterLink
+          :to="`/teacher/assessments`"
+          class="link"
+        >
+          前往列表查看
+        </RouterLink>
       </div>
 
       <div class="form-actions">
-        <button type="submit" class="btn-primary" :disabled="submitting">
+        <button
+          type="submit"
+          class="btn-primary"
+          :disabled="submitting"
+        >
           {{ submitting ? '创建中…' : '发起测评' }}
         </button>
       </div>
@@ -95,14 +145,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, reactive, watch, onMounted } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 import { useAssessmentStore } from '../../stores/assessment'
 import type { StudentSummary } from '@shared/types/student'
 import type { StrategySummary, StrategyType, StrategyVersionSummary } from '@shared/types/strategy'
 
-const router = useRouter()
 const auth = useAuthStore()
 const store = useAssessmentStore()
 

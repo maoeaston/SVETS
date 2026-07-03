@@ -1,11 +1,22 @@
 <template>
   <div class="login-page">
     <div class="login-card">
-      <h1 class="login-title">职途向导系统</h1>
-      <form class="login-form" @submit.prevent="handleLogin">
+      <h1 class="login-title">
+        职途向导系统
+      </h1>
+      <form
+        class="login-form"
+        @submit.prevent="handleLogin"
+      >
         <div class="field">
           <label for="username">用户名</label>
-          <input id="username" v-model="form.username" type="text" autocomplete="username" required />
+          <input
+            id="username"
+            v-model="form.username"
+            type="text"
+            autocomplete="username"
+            required
+          >
         </div>
         <div class="field">
           <label for="password">密码</label>
@@ -15,12 +26,22 @@
             type="password"
             autocomplete="current-password"
             required
-          />
+          >
         </div>
-        <button type="submit" class="btn-primary" :disabled="loading">
+        <button
+          type="submit"
+          class="btn-primary"
+          :disabled="loading"
+        >
           {{ loading ? '登录中…' : '登录' }}
         </button>
-        <p v-if="error" class="error-msg" role="alert">{{ error }}</p>
+        <p
+          v-if="error"
+          class="error-msg"
+          role="alert"
+        >
+          {{ error }}
+        </p>
       </form>
     </div>
   </div>

@@ -1,10 +1,15 @@
 <template>
   <div class="student-list">
     <header class="header">
-      <h2 class="title">学生列表</h2>
+      <h2 class="title">
+        学生列表
+      </h2>
       <div class="actions">
         <label class="toggle">
-          <input type="checkbox" v-model="includeArchived" />
+          <input
+            v-model="includeArchived"
+            type="checkbox"
+          >
           <span>包含已归档</span>
         </label>
         <input
@@ -12,28 +17,52 @@
           class="search"
           type="text"
           placeholder="按姓名搜索"
-        />
-        <button class="btn-primary" @click="goCreate">新建学生</button>
+        >
+        <button
+          class="btn-primary"
+          @click="goCreate"
+        >
+          新建学生
+        </button>
       </div>
     </header>
 
-    <p v-if="errorMsg" class="error-msg" role="alert">{{ errorMsg }}</p>
+    <p
+      v-if="errorMsg"
+      class="error-msg"
+      role="alert"
+    >
+      {{ errorMsg }}
+    </p>
 
-    <table v-if="!loading" class="table">
+    <table
+      v-if="!loading"
+      class="table"
+    >
       <thead>
         <tr>
           <th>姓名</th>
           <th>性别</th>
           <th>状态</th>
           <th>创建时间</th>
-          <th class="col-action">操作</th>
+          <th class="col-action">
+            操作
+          </th>
         </tr>
       </thead>
       <tbody>
         <tr v-if="items.length === 0">
-          <td colspan="5" class="empty">暂无学生</td>
+          <td
+            colspan="5"
+            class="empty"
+          >
+            暂无学生
+          </td>
         </tr>
-        <tr v-for="row in items" :key="row.studentId">
+        <tr
+          v-for="row in items"
+          :key="row.studentId"
+        >
           <td>{{ row.studentName }}</td>
           <td>{{ formatGender(row.gender) }}</td>
           <td>
@@ -43,21 +72,42 @@
           </td>
           <td>{{ formatTime(row.createdAt) }}</td>
           <td class="col-action">
-            <RouterLink :to="`/teacher/students/${row.studentId}`" class="link">查看 / 编辑</RouterLink>
+            <RouterLink
+              :to="`/teacher/students/${row.studentId}`"
+              class="link"
+            >
+              查看 / 编辑
+            </RouterLink>
           </td>
         </tr>
       </tbody>
     </table>
-    <p v-else class="loading">加载中…</p>
+    <p
+      v-else
+      class="loading"
+    >
+      加载中…
+    </p>
 
-    <footer v-if="!loading && items.length > 0" class="pagination">
-      <button class="btn-page" :disabled="page <= 1" @click="goPage(page - 1)">上一页</button>
+    <footer
+      v-if="!loading && items.length > 0"
+      class="pagination"
+    >
+      <button
+        class="btn-page"
+        :disabled="page <= 1"
+        @click="goPage(page - 1)"
+      >
+        上一页
+      </button>
       <span class="page-indicator">第 {{ page }} 页</span>
       <button
         class="btn-page"
         :disabled="items.length < 20"
         @click="goPage(page + 1)"
-      >下一页</button>
+      >
+        下一页
+      </button>
     </footer>
   </div>
 </template>

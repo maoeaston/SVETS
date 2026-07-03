@@ -1,18 +1,37 @@
 <template>
   <div class="student-home">
     <header class="header">
-      <h2 class="title">我的测评</h2>
+      <h2 class="title">
+        我的测评
+      </h2>
     </header>
 
-    <p v-if="errorMsg" class="error-msg" role="alert">{{ errorMsg }}</p>
+    <p
+      v-if="errorMsg"
+      class="error-msg"
+      role="alert"
+    >
+      {{ errorMsg }}
+    </p>
 
-    <div v-if="loading" class="loading">加载中…</div>
+    <div
+      v-if="loading"
+      class="loading"
+    >
+      加载中…
+    </div>
 
-    <div v-else-if="items.length === 0" class="empty">
+    <div
+      v-else-if="items.length === 0"
+      class="empty"
+    >
       暂无可继续的测评。请联系教师发起。
     </div>
 
-    <div v-else class="session-cards">
+    <div
+      v-else
+      class="session-cards"
+    >
       <div
         v-for="row in items"
         :key="row.sessionId"
@@ -32,7 +51,10 @@
             <span class="card-label">进度</span>
             <span>{{ row.onlineCompletedCount }} / {{ row.onlineQuestionCount }}</span>
           </div>
-          <div v-if="row.pauseCount > 0" class="card-row">
+          <div
+            v-if="row.pauseCount > 0"
+            class="card-row"
+          >
             <span class="card-label">中断次数</span>
             <span>{{ row.pauseCount }}</span>
           </div>
@@ -42,8 +64,13 @@
             v-if="canContinue(row.status)"
             class="btn-primary"
             @click="goContinue(row.sessionId)"
-          >{{ row.status === 'EMOTION_INTERRUPTED' ? '等待教师恢复' : '继续答题' }}</button>
-          <span v-else class="muted">当前状态不可继续</span>
+          >
+            {{ row.status === 'EMOTION_INTERRUPTED' ? '等待教师恢复' : '继续答题' }}
+          </button>
+          <span
+            v-else
+            class="muted"
+          >当前状态不可继续</span>
         </div>
       </div>
     </div>

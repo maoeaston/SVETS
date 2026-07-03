@@ -49,8 +49,8 @@ if (process.contextIsolated) {
     console.error('[Preload]', error)
   }
 } else {
-  // @ts-ignore — 仅开发环境 contextIsolation 关闭时走这里
+  // @ts-expect-error — 仅开发环境 contextIsolation 关闭时走这里
   window.electron = electronAPI
-  // @ts-ignore
+  // @ts-expect-error — 同上，window.api 全局挂载仅用于 dev contextIsolation 关闭场景
   window.api = api
 }

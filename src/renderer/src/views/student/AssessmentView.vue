@@ -1,8 +1,13 @@
 <template>
   <div class="assessment-view">
     <header class="header">
-      <h2 class="title">测评答题</h2>
-      <div v-if="session" class="progress-wrap">
+      <h2 class="title">
+        测评答题
+      </h2>
+      <div
+        v-if="session"
+        class="progress-wrap"
+      >
         <span class="progress-text">
           进度：{{ session.onlineCompletedCount }} / {{ session.onlineQuestionCount }}
         </span>
@@ -15,34 +20,76 @@
       </div>
     </header>
 
-    <p v-if="store.errorMsg" class="error-msg" role="alert">{{ store.errorMsg }}</p>
+    <p
+      v-if="store.errorMsg"
+      class="error-msg"
+      role="alert"
+    >
+      {{ store.errorMsg }}
+    </p>
 
     <!-- 加载中 -->
-    <p v-if="store.loading && !session" class="loading">加载中…</p>
+    <p
+      v-if="store.loading && !session"
+      class="loading"
+    >
+      加载中…
+    </p>
 
     <!-- 加载失败 / session 不存在 -->
-    <p v-else-if="!session" class="empty">测评不存在或加载失败</p>
+    <p
+      v-else-if="!session"
+      class="empty"
+    >
+      测评不存在或加载失败
+    </p>
 
     <!-- 已终止（红线） -->
-    <div v-else-if="session.status === 'REDLINE_HALTED'" class="halted-state">
-      <p class="state-msg state-halted">⚠ 测评已被安全红线终止</p>
-      <p class="state-hint">请咨询教师了解详情</p>
+    <div
+      v-else-if="session.status === 'REDLINE_HALTED'"
+      class="halted-state"
+    >
+      <p class="state-msg state-halted">
+        ⚠ 测评已被安全红线终止
+      </p>
+      <p class="state-hint">
+        请咨询教师了解详情
+      </p>
     </div>
 
     <!-- 情绪中断中（教师未恢复） -->
-    <div v-else-if="session.status === 'EMOTION_INTERRUPTED'" class="paused-state">
-      <p class="state-msg state-paused">已暂停 — 教师正赶来，请稍等</p>
+    <div
+      v-else-if="session.status === 'EMOTION_INTERRUPTED'"
+      class="paused-state"
+    >
+      <p class="state-msg state-paused">
+        已暂停 — 教师正赶来，请稍等
+      </p>
     </div>
 
     <!-- 已结束（COMPLETED/ABORTED） -->
-    <div v-else-if="session.status === 'COMPLETED' || session.status === 'ABORTED'" class="ended-state">
-      <p class="state-msg state-ended">测评已结束</p>
+    <div
+      v-else-if="session.status === 'COMPLETED' || session.status === 'ABORTED'"
+      class="ended-state"
+    >
+      <p class="state-msg state-ended">
+        测评已结束
+      </p>
     </div>
 
     <!-- 学生从未开始 → 显示"开始答题"按钮 -->
-    <div v-else-if="session.status === 'ACTIVE' && !currentQuestion" class="start-state">
-      <p class="state-msg">点击下方按钮开始答题</p>
-      <button class="btn-primary btn-large" :disabled="starting" @click="handleStart">
+    <div
+      v-else-if="session.status === 'ACTIVE' && !currentQuestion"
+      class="start-state"
+    >
+      <p class="state-msg">
+        点击下方按钮开始答题
+      </p>
+      <button
+        class="btn-primary btn-large"
+        :disabled="starting"
+        @click="handleStart"
+      >
         {{ starting ? '开始中…' : '开始答题' }}
       </button>
     </div>
@@ -52,12 +99,19 @@
       v-else-if="session.status === 'ACTIVE' && allOnlineAnswered"
       class="all-answered-state"
     >
-      <p class="state-msg">已完成所有线上题目</p>
-      <p class="state-hint">请等待教师安排线下评分</p>
+      <p class="state-msg">
+        已完成所有线上题目
+      </p>
+      <p class="state-hint">
+        请等待教师安排线下评分
+      </p>
     </div>
 
     <!-- 正常答题（ACTIVE + currentQuestion） -->
-    <div v-else-if="session.status === 'ACTIVE' && currentQuestion" class="question-block">
+    <div
+      v-else-if="session.status === 'ACTIVE' && currentQuestion"
+      class="question-block"
+    >
       <div class="question-meta">
         <span class="meta-item">第 {{ currentQuestion.questionOrder }} 题</span>
         <span class="meta-item">{{ formatModule(currentQuestion.moduleType) }}</span>
@@ -70,45 +124,71 @@
         :src="'app://asset/' + currentQuestion.mediaAssetId"
         :alt="currentQuestion.mediaBrief ?? '题目主图'"
         class="question-image"
-      />
+      >
 
-      <p class="prompt">{{ currentQuestion.prompt }}</p>
-      <p v-if="currentQuestion.assessmentPoint" class="assessment-point">
+      <p class="prompt">
+        {{ currentQuestion.prompt }}
+      </p>
+      <p
+        v-if="currentQuestion.assessmentPoint"
+        class="assessment-point"
+      >
         考点：{{ currentQuestion.assessmentPoint }}
       </p>
 
       <!-- TRUE_FALSE：是/否单选 -->
-      <div v-if="currentQuestion.questionType === 'TRUE_FALSE'" class="answer-area">
+      <div
+        v-if="currentQuestion.questionType === 'TRUE_FALSE'"
+        class="answer-area"
+      >
         <label class="choice">
-          <input v-model="tfAnswer" type="radio" :value="true" />
+          <input
+            v-model="tfAnswer"
+            type="radio"
+            :value="true"
+          >
           <span>是</span>
         </label>
         <label class="choice">
-          <input v-model="tfAnswer" type="radio" :value="false" />
+          <input
+            v-model="tfAnswer"
+            type="radio"
+            :value="false"
+          >
           <span>否</span>
         </label>
       </div>
 
       <!-- SINGLE_CHOICE：选项单选 -->
-      <div v-else-if="currentQuestion.questionType === 'SINGLE_CHOICE'" class="answer-area">
+      <div
+        v-else-if="currentQuestion.questionType === 'SINGLE_CHOICE'"
+        class="answer-area"
+      >
         <label
           v-for="opt in currentQuestion.options ?? []"
           :key="opt.key"
           class="choice"
         >
-          <input v-model="scAnswer" type="radio" :value="opt.key" />
+          <input
+            v-model="scAnswer"
+            type="radio"
+            :value="opt.key"
+          >
           <img
             v-if="opt.imageAssetId"
             :src="'app://asset/' + opt.imageAssetId"
             :alt="opt.text"
             class="option-image"
-          />
+          >
           <span>{{ opt.key }}. {{ opt.text }}</span>
         </label>
       </div>
 
       <!-- DRAG：简化为 select-per-item（MVP；真正拖拽 UI 后续迭代） -->
-      <div v-else class="answer-area drag-area">
+      <div
+        v-else
+        class="answer-area drag-area"
+      >
         <div
           v-for="item in currentQuestion.dragItems ?? []"
           :key="item.itemId"
@@ -119,15 +199,22 @@
             :src="'app://asset/' + item.imageAssetId"
             :alt="item.label"
             class="drag-image"
-          />
+          >
           <span class="drag-label">{{ item.label }}</span>
-          <select v-model="dragMap[item.itemId]" class="drag-select">
-            <option value="">— 选择放置区 —</option>
+          <select
+            v-model="dragMap[item.itemId]"
+            class="drag-select"
+          >
+            <option value="">
+              — 选择放置区 —
+            </option>
             <option
               v-for="zone in currentQuestion.dropZones ?? []"
               :key="zone.zoneId"
               :value="zone.zoneId"
-            >{{ zone.label }}</option>
+            >
+              {{ zone.label }}
+            </option>
           </select>
         </div>
       </div>
@@ -137,17 +224,26 @@
           class="btn-primary"
           :disabled="!canSubmit || submitting"
           @click="handleSubmit"
-        >{{ submitting ? '提交中…' : '提交答案' }}</button>
+        >
+          {{ submitting ? '提交中…' : '提交答案' }}
+        </button>
         <button
           class="btn-secondary"
           :disabled="interrupting"
           @click="handleInterrupt"
-        >我遇到困难了</button>
+        >
+          我遇到困难了
+        </button>
       </div>
     </div>
 
     <!-- 兜底：状态未识别 -->
-    <p v-else class="empty">测评状态异常（{{ session.status }}）</p>
+    <p
+      v-else
+      class="empty"
+    >
+      测评状态异常（{{ session.status }}）
+    </p>
   </div>
 </template>
 

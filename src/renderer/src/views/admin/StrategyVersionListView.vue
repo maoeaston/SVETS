@@ -2,22 +2,53 @@
   <div class="version-list">
     <header class="header">
       <div class="title-group">
-        <RouterLink to="/admin/strategies" class="back-link">← 返回列表</RouterLink>
-        <h2 class="title">策略族版本</h2>
+        <RouterLink
+          to="/admin/strategies"
+          class="back-link"
+        >
+          ← 返回列表
+        </RouterLink>
+        <h2 class="title">
+          策略族版本
+        </h2>
       </div>
-      <div v-if="familyLoaded" class="family-meta">
+      <div
+        v-if="familyLoaded"
+        class="family-meta"
+      >
         <span class="meta-tag">{{ formatType(familyStrategyType) }}</span>
         <span class="meta-job">{{ familyJobCode }}</span>
       </div>
       <div class="actions">
-        <button v-if="isAdmin" class="btn-primary" @click="goNewVersion">新增版本</button>
+        <button
+          v-if="isAdmin"
+          class="btn-primary"
+          @click="goNewVersion"
+        >
+          新增版本
+        </button>
       </div>
     </header>
 
-    <p v-if="errorMsg" class="error-msg" role="alert">{{ errorMsg }}</p>
-    <p v-if="toggleMsg" class="info-msg" role="status">{{ toggleMsg }}</p>
+    <p
+      v-if="errorMsg"
+      class="error-msg"
+      role="alert"
+    >
+      {{ errorMsg }}
+    </p>
+    <p
+      v-if="toggleMsg"
+      class="info-msg"
+      role="status"
+    >
+      {{ toggleMsg }}
+    </p>
 
-    <table v-if="!loading" class="table">
+    <table
+      v-if="!loading"
+      class="table"
+    >
       <thead>
         <tr>
           <th>版本</th>
@@ -25,14 +56,24 @@
           <th>状态</th>
           <th>阈值</th>
           <th>更新时间</th>
-          <th class="col-action">操作</th>
+          <th class="col-action">
+            操作
+          </th>
         </tr>
       </thead>
       <tbody>
         <tr v-if="items.length === 0">
-          <td colspan="6" class="empty">暂无版本</td>
+          <td
+            colspan="6"
+            class="empty"
+          >
+            暂无版本
+          </td>
         </tr>
-        <tr v-for="row in items" :key="`${row.strategyId}:${row.version}`">
+        <tr
+          v-for="row in items"
+          :key="`${row.strategyId}:${row.version}`"
+        >
           <td>v{{ row.version }}</td>
           <td>{{ row.strategyName }}</td>
           <td>
@@ -47,7 +88,10 @@
           <td>{{ formatTime(row.updatedAt) }}</td>
           <td class="col-action">
             <template v-if="isAdmin">
-              <RouterLink :to="`/admin/strategies/${row.strategyId}/v/${row.version}`" class="link">
+              <RouterLink
+                :to="`/admin/strategies/${row.strategyId}/v/${row.version}`"
+                class="link"
+              >
                 编辑
               </RouterLink>
               <button
@@ -58,12 +102,20 @@
                 {{ row.isActive ? '停用' : '启用' }}
               </button>
             </template>
-            <span v-else class="readonly-hint">只读</span>
+            <span
+              v-else
+              class="readonly-hint"
+            >只读</span>
           </td>
         </tr>
       </tbody>
     </table>
-    <p v-else class="loading">加载中…</p>
+    <p
+      v-else
+      class="loading"
+    >
+      加载中…
+    </p>
   </div>
 </template>
 

@@ -1,11 +1,16 @@
 <template>
   <div class="strategy-list">
     <header class="header">
-      <h2 class="title">策略配置</h2>
+      <h2 class="title">
+        策略配置
+      </h2>
       <div class="actions">
         <label class="field-label">
           类型
-          <select v-model="filterType" class="select">
+          <select
+            v-model="filterType"
+            class="select"
+          >
             <option value="">全部</option>
             <option value="BASELINE_ASSESSMENT">能力测评</option>
             <option value="MOCK_EXAM">模拟考试</option>
@@ -17,20 +22,36 @@
           class="search"
           type="text"
           placeholder="按岗位代码搜索"
-        />
+        >
         <label class="toggle">
-          <input type="checkbox" v-model="includeInactive" />
+          <input
+            v-model="includeInactive"
+            type="checkbox"
+          >
           <span>包含停用</span>
         </label>
-        <button v-if="auth.role === 'ADMIN'" class="btn-primary" @click="goCreate">
+        <button
+          v-if="auth.role === 'ADMIN'"
+          class="btn-primary"
+          @click="goCreate"
+        >
           新建策略
         </button>
       </div>
     </header>
 
-    <p v-if="errorMsg" class="error-msg" role="alert">{{ errorMsg }}</p>
+    <p
+      v-if="errorMsg"
+      class="error-msg"
+      role="alert"
+    >
+      {{ errorMsg }}
+    </p>
 
-    <table v-if="!loading" class="table">
+    <table
+      v-if="!loading"
+      class="table"
+    >
       <thead>
         <tr>
           <th>策略名</th>
@@ -38,33 +59,64 @@
           <th>岗位代码</th>
           <th>最新版本</th>
           <th>启用 / 总版本</th>
-          <th class="col-action">操作</th>
+          <th class="col-action">
+            操作
+          </th>
         </tr>
       </thead>
       <tbody>
         <tr v-if="groups.length === 0">
-          <td colspan="6" class="empty">暂无策略</td>
+          <td
+            colspan="6"
+            class="empty"
+          >
+            暂无策略
+          </td>
         </tr>
-        <tr v-for="g in groups" :key="g.strategyId">
+        <tr
+          v-for="g in groups"
+          :key="g.strategyId"
+        >
           <td>{{ g.strategyName }}</td>
           <td>{{ formatType(g.strategyType) }}</td>
           <td>{{ g.jobCode }}</td>
           <td>v{{ g.latestVersion }}</td>
           <td>{{ g.activeCount }} / {{ g.totalVersions }}</td>
           <td class="col-action">
-            <RouterLink :to="`/admin/strategies/${g.strategyId}`" class="link">
+            <RouterLink
+              :to="`/admin/strategies/${g.strategyId}`"
+              class="link"
+            >
               查看版本
             </RouterLink>
           </td>
         </tr>
       </tbody>
     </table>
-    <p v-else class="loading">加载中…</p>
+    <p
+      v-else
+      class="loading"
+    >
+      加载中…
+    </p>
 
-    <footer v-if="!loading && items.length > 0" class="pagination">
-      <button class="btn-page" :disabled="page <= 1" @click="goPage(page - 1)">上一页</button>
+    <footer
+      v-if="!loading && items.length > 0"
+      class="pagination"
+    >
+      <button
+        class="btn-page"
+        :disabled="page <= 1"
+        @click="goPage(page - 1)"
+      >
+        上一页
+      </button>
       <span class="page-indicator">第 {{ page }} 页</span>
-      <button class="btn-page" :disabled="items.length < 20" @click="goPage(page + 1)">
+      <button
+        class="btn-page"
+        :disabled="items.length < 20"
+        @click="goPage(page + 1)"
+      >
         下一页
       </button>
     </footer>
