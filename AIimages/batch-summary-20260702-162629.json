@@ -1,0 +1,64 @@
+{
+  "source": "/home/maoea/projects/SVETS/doc/features/question-bank-image-batch-pilot-v001.json",
+  "total": 6,
+  "success": 3,
+  "failed": 3,
+  "results": [
+    {
+      "index": 1,
+      "name": "JDG-MS02-standard-shelf-master-v001",
+      "status": "completed",
+      "task_id": "task_01KWGYTSXNQX8W8VJJW1372WDT",
+      "saved_paths": [
+        "/home/maoea/projects/SVETS/AIimages/JDG-MS02-standard-shelf-master-v001.png"
+      ],
+      "urls": [
+        "https://getapib.org/image/9998217019273114-0bfbc712-9a81-4658-a9ef-0713addcb1b3-gpt_image_2_codex_image_c7dfbf9f-9c2d-48aa-a76f-7280849e2c73_0.png"
+      ]
+    },
+    {
+      "index": 2,
+      "name": "JDG-MS02-facing-correct-v001",
+      "status": "completed",
+      "task_id": "task_01KWGYTSXK87V4EX8HE3GVZEHY",
+      "saved_paths": [
+        "/home/maoea/projects/SVETS/AIimages/JDG-MS02-facing-correct-v001.png"
+      ],
+      "urls": [
+        "https://getapib.org/image/9998217019293499-1c537bd7-edbb-4ea9-ade8-e97e01c8563f-gpt_image_2_codex_image_18760396-b3b1-452d-b898-1df91f775818_0.png"
+      ]
+    },
+    {
+      "index": 3,
+      "name": "JDG-MS02-facing-wrong-v001",
+      "status": "failed",
+      "error": "本地参考图不存在: /home/maoea/projects/SVETS/doc/features/AIimages/JDG-MS02-facing-correct-v001.png"
+    },
+    {
+      "index": 4,
+      "name": "JDG-MS04-safety-risk-master-v001",
+      "status": "completed",
+      "task_id": "task_01KWGYTSXKMP6XVT38R7HEST9H",
+      "saved_paths": [
+        "/home/maoea/projects/SVETS/AIimages/JDG-MS04-safety-risk-master-v001.png"
+      ],
+      "urls": [
+        "https://getapib.org/image/9998217019303703-4f040135-431b-4ccf-b3de-fb45d4d7f158-gpt_image_2_codex_image_fea237bb-f6d1-4cd3-8448-8bc011314592_0.png"
+      ]
+    },
+    {
+      "index": 5,
+      "name": "DRG-BG01-shelf-alignment-board-v001",
+      "status": "failed",
+      "error": "下载图片失败: curl: (35) OpenSSL SSL_connect: SSL_ERROR_SYSCALL in connection to getapib.org:443",
+      "error_details": null
+    },
+    {
+      "index": 6,
+      "name": "DRG-OBJ02-goods-facing-pack-v001",
+      "status": "failed",
+      "error": "下载图片失败: curl: (35) OpenSSL SSL_connect: SSL_ERROR_SYSCALL in connection to getapib.org:443",
+      "error_details": null
+    }
+  ]
+}

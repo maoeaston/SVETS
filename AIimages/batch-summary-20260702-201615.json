@@ -1,0 +1,51 @@
+{
+  "source": "/home/maoea/projects/SVETS/doc/features/question-bank-image-batch-drg-obj02-snack-pack-v002.json",
+  "total": 4,
+  "success": 3,
+  "failed": 1,
+  "results": [
+    {
+      "index": 1,
+      "name": "drg-obj02-snack-box-blue-v002-whitebg",
+      "status": "failed",
+      "error": "任务轮询超时: task_01KWHBXH0R8B9BXK4C7CWTEWCS",
+      "error_details": null
+    },
+    {
+      "index": 2,
+      "name": "drg-obj02-snack-box-red-v002-whitebg",
+      "status": "completed",
+      "task_id": "task_01KWHBXH0GNG1HFSNTPBSNFQMZ",
+      "saved_paths": [
+        "/home/maoea/projects/SVETS/AIimages/drg-obj02-snack-box-red-v002-whitebg.png"
+      ],
+      "urls": [
+        "https://getapib.org/tokens/8be390b4-64c6-41e8-8cbb-44823c825f31.png"
+      ]
+    },
+    {
+      "index": 3,
+      "name": "drg-obj02-snack-box-yellow-v002-whitebg",
+      "status": "completed",
+      "task_id": "task_01KWHBZ65PH93Z7F418TAE9V8R",
+      "saved_paths": [
+        "/home/maoea/projects/SVETS/AIimages/drg-obj02-snack-box-yellow-v002-whitebg.png"
+      ],
+      "urls": [
+        "https://getapib.org/image/9998217005482092-52b7b7f4-97c1-4977-85b8-149011d19618-gpt_image_2_codex_image_fdaa1037-1804-4ec7-ae4c-89f6fdb17745_0.png"
+      ]
+    },
+    {
+      "index": 4,
+      "name": "drg-obj02-snack-box-green-v002-whitebg",
+      "status": "completed",
+      "task_id": "task_01KWHC2H99S1Q034ZZDJS8ZAWG",
+      "saved_paths": [
+        "/home/maoea/projects/SVETS/AIimages/drg-obj02-snack-box-green-v002-whitebg.png"
+      ],
+      "urls": [
+        "https://getapib.org/tokens/1c659a50-8f48-48df-86c9-51c454b6a6df.png"
+      ]
+    }
+  ]
+}

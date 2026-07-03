@@ -1,0 +1,20 @@
+{
+  "source": "/home/maoea/projects/SVETS/doc/features/question-bank-image-batch-drg-obj02-pack-overview-v003.json",
+  "total": 1,
+  "success": 1,
+  "failed": 0,
+  "results": [
+    {
+      "index": 1,
+      "name": "DRG-OBJ02-goods-facing-pack-v003",
+      "status": "completed",
+      "task_id": "task_01KWJXY885DGWW16NSRWSTN631",
+      "saved_paths": [
+        "/home/maoea/projects/SVETS/AIimages/DRG-OBJ02-goods-facing-pack-v003.png"
+      ],
+      "urls": [
+        "https://getapib.org/tokens/43e6aa9c-783e-49be-8f2d-fd9f48dd40f5.png"
+      ]
+    }
+  ]
+}

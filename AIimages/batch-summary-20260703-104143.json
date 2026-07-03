@@ -1,0 +1,15 @@
+{
+  "source": "/home/maoea/projects/SVETS/doc/features/question-bank-image-batch-drg-obj02-pack-overview-v002.json",
+  "total": 1,
+  "success": 0,
+  "failed": 1,
+  "results": [
+    {
+      "index": 1,
+      "name": "DRG-OBJ02-goods-facing-pack-v002",
+      "status": "failed",
+      "error": "任务轮询超时: task_01KWJXFB02Q8KQP5SF9MAASS7Y",
+      "error_details": null
+    }
+  ]
+}
