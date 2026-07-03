@@ -32,6 +32,7 @@ import {
 import type { AbilityTag, QuestionPolicyJson } from '../../../shared/types/json-schemas'
 import type {
   SessionStartedPayload,
+  SessionFirstQuestionActivatedPayload,
   AnswerSubmittedPayload,
   EmotionInterruptedPayload,
   EmotionResumedPayload,
@@ -64,6 +65,12 @@ import type {
   SubmitAnswerParams,
   SubmitAnswerResult,
   SubmitAnswerSuccess,
+  StartSessionParams,
+  StartSessionResult,
+  StartSessionSuccess,
+  ListMySessionsParams,
+  ListMySessionsResult,
+  ListMySessionsSuccess,
   EmotionInterruptParams,
   EmotionInterruptResult,
   EmotionResumeParams,
@@ -1825,6 +1832,187 @@ export function listSessions(db: DBAdapter, params: ListSessionsParams): ListSes
   return result
 }
 
+// ============================================================================
+// Step 9b：startSession（STUDENT 推进第一题指针）+ listMySessions（STUDENT 自查列表）
+// ============================================================================
+
+/**
+ * assessment:startSession 核心纯函数（STUDENT）。
+ *
+ * 学生首次进入 session（current_question_id=NULL）点"开始答题"。写
+ * SESSION_FIRST_QUESTION_ACTIVATED 事件 + reducer 推进 current_question_id 到
+ * MIN(question_order) ONLINE 题。
+ *
+ * [!] reducer applySessionStarted 不设 current_question_id（INSERT 省略该列，默认 NULL）。
+ *     仅 applyAnswerSubmitted 推进。本事件填补"学生从未开始"到"答第一题"之间的指针真空，
+ *     让 getSession 在 status=ACTIVE 且学生已开始后能返回 currentQuestion 正文。
+ *
+ * 幂等：current_question_id 已非 NULL（无论被谁设——本事件重放或学生已答过题）→
+ *   读现有指针的 question_order，直接返回成功（不写事件）。
+ *
+ * 失败码：
+ * - FORBIDDEN：非 STUDENT / 账号非 ACTIVE / session 不属于 caller
+ * - NOT_FOUND：session 不存在
+ * - SESSION_NOT_ACTIVE / SESSION_PAUSED / SESSION_HALTED：status 非 ACTIVE
+ * - ASSESSMENT_SYSTEM_ERROR：事务异常（写审计）
+ */
+export function startSession(db: DBAdapter, params: StartSessionParams): StartSessionResult {
+  // 1. STUDENT 身份校验
+  const caller = assertStudent(db, params.callerUserId, params.callerRole)
+  if (!caller.ok) {
+    return { success: false, errorCode: 'FORBIDDEN' }
+  }
+
+  // 2. session 所有权（NOT_FOUND / FORBIDDEN）
+  const owner = assertSessionOwner(db, caller.row.user_id, params.sessionId)
+  if (!owner.ok) {
+    return { success: false, errorCode: owner.errorCode }
+  }
+
+  // 3. status 必须 ACTIVE（与 submitAnswer 同映射：EMOTION_INTERRUPTED→PAUSED、
+  //    REDLINE_HALTED→HALTED、其余→NOT_ACTIVE）
+  const statusErr = statusToAnswerErrorCode(owner.sessionRow.status)
+  if (statusErr) {
+    return { success: false, errorCode: statusErr }
+  }
+
+  // 4. 读 current_question_id（SessionRow 类型只含 session_id/student_id/status，
+  //    不带 current_question_id；单独 SELECT）
+  const pointer = db
+    .prepare('SELECT current_question_id FROM assessment_session WHERE session_id = ?')
+    .get(params.sessionId) as { current_question_id: string | null } | undefined
+  if (!pointer) {
+    return { success: false, errorCode: 'NOT_FOUND' }
+  }
+
+  // 5. 幂等：current_question_id 已非 NULL → 直接返回，不写事件
+  if (pointer.current_question_id) {
+    const q = db
+      .prepare(
+        `SELECT question_order FROM assessment_session_question
+          WHERE session_id = ? AND question_id = ?`
+      )
+      .get(params.sessionId, pointer.current_question_id) as
+      | { question_order: number }
+      | undefined
+    const result: StartSessionSuccess = {
+      success: true,
+      firstQuestionId: pointer.current_question_id,
+      firstQuestionOrder: q?.question_order ?? 1
+    }
+    return result
+  }
+
+  // 6. 查 MIN(question_order) ONLINE 题（首次进入时不可能有任何 answer_record，
+  //    不需要 NOT EXISTS 过滤；与 applyAnswerSubmitted 的"下一未答题"查询不同）
+  const first = db
+    .prepare(
+      `SELECT question_id, question_order FROM assessment_session_question
+        WHERE session_id = ? AND question_phase = 'ONLINE'
+        ORDER BY question_order LIMIT 1`
+    )
+    .get(params.sessionId) as { question_id: string; question_order: number } | undefined
+  if (!first) {
+    // 不应发生（session 已有 50 题）；防御性返回 SYSTEM_ERROR
+    logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', params.sessionId, caller.row.user_id, {
+      operation: 'startSession',
+      error: 'no ONLINE question found for session'
+    })
+    return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
+  }
+
+  // 6. 事务：writeEvent(SESSION_FIRST_QUESTION_ACTIVATED) + applyAssessmentEvent
+  const payload: SessionFirstQuestionActivatedPayload = {
+    session_id: params.sessionId,
+    first_question_id: first.question_id,
+    first_question_order: first.question_order,
+    activated_at: new Date().toISOString()
+  }
+  try {
+    const tx = db.transaction(() => {
+      const event = writeEvent({
+        aggregateType: 'ASSESSMENT_SESSION',
+        aggregateId: params.sessionId,
+        eventType: 'SESSION_FIRST_QUESTION_ACTIVATED',
+        payload: payload as unknown as Record<string, unknown>,
+        actorId: caller.row.user_id,
+        actorRole: 'STUDENT'
+      })
+      applyAssessmentEvent(db, event)
+    })
+    tx()
+  } catch (err) {
+    logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', params.sessionId, caller.row.user_id, {
+      operation: 'startSession',
+      error: String(err)
+    })
+    return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
+  }
+
+  const result: StartSessionSuccess = {
+    success: true,
+    firstQuestionId: first.question_id,
+    firstQuestionOrder: first.question_order
+  }
+  return result
+}
+
+/**
+ * assessment:listMySessions 核心纯函数（STUDENT）。
+ *
+ * 学生自查非终态 session 列表（OPEN_SESSION_STATUSES 全集）。
+ * 复用 listSessions 的 SELECT + 行映射；仅 WHERE 改为 student_id = caller.userId
+ * （assertStudent 已校验 caller.userId 是 STUDENT 账号的 user_id，与 student_id 同值）。
+ *
+ * 失败码：FORBIDDEN（非 STUDENT）
+ */
+export function listMySessions(db: DBAdapter, params: ListMySessionsParams): ListMySessionsResult {
+  const stu = assertStudent(db, params.callerUserId, params.callerRole)
+  if (!stu.ok) {
+    return { success: false, errorCode: 'FORBIDDEN' }
+  }
+
+  const placeholders = OPEN_SESSION_STATUSES.map(() => '?').join(', ')
+  const rows = db
+    .prepare(
+      `SELECT s.session_id, s.student_id, sp.student_name,
+              s.strategy_id, s.strategy_type, s.strategy_version,
+              s.job_code, s.task_code, s.status,
+              s.online_question_count, s.online_completed_count,
+              s.current_question_id, s.pause_count,
+              s.redline_incident_id, s.last_interruption_reason,
+              s.updated_at AS created_at, s.started_at
+         FROM assessment_session s
+         JOIN student_profile sp ON sp.student_id = s.student_id
+        WHERE s.student_id = ? AND s.status IN (${placeholders})
+        ORDER BY s.updated_at DESC`
+    )
+    .all(stu.row.user_id, ...OPEN_SESSION_STATUSES) as SessionListJoinRow[]
+
+  const items: SessionListItem[] = rows.map((r) => ({
+    sessionId: r.session_id,
+    studentId: r.student_id,
+    studentName: r.student_name,
+    strategyId: r.strategy_id,
+    strategyType: r.strategy_type as AssessmentStrategyType,
+    strategyVersion: r.strategy_version,
+    jobCode: r.job_code,
+    taskCode: r.task_code,
+    status: r.status as SessionStatus,
+    onlineQuestionCount: r.online_question_count,
+    onlineCompletedCount: r.online_completed_count,
+    currentQuestionId: r.current_question_id,
+    pauseCount: r.pause_count,
+    redlineIncidentId: r.redline_incident_id,
+    lastInterruptionReason: r.last_interruption_reason,
+    createdAt: r.created_at,
+    startedAt: r.started_at
+  }))
+
+  const result: ListMySessionsSuccess = { success: true, items }
+  return result
+}
+
 // 生产默认 getDb：用 SqliteAdapter 包装 better-sqlite3 singleton。
 // Adapter 是无状态薄包装，不缓存（每次 IPC 新建一个，开销可忽略）。
 function defaultGetDb(): DBAdapter {
@@ -1887,5 +2075,13 @@ export function registerAssessmentHandlers(getDb: () => DBAdapter = defaultGetDb
 
   ipcMain.handle('assessment:listSessions', (_e, params: ListSessionsParams) => {
     return listSessions(ensureSeeded(), params)
+  })
+
+  ipcMain.handle('assessment:startSession', (_e, params: StartSessionParams) => {
+    return startSession(ensureSeeded(), params)
+  })
+
+  ipcMain.handle('assessment:listMySessions', (_e, params: ListMySessionsParams) => {
+    return listMySessions(ensureSeeded(), params)
   })
 }

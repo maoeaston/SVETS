@@ -12,6 +12,7 @@ import type {
   ActionLogEntry,
   EventType,
   SessionStartedPayload,
+  SessionFirstQuestionActivatedPayload,
   AnswerSubmittedPayload,
   EmotionInterruptedPayload,
   EmotionResumedPayload,
@@ -820,6 +821,120 @@ describe('applyAssessmentEvent — 幂等性', () => {
 
     const rrCount = db.prepare('SELECT COUNT(*) AS c FROM result_record WHERE result_id = ?').get(resultId) as { c: number }
     expect(rrCount.c).toBe(1)
+  })
+
+  // ---- SESSION_FIRST_QUESTION_ACTIVATED 幂等（plan 5.4 Step 9b 要求 reducer 级直接单测）----
+
+  it('SESSION_FIRST_QUESTION_ACTIVATED apply 两次：第二次 no-op（current_question_id / last_applied_event_id 不变）', () => {
+    const sessionId = uuidv4()
+    const startEvent = makeSessionStartedEvent(sessionId)
+    seedEvent(db, startEvent)
+    applyAssessmentEvent(db, startEvent)
+
+    // 前置：SESSION_STARTED 后 current_question_id 应为 NULL（reducer applySessionStarted 不设）
+    const before = db
+      .prepare('SELECT current_question_id, last_applied_event_id FROM assessment_session WHERE session_id = ?')
+      .get(sessionId) as { current_question_id: string | null; last_applied_event_id: string | null }
+    expect(before.current_question_id).toBeNull()
+
+    const firstQid = questionIds[0] // MIN(question_order) 对应的 ONLINE 题
+    const payload: SessionFirstQuestionActivatedPayload = {
+      session_id: sessionId,
+      first_question_id: firstQid,
+      first_question_order: 1,
+      activated_at: '2026-07-01T00:05:00.000Z'
+    }
+    const event = makeEvent(
+      'SESSION_FIRST_QUESTION_ACTIVATED',
+      sessionId,
+      payload as unknown as Record<string, unknown>,
+      { actor_id: studentId, actor_role: 'STUDENT', event_sequence: 2 }
+    )
+    seedEvent(db, event)
+    applyAssessmentEvent(db, event)
+
+    const after1 = db
+      .prepare('SELECT current_question_id, last_applied_event_id FROM assessment_session WHERE session_id = ?')
+      .get(sessionId) as { current_question_id: string; last_applied_event_id: string }
+    expect(after1.current_question_id).toBe(firstQid)
+    expect(after1.last_applied_event_id).toBe(event.event_id)
+
+    // 第二次 apply 同事件 → reducer 应跳过（current_question_id 非 NULL guard）
+    applyAssessmentEvent(db, event)
+
+    const after2 = db
+      .prepare('SELECT current_question_id, last_applied_event_id FROM assessment_session WHERE session_id = ?')
+      .get(sessionId) as { current_question_id: string; last_applied_event_id: string }
+    expect(after2.current_question_id).toBe(firstQid)
+    expect(after2.last_applied_event_id).toBe(event.event_id) // 未被覆盖
+  })
+
+  it('SESSION_FIRST_QUESTION_ACTIVATED 在 ANSWER_SUBMITTED 之后重放 → 不覆盖已推进的 current_question_id', () => {
+    const sessionId = uuidv4()
+    const startEvent = makeSessionStartedEvent(sessionId)
+    seedEvent(db, startEvent)
+    applyAssessmentEvent(db, startEvent)
+
+    const firstQid = questionIds[0]
+    const secondQid = questionIds[1]
+
+    // 1. 先 apply SESSION_FIRST_QUESTION_ACTIVATED（current → 第 1 题）
+    const activateEvent = makeEvent(
+      'SESSION_FIRST_QUESTION_ACTIVATED',
+      sessionId,
+      {
+        session_id: sessionId,
+        first_question_id: firstQid,
+        first_question_order: 1,
+        activated_at: '2026-07-01T00:05:00.000Z'
+      } as SessionFirstQuestionActivatedPayload as unknown as Record<string, unknown>,
+      { actor_id: studentId, actor_role: 'STUDENT', event_sequence: 2 }
+    )
+    seedEvent(db, activateEvent)
+    applyAssessmentEvent(db, activateEvent)
+
+    // 2. 答第 1 题（reducer applyAnswerSubmitted 推 current → 第 2 题）
+    const answerEvent = makeAnswerEvent(sessionId, uuidv4(), firstQid, 1)
+    answerEvent.event_sequence = 3
+    seedEvent(db, answerEvent)
+    applyAssessmentEvent(db, answerEvent)
+
+    const afterAnswer = db
+      .prepare('SELECT current_question_id FROM assessment_session WHERE session_id = ?')
+      .get(sessionId) as { current_question_id: string }
+    expect(afterAnswer.current_question_id).toBe(secondQid)
+
+    // 3. 重放 SESSION_FIRST_QUESTION_ACTIVATED（模拟冷启动 / jsonl 回放）
+    //    reducer guard：current_question_id 非 NULL → skip，不覆盖回 firstQid
+    applyAssessmentEvent(db, activateEvent)
+
+    const afterReplay = db
+      .prepare('SELECT current_question_id FROM assessment_session WHERE session_id = ?')
+      .get(sessionId) as { current_question_id: string }
+    expect(afterReplay.current_question_id).toBe(secondQid) // 仍指第 2 题
+  })
+
+  it('SESSION_FIRST_QUESTION_ACTIVATED 在 session 不存在时静默 skip（不抛错）', () => {
+    const nonexistentId = uuidv4()
+    const event = makeEvent(
+      'SESSION_FIRST_QUESTION_ACTIVATED',
+      nonexistentId,
+      {
+        session_id: nonexistentId,
+        first_question_id: questionIds[0],
+        first_question_order: 1,
+        activated_at: '2026-07-01T00:05:00.000Z'
+      } as SessionFirstQuestionActivatedPayload as unknown as Record<string, unknown>,
+      { actor_id: studentId, actor_role: 'STUDENT', event_sequence: 1 }
+    )
+    // 不 seedEvent（reducer 不依赖 projection 行），不预先建 session
+    expect(() => applyAssessmentEvent(db, event)).not.toThrow()
+
+    // session 仍不存在
+    const row = db
+      .prepare('SELECT COUNT(*) AS c FROM assessment_session WHERE session_id = ?')
+      .get(nonexistentId) as { c: number }
+    expect(row.c).toBe(0)
   })
 })
 

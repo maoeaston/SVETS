@@ -32,6 +32,10 @@ import type {
   ListSessionsResult,
   SubmitAnswerParams,
   SubmitAnswerResult,
+  StartSessionParams,
+  StartSessionResult,
+  ListMySessionsParams,
+  ListMySessionsResult,
   EmotionInterruptParams,
   EmotionInterruptResult,
   EmotionResumeParams,
@@ -101,6 +105,8 @@ export interface IpcApi {
     getSession: (params: GetSessionParams) => Promise<GetSessionResult>
     listSessions: (params: ListSessionsParams) => Promise<ListSessionsResult>
     submitAnswer: (params: SubmitAnswerParams) => Promise<SubmitAnswerResult>
+    startSession: (params: StartSessionParams) => Promise<StartSessionResult>
+    listMySessions: (params: ListMySessionsParams) => Promise<ListMySessionsResult>
     emotionInterrupt: (
       params: EmotionInterruptParams
     ) => Promise<EmotionInterruptResult>

@@ -172,6 +172,19 @@ export interface ListSessionsSuccess {
   items: SessionListItem[]
 }
 
+// --- listMySessions（STUDENT 视角：返回自己的非终态 session）---
+// 复用 SessionListItem + OPEN_SESSION_STATUSES 过滤（与 listSessions 一致）。
+// 学生端入口：登录后查看自己可继续的 session 列表。
+export interface ListMySessionsParams {
+  callerUserId: string
+  callerRole: string
+}
+
+export interface ListMySessionsSuccess {
+  success: true
+  items: SessionListItem[]
+}
+
 // --- submitAnswer（STUDENT）---
 // answerPayload 复用 event-payloads AnswerPayloadDetail：renderer → main → event payload
 // 结构 1:1，无需映射层（impl.md Step 7 文本描述的 selected_option/slots 字段名与
@@ -189,6 +202,23 @@ export interface SubmitAnswerSuccess {
   answerId: string
   isCorrect: boolean
   score: 0 | 1 | 2
+}
+
+// --- startSession（STUDENT）---
+// 学生首次进入 session（current_question_id=null）点"开始答题"。
+// 写 SESSION_FIRST_QUESTION_ACTIVATED 事件 + reducer 推进 current_question_id。
+// 幂等：current_question_id 已非 NULL → 直接返回现有指针，不写事件。
+// status 必须 ACTIVE；其他态映射错误码（SESSION_PAUSED / SESSION_HALTED / SESSION_NOT_ACTIVE）。
+export interface StartSessionParams {
+  callerUserId: string
+  callerRole: string
+  sessionId: string
+}
+
+export interface StartSessionSuccess {
+  success: true
+  firstQuestionId: string
+  firstQuestionOrder: number
 }
 
 // --- emotionInterrupt（STUDENT 触发，含自动检测）---
@@ -250,6 +280,8 @@ export type CreateSessionResult = CreateSessionSuccess | AssessmentOpError
 export type GetSessionResult = GetSessionSuccess | AssessmentOpError
 export type ListSessionsResult = ListSessionsSuccess | AssessmentOpError
 export type SubmitAnswerResult = SubmitAnswerSuccess | AssessmentOpError
+export type StartSessionResult = StartSessionSuccess | AssessmentOpError
+export type ListMySessionsResult = ListMySessionsSuccess | AssessmentOpError
 export type EmotionInterruptResult = { success: true } | AssessmentOpError
 export type EmotionResumeResult = { success: true } | AssessmentOpError
 export type AbortSessionResult = { success: true } | AssessmentOpError

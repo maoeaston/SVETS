@@ -27,6 +27,7 @@ import type { DBAdapter } from '../db/interface'
 import type {
   ActionLogEntry,
   SessionStartedPayload,
+  SessionFirstQuestionActivatedPayload,
   AnswerSubmittedPayload,
   EmotionInterruptedPayload,
   EmotionResumedPayload,
@@ -44,6 +45,9 @@ export function applyAssessmentEvent(db: DBAdapter, event: ActionLogEntry): void
   switch (event.event_type) {
     case 'SESSION_STARTED':
       applySessionStarted(db, event)
+      break
+    case 'SESSION_FIRST_QUESTION_ACTIVATED':
+      applySessionFirstQuestionActivated(db, event)
       break
     case 'ANSWER_SUBMITTED':
       applyAnswerSubmitted(db, event)
@@ -147,6 +151,27 @@ function applySessionStarted(db: DBAdapter, event: ActionLogEntry): void {
       event.event_id
     )
   }
+}
+
+// SESSION_FIRST_QUESTION_ACTIVATED → 初始化 current_question_id 指针
+// 幂等：current_question_id 非 NULL 则 skip（无论被谁设——可能本事件重放或
+//   ANSWER_SUBMITTED 已推进）。**刻意不更新 last_status_event_id**（非 status 变更，
+//   与 applyAnswerSubmitted 同模式），只更新 last_applied_event_id。
+// WHERE 加 AND current_question_id IS NULL 兜底，防并发或重放乱序覆盖已推进的指针。
+function applySessionFirstQuestionActivated(db: DBAdapter, event: ActionLogEntry): void {
+  const p = event.payload as unknown as SessionFirstQuestionActivatedPayload
+  const row = db
+    .prepare('SELECT current_question_id FROM assessment_session WHERE session_id = ?')
+    .get(p.session_id) as { current_question_id: string | null } | undefined
+  if (!row) return // session 不存在（正常重放不应出现），静默 skip
+  if (row.current_question_id !== null) return
+
+  db.prepare(
+    `UPDATE assessment_session
+     SET current_question_id = ?,
+         last_applied_event_id = ?
+     WHERE session_id = ? AND current_question_id IS NULL`
+  ).run(p.first_question_id, event.event_id, p.session_id)
 }
 
 // ANSWER_SUBMITTED → INSERT answer_record + session 计数前移

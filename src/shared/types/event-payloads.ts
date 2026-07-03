@@ -13,6 +13,7 @@ export type ActorRole = 'STUDENT' | 'TEACHER' | 'ADMIN' | 'SYSTEM'
 
 export type EventType =
   | 'SESSION_STARTED'
+  | 'SESSION_FIRST_QUESTION_ACTIVATED'
   | 'ANSWER_SUBMITTED'
   | 'EMOTION_INTERRUPTED'
   | 'EMOTION_RESUMED'
@@ -72,6 +73,18 @@ export interface SessionStartedPayload {
   online_question_count: number
   offline_question_count: number
   question_ids: string[]
+}
+
+// SESSION_FIRST_QUESTION_ACTIVATED — 学生首次点"开始答题"，初始化 current_question_id 指针。
+// reducer applySessionStarted 不设 current_question_id（默认 NULL）；本事件将其推进到
+// MIN(question_order ONLINE 题)。事件流显式记录"学生开始时刻"（区别于 SESSION_STARTED
+// 的"教师创建时刻"）。applyAnswerSubmitted 的"下一未答题"推进逻辑对此事件无影响
+// （首次进入时无任何 answer_record）。
+export interface SessionFirstQuestionActivatedPayload {
+  session_id: string
+  first_question_id: string
+  first_question_order: number
+  activated_at: string
 }
 
 export type AnswerPayloadDetail =
