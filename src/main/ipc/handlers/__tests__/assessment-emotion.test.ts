@@ -145,7 +145,22 @@ interface SetupResult {
   questions: SessionQuestionView[]
 }
 
-function setupSession(student: string = studentId): SetupResult {
+type OnlineQuestionType = 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG'
+
+function seedContentJsonByType(questionType: OnlineQuestionType, content: Record<string, unknown>): void {
+  db.prepare('UPDATE question_bank SET content_json = ? WHERE question_type = ?').run(
+    JSON.stringify(content),
+    questionType
+  )
+}
+
+function setupSession(
+  student: string = studentId,
+  contentByType: Partial<Record<OnlineQuestionType, Record<string, unknown>>> = {}
+): SetupResult {
+  for (const [questionType, content] of Object.entries(contentByType)) {
+    seedContentJsonByType(questionType as OnlineQuestionType, content)
+  }
   const result = createSession(db, {
     callerUserId: callerId,
     callerRole: 'TEACHER',
@@ -313,13 +328,10 @@ describe('assessment:emotionResume 正常路径', () => {
   })
 
   it('中断→恢复后可继续答题（integration）', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession(studentId, {
+      TRUE_FALSE: { question_type: 'TRUE_FALSE', expected_answer: true }
+    })
     const q = questions[0]
-    // 命中题目补真实 content_json（TRUE_FALSE，expected=true）
-    db.prepare('UPDATE question_bank SET content_json = ? WHERE question_id = ?').run(
-      JSON.stringify({ question_type: 'TRUE_FALSE', expected_answer: true }),
-      q.questionId
-    )
 
     emotionInterrupt(db, interruptParams(sessionId))
     expect(sessionStatus(sessionId).status).toBe('EMOTION_INTERRUPTED')

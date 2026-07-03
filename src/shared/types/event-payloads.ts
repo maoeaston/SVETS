@@ -5,8 +5,12 @@ import type { AbilityTag } from './json-schemas'
 export type AggregateType =
   | 'ASSESSMENT_SESSION'
   | 'TRAINING_SESSION'
-  | 'SAFETY_INCIDENT'
+  | 'STUDENT_PROFILE'
+  | 'STRATEGY_CONFIG'
+  | 'QUESTION_BANK'
   | 'TASK_REPORT'
+  | 'SAFETY_INCIDENT'
+  | 'ASSET_RESOURCE'
   | 'SYSTEM'
 
 export type ActorRole = 'STUDENT' | 'TEACHER' | 'ADMIN' | 'SYSTEM'
@@ -17,6 +21,9 @@ export type EventType =
   | 'ANSWER_SUBMITTED'
   | 'EMOTION_INTERRUPTED'
   | 'EMOTION_RESUMED'
+  | 'SITTING_STARTED'
+  | 'SITTING_ENDED'
+  | 'EMOTION_COLLAPSE_RECORDED'
   | 'EMOTION_COLLAPSE_THRESHOLD_REACHED'
   | 'OFFLINE_SCORE_SUBMITTED'
   | 'REDLINE_TRIGGERED'
@@ -32,6 +39,8 @@ export type EventType =
   | 'REPORT_GENERATED'
   | 'REPORT_EXPORTED'
   | 'REPORT_LOCKED'
+  | 'PLACEMENT_REVIEW_CONFIRMED'
+  | 'QUESTION_SUPERSEDED'
   | 'SAFETY_INCIDENT_CREATED'
   | 'SAFETY_INCIDENT_DETAIL_CONFIRMED'
   | 'SAFETY_INCIDENT_RESOLVED'
@@ -99,7 +108,7 @@ export interface AnswerSubmittedPayload {
   question_type: 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG'
   answer_payload: AnswerPayloadDetail
   is_correct: boolean
-  score: 0 | 1 | 2
+  score: 0 | 2
   question_order: number
   submitted_at: string
 }
@@ -139,7 +148,9 @@ export interface CriterionScore {
 export interface OfflineScoreSubmittedPayload {
   session_id: string
   offline_score_id: string
-  question_id: string
+  question_id?: string | null
+  score_scope: 'OFFLINE_ABILITY' | 'TASK_OPERATION'
+  task_operation_code?: string | null
   criterion_scores: CriterionScore[]
   total_score: number
   scored_by: string
@@ -218,6 +229,7 @@ export interface ResultCalculatedPayload {
   level_result: string
   calculated_at: string
   calculated_by: string
+  completion_ratio?: number | null
   // result_record.result_payload_json 的来源（schema.sql:989 列可空）。
   // 事件溯源原则：投影字段必须可从事件流重建，故 breakdown 跟随事件 payload
   // 而非 handler 后置 UPDATE。ABILITY_SCORE 类型由 persistRedlineResult 填充
@@ -239,9 +251,46 @@ export interface AbilityScorePayload {
   offline_raw_score: number
   question_count: number
   answered_count: number
+  completion_ratio?: number | null
   emotion_collapse_count: number
   module_veto_triggered_by?: AbilityTag | null
   level_forced_by?: 'MODULE_VETO' | 'EMOTION_COLLAPSE' | null
+}
+
+export interface SittingStartedPayload {
+  session_id: string
+  sitting_no: number
+  started_at: string
+  started_by: string
+}
+
+export interface SittingEndedPayload {
+  session_id: string
+  sitting_no: number
+  ended_at: string
+  ended_by: string
+  end_reason: 'COMPLETED_NORMALLY' | 'PAUSED_BY_PLAN' | 'ENDED_BY_COLLAPSE'
+  current_question_order?: number | null
+}
+
+export interface EmotionCollapseRecordedPayload {
+  session_id: string
+  sitting_no: number
+  recorded_at: string
+  current_question_order?: number | null
+}
+
+export interface PlacementReviewConfirmedPayload {
+  report_id: string
+  reviewed_by: string
+  reviewed_at: string
+}
+
+export interface QuestionSupersededPayload {
+  old_question_id: string
+  new_question_id: string
+  superseded_at: string
+  superseded_by: string
 }
 
 export interface ReportGeneratedPayload {

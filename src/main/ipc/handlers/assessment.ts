@@ -115,7 +115,7 @@ const OPEN_SESSION_STATUSES = [
 const SAFETY_REASON_CODES = new Set<string>(SAFETY_REASON_CODES_SRC.map((r) => r.value))
 const SAFETY_CONTEXT_PHASES = new Set<string>(SAFETY_CONTEXT_PHASES_SRC.map((p) => p.value))
 
-// 每道 ONLINE 题的最高分（doc §2：TRUE_FALSE/SINGLE_CHOICE exact 2/0，DRAG 2/1/0）。
+// 每道 ONLINE 题的最高分（doc §2：TRUE_FALSE/SINGLE_CHOICE/DRAG 均为二值 2/0）。
 // 用于从 answer_record.score 反推题数（max_score = answered * MAX_SCORE_PER_QUESTION）。
 const MAX_SCORE_PER_QUESTION = 2
 
@@ -527,7 +527,7 @@ export function createSession(db: DBAdapter, params: CreateSessionParams): Creat
  * [!] answerPayload 字段名以 event-payloads.ts 为准（selected / placements），
  * 非 impl.md Step 7 文本的 selected_option / slots（文档不一致，待同步）。
  *
- * [!] 计分逻辑按题型硬编码（doc §2：exact 2/0、drag partial 2/1/0），
+ * [!] 计分逻辑按题型硬编码（doc §2：线上题二值 2/0），
  * 不读 scoring_rule_json（该字段供教师界面标签展示用，非运行期评分输入）。
  *
  * 失败码：
@@ -608,7 +608,7 @@ export function submitAnswer(db: DBAdapter, params: SubmitAnswerParams): SubmitA
   }
 
   let isCorrect: boolean
-  let score: 0 | 1 | 2
+  let score: 0 | 2
 
   if (payload.question_type === 'TRUE_FALSE') {
     if (typeof payload.selected !== 'boolean') {
@@ -690,13 +690,7 @@ export function submitAnswer(db: DBAdapter, params: SubmitAnswerParams): SubmitA
     const total = placements.length
     const allCorrect = correctCount === total
     isCorrect = allCorrect
-    if (allCorrect) {
-      score = 2
-    } else if (content.scoring_mode === 'PARTIAL_CREDIT' && correctCount > total / 2) {
-      score = 1
-    } else {
-      score = 0
-    }
+    score = allCorrect ? 2 : 0
   }
 
   // 8. 事务：writeEvent(ANSWER_SUBMITTED) + applyAssessmentEvent

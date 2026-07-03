@@ -1,6 +1,6 @@
 # 炫灿-职途向导系统 MVP
 
-**工程基线：** schema v0.1.9-strategy-composite-pk | PRD v1.0.5  
+**工程基线：** schema v0.1.10-scoring-closure | PRD v1.0.6  
 **技术栈：** Electron + Vue3 + TypeScript + SQLite  
 **MVP 范围：** 一岗位（超市理货员）| 一任务（拆箱与上架）| 一闭环（测评→训练→评分→报告）
 
@@ -42,7 +42,7 @@
 - 写入任何 JSON TEXT 字段前，必须按 `doc/xc-career-guide-json-field-schema-v1.0.0.md` 验证结构
 - 新增 JSON 结构字段时，必须同时补共享类型、运行时校验器和至少一个消费路径测试，三者缺一不可
 - `content_json` 的 `question_type` 必须与 `question_bank.question_type` 一致
-- `scoring_policy_json` 的 `pass_threshold > improve_threshold` 必须满足
+- `strategy_config` 的 `competent_threshold > conditional_threshold` 必须满足
 - 所有 `asset_id` 引用必须存在于 `asset_resource` 且 `status = 'ACTIVE'`
 
 ### 事件写入顺序（不可颠倒）
@@ -55,9 +55,12 @@
 
 ### 状态机强制路径
 - `assessment_session.status`:
-  - `INIT` → `ACTIVE` → `COMPLETED` / `ABORTED` / `REDLINE_HALTED`
+  - 开放态包括 `INIT` / `ACTIVE` / `EMOTION_INTERRUPTED` / `SUSPENDED_REVIEW_REQUIRED` / `OFFLINE_PENDING`
   - `EMOTION_INTERRUPTED` 可从 `ACTIVE` 进入，恢复后回到 `ACTIVE`
+  - `SUSPENDED_REVIEW_REQUIRED` 是坐次间歇 / 待复核开放态，可回 `ACTIVE` 或终止
+  - `OFFLINE_PENDING` 是线上完成后等待基础能力线下 8 题评分的开放态
   - 终态（`COMPLETED` / `ABORTED` / `REDLINE_HALTED`）不可转出
+  - 红线可从任一开放态进入 `REDLINE_HALTED`
 - 触发器在 DB 层阻止非法迁移，应用层不应尝试绕过
 
 ### 结果分离展示（不可合并）

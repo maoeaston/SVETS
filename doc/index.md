@@ -34,7 +34,8 @@
 
 ### 2.2 产品与流程基线
 
-- `doc/炫灿-职途向导系统_MVP_PRD_v1.0.5.md`：MVP 产品总说明，定义功能范围、角色、流程、结果模型和验收基线。
+- `doc/炫灿-职途向导系统_MVP_PRD_v1.0.6.md`：当前 MVP 产品总说明与评分收口基线，定义功能范围、角色、流程、结果模型和验收基线。
+- `doc/炫灿-职途向导系统_MVP_PRD_v1.0.5.md`：上一版基础能力评估重平衡 PRD，作为 v1.0.6 未替换章节的历史依据。
 - `doc/Vibe Coding.md`：解释本项目采用的 `PRD → 实现文档 → 分步实现 → 验收` 工作流思路。
 
 适用任务：
@@ -45,7 +46,8 @@
 
 ### 2.3 数据与约束基线
 
-- `doc/xc-career-guide-mvp-schema-v0.1.7-consistency-guard.sql`：数据库 schema 基线和触发器约束入口，适合核对表、字段、状态机、资源接入位点。
+- `src/main/db/schema.sql`：当前数据库 schema 基线和触发器约束入口，适合核对表、字段、状态机、资源接入位点。
+- `doc/xc-career-guide-mvp-schema-v0.1.7-consistency-guard.sql`：旧版 schema 镜像，仅用于历史追溯，不作为当前实现入口。
 - `doc/xc-career-guide-json-field-schema-v1.0.0.md`：所有 JSON TEXT 字段的结构规范，写 `content_json`、`scoring_policy_json` 等前必须读。
 - `doc/xc-career-guide-event-payload-schema-v1.0.0.md`：事件载荷和 JSONL 信封规范，涉及 `action_log.jsonl`、事件写入、回放时必须读。
 
@@ -80,11 +82,11 @@
 4. 当前任务对应的 `doc/features/*-prd.md`
 5. 当前任务对应的 `doc/features/*-impl.md`
 6. 如涉及结构约束，再补读：
-   - `doc/xc-career-guide-mvp-schema-*.sql`
+   - `src/main/db/schema.sql`
    - `doc/xc-career-guide-json-field-schema-v1.0.0.md`
    - `doc/xc-career-guide-event-payload-schema-v1.0.0.md`
 7. 如涉及产品范围或验收口径，再补读：
-   - `doc/炫灿-职途向导系统_MVP_PRD_v1.0.5.md`
+   - `doc/炫灿-职途向导系统_MVP_PRD_v1.0.6.md`
 
 ### 3.2 什么时候停在最小集合
 
@@ -120,7 +122,7 @@
    - `doc/features/question-bank-image-asset-resource-seed-draft.md`
    - `doc/features/question-bank-image-asset-seed-input.tsv`
    - `doc/features/question-bank-image-continue-here-template.md`
-   - `doc/xc-career-guide-mvp-schema-*.sql`
+   - `src/main/db/schema.sql`
 
 ### 4.2 生图任务的文档分工
 
@@ -152,7 +154,8 @@
 
 入口文档：
 
-- `doc/xc-career-guide-mvp-schema-v0.1.7-consistency-guard.sql`
+- `src/main/db/schema.sql`
+- `doc/xc-career-guide-mvp-schema-v0.1.7-consistency-guard.sql`（历史镜像，不作为当前 schema 基线）
 - 必要时再结合 `AGENTS.md` 的架构原则一起看
 
 ### 5.2 先看主 PRD 的任务
@@ -165,7 +168,7 @@
 
 入口文档：
 
-- `doc/炫灿-职途向导系统_MVP_PRD_v1.0.5.md`
+- `doc/炫灿-职途向导系统_MVP_PRD_v1.0.6.md`
 
 ### 5.3 先看 feature 文档的任务
 

@@ -140,7 +140,7 @@ export const useAssessmentStore = defineStore('assessment', () => {
     sessionId: string,
     questionId: string,
     answerPayload: AnswerPayloadDetail
-  ): Promise<{ ok: true; isCorrect: boolean; score: 0 | 1 | 2 } | { ok: false; errorCode: AssessmentErrorCode }> {
+  ): Promise<{ ok: true; isCorrect: boolean; score: 0 | 2 } | { ok: false; errorCode: AssessmentErrorCode }> {
     errorMsg.value = ''
     const params: SubmitAnswerParams = { callerUserId, callerRole, sessionId, questionId, answerPayload }
     try {

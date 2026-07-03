@@ -144,8 +144,24 @@ interface SetupResult {
   questions: SessionQuestionView[]
 }
 
+type OnlineQuestionType = 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG'
+
+function seedContentJsonByType(questionType: OnlineQuestionType, content: Record<string, unknown>): void {
+  db.prepare('UPDATE question_bank SET content_json = ? WHERE question_type = ?').run(
+    JSON.stringify(content),
+    questionType
+  )
+}
+
 /** 跑一次 createSession 拿到 ACTIVE + current_question_id=NULL 的 session。 */
-function setupSession(student: string = studentId, task: string = taskCode): SetupResult {
+function setupSession(
+  student: string = studentId,
+  task: string = taskCode,
+  contentByType: Partial<Record<OnlineQuestionType, Record<string, unknown>>> = {}
+): SetupResult {
+  for (const [questionType, content] of Object.entries(contentByType)) {
+    seedContentJsonByType(questionType as OnlineQuestionType, content)
+  }
   const result = createSession(db, {
     callerUserId: callerId,
     callerRole: 'TEACHER',
@@ -317,18 +333,16 @@ describe('assessment:startSession 幂等', () => {
   })
 
   it('ANSWER_SUBMITTED 已推进 current_question_id 后 startSession → 不覆盖，返回当前指针', () => {
-    const { sessionId } = setupSession()
+    const { sessionId } = setupSession(studentId, taskCode, {
+      TRUE_FALSE: { question_type: 'TRUE_FALSE', expected_answer: true }
+    })
 
     // 1. startSession 推进到第一题
     const started = startSession(db, baseStartParams(sessionId))
     expect(started.success).toBe(true)
 
-    // 2. seedContentJson 第一题为 TRUE_FALSE + 提交答案 → reducer applyAnswerSubmitted 推进到第二题
+    // 2. 第一题为 TRUE_FALSE + 提交答案 → reducer applyAnswerSubmitted 推进到第二题
     const firstQuestionId = (started as { firstQuestionId: string }).firstQuestionId
-    db.prepare('UPDATE question_bank SET content_json = ? WHERE question_id = ?').run(
-      JSON.stringify({ question_type: 'TRUE_FALSE', expected_answer: true }),
-      firstQuestionId
-    )
     const answerResult = submitAnswer(db, {
       callerUserId: studentId,
       callerRole: 'STUDENT',

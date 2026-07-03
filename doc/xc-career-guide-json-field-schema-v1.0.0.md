@@ -1,11 +1,13 @@
 # 炫灿-职途向导系统 JSON 字段规范
 
 版本：v1.0.0  
-工程基线：`schema.sql v0.1.8-base-ability-rebalance`，`PRD v1.0.5`  
+工程基线：`schema.sql v0.1.10-scoring-closure`，`PRD v1.0.6`  
 文档状态：草案（首期落地实施前置文档）  
-最后更新：2026-07-01  
+最后更新：2026-07-03  
 
 > 2026-07-01 修订：`scoring_policy_json` 内部键 `pass_threshold / improve_threshold` 随 schema v0.1.8 表字段一并更名为 `competent_threshold / conditional_threshold`；`module_veto_threshold / emotion_collapse_threshold` 提升为 `strategy_config` 表级字段后从 JSON 移除；`level_rules.level` 枚举切换为 `LEVEL_COMPETENT / LEVEL_CONDITIONAL / LEVEL_NOT_COMPETENT`。
+>
+> 2026-07-03 修订：PRD v1.0.6 收口线上题为 `0 / 2` 二值自动判分；`offline_score_record.score_scope` 区分 `OFFLINE_ABILITY / TASK_OPERATION`；`result_record.completion_ratio` 纳入结果投影。
 
 ---
 
@@ -209,7 +211,7 @@ interface RubricCriterion {
 
 ## 2. `question_bank.scoring_rule_json`
 
-定义该题的计分规则。schema 中 `answer_record.score` 与 `offline_score_record.score` 均限制在 `{0, 1, 2}`。
+定义该题的计分规则。PRD v1.0.6 起，线上 `answer_record.score` 限制为 `{0, 2}`；线下 `offline_score_record.score` 保留 `{0, 1, 2}`。
 
 ### 2.1 `TRUE_FALSE` / `SINGLE_CHOICE`
 
@@ -233,19 +235,17 @@ interface ScoringRuleExactMatch {
 interface ScoringRuleDrag {
   scoring_type: 'DRAG_PARTIAL';
   max_score: 2;
-  // 所有 item 均正确 → 2；超过 half 正确 → 1；其余 → 0
+  // PRD v1.0.6 起线上拖拽题二值化：全部正确 → 2；否则 → 0
   all_correct_score: 2;
-  partial_correct_score: 1;          // 多于 half 正确
+  partial_correct_score: 0;
   incorrect_score: 0;
 }
 ```
 
 **示例：**
 ```json
-{ "scoring_type": "DRAG_PARTIAL", "max_score": 2, "all_correct_score": 2, "partial_correct_score": 1, "incorrect_score": 0 }
+{ "scoring_type": "DRAG_PARTIAL", "max_score": 2, "all_correct_score": 2, "partial_correct_score": 0, "incorrect_score": 0 }
 ```
-
-若 `content_json.scoring_mode = 'ALL_OR_NOTHING'`，则 `partial_correct_score` 设为 0。
 
 ### 2.3 `OFFLINE_OPERATION`
 
@@ -583,7 +583,8 @@ interface AbilityScorePayload {
   offline_raw_score: number;
   question_count: number;
   answered_count: number;
-  // v1.0.5 / PRD §5.4 第 9 步：以下字段必须随结果持久化，不得只存最终等级
+  completion_ratio?: number;         // 已答/已评分题数 / 50；中途终止时必须持久化
+  // v1.0.6 / PRD §5.4 第 9 步：以下字段必须随结果持久化，不得只存最终等级
   emotion_collapse_count: number;    // 本会话累计情绪崩溃次数（0 表示未触发兜底）
   module_veto_triggered_by?: AbilityTag | null; // 触发模块否决的模块（null 表示未触发）
   level_forced_by?: 'MODULE_VETO' | 'EMOTION_COLLAPSE' | null; // 等级是否被兜底强制（null 表示纯分数判定）

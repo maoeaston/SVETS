@@ -392,10 +392,10 @@ function applyResultCalculated(db: DBAdapter, event: ActionLogEntry): void {
   db.prepare(
     `INSERT INTO result_record
        (result_id, student_id, result_type, source_aggregate_type, source_aggregate_id,
-        job_code, raw_score, max_score, normalized_score, level_result,
+        job_code, raw_score, max_score, normalized_score, completion_ratio, level_result,
         safety_overridden, redline_incident_id, result_payload_json,
         generated_event_id, generated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   ).run(
     p.result_id,
     p.student_id,
@@ -406,6 +406,7 @@ function applyResultCalculated(db: DBAdapter, event: ActionLogEntry): void {
     p.raw_score ?? null,
     p.max_score ?? null,
     p.normalized_score,
+    p.completion_ratio ?? null,
     p.level_result,
     isFailBySafety ? 1 : 0,
     redlineIncidentId,

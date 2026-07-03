@@ -8,7 +8,8 @@
 //
 // [!] content_json：seedQuestionBank 用 '{"seed":true}' 占位，submitAnswer 计分
 // 依赖 content_json 的 expected_answer / options / drop_zones 字段（doc §1）。
-// 测试通过 seedContentJson 直接 UPDATE 命中题目的 content_json 为真实结构。
+// schema v0.1.10 起，题目进入 assessment_session_question 后语义字段冻结。
+// 需要真实 content_json 的测试通过 setupSession({ contentByType }) 在组卷前写入。
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest'
 import { v4 as uuidv4 } from 'uuid'
@@ -135,10 +136,12 @@ function seedStrategyRow(over: Partial<StrategyInput> = {}): void {
 
 /** UPDATE 指定题目的 content_json（覆盖 seed 占位 '{"seed":true}'）。 */
 function seedContentJson(questionId: string, content: Record<string, unknown>): void {
-  db.prepare('UPDATE question_bank SET content_json = ? WHERE question_id = ?').run(
-    JSON.stringify(content),
-    questionId
-  )
+  const contentJson = JSON.stringify(content)
+  const row = db
+    .prepare('SELECT content_json FROM question_bank WHERE question_id = ?')
+    .get(questionId) as { content_json: string } | undefined
+  if (row?.content_json === contentJson) return
+  db.prepare('UPDATE question_bank SET content_json = ? WHERE question_id = ?').run(contentJson, questionId)
 }
 
 interface SetupResult {
@@ -146,12 +149,25 @@ interface SetupResult {
   questions: SessionQuestionView[]
 }
 
+type OnlineType = 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG'
+
 /** 跑一次 createSession 拿到可答 session + ONLINE 题列表（已含 42 ONLINE + 8 OFFLINE）。 */
-function setupSession(student: string = studentId): SetupResult {
+function setupSession(options: {
+  student?: string
+  contentByType?: Partial<Record<OnlineType, Record<string, unknown>>>
+} = {}): SetupResult {
+  if (options.contentByType) {
+    for (const [type, content] of Object.entries(options.contentByType)) {
+      db.prepare('UPDATE question_bank SET content_json = ? WHERE question_type = ?').run(
+        JSON.stringify(content),
+        type
+      )
+    }
+  }
   const result = createSession(db, {
     callerUserId: callerId,
     callerRole: 'TEACHER',
-    studentId: student,
+    studentId: options.student ?? studentId,
     strategyId,
     strategyVersion,
     taskCode
@@ -227,7 +243,7 @@ const SC_CONTENT = {
   ],
   expected_answer: 'B'
 } as const
-// 3 项 DRAG：PARTIAL_CREDIT 下 2/3 对应 score=1
+// 线上 DRAG 按 PRD v1.0.6 收口为二值判分；scoring_mode 仅保留展示/兼容语义。
 const DRAG_PARTIAL_CONTENT = {
   question_type: 'DRAG',
   drag_items: [
@@ -281,7 +297,7 @@ beforeEach(() => {
 
 describe('assessment:submitAnswer 正常路径', () => {
   it('TRUE_FALSE 答对 → score=2 + answer_record + 事件 + 计数前移', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({ contentByType: { TRUE_FALSE: TF_CONTENT } })
     const q = pickQuestion(questions, 'TRUE_FALSE')
     seedContentJson(q.questionId, TF_CONTENT)
 
@@ -334,7 +350,7 @@ describe('assessment:submitAnswer 正常路径', () => {
   })
 
   it('TRUE_FALSE 答错 → score=0 + is_correct=false', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({ contentByType: { TRUE_FALSE: TF_CONTENT } })
     const q = pickQuestion(questions, 'TRUE_FALSE')
     seedContentJson(q.questionId, TF_CONTENT)
 
@@ -349,7 +365,7 @@ describe('assessment:submitAnswer 正常路径', () => {
   })
 
   it('SINGLE_CHOICE 选对 → score=2', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({ contentByType: { SINGLE_CHOICE: SC_CONTENT } })
     const q = pickQuestion(questions, 'SINGLE_CHOICE')
     seedContentJson(q.questionId, SC_CONTENT)
 
@@ -364,7 +380,7 @@ describe('assessment:submitAnswer 正常路径', () => {
   })
 
   it('SINGLE_CHOICE 选错 → score=0', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({ contentByType: { SINGLE_CHOICE: SC_CONTENT } })
     const q = pickQuestion(questions, 'SINGLE_CHOICE')
     seedContentJson(q.questionId, SC_CONTENT)
 
@@ -383,7 +399,7 @@ describe('assessment:submitAnswer 正常路径', () => {
 
 describe('assessment:submitAnswer DRAG 部分得分', () => {
   it('全部正确 → score=2', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({ contentByType: { DRAG: DRAG_PARTIAL_CONTENT } })
     const q = pickQuestion(questions, 'DRAG')
     seedContentJson(q.questionId, DRAG_PARTIAL_CONTENT)
 
@@ -404,8 +420,8 @@ describe('assessment:submitAnswer DRAG 部分得分', () => {
     expect(result.isCorrect).toBe(true)
   })
 
-  it('PARTIAL_CREDIT 2/3 正确（多于半数）→ score=1 + is_correct=false', () => {
-    const { sessionId, questions } = setupSession()
+  it('线上 DRAG 2/3 正确仍按二值判分 → score=0 + is_correct=false', () => {
+    const { sessionId, questions } = setupSession({ contentByType: { DRAG: DRAG_PARTIAL_CONTENT } })
     const q = pickQuestion(questions, 'DRAG')
     seedContentJson(q.questionId, DRAG_PARTIAL_CONTENT)
 
@@ -422,12 +438,12 @@ describe('assessment:submitAnswer DRAG 部分得分', () => {
     )
     expect(result.success).toBe(true)
     if (!result.success) return
-    expect(result.score).toBe(1)
+    expect(result.score).toBe(0)
     expect(result.isCorrect).toBe(false)
   })
 
   it('PARTIAL_CREDIT 1/3 正确（不多于半数）→ score=0', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({ contentByType: { DRAG: DRAG_PARTIAL_CONTENT } })
     const q = pickQuestion(questions, 'DRAG')
     seedContentJson(q.questionId, DRAG_PARTIAL_CONTENT)
 
@@ -449,7 +465,7 @@ describe('assessment:submitAnswer DRAG 部分得分', () => {
   })
 
   it('ALL_OR_NOTHING 2/3 正确仍 → score=0（不给部分分）', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({ contentByType: { DRAG: DRAG_ALL_OR_NOTHING_CONTENT } })
     const q = pickQuestion(questions, 'DRAG')
     seedContentJson(q.questionId, DRAG_ALL_OR_NOTHING_CONTENT)
 
@@ -475,7 +491,7 @@ describe('assessment:submitAnswer DRAG 部分得分', () => {
 
 describe('assessment:submitAnswer 身份校验', () => {
   it('TEACHER 调用 → FORBIDDEN（仅 STUDENT 可答题）', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({ contentByType: { TRUE_FALSE: TF_CONTENT } })
     const q = questions[0]
 
     const result = submitAnswer(
@@ -488,7 +504,7 @@ describe('assessment:submitAnswer 身份校验', () => {
   })
 
   it('DISABLED STUDENT → FORBIDDEN', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({ contentByType: { TRUE_FALSE: TF_CONTENT } })
     const q = questions[0]
     db.prepare('UPDATE user_account SET status = ? WHERE user_id = ?').run('DISABLED', studentId)
 
@@ -501,7 +517,7 @@ describe('assessment:submitAnswer 身份校验', () => {
 
   it('答他人 session → FORBIDDEN', () => {
     const otherStudent = seedStudent(db, { studentName: '其他学生' })
-    const { sessionId, questions } = setupSession(otherStudent)
+    const { sessionId, questions } = setupSession({ student: otherStudent })
     const q = questions[0]
 
     // studentId（本人）答 otherStudent 的 session
@@ -525,7 +541,7 @@ describe('assessment:submitAnswer 身份校验', () => {
 
 describe('assessment:submitAnswer 状态校验', () => {
   it('EMOTION_INTERRUPTED → SESSION_PAUSED', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({ contentByType: { TRUE_FALSE: TF_CONTENT } })
     const q = questions[0]
     db.prepare('UPDATE assessment_session SET status = ? WHERE session_id = ?').run(
       'EMOTION_INTERRUPTED',
@@ -540,7 +556,7 @@ describe('assessment:submitAnswer 状态校验', () => {
   })
 
   it('COMPLETED → SESSION_NOT_ACTIVE', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({ contentByType: { TRUE_FALSE: TF_CONTENT } })
     const q = questions[0]
     db.prepare('UPDATE assessment_session SET status = ? WHERE session_id = ?').run('COMPLETED', sessionId)
 
@@ -552,7 +568,7 @@ describe('assessment:submitAnswer 状态校验', () => {
   })
 
   it('REDLINE_HALTED → SESSION_HALTED（经 safety_incident 批量熔断构造）', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({ contentByType: { TRUE_FALSE: TF_CONTENT } })
     const q = questions[0]
     haltSession(studentId)
 
@@ -607,7 +623,7 @@ describe('assessment:submitAnswer question 校验', () => {
 
 describe('assessment:submitAnswer 重复答题', () => {
   it('已存在 VALID answer_record → ALREADY_ANSWERED', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({ contentByType: { TRUE_FALSE: TF_CONTENT } })
     const q = pickQuestion(questions, 'TRUE_FALSE')
     seedContentJson(q.questionId, TF_CONTENT)
 
@@ -629,7 +645,7 @@ describe('assessment:submitAnswer 重复答题', () => {
 
 describe('assessment:submitAnswer answerPayload 结构校验', () => {
   it('payload.question_type 与 session 题型不一致 → VALIDATION_ERROR', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({ contentByType: { TRUE_FALSE: TF_CONTENT } })
     const q = pickQuestion(questions, 'TRUE_FALSE')
     seedContentJson(q.questionId, TF_CONTENT)
 
@@ -641,7 +657,7 @@ describe('assessment:submitAnswer answerPayload 结构校验', () => {
   })
 
   it('TRUE_FALSE selected 非 boolean → VALIDATION_ERROR', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({ contentByType: { TRUE_FALSE: TF_CONTENT } })
     const q = pickQuestion(questions, 'TRUE_FALSE')
     seedContentJson(q.questionId, TF_CONTENT)
 
@@ -657,7 +673,7 @@ describe('assessment:submitAnswer answerPayload 结构校验', () => {
   })
 
   it('SINGLE_CHOICE selected 不在 options.key → VALIDATION_ERROR', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({ contentByType: { SINGLE_CHOICE: SC_CONTENT } })
     const q = pickQuestion(questions, 'SINGLE_CHOICE')
     seedContentJson(q.questionId, SC_CONTENT)
 
@@ -669,7 +685,7 @@ describe('assessment:submitAnswer answerPayload 结构校验', () => {
   })
 
   it('DRAG placements 数量与 drag_items 不符 → VALIDATION_ERROR', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({ contentByType: { DRAG: DRAG_PARTIAL_CONTENT } })
     const q = pickQuestion(questions, 'DRAG')
     seedContentJson(q.questionId, DRAG_PARTIAL_CONTENT)
 
@@ -688,7 +704,7 @@ describe('assessment:submitAnswer answerPayload 结构校验', () => {
   })
 
   it('DRAG placements 含未知 zone_id → VALIDATION_ERROR', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession({ contentByType: { DRAG: DRAG_PARTIAL_CONTENT } })
     const q = pickQuestion(questions, 'DRAG')
     seedContentJson(q.questionId, DRAG_PARTIAL_CONTENT)
 
@@ -723,9 +739,7 @@ describe('assessment:submitAnswer content_json 缺校验数据', () => {
   })
 
   it('TRUE_FALSE variants 脏数据（variant.expected_answer 非 boolean）→ VALIDATION_ERROR', () => {
-    const { sessionId, questions } = setupSession()
-    const q = pickQuestion(questions, 'TRUE_FALSE')
-    seedContentJson(q.questionId, {
+    const dirtyTfContent = {
       question_type: 'TRUE_FALSE',
       expected_answer: true,
       variants: [
@@ -736,7 +750,10 @@ describe('assessment:submitAnswer content_json 缺校验数据', () => {
           expected_answer: 'true'
         }
       ]
-    })
+    }
+    const { sessionId, questions } = setupSession({ contentByType: { TRUE_FALSE: dirtyTfContent } })
+    const q = pickQuestion(questions, 'TRUE_FALSE')
+    seedContentJson(q.questionId, dirtyTfContent)
 
     const result = submitAnswer(
       db,

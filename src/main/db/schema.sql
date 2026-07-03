@@ -1,5 +1,5 @@
 -- ============================================================================
--- 炫灿-职途向导系统 MVP schema.sql v0.1.9-strategy-composite-pk
+-- 炫灿-职途向导系统 MVP schema.sql v0.1.10-scoring-closure
 -- Architecture baseline:
 --   1. Lightweight event sourcing + SQLite projection.
 --   2. action_log.jsonl is the source of truth; SQLite is a query snapshot.
@@ -112,6 +112,20 @@
 --      joins efficient and they remain semantically correct.
 --   PRD feature 5.2 (doc/features/strategy-config-prd.md §策略族模型) is the
 --   authoritative source for the family-model semantics.
+--
+-- v0.1.10-scoring-closure patch notes:
+--   1. Preserve v0.1.9 strategy composite PK semantics and add PRD v1.0.6
+--      scoring-closure fields rather than reusing the v0.1.9 version name.
+--   2. Add offline_score_record.score_scope to split OFFLINE_ABILITY from
+--      TASK_OPERATION records. TASK_OPERATION uses task_operation_code instead
+--      of question_id so task-operation pass rate cannot be double-counted into
+--      ABILITY_SCORE.
+--   3. Add result_record.completion_ratio for incomplete/terminated assessment
+--      results and report export gating fields placement_review_by/at.
+--   4. Add question_bank.superseded_by_question_id and freeze semantic question
+--      fields after a question has been selected into a session or answered.
+--   5. Add domain_event_projection.sitting_no for sitting-level event replay.
+--   6. Add strategy_config.session_validity_days for sitting/open-session expiry.
 -- ----------------------------------------------------------------------------
 
 PRAGMA foreign_keys = ON;
@@ -185,6 +199,16 @@ INSERT OR IGNORE INTO schema_migration (
   '2026-07-02_mvp_schema_v0_1_9_strategy_composite_pk',
   '0.1.9-strategy-composite-pk',
   'MVP schema v0.1.9-strategy-composite-pk: strategy_config PK strategy_id -> (strategy_id, version) composite to support PRD feature 5.2 one-strategy_id-per-family model; assessment_session/training_session FK upgraded to composite (strategy_id, strategy_version); result_record.strategy_id FK dropped (no version column, would be non-unique parent key); UNIQUE(type,job,version) retained as DUPLICATE_JOB_STRATEGY backstop'
+);
+
+INSERT OR IGNORE INTO schema_migration (
+  migration_id,
+  schema_version,
+  description
+) VALUES (
+  '2026-07-03_mvp_schema_v0_1_10_scoring_closure',
+  '0.1.10-scoring-closure',
+  'MVP schema v0.1.10-scoring-closure: add score_scope, completion_ratio, question supersede/freeze, placement review fields, sitting_no, and session_validity_days while preserving v0.1.9 strategy composite PK'
 );
 
 -- ----------------------------------------------------------------------------
@@ -270,6 +294,7 @@ CREATE TABLE IF NOT EXISTS strategy_config (
   -- assessment_session reaching this forces LEVEL_NOT_COMPETENT.
   -- PRD v1.0.5 §4.6 / §7.4. Single recoverable interruptions do not count.
   emotion_collapse_threshold  INTEGER NOT NULL DEFAULT 3 CHECK (emotion_collapse_threshold >= 1),
+  session_validity_days        INTEGER NOT NULL DEFAULT 14 CHECK (session_validity_days >= 1),
 
   -- JSON strings. App layer validates detailed schema.
   question_policy_json        TEXT NOT NULL,
@@ -373,12 +398,14 @@ CREATE TABLE IF NOT EXISTS question_bank (
 
   safety_sensitive      INTEGER NOT NULL DEFAULT 0 CHECK (safety_sensitive IN (0, 1)),
   sensory_tags_json     TEXT,
+  superseded_by_question_id TEXT REFERENCES question_bank(question_id),
 
   status                TEXT NOT NULL DEFAULT 'ACTIVE'
                          CHECK (status IN ('ACTIVE', 'DRAFT', 'DISABLED', 'ARCHIVED')),
   version               INTEGER NOT NULL DEFAULT 1 CHECK (version >= 1),
   created_at            TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at            TEXT NOT NULL DEFAULT (datetime('now'))
+  updated_at            TEXT NOT NULL DEFAULT (datetime('now')),
+  CHECK (superseded_by_question_id IS NULL OR superseded_by_question_id <> question_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_question_bank_job_module_type_status
@@ -417,6 +444,7 @@ CREATE TABLE IF NOT EXISTS domain_event_projection (
   source_log_byte_offset INTEGER CHECK (source_log_byte_offset IS NULL OR source_log_byte_offset >= 0),
 
   schema_version        INTEGER NOT NULL DEFAULT 1 CHECK (schema_version >= 1),
+  sitting_no            INTEGER CHECK (sitting_no IS NULL OR sitting_no >= 1),
   created_at            TEXT NOT NULL DEFAULT (datetime('now')),
 
   applied_to_snapshot   INTEGER NOT NULL DEFAULT 0 CHECK (applied_to_snapshot IN (0, 1)),
@@ -575,7 +603,7 @@ CREATE TABLE IF NOT EXISTS answer_record (
 
   answer_payload_json   TEXT NOT NULL,
   is_correct            INTEGER CHECK (is_correct IS NULL OR is_correct IN (0, 1)),
-  score                 INTEGER NOT NULL DEFAULT 0 CHECK (score IN (0, 1, 2)),
+  score                 INTEGER NOT NULL DEFAULT 0 CHECK (score IN (0, 2)),
 
   submitted_event_id    TEXT NOT NULL REFERENCES domain_event_projection(event_id),
   submitted_at          TEXT NOT NULL DEFAULT (datetime('now')),
@@ -595,7 +623,12 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_answer_record_one_valid_answer
 CREATE TABLE IF NOT EXISTS offline_score_record (
   offline_score_id          TEXT PRIMARY KEY,
   session_id                TEXT NOT NULL REFERENCES assessment_session(session_id) ON DELETE RESTRICT,
-  question_id               TEXT NOT NULL REFERENCES question_bank(question_id),
+  question_id               TEXT REFERENCES question_bank(question_id),
+  score_scope               TEXT NOT NULL DEFAULT 'OFFLINE_ABILITY' CHECK (score_scope IN (
+                              'OFFLINE_ABILITY',
+                              'TASK_OPERATION'
+                            )),
+  task_operation_code       TEXT,
 
   score                     INTEGER NOT NULL CHECK (score IN (0, 1, 2)),
   scoring_rubric_json       TEXT NOT NULL,
@@ -608,7 +641,11 @@ CREATE TABLE IF NOT EXISTS offline_score_record (
   tool_checklist_confirmed  INTEGER NOT NULL DEFAULT 0 CHECK (tool_checklist_confirmed IN (0, 1)),
   revision_no               INTEGER NOT NULL DEFAULT 1 CHECK (revision_no >= 1),
   status                    TEXT NOT NULL DEFAULT 'VALID'
-                            CHECK (status IN ('VALID', 'SUPERSEDED', 'VOID'))
+                            CHECK (status IN ('VALID', 'SUPERSEDED', 'VOID')),
+  CHECK (
+    (score_scope = 'OFFLINE_ABILITY' AND question_id IS NOT NULL AND task_operation_code IS NULL)
+    OR (score_scope = 'TASK_OPERATION' AND question_id IS NULL AND task_operation_code IS NOT NULL)
+  )
 );
 
 CREATE INDEX IF NOT EXISTS idx_offline_score_session_question
@@ -616,7 +653,11 @@ CREATE INDEX IF NOT EXISTS idx_offline_score_session_question
 
 CREATE UNIQUE INDEX IF NOT EXISTS ux_offline_score_one_valid_score
   ON offline_score_record(session_id, question_id)
-  WHERE status = 'VALID';
+  WHERE status = 'VALID' AND score_scope = 'OFFLINE_ABILITY';
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_offline_score_one_valid_task_operation
+  ON offline_score_record(session_id, task_operation_code)
+  WHERE status = 'VALID' AND score_scope = 'TASK_OPERATION';
 
 -- ----------------------------------------------------------------------------
 -- 8. Safety incident: student-task level independent redline aggregate
@@ -974,6 +1015,7 @@ CREATE TABLE IF NOT EXISTS result_record (
   raw_score               REAL,
   max_score               REAL,
   normalized_score        REAL NOT NULL CHECK (normalized_score >= 0 AND normalized_score <= 100),
+  completion_ratio        REAL CHECK (completion_ratio IS NULL OR (completion_ratio >= 0 AND completion_ratio <= 1)),
   level_result            TEXT CHECK (level_result IS NULL OR level_result IN (
                             'LEVEL_COMPETENT',
                             'LEVEL_CONDITIONAL',
@@ -1059,6 +1101,8 @@ CREATE TABLE IF NOT EXISTS task_report (
   generated_event_id     TEXT NOT NULL REFERENCES domain_event_projection(event_id),
   generated_by           TEXT NOT NULL REFERENCES user_account(user_id),
   generated_at           TEXT NOT NULL DEFAULT (datetime('now')),
+  placement_review_by    TEXT REFERENCES user_account(user_id),
+  placement_review_at    TEXT,
 
   status                 TEXT NOT NULL DEFAULT 'GENERATED'
                          CHECK (status IN ('GENERATED', 'LOCKED', 'EXPORTED', 'SUPERSEDED', 'ARCHIVED', 'FAILED'))
@@ -1916,6 +1960,49 @@ BEGIN
   SELECT RAISE(ABORT, 'redline-halted source must generate SAFETY_TERMINATION_REPORT only');
 END;
 
+-- Full reports that can include placement advice must be reviewed before export.
+CREATE TRIGGER IF NOT EXISTS trg_task_report_placement_review_export_insert_guard
+BEFORE INSERT ON task_report
+FOR EACH ROW
+WHEN NEW.report_type = 'FULL_REPORT'
+  AND NEW.status = 'EXPORTED'
+  AND (NEW.placement_review_by IS NULL OR NEW.placement_review_at IS NULL)
+BEGIN
+  SELECT RAISE(ABORT, 'placement review is required before exporting FULL_REPORT');
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_task_report_placement_review_export_update_guard
+BEFORE UPDATE ON task_report
+FOR EACH ROW
+WHEN NEW.report_type = 'FULL_REPORT'
+  AND NEW.status = 'EXPORTED'
+  AND (NEW.placement_review_by IS NULL OR NEW.placement_review_at IS NULL)
+BEGIN
+  SELECT RAISE(ABORT, 'placement review is required before exporting FULL_REPORT');
+END;
+
+-- Referenced questions are historical facts. Create a new question and link it
+-- with superseded_by_question_id instead of mutating semantic content in place.
+CREATE TRIGGER IF NOT EXISTS trg_question_bank_referenced_semantic_immutable
+BEFORE UPDATE ON question_bank
+FOR EACH ROW
+WHEN (
+  EXISTS (SELECT 1 FROM answer_record ar WHERE ar.question_id = OLD.question_id)
+  OR EXISTS (SELECT 1 FROM assessment_session_question sq WHERE sq.question_id = OLD.question_id)
+)
+AND (
+  OLD.module_type IS NOT NEW.module_type
+  OR OLD.question_type IS NOT NEW.question_type
+  OR OLD.difficulty_level IS NOT NEW.difficulty_level
+  OR OLD.content_json IS NOT NEW.content_json
+  OR OLD.scoring_rule_json IS NOT NEW.scoring_rule_json
+  OR OLD.media_asset_id IS NOT NEW.media_asset_id
+  OR OLD.tool_asset_ids_json IS NOT NEW.tool_asset_ids_json
+)
+BEGIN
+  SELECT RAISE(ABORT, 'referenced question semantic fields are frozen; create a superseding question instead');
+END;
+
 
 -- ----------------------------------------------------------------------------
 -- 16. v0.1.5 strategy_config historical-version immutability
@@ -1950,6 +2037,7 @@ AND (
   OR OLD.conditional_threshold IS NOT NEW.conditional_threshold
   OR OLD.module_veto_threshold IS NOT NEW.module_veto_threshold
   OR OLD.emotion_collapse_threshold IS NOT NEW.emotion_collapse_threshold
+  OR OLD.session_validity_days IS NOT NEW.session_validity_days
   OR OLD.question_policy_json IS NOT NEW.question_policy_json
   OR OLD.scoring_policy_json IS NOT NEW.scoring_policy_json
   OR OLD.supports_redline_halt IS NOT NEW.supports_redline_halt
@@ -2049,5 +2137,5 @@ INSERT OR IGNORE INTO strategy_config (
 );
 
 -- ============================================================================
--- End of schema.sql v0.1.9-strategy-composite-pk
+-- End of schema.sql v0.1.10-scoring-closure
 -- ============================================================================

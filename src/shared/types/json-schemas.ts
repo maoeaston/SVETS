@@ -109,7 +109,7 @@ export interface ScoringRuleDrag {
   scoring_type: 'DRAG_PARTIAL'
   max_score: 2
   all_correct_score: 2
-  partial_correct_score: 1 | 0
+  partial_correct_score: 0
   incorrect_score: 0
 }
 

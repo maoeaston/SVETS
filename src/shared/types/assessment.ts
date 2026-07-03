@@ -201,7 +201,7 @@ export interface SubmitAnswerSuccess {
   success: true
   answerId: string
   isCorrect: boolean
-  score: 0 | 1 | 2
+  score: 0 | 2
 }
 
 // --- startSession（STUDENT）---

@@ -10,14 +10,14 @@
 
 | 阶段 | 状态 |
 |---|---|
-| PRD v1.0.4 | ✅ 已冻结 |
-| Schema v0.1.7 | ✅ 已冻结 |
+| PRD v1.0.6-scoring-closure | ✅ 当前基线 |
+| Schema v0.1.10-scoring-closure | ✅ 当前基线 |
 | JSON 字段规范 | ✅ 已完成 |
 | 事件载荷规范 | ✅ 已完成 |
 | Electron 脚手架 | ✅ 已就绪（typecheck + build 通过）|
-| 功能开发 | 🚧 进行中（下一步：登录 + 学生档案）|
-| 教学素材 | ⏳ 待制作（视频、步骤卡）|
-| 题库审核 | ⏳ 待完成（CSV 已导入为 DRAFT）|
+| 功能开发 | 🚧 进行中（已完成登录、学生档案、策略配置、测评核心闭环；下一步：训练功能）|
+| 教学素材 | 🚧 进行中（图片资产链路已接入，视频、步骤卡待制作）|
+| 题库审核 | 🚧 进行中（题库与图片资产 seed 已接入，仍需按 v1.0.6 上线门禁复核 ACTIVE 完成度）|
 
 ---
 
@@ -92,10 +92,11 @@ SVETS/
 
 | 文档 | 说明 |
 |---|---|
-| `doc/炫灿-职途向导系统_MVP_PRD_v1.0.4.md` | 产品需求文档（功能范围、验收标准、状态机） |
-| `doc/xc-career-guide-mvp-schema-v0.1.7-consistency-guard.sql` | 完整 SQLite schema（20 张表 + 50+ 触发器） |
+| `doc/炫灿-职途向导系统_MVP_PRD_v1.0.6.md` | 当前产品需求文档（功能范围、验收标准、评分收口基线） |
+| `src/main/db/schema.sql` | 当前 SQLite schema（表、触发器、状态机、投影约束） |
 | `doc/xc-career-guide-json-field-schema-v1.0.0.md` | 各 JSON TEXT 字段的结构定义 |
-| `doc/xc-career-guide-event-payload-schema-v1.0.0.md` | 26 个领域事件的载荷格式 + action_log.jsonl 规范 |
+| `doc/xc-career-guide-event-payload-schema-v1.0.0.md` | 领域事件载荷格式 + action_log.jsonl 规范 |
+| `doc/index.md` | 文档入口索引，说明不同任务应先读哪些文档 |
 
 ---
 
@@ -119,9 +120,9 @@ SVETS/
 
 ### 三类结果（独立计算，不合并）
 
-- `ABILITY_SCORE` — 线上测评得分 / 百分制
+- `ABILITY_SCORE` — 基础能力测评分（线上 42 题 0/2 自动判分 + 线下 8 题 0/1/2 教师评分）
 - `TRAINING_COMPLETION` — 四步训练完成率
-- `OPERATION_PASS_RATE` — 线下实操达标率（0/1/2 评分）
+- `OPERATION_PASS_RATE` — 拆箱上架任务实操达标率（独立于基础能力线下 8 题）
 
 ---
 

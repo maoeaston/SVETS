@@ -131,10 +131,13 @@ function seedStrategyRow(over: Partial<StrategyInput> = {}): void {
   )
 }
 
-function seedContentJson(questionId: string, content: Record<string, unknown>): void {
-  db.prepare('UPDATE question_bank SET content_json = ? WHERE question_id = ?').run(
-    JSON.stringify(content),
-    questionId
+type OnlineQuestionType = 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG'
+type QuestionContentFixture = Record<string, unknown> | string
+
+function seedContentJsonByType(questionType: OnlineQuestionType, content: QuestionContentFixture): void {
+  db.prepare('UPDATE question_bank SET content_json = ? WHERE question_type = ?').run(
+    typeof content === 'string' ? content : JSON.stringify(content),
+    questionType
   )
 }
 
@@ -143,7 +146,13 @@ interface SetupResult {
   questions: SessionQuestionView[]
 }
 
-function setupSession(student: string = studentId): SetupResult {
+function setupSession(
+  student: string = studentId,
+  contentByType: Partial<Record<OnlineQuestionType, QuestionContentFixture>> = {}
+): SetupResult {
+  for (const [questionType, content] of Object.entries(contentByType)) {
+    seedContentJsonByType(questionType as OnlineQuestionType, content)
+  }
   const result = createSession(db, {
     callerUserId: callerId,
     callerRole: 'TEACHER',
@@ -287,29 +296,30 @@ function asRecord(obj: unknown): Record<string, unknown> {
 
 describe('assessment:getSession 脱敏与字段映射', () => {
   it('TRUE_FALSE + variants → success，currentQuestion 无 expected_answer，variants[*] 也无 expected_answer', () => {
-    const { sessionId, questions } = setupSession()
-    const q = pickQuestion(questions, 'TRUE_FALSE')
-    seedContentJson(q.questionId, {
-      question_type: 'TRUE_FALSE',
-      prompt: '图中同学的理货方式是否正确？',
-      assessment_point: '货架正面朝外识别',
-      ability_tags: ['COGNITION'],
-      expected_answer: true,
-      variants: [
-        {
-          variant_id: 'v_correct',
-          media_asset_id: 'asset_img_correct_v001',
-          media_brief: '正面朝外',
-          expected_answer: true
-        },
-        {
-          variant_id: 'v_wrong',
-          media_asset_id: 'asset_img_wrong_v001',
-          media_brief: '歪斜',
-          expected_answer: false
-        }
-      ]
+    const { sessionId, questions } = setupSession(studentId, {
+      TRUE_FALSE: {
+        question_type: 'TRUE_FALSE',
+        prompt: '图中同学的理货方式是否正确？',
+        assessment_point: '货架正面朝外识别',
+        ability_tags: ['COGNITION'],
+        expected_answer: true,
+        variants: [
+          {
+            variant_id: 'v_correct',
+            media_asset_id: 'asset_img_correct_v001',
+            media_brief: '正面朝外',
+            expected_answer: true
+          },
+          {
+            variant_id: 'v_wrong',
+            media_asset_id: 'asset_img_wrong_v001',
+            media_brief: '歪斜',
+            expected_answer: false
+          }
+        ]
+      }
     })
+    const q = pickQuestion(questions, 'TRUE_FALSE')
     setCurrentQuestion(sessionId, q.questionId)
 
     const result = getSession(db, {
@@ -349,19 +359,20 @@ describe('assessment:getSession 脱敏与字段映射', () => {
   })
 
   it('SINGLE_CHOICE → options[*] 含 key/text，无 is_correct', () => {
-    const { sessionId, questions } = setupSession()
-    const q = pickQuestion(questions, 'SINGLE_CHOICE')
-    seedContentJson(q.questionId, {
-      question_type: 'SINGLE_CHOICE',
-      prompt: '以下哪种做法正确？',
-      assessment_point: '上架流程',
-      options: [
-        { key: 'A', text: '轻拿轻放', is_correct: false },
-        { key: 'B', text: '抛掷商品', is_correct: true },
-        { key: 'C', text: '踩踏货架', is_correct: false }
-      ],
-      expected_answer: 'B'
+    const { sessionId, questions } = setupSession(studentId, {
+      SINGLE_CHOICE: {
+        question_type: 'SINGLE_CHOICE',
+        prompt: '以下哪种做法正确？',
+        assessment_point: '上架流程',
+        options: [
+          { key: 'A', text: '轻拿轻放', is_correct: false },
+          { key: 'B', text: '抛掷商品', is_correct: true },
+          { key: 'C', text: '踩踏货架', is_correct: false }
+        ],
+        expected_answer: 'B'
+      }
     })
+    const q = pickQuestion(questions, 'SINGLE_CHOICE')
     setCurrentQuestion(sessionId, q.questionId)
 
     const result = getSession(db, {
@@ -383,22 +394,23 @@ describe('assessment:getSession 脱敏与字段映射', () => {
   })
 
   it('DRAG → dragItems / dropZones / scoringMode 正确映射', () => {
-    const { sessionId, questions } = setupSession()
-    const q = pickQuestion(questions, 'DRAG')
-    seedContentJson(q.questionId, {
-      question_type: 'DRAG',
-      prompt: '将商品拖到正确货架区',
-      assessment_point: '商品分类',
-      drag_items: [
-        { item_id: 'd1', label: '苹果' },
-        { item_id: 'd2', label: '面包' }
-      ],
-      drop_zones: [
-        { zone_id: 'z1', label: '生鲜区', accepts: ['d1'] },
-        { zone_id: 'z2', label: '主食区', accepts: ['d2'] }
-      ],
-      scoring_mode: 'PARTIAL_CREDIT'
+    const { sessionId, questions } = setupSession(studentId, {
+      DRAG: {
+        question_type: 'DRAG',
+        prompt: '将商品拖到正确货架区',
+        assessment_point: '商品分类',
+        drag_items: [
+          { item_id: 'd1', label: '苹果' },
+          { item_id: 'd2', label: '面包' }
+        ],
+        drop_zones: [
+          { zone_id: 'z1', label: '生鲜区', accepts: ['d1'] },
+          { zone_id: 'z2', label: '主食区', accepts: ['d2'] }
+        ],
+        scoring_mode: 'PARTIAL_CREDIT'
+      }
     })
+    const q = pickQuestion(questions, 'DRAG')
     setCurrentQuestion(sessionId, q.questionId)
 
     const result = getSession(db, {
@@ -424,14 +436,15 @@ describe('assessment:getSession 脱敏与字段映射', () => {
   })
 
   it('TRUE_FALSE 无 variants 字段 → currentQuestion.variants = undefined（不抛错）', () => {
-    const { sessionId, questions } = setupSession()
-    const q = pickQuestion(questions, 'TRUE_FALSE')
-    seedContentJson(q.questionId, {
-      question_type: 'TRUE_FALSE',
-      prompt: '简单判断',
-      assessment_point: '基础认知',
-      expected_answer: false
+    const { sessionId, questions } = setupSession(studentId, {
+      TRUE_FALSE: {
+        question_type: 'TRUE_FALSE',
+        prompt: '简单判断',
+        assessment_point: '基础认知',
+        expected_answer: false
+      }
     })
+    const q = pickQuestion(questions, 'TRUE_FALSE')
     setCurrentQuestion(sessionId, q.questionId)
 
     const result = getSession(db, {
@@ -517,14 +530,30 @@ describe('assessment:getSession 权限与边界', () => {
   })
 
   it('REDLINE_HALTED 终态且 current_question_id 非空 → 仍 success + currentQuestion 非空（不做 status 拦截）', () => {
-    const { sessionId, questions } = setupSession()
-    const q = questions[0]
-    seedContentJson(q.questionId, {
-      question_type: q.questionType,
-      prompt: 'X',
-      assessment_point: 'Y',
-      expected_answer: true
+    const { sessionId, questions } = setupSession(studentId, {
+      TRUE_FALSE: {
+        question_type: 'TRUE_FALSE',
+        prompt: 'X',
+        assessment_point: 'Y',
+        expected_answer: true
+      },
+      SINGLE_CHOICE: {
+        question_type: 'SINGLE_CHOICE',
+        prompt: 'X',
+        assessment_point: 'Y',
+        options: [{ key: 'A', text: 'A', is_correct: true }],
+        expected_answer: 'A'
+      },
+      DRAG: {
+        question_type: 'DRAG',
+        prompt: 'X',
+        assessment_point: 'Y',
+        drag_items: [{ item_id: 'd1', label: 'A' }],
+        drop_zones: [{ zone_id: 'z1', label: 'A', accepts: ['d1'] }],
+        scoring_mode: 'ALL_OR_NOTHING'
+      }
     })
+    const q = questions[0]
     setCurrentQuestion(sessionId, q.questionId)
     // 触发批量熔断：active session → REDLINE_HALTED + redline_incident_id（schema trigger）
     haltSession(studentId)
@@ -545,12 +574,12 @@ describe('assessment:getSession 权限与边界', () => {
   })
 
   it('content_json 损坏（JSON.parse 失败）→ success + currentQuestion = null（不抛错）', () => {
-    const { sessionId, questions } = setupSession()
+    const { sessionId, questions } = setupSession(studentId, {
+      TRUE_FALSE: '{not valid json',
+      SINGLE_CHOICE: '{not valid json',
+      DRAG: '{not valid json'
+    })
     const q = questions[0]
-    db.prepare('UPDATE question_bank SET content_json = ? WHERE question_id = ?').run(
-      '{not valid json',
-      q.questionId
-    )
     setCurrentQuestion(sessionId, q.questionId)
 
     const result = getSession(db, {

@@ -1,19 +1,21 @@
 # 炫灿-职途向导系统 事件载荷规范
 
 版本：v1.0.0  
-工程基线：`schema.sql v0.1.8-base-ability-rebalance`，`PRD v1.0.5`  
+工程基线：`schema.sql v0.1.10-scoring-closure`，`PRD v1.0.6`  
 文档状态：草案（首期落地实施前置文档）  
-最后更新：2026-07-01  
+最后更新：2026-07-03  
 
 > 2026-07-01 修订：新增 `EMOTION_COLLAPSE_THRESHOLD_REACHED` 事件（PRD v1.0.5 §4.6 / §8.7），对应情绪崩溃兜底强制 `LEVEL_NOT_COMPETENT` 的领域事件。
 >
 > 2026-07-03 修订：新增 `SESSION_FIRST_QUESTION_ACTIVATED` 事件（5.4 Step 9b），学生首次点"开始答题"初始化 `assessment_session.current_question_id` 指针。`SESSION_STARTED` 创建 session 时该字段为 NULL；本事件将其推进到 MIN(ONLINE question_order) 题。
+>
+> 2026-07-03 修订：PRD v1.0.6 新增 `SITTING_STARTED`、`SITTING_ENDED`、`EMOTION_COLLAPSE_RECORDED`、`PLACEMENT_REVIEW_CONFIRMED`、`QUESTION_SUPERSEDED`；`OFFLINE_SCORE_SUBMITTED` 增加 `score_scope`；`RESULT_CALCULATED` 增加 `completion_ratio`。
 
 ---
 
 ## 0. 约定
 
-1. 本文档定义 `action_log.jsonl` 的 **JSONL 信封格式** 及 **26 个领域事件的 payload 结构**。
+1. 本文档定义 `action_log.jsonl` 的 **JSONL 信封格式** 及领域事件的 payload 结构。
 2. 每行为一个完整 JSON 对象（无换行符），以 `\n` 分隔。
 3. `checksum` 由 `SHA-256(JSON.stringify(payload))` 生成，用于完整性校验。
 4. `event_sequence` 在同一 `aggregate_id` 内单调递增，用于检测事件缺失或重复。
@@ -47,8 +49,12 @@ interface ActionLogEntry {
 type AggregateType =
   | 'ASSESSMENT_SESSION'
   | 'TRAINING_SESSION'
-  | 'SAFETY_INCIDENT'
+  | 'STUDENT_PROFILE'
+  | 'STRATEGY_CONFIG'
+  | 'QUESTION_BANK'
   | 'TASK_REPORT'
+  | 'SAFETY_INCIDENT'
+  | 'ASSET_RESOURCE'
   | 'SYSTEM';
 
 type ActorRole = 'STUDENT' | 'TEACHER' | 'ADMIN' | 'SYSTEM';
@@ -59,6 +65,9 @@ type EventType =
   | 'ANSWER_SUBMITTED'
   | 'EMOTION_INTERRUPTED'
   | 'EMOTION_RESUMED'
+  | 'SITTING_STARTED'
+  | 'SITTING_ENDED'
+  | 'EMOTION_COLLAPSE_RECORDED'
   | 'EMOTION_COLLAPSE_THRESHOLD_REACHED'
   | 'OFFLINE_SCORE_SUBMITTED'
   | 'REDLINE_TRIGGERED'
@@ -74,6 +83,8 @@ type EventType =
   | 'REPORT_GENERATED'
   | 'REPORT_EXPORTED'
   | 'REPORT_LOCKED'
+  | 'PLACEMENT_REVIEW_CONFIRMED'
+  | 'QUESTION_SUPERSEDED'
   | 'SAFETY_INCIDENT_CREATED'
   | 'SAFETY_INCIDENT_DETAIL_CONFIRMED'
   | 'SAFETY_INCIDENT_RESOLVED'
@@ -124,7 +135,7 @@ interface AnswerSubmittedPayload {
   question_type: 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG';
   answer_payload: AnswerPayloadDetail;
   is_correct: boolean;
-  score: 0 | 1 | 2;
+  score: 0 | 2;
   question_order: number;            // 该题在本次会话中的序号（1-based）
   submitted_at: string;              // ISO 8601 UTC
 }
@@ -168,7 +179,9 @@ interface EmotionResumedPayload {
 interface OfflineScoreSubmittedPayload {
   session_id: string;
   offline_score_id: string;          // offline_score_record.offline_score_id
-  question_id: string;
+  question_id?: string | null;       // OFFLINE_ABILITY 必填；TASK_OPERATION 为空
+  score_scope: 'OFFLINE_ABILITY' | 'TASK_OPERATION';
+  task_operation_code?: string | null; // TASK_OPERATION 必填
   criterion_scores: CriterionScore[];
   total_score: number;               // 该题总分（所有 criterion 分数之和）
   scored_by: string;                 // 评分教师 user_id
@@ -266,6 +279,47 @@ interface SessionFirstQuestionActivatedPayload {
 **handler 幂等**：`assessment:startSession` 在 `current_question_id` 已非 NULL 时直接返回现有指针，不写事件。
 
 **触发条件**：`session.status === 'ACTIVE' AND current_question_id IS NULL`。其他 status 映射错误码（EMOTION_INTERRUPTED→SESSION_PAUSED / REDLINE_HALTED→SESSION_HALTED / 终态→SESSION_NOT_ACTIVE）。
+
+### 2.11 SITTING_STARTED
+
+一次测评坐次开始。
+
+```typescript
+interface SittingStartedPayload {
+  session_id: string;
+  sitting_no: number;
+  started_at: string;
+  started_by: string;
+}
+```
+
+### 2.12 SITTING_ENDED
+
+一次测评坐次结束。
+
+```typescript
+interface SittingEndedPayload {
+  session_id: string;
+  sitting_no: number;
+  ended_at: string;
+  ended_by: string;
+  end_reason: 'COMPLETED_NORMALLY' | 'PAUSED_BY_PLAN' | 'ENDED_BY_COLLAPSE';
+  current_question_order?: number | null;
+}
+```
+
+### 2.13 EMOTION_COLLAPSE_RECORDED
+
+记录一次坐次内情绪崩溃。
+
+```typescript
+interface EmotionCollapseRecordedPayload {
+  session_id: string;
+  sitting_no: number;
+  recorded_at: string;
+  current_question_order?: number | null;
+}
+```
 
 ---
 
@@ -434,9 +488,40 @@ interface ReportLockedPayload {
 
 ---
 
-## 5. 安全事件（SAFETY_INCIDENT）
+### 4.5 PLACEMENT_REVIEW_CONFIRMED
 
-### 5.1 SAFETY_INCIDENT_CREATED
+安置建议复核确认。
+
+```typescript
+interface PlacementReviewConfirmedPayload {
+  report_id: string;
+  reviewed_by: string;
+  reviewed_at: string;
+}
+```
+
+---
+
+## 5. 题库事件（QUESTION_BANK）
+
+### 5.1 QUESTION_SUPERSEDED
+
+题目因修订被新题替代。该事件固定使用 `aggregate_id = old_question_id`，表达“旧题被新题替代”；`new_question_id` 作为 payload 字段指向替代题。
+
+```typescript
+interface QuestionSupersededPayload {
+  old_question_id: string;
+  new_question_id: string;
+  superseded_at: string;
+  superseded_by: string;
+}
+```
+
+---
+
+## 6. 安全事件（SAFETY_INCIDENT）
+
+### 6.1 SAFETY_INCIDENT_CREATED
 
 安全事件创建（初始状态为 PENDING_DETAIL）。
 
@@ -454,7 +539,7 @@ interface SafetyIncidentCreatedPayload {
 }
 ```
 
-### 5.2 SAFETY_INCIDENT_DETAIL_CONFIRMED
+### 6.2 SAFETY_INCIDENT_DETAIL_CONFIRMED
 
 安全事件详情确认（状态从 PENDING_DETAIL → CONFIRMED）。
 
@@ -470,7 +555,7 @@ interface SafetyIncidentDetailConfirmedPayload {
 }
 ```
 
-### 5.3 SAFETY_INCIDENT_RESOLVED
+### 6.3 SAFETY_INCIDENT_RESOLVED
 
 安全事件处理完毕（状态 → RESOLVED）。
 
@@ -484,7 +569,7 @@ interface SafetyIncidentResolvedPayload {
 }
 ```
 
-### 5.4 SAFETY_INCIDENT_VOIDED
+### 6.4 SAFETY_INCIDENT_VOIDED
 
 安全事件作废（状态 → VOIDED）。
 
@@ -498,7 +583,7 @@ interface SafetyIncidentVoidedPayload {
 }
 ```
 
-### 5.5 SAFETY_INCIDENT_REPLACED_FOR_FACTUAL_CORRECTION
+### 6.5 SAFETY_INCIDENT_REPLACED_FOR_FACTUAL_CORRECTION
 
 安全事件因事实性错误被替换（PRD §5.7 原子事务）。
 
@@ -521,9 +606,9 @@ interface FactualChange {
 
 ---
 
-## 6. 系统事件（SYSTEM）
+## 7. 系统事件（SYSTEM）
 
-### 6.1 SNAPSHOT_COMMITTED
+### 7.1 SNAPSHOT_COMMITTED
 
 SQLite 投影快照提交（domain_event_projection 写入完成）。
 
@@ -537,7 +622,7 @@ interface SnapshotCommittedPayload {
 }
 ```
 
-### 6.2 RECOVERY_REPLAYED
+### 7.2 RECOVERY_REPLAYED
 
 系统恢复：从 action_log.jsonl 重放事件到 SQLite。
 
@@ -559,7 +644,7 @@ interface ErrorSummary {
 }
 ```
 
-### 6.3 RECOVERY_LOG_TRUNCATED
+### 7.3 RECOVERY_LOG_TRUNCATED
 
 action_log.jsonl 日志截断（已投影的历史事件被归档）。
 
@@ -576,9 +661,9 @@ interface RecoveryLogTruncatedPayload {
 
 ---
 
-## 7. 事件写入与回放规则
+## 8. 事件写入与回放规则
 
-### 7.1 写入顺序
+### 8.1 写入顺序
 
 1. 主进程领域服务生成事件 payload。
 2. 计算 `checksum = SHA-256(JSON.stringify(payload))`。
@@ -587,7 +672,7 @@ interface RecoveryLogTruncatedPayload {
 5. 同步写入 `domain_event_projection` 表。
 6. 调用 reducer 更新 SQLite 投影表（assessment_session / training_session / result_record 等）。
 
-### 7.2 回放规则
+### 8.2 回放规则
 
 冷启动时或恢复时，从 `action_log.jsonl` 逐行读取：
 
@@ -597,7 +682,7 @@ interface RecoveryLogTruncatedPayload {
 4. 跳过 `schema_version` 不兼容的事件（记录警告）。
 5. 恢复完成后，对比 SQLite 投影与最后一个 `SNAPSHOT_COMMITTED` 的 `last_event_id`。
 
-### 7.3 Checksum 计算示例（Node.js）
+### 8.3 Checksum 计算示例（Node.js）
 
 ```javascript
 const crypto = require('crypto');
@@ -610,7 +695,7 @@ function calculateChecksum(payload) {
 
 ---
 
-## 8. 事件版本兼容性
+## 9. 事件版本兼容性
 
 `schema_version` 用于标记 payload 结构版本。当前所有事件为 `schema_version: 1`。
 
@@ -626,9 +711,13 @@ function calculateChecksum(payload) {
 | 事件类型 | aggregate_type | aggregate_id 来源 |
 |---|---|---|
 | SESSION_STARTED | ASSESSMENT_SESSION | session_id |
+| SESSION_FIRST_QUESTION_ACTIVATED | ASSESSMENT_SESSION | session_id |
 | ANSWER_SUBMITTED | ASSESSMENT_SESSION | session_id |
 | EMOTION_INTERRUPTED | ASSESSMENT_SESSION | session_id |
 | EMOTION_RESUMED | ASSESSMENT_SESSION | session_id |
+| SITTING_STARTED | ASSESSMENT_SESSION | session_id |
+| SITTING_ENDED | ASSESSMENT_SESSION | session_id |
+| EMOTION_COLLAPSE_RECORDED | ASSESSMENT_SESSION | session_id |
 | EMOTION_COLLAPSE_THRESHOLD_REACHED | ASSESSMENT_SESSION | session_id |
 | OFFLINE_SCORE_SUBMITTED | ASSESSMENT_SESSION | session_id |
 | REDLINE_TRIGGERED | ASSESSMENT_SESSION | session_id |
@@ -644,6 +733,8 @@ function calculateChecksum(payload) {
 | REPORT_GENERATED | TASK_REPORT | report_id |
 | REPORT_EXPORTED | TASK_REPORT | report_id |
 | REPORT_LOCKED | TASK_REPORT | report_id |
+| PLACEMENT_REVIEW_CONFIRMED | TASK_REPORT | report_id |
+| QUESTION_SUPERSEDED | QUESTION_BANK | old_question_id |
 | SAFETY_INCIDENT_CREATED | SAFETY_INCIDENT | incident_id |
 | SAFETY_INCIDENT_DETAIL_CONFIRMED | SAFETY_INCIDENT | incident_id |
 | SAFETY_INCIDENT_RESOLVED | SAFETY_INCIDENT | incident_id |
@@ -673,4 +764,3 @@ function calculateChecksum(payload) {
 ---
 
 *本文档配套文件：`doc/xc-career-guide-json-field-schema-v1.0.0.md`*
-
