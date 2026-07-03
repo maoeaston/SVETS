@@ -1,0 +1,15 @@
+{
+  "defaults": {
+    "platform": "apimart",
+    "model": "gpt-image-2",
+    "size": "1:1",
+    "resolution": "1k",
+    "output_format": "png"
+  },
+  "jobs": [
+    {
+      "name": "DRG-OBJ02-goods-facing-pack-v002",
+      "prompt": "/* DRAG_OBJECT_PACK_CONFIG\n   VERSION: 2.0.0\n   AESTHETIC: Standardized vocational supermarket goods family overview board */\n{\n  \"GLOBAL_SETTINGS\": {\n    \"aspect_ratio\": \"1:1\",\n    \"style\": \"photorealistic educational asset family board\",\n    \"background\": \"clean white seamless studio background\",\n    \"lighting\": \"soft top-front studio light with even illumination and restrained shadow\",\n    \"render_flags\": [\"sharp_edges\", \"consistent_scale\", \"clear_silhouette\", \"overview_board_readability\", \"no_text\", \"no_logo\", \"no_watermark\"]\n  },\n  \"CORE_ASSETS\": {\n    \"pack_name\": \"goods_facing_pack_overview_v002\",\n    \"items\": [\n      \"four boxed snack products matching the current draggable asset family: one deep blue, one vivid red, one warm yellow, one fresh green\",\n      \"three boxed homecare products matching the current draggable asset family: one white-blue, one white-orange, one purple-white\",\n      \"two bottled drinks matching the current draggable asset family: one orange bottle, one green bottle\"\n    ],\n    \"layout\": \"nine products arranged as one standardized family overview board, evenly spaced in a clean single-row or balanced shallow two-row layout, all front-facing with slight three-quarter consistency, no overlap\",\n    \"view\": \"front-facing family overview board, stable camera, minimal perspective distortion\",\n    \"surface_language\": \"simple geometric color blocks, low-text or text-free packaging, restrained product graphics, no realistic food glamour photography dominating the front panels\",\n    \"material_goal\": \"show the full current DRG-OBJ02 draggable family as a calm training asset overview, not as commercial packaging advertising, with each product clearly distinguishable and visually consistent with the existing v002 child assets\"\n  },\n  \"OUTPUT\": {\n    \"consistency\": \"all nine products must belong to one Chinese mainland school vocational supermarket training visual system and read as one standardized assessment asset family\",\n    \"avoid\": [\"brand logos\", \"large food beauty shots\", \"advertising poster composition\", \"dramatic reflections\", \"busy decorative props\", \"hands\", \"shelf scene\", \"strong overseas retail branding\", \"random extra products\", \"inconsistent product family count\"]\n  }\n}"
+    }
+  ]
+}

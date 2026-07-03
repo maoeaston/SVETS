@@ -1,0 +1,135 @@
+{
+  "defaults": {
+    "platform": "apimart",
+    "model": "gpt-image-2",
+    "size": "16:9",
+    "resolution": "2k",
+    "quality": "medium",
+    "output_format": "png"
+  },
+  "jobs": [
+    {
+      "name": "JDG-MS02-standard-shelf-master-v001",
+      "prompt": "Landscape 16:9 photorealistic vocational assessment still. Fixed environment: standard supermarket training shelf area inside a Chinese mainland school practice room. Eye-level 28 mm lens feel, neutral indoor fluorescent lighting softened for realism, one white or light-neutral three-layer retail shelf with clear price rails, several boxed goods, bottle drinks, and daily-use products arranged in a campus training supermarket corner. Product packaging should use text-free or low-text design based on color blocks, icons, and simple shapes, similar in readability to DRG-OBJ02-goods-facing-pack-v001, so shelf text does not become garbled. Floor is clean light gray anti-slip tile, right side has a narrow aisle, left side has one small replenishment cart parked still. Keep shelf geometry, aisle width, lighting direction, and prop positions stable for future variants. One East Asian trainee stands near the middle shelf in a light gray training polo shirt, dark navy apron, black pants, non-slip shoes. The person must read as a Chinese mainland school vocational trainee, not a Western retail advertisement model. Calm instructional realism, no dramatic cinema, no baked text, no watermark."
+    },
+    {
+      "name": "JDG-MS02-facing-correct-v001",
+      "prompt": "Landscape 16:9 photorealistic vocational assessment still in the same supermarket training shelf area inside a Chinese mainland school practice room. Eye-level 28 mm lens feel, same shelf geometry, same aisle width, same lighting direction, same cart position, same wardrobe. Use the same white or light-neutral shelf system as JDG-MS02-standard-shelf-master-v001-r2. Shelf products should use text-free or low-text packaging based on color blocks, icons, and simple shapes, similar in readability to DRG-OBJ02-goods-facing-pack-v001, so packaging text does not turn into garbled noise. Show one East Asian trainee placing boxed supermarket goods on the shelf with all product fronts facing outward, edges aligned, spacing even, no tilt, no stacking errors. The person must read as a Chinese mainland school vocational trainee. The action must be clear and readable as the correct assessment example. Calm instructional realism, no text overlay, no watermark."
+    },
+    {
+      "name": "JDG-MS02-facing-wrong-v001",
+      "model": "gpt-image-2-official",
+      "prompt": "Transform the provided assessment scene into the wrong-action variant while preserving the original camera angle, shelf positions, aisle width, cart position, floor, lighting direction, costume, and character identity. Change only the action from neatly placing goods front-facing and aligned to placing goods tilted, misaligned, and not front-facing. Keep the image readable as a paired vocational training comparison image. No extra people, no dramatic effects, no text overlay.",
+      "image_paths": [
+        "AIimages/JDG-MS02-facing-correct-v001.png"
+      ]
+    },
+    {
+      "name": "JDG-MS01-training-desk-master-v001",
+      "prompt": "Landscape 16:9 photorealistic vocational assessment still. Fixed environment: supermarket training desk area inside a Chinese mainland school practice room. Eye-level 28 mm lens feel, soft neutral indoor light, one sturdy light-wood training table, several small daily-use practice props, one shallow storage tray, one cup, one folded paper sheet, and one clean neutral wall in the background. Keep table position, wall, tray positions, light direction, and camera angle stable for future variants. One East Asian trainee from the fixed character pool wears a light gray training polo shirt, dark navy apron, black pants, non-slip shoes. The person must read as a Chinese mainland school vocational trainee. Calm instructional realism, no dramatic effects, no baked text, no watermark."
+    },
+    {
+      "name": "JDG-MS01-pinch-correct-v001",
+      "prompt": "Landscape 16:9 photorealistic vocational assessment still in the same training desk area inside a Chinese mainland school practice room. Keep the same camera angle, desk position, tray position, and lighting. Show one East Asian trainee using two fingertips to gently pick up a small object from the tabletop with stable control, no crushing, no slipping, no dropping. The person must read as a Chinese mainland school vocational trainee. The action must read clearly as the correct vocational assessment example for fine motor control. Calm instructional realism, no text overlay, no watermark."
+    },
+    {
+      "name": "JDG-MS01-pinch-wrong-v001",
+      "model": "gpt-image-2-official",
+      "prompt": "Transform the provided desk assessment scene into the wrong-action variant while preserving the original camera angle, table, tray, wall, lighting direction, costume, and character identity. Change only the action from stable two-fingertip picking to clumsy over-force pinching or slipping that causes the small object to drop or be crushed. Keep the image readable as a paired vocational training comparison image. No extra props, no dramatic effects, no text overlay.",
+      "image_paths": [
+        "AIimages/JDG-MS01-pinch-correct-v001.png"
+      ]
+    },
+    {
+      "name": "JDG-MS03-storeroom-aisle-master-v001",
+      "prompt": "Landscape 16:9 photorealistic vocational assessment still. Fixed environment: supermarket storeroom aisle area inside a Chinese mainland school practice room. Eye-level 28 mm lens feel, neutral warehouse-style indoor lighting, one narrow but tidy aisle, stacked cartons along one side, one empty flattened carton area near the wall, one utility cart, and visible but uncluttered floor markings. Keep aisle width, carton layout, wall position, and lighting direction stable for future variants. One East Asian trainee wears a light gray training polo shirt, dark navy apron, black pants, non-slip shoes. The person must read as a Chinese mainland school vocational trainee. Calm instructional realism, no cinematic tension, no baked text, no watermark."
+    },
+    {
+      "name": "JDG-MS03-open-box-correct-v001",
+      "prompt": "Landscape 16:9 photorealistic vocational assessment still in the same storeroom aisle area inside a Chinese mainland school practice room. Keep the same camera angle, aisle geometry, stacked cartons, utility cart, and lighting. Show one East Asian trainee stabilizing a carton with one hand while using the other hand to open the sealing tape carefully from the tape edge with controlled force, without damaging the box. The person must read as a Chinese mainland school vocational trainee. The action must read clearly as the correct vocational assessment example. Calm instructional realism, no text overlay, no watermark."
+    },
+    {
+      "name": "JDG-MS03-open-box-wrong-v001",
+      "model": "gpt-image-2-official",
+      "prompt": "Transform the provided storeroom assessment scene into the wrong-action variant while preserving the original camera angle, aisle geometry, stacked cartons, cart position, wall, lighting direction, costume, and character identity. Change only the action from controlled one-hand stabilization and careful tape opening to rough two-hand tearing that bends or damages the carton. Keep the image readable as a paired vocational training comparison image. No extra people, no dramatic effects, no text overlay.",
+      "image_paths": [
+        "AIimages/JDG-MS03-open-box-correct-v001.png"
+      ]
+    },
+    {
+      "name": "JDG-MS04-safety-risk-master-v001",
+      "prompt": "Landscape 16:9 photorealistic vocational assessment still. Fixed environment: supermarket safety demonstration zone inside a Chinese mainland school practice room. Eye-level 28 mm lens feel, neutral indoor training light, one controlled practice corner containing a wet-floor patch, a visible wall socket area, a cleaning-supplies cabinet, a small step platform, and a safety tool table. The layout must feel like a standardized training environment, not a real accident scene. Keep camera angle, floor markings, object positions, and lighting stable for future correct and wrong variants. One East Asian trainee from the fixed character pool is present. The person must read as a Chinese mainland school vocational trainee. Calm instructional realism, no panic, no cinematic hazard effects, no text overlay, no watermark."
+    },
+    {
+      "name": "JDG-MS04-wet-floor-correct-v001",
+      "prompt": "Landscape 16:9 photorealistic vocational assessment still in the same safety demonstration zone inside a Chinese mainland school practice room. Keep the same camera angle, floor patch position, socket area, cabinet, step platform, safety tool table, and lighting. Show one East Asian trainee noticing a wet floor area and walking slowly and carefully around it with stable posture, no running, no jumping. The person must read as a Chinese mainland school vocational trainee. The action must be clear as the correct safety assessment example. Calm instructional realism, no text overlay, no watermark."
+    },
+    {
+      "name": "JDG-MS04-wet-floor-wrong-v001",
+      "model": "gpt-image-2-official",
+      "prompt": "Transform the provided safety assessment scene into the wrong-action variant while preserving the original camera angle, wet-floor patch position, socket area, cabinet, step platform, tool table, lighting direction, costume, and character identity. Change only the action from careful slow walking around the wet area to running or jumping through the wet area with unsafe posture. Keep the image readable as a paired vocational training comparison image. No extra people, no dramatic effects, no text overlay.",
+      "image_paths": [
+        "AIimages/JDG-MS04-wet-floor-correct-v001.png"
+      ]
+    },
+    {
+      "name": "JDG-MS04-electric-wire-correct-v001",
+      "prompt": "Landscape 16:9 photorealistic vocational assessment still in the same safety demonstration zone inside a Chinese mainland school practice room. Keep the same camera angle, floor, socket area, cabinet, step platform, tool table, and lighting. Show one East Asian trainee seeing a visible exposed wire or socket hazard and keeping a safe distance without touching it, body posture calm and clearly avoidant. The person must read as a Chinese mainland school vocational trainee. The action must read as the correct safety assessment example. Calm instructional realism, no text overlay, no watermark."
+    },
+    {
+      "name": "JDG-MS04-electric-wire-wrong-v001",
+      "model": "gpt-image-2-official",
+      "prompt": "Transform the provided safety assessment scene into the wrong-action variant while preserving the original camera angle, wire or socket hazard position, cabinet, step platform, tool table, floor, lighting direction, costume, and character identity. Change only the action from safely avoiding the wire hazard to reaching toward it and trying to touch it. Keep the image readable as a paired vocational training comparison image. No extra people, no dramatic effects, no text overlay.",
+      "image_paths": [
+        "AIimages/JDG-MS04-electric-wire-correct-v001.png"
+      ]
+    },
+    {
+      "name": "JDG-MS05-social-interaction-master-v001",
+      "prompt": "Landscape 16:9 photorealistic vocational assessment still. Fixed environment: supermarket social interaction zone inside a Chinese mainland school practice room near a practice shelf and open aisle. Eye-level 28 mm lens feel, soft neutral indoor light, two East Asian people can stand comfortably in frame, one shelf edge visible on one side, one open aisle behind them, and one neutral service counter or information point in the background. Keep camera angle, environment layout, shelf edge, aisle, and lighting direction stable for future variants. Characters must read as Chinese mainland school vocational training participants or instructors and wear simple training clothing consistent with the rest of the asset set. Calm instructional realism, no baked text, no watermark."
+    },
+    {
+      "name": "JDG-MS05-greeting-correct-v001",
+      "prompt": "Landscape 16:9 photorealistic vocational assessment still in the same supermarket social interaction zone inside a Chinese mainland school practice room. Keep the same camera angle, shelf edge, aisle, counter, and lighting. Show two East Asian people, one greeting the trainee and the trainee giving a polite verbal response with open posture, natural eye contact, and calm expression. Both people must read as Chinese mainland school vocational training participants or instructors. The action must read clearly as the correct social assessment example. Calm instructional realism, no text overlay, no watermark."
+    },
+    {
+      "name": "JDG-MS05-greeting-wrong-v001",
+      "model": "gpt-image-2-official",
+      "prompt": "Transform the provided social interaction assessment scene into the wrong-action variant while preserving the original camera angle, environment layout, shelf edge, aisle, counter, lighting direction, costume, and character identities. Change only the action from politely responding to a greeting to turning away and not responding. Keep the image readable as a paired vocational training comparison image. No extra people, no dramatic effects, no text overlay.",
+      "image_paths": [
+        "AIimages/JDG-MS05-greeting-correct-v001.png"
+      ]
+    },
+    {
+      "name": "DRG-BG01-shelf-alignment-board-v001",
+      "prompt": "Landscape 16:9 photorealistic training interface background for a supermarket shelf drag-and-drop task. Front-facing composition, minimal perspective distortion, one clear retail shelf with three horizontal levels and six obvious product landing zones. The shelf should look realistic but visually clean, with subtle material contrast indicating drop areas. Neutral indoor light, soft shadows, no baked text, no arrows, no watermark, no extra clutter."
+    },
+    {
+      "name": "DRG-BG02-three-zone-classification-board-v001",
+      "prompt": "Landscape 16:9 photorealistic training interface background for a three-zone drag-and-drop classification task. Front-facing composition, minimal perspective distortion, one clean tabletop or board surface with three clearly separated landing zones, each zone visually distinct through subtle color or material difference only. The environment should feel like a vocational training classroom inside a supermarket practice room. Neutral light, soft shadow, no baked text, no arrows, no watermark."
+    },
+    {
+      "name": "DRG-BG03-three-step-flow-board-v001",
+      "prompt": "Landscape 16:9 photorealistic training interface background for a three-step drag-and-drop sequencing task. Front-facing composition, minimal perspective distortion, one clean board with three evenly spaced step slots arranged left to right. The board should feel realistic and instructional, with subtle slot contrast but no text labels. Neutral indoor light, soft shadow, uncluttered environment, no arrows, no watermark."
+    },
+    {
+      "name": "DRG-BG04-two-zone-safety-board-v001",
+      "prompt": "Landscape 16:9 photorealistic training interface background for a two-zone safety drag-and-drop task. Front-facing composition, minimal perspective distortion, one clean board with two clearly separated landing zones suitable for safety versus danger sorting. Use subtle material contrast and stable geometry only, no baked text. The environment should feel like a standardized vocational safety training board. Neutral light, soft shadow, no arrows, no watermark."
+    },
+    {
+      "name": "DRG-OBJ02-goods-facing-pack-v001",
+      "size": "1:1",
+      "prompt": "/* DRAG_OBJECT_PACK_CONFIG\n   VERSION: 1.0.0\n   AESTHETIC: Realistic supermarket goods training pack */\n{\n  \"GLOBAL_SETTINGS\": {\n    \"aspect_ratio\": \"1:1\",\n    \"style\": \"photorealistic training prop packshot\",\n    \"background\": \"clean white seamless studio background\",\n    \"lighting\": \"soft top-front studio light\",\n    \"render_flags\": [\"sharp_edges\", \"consistent_scale\", \"no_text\", \"no_watermark\"]\n  },\n  \"CORE_ASSETS\": {\n    \"pack_name\": \"goods_facing_pack\",\n    \"items\": [\n      \"three boxed snack products with clear front face\",\n      \"two boxed daily-use products with rectangular silhouette\",\n      \"one bottle drink product with front-facing label area\"\n    ],\n    \"view\": \"front-facing slight three-quarter view\",\n    \"material_goal\": \"real supermarket practice goods for Chinese mainland school vocational training, easy to read at drag-card size\"\n  },\n  \"OUTPUT\": {\n    \"consistency\": \"all items belong to one realistic vocational training visual system\",\n    \"avoid\": [\"brand logos\", \"busy reflections\", \"decorative composition\", \"strong overseas retail branding\"]\n  }\n}"
+    },
+    {
+      "name": "DRG-OBJ04-sequence-card-pack-v001",
+      "size": "1:1",
+      "prompt": "/* DRAG_OBJECT_PACK_CONFIG\n   VERSION: 1.0.0\n   AESTHETIC: Realistic workflow card pack */\n{\n  \"GLOBAL_SETTINGS\": {\n    \"aspect_ratio\": \"1:1\",\n    \"style\": \"photorealistic illustrated workflow cards for vocational training\",\n    \"background\": \"clean white seamless studio background\",\n    \"lighting\": \"soft top-front studio light\",\n    \"render_flags\": [\"sharp_edges\", \"consistent_scale\", \"no_text\", \"no_watermark\"]\n  },\n  \"CORE_ASSETS\": {\n    \"pack_name\": \"sequence_card_pack\",\n    \"items\": [\n      \"pick up item action card\",\n      \"place item action card\",\n      \"organize and return item action card\",\n      \"arrive at work card\",\n      \"work in progress card\",\n      \"short break card\",\n      \"calm down card\",\n      \"adjust and continue card\"\n    ],\n    \"view\": \"front-facing card view\",\n    \"material_goal\": \"clear action readability at small card size, East Asian character pool, Chinese mainland school vocational training visual system\"\n  },\n  \"OUTPUT\": {\n    \"consistency\": \"all cards must look like one standardized assessment set\",\n    \"avoid\": [\"dramatic poses\", \"busy backgrounds\", \"small unreadable details\", \"non-East-Asian character appearance\"]\n  }\n}"
+    },
+    {
+      "name": "DRG-OBJ06-price-tag-pack-v001",
+      "size": "1:1",
+      "prompt": "/* DRAG_OBJECT_PACK_CONFIG\n   VERSION: 1.0.0\n   AESTHETIC: Realistic price tag and product matching pack */\n{\n  \"GLOBAL_SETTINGS\": {\n    \"aspect_ratio\": \"1:1\",\n    \"style\": \"photorealistic supermarket training asset pack\",\n    \"background\": \"clean white seamless studio background\",\n    \"lighting\": \"soft top-front studio light\",\n    \"render_flags\": [\"sharp_edges\", \"consistent_scale\", \"no_watermark\"]\n  },\n  \"CORE_ASSETS\": {\n    \"pack_name\": \"price_tag_pack\",\n    \"items\": [\n      \"four boxed or bottled supermarket goods with clearly distinct shapes and colors\",\n      \"four matching clean retail price tags aligned separately\"\n    ],\n    \"view\": \"front-facing slight three-quarter view\",\n    \"material_goal\": \"easy one-to-one matching for vocational assessment tasks\"\n  },\n  \"OUTPUT\": {\n    \"consistency\": \"products and tags must feel like one real shelf system\",\n    \"avoid\": [\"fake luxury packaging\", \"decorative layout\", \"unreadable micro details\"]\n  }\n}"
+    }
+  ]
+}
