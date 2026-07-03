@@ -374,8 +374,8 @@ describe('assessment:getSession 脱敏与字段映射', () => {
     if (!result.success) return
     const cq = result.currentQuestion!
     expect(cq.options).toHaveLength(3)
-    expect(cq.options![0]).toEqual({ key: 'A', text: '轻拿轻放' })
-    expect(cq.options![1]).toEqual({ key: 'B', text: '抛掷商品' })
+    expect(cq.options![0]).toEqual({ key: 'A', text: '轻拿轻放', imageAssetId: null })
+    expect(cq.options![1]).toEqual({ key: 'B', text: '抛掷商品', imageAssetId: null })
     // [!] 脱敏：options[*] 无 is_correct / expected_answer
     expect(asRecord(cq.options![0]).is_correct).toBeUndefined()
     expect(asRecord(cq.options![1]).is_correct).toBeUndefined()
@@ -411,8 +411,8 @@ describe('assessment:getSession 脱敏与字段映射', () => {
     if (!result.success) return
     const cq = result.currentQuestion!
     expect(cq.dragItems).toEqual([
-      { itemId: 'd1', label: '苹果' },
-      { itemId: 'd2', label: '面包' }
+      { itemId: 'd1', label: '苹果', imageAssetId: null },
+      { itemId: 'd2', label: '面包', imageAssetId: null }
     ])
     expect(cq.dropZones).toEqual([
       { zoneId: 'z1', label: '生鲜区' },

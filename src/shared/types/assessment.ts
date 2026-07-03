@@ -120,9 +120,9 @@ export interface SessionQuestionContent {
   prompt: string
   assessmentPoint: string
   // SINGLE_CHOICE 选项（已脱敏，无 is_correct）
-  options?: { key: string; text: string }[]
+  options?: { key: string; text: string; imageAssetId?: string | null }[]
   // DRAG 拖拽配置
-  dragItems?: { itemId: string; label: string }[]
+  dragItems?: { itemId: string; label: string; imageAssetId?: string | null }[]
   dropZones?: { zoneId: string; label: string }[]
   scoringMode?: 'ALL_OR_NOTHING' | 'PARTIAL_CREDIT'
   // question_bank.media_asset_id（题目主图）

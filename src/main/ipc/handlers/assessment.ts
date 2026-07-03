@@ -1660,7 +1660,11 @@ function readCurrentQuestionContent(
           .filter((o): o is Record<string, unknown> => o !== null && typeof o === 'object')
           .map((o) => ({
             key: typeof o.key === 'string' ? o.key : '',
-            text: typeof o.text === 'string' ? o.text : ''
+            text: typeof o.text === 'string' ? o.text : '',
+            imageAssetId:
+              o.image_asset_id != null && typeof o.image_asset_id === 'string'
+                ? o.image_asset_id
+                : null
             // [!] 刻意不读 o.is_correct —— 脱敏
           }))
       : undefined
@@ -1673,7 +1677,11 @@ function readCurrentQuestionContent(
           .filter((d): d is Record<string, unknown> => d !== null && typeof d === 'object')
           .map((d) => ({
             itemId: typeof d.item_id === 'string' ? d.item_id : '',
-            label: typeof d.label === 'string' ? d.label : ''
+            label: typeof d.label === 'string' ? d.label : '',
+            imageAssetId:
+              d.image_asset_id != null && typeof d.image_asset_id === 'string'
+                ? d.image_asset_id
+                : null
           }))
       : undefined
     const dropZones = Array.isArray(content.drop_zones)
