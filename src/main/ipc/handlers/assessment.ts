@@ -22,6 +22,7 @@ import type { DBAdapter } from '../../db/interface'
 import { SqliteAdapter } from '../../db/sqlite-adapter'
 import { getDatabase } from '../../db/connection'
 import { assertCaller, assertStudent, assertSessionOwner } from '../../utils/auth-context'
+import { validateContentJson } from '../../utils/validate-content-json'
 import { writeEvent } from '../../domain/event-writer'
 import { applyAssessmentEvent } from '../../domain/assessment-reducer'
 import {
@@ -609,6 +610,10 @@ export function submitAnswer(db: DBAdapter, params: SubmitAnswerParams): SubmitA
   try {
     content = JSON.parse(sq.content_json)
   } catch {
+    return { success: false, errorCode: 'VALIDATION_ERROR' }
+  }
+  const contentValidation = validateContentJson(content, { allowMissingBaseFields: true })
+  if (!contentValidation.ok) {
     return { success: false, errorCode: 'VALIDATION_ERROR' }
   }
 

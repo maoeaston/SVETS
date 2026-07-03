@@ -721,4 +721,27 @@ describe('assessment:submitAnswer content_json 缺校验数据', () => {
     )
     expect(result).toEqual({ success: false, errorCode: 'VALIDATION_ERROR' })
   })
+
+  it('TRUE_FALSE variants 脏数据（variant.expected_answer 非 boolean）→ VALIDATION_ERROR', () => {
+    const { sessionId, questions } = setupSession()
+    const q = pickQuestion(questions, 'TRUE_FALSE')
+    seedContentJson(q.questionId, {
+      question_type: 'TRUE_FALSE',
+      expected_answer: true,
+      variants: [
+        {
+          variant_id: 'bad_variant',
+          media_asset_id: 'asset_img_jdg_ms02_facing_correct_v001',
+          media_brief: '坏变体',
+          expected_answer: 'true'
+        }
+      ]
+    })
+
+    const result = submitAnswer(
+      db,
+      baseAnswerParams(sessionId, q.questionId, { question_type: 'TRUE_FALSE', selected: true })
+    )
+    expect(result).toEqual({ success: false, errorCode: 'VALIDATION_ERROR' })
+  })
 })

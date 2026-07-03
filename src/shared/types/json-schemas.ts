@@ -31,10 +31,22 @@ interface ContentJsonBase {
   media_brief?: string
   note?: string
   source?: ContentSource
+  variants?: ContentVariant[] | null
 }
 
 export interface ContentJsonTrueFalse extends ContentJsonBase {
   question_type: 'TRUE_FALSE'
+  expected_answer: boolean
+  variants?: TrueFalseVariant[] | null
+}
+
+export interface ContentVariant {
+  variant_id: string
+  media_asset_id: string | null
+  media_brief: string
+}
+
+export interface TrueFalseVariant extends ContentVariant {
   expected_answer: boolean
 }
 

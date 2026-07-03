@@ -40,6 +40,7 @@
 
 ### JSON 字段必须验证
 - 写入任何 JSON TEXT 字段前，必须按 `doc/xc-career-guide-json-field-schema-v1.0.0.md` 验证结构
+- 新增 JSON 结构字段时，必须同时补共享类型、运行时校验器和至少一个消费路径测试，三者缺一不可
 - `content_json` 的 `question_type` 必须与 `question_bank.question_type` 一致
 - `scoring_policy_json` 的 `pass_threshold > improve_threshold` 必须满足
 - 所有 `asset_id` 引用必须存在于 `asset_resource` 且 `status = 'ACTIVE'`
