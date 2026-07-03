@@ -46,6 +46,10 @@ import type {
   ModuleScore
 } from '@shared/types/event-payloads'
 import { judgeLevel, type ModuleScoreInput, type JudgeLevelInput } from '../../domain/level-judge'
+import {
+  SAFETY_REASON_CODES as SAFETY_REASON_CODES_SRC,
+  SAFETY_CONTEXT_PHASES as SAFETY_CONTEXT_PHASES_SRC
+} from '../../../shared/types/safety'
 import type {
   AssessmentStrategyType,
   CreateSessionParams,
@@ -106,31 +110,10 @@ const OPEN_SESSION_STATUSES = [
   'OFFLINE_PENDING'
 ] as const
 
-// safety_incident.reason_code 枚举（schema.sql:812 CHECK 约束，镜像保持同步）。
-// [!] 修改时同步 schema.sql + doc 事件规范；schema CHECK 是兜底，handler 前置校验避免脏 jsonl。
-const SAFETY_REASON_CODES = new Set<string>([
-  'BLADE_TOWARD_SELF',
-  'BLADE_TOWARD_OTHERS',
-  'DANGEROUS_CLIMBING',
-  'THROWING_OBJECT',
-  'AGGRESSIVE_BEHAVIOR',
-  'OTHER_SAFETY_RISK'
-])
-
-// safety_incident.context_phase 枚举（schema.sql:826 CHECK 约束）。
-// [!] impl.md Step 8 风险点 10：context_phase 不含 BASELINE_ASSESSMENT
-// （那属于 strategy_type）。BASELINE_ASSESSMENT 会被 schema CHECK 拦截。
-const SAFETY_CONTEXT_PHASES = new Set<string>([
-  'ONLINE_ASSESSMENT',
-  'TRAINING_WATCH',
-  'TRAINING_LEARN',
-  'TRAINING_PRACTICE',
-  'TRAINING_DO',
-  'OFFLINE_SCORING',
-  'TOOL_PREPARATION',
-  'BREAK_OR_TRANSITION',
-  'OTHER'
-])
+// safety_incident 枚举：从 shared 共享常量派生（单一来源 = src/shared/types/safety.ts）。
+// schema CHECK 是兜底；handler 前置校验避免脏 jsonl。
+const SAFETY_REASON_CODES = new Set<string>(SAFETY_REASON_CODES_SRC.map((r) => r.value))
+const SAFETY_CONTEXT_PHASES = new Set<string>(SAFETY_CONTEXT_PHASES_SRC.map((p) => p.value))
 
 // 每道 ONLINE 题的最高分（doc §2：TRUE_FALSE/SINGLE_CHOICE exact 2/0，DRAG 2/1/0）。
 // 用于从 answer_record.score 反推题数（max_score = answered * MAX_SCORE_PER_QUESTION）。
@@ -1877,13 +1860,11 @@ export function startSession(db: DBAdapter, params: StartSessionParams): StartSe
   }
 
   // 4. 读 current_question_id（SessionRow 类型只含 session_id/student_id/status，
-  //    不带 current_question_id；单独 SELECT）
+  //    不带 current_question_id；单独 SELECT）。
+  //    assertSessionOwner (step 2) 已确保 session 存在 → pointer 必非 undefined。
   const pointer = db
     .prepare('SELECT current_question_id FROM assessment_session WHERE session_id = ?')
-    .get(params.sessionId) as { current_question_id: string | null } | undefined
-  if (!pointer) {
-    return { success: false, errorCode: 'NOT_FOUND' }
-  }
+    .get(params.sessionId) as { current_question_id: string | null }
 
   // 5. 幂等：current_question_id 已非 NULL → 直接返回，不写事件
   if (pointer.current_question_id) {
