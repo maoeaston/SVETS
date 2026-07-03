@@ -64,6 +64,14 @@
         <span class="meta-item">{{ formatPhase(currentQuestion.questionPhase) }}</span>
       </div>
 
+      <!-- 题目主图（question_bank.media_asset_id，经 app:// 协议加载） -->
+      <img
+        v-if="currentQuestion.mediaAssetId"
+        :src="'app://asset/' + currentQuestion.mediaAssetId"
+        :alt="currentQuestion.mediaBrief ?? '题目主图'"
+        class="question-image"
+      />
+
       <p class="prompt">{{ currentQuestion.prompt }}</p>
       <p v-if="currentQuestion.assessmentPoint" class="assessment-point">
         考点：{{ currentQuestion.assessmentPoint }}
@@ -89,6 +97,12 @@
           class="choice"
         >
           <input v-model="scAnswer" type="radio" :value="opt.key" />
+          <img
+            v-if="opt.imageAssetId"
+            :src="'app://asset/' + opt.imageAssetId"
+            :alt="opt.text"
+            class="option-image"
+          />
           <span>{{ opt.key }}. {{ opt.text }}</span>
         </label>
       </div>
@@ -100,6 +114,12 @@
           :key="item.itemId"
           class="drag-row"
         >
+          <img
+            v-if="item.imageAssetId"
+            :src="'app://asset/' + item.imageAssetId"
+            :alt="item.label"
+            class="drag-image"
+          />
           <span class="drag-label">{{ item.label }}</span>
           <select v-model="dragMap[item.itemId]" class="drag-select">
             <option value="">— 选择放置区 —</option>
@@ -414,6 +434,35 @@ onMounted(() => {
   color: #6b7280;
   margin-bottom: 20px;
   font-style: italic;
+}
+.question-image {
+  display: block;
+  max-width: 100%;
+  max-height: 320px;
+  height: auto;
+  margin: 0 0 16px 0;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  object-fit: contain;
+}
+.option-image {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  flex-shrink: 0;
+}
+.drag-image {
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
 }
 .answer-area {
   margin: 20px 0;
