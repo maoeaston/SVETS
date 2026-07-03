@@ -514,6 +514,19 @@ AssessmentListView（教师）：列出 ACTIVE/EMOTION_INTERRUPTED/OFFLINE_PENDI
 
 **commit message：** `feat(assessment): renderer views + pinia store + router`
 
+**实测结论（Step 9b 实现）：**
+- **范围扩展**：原 impl.md 列 5 文件（store + 3 view + router）。实际因两个未明的设计点扩到 13 文件：①学生首次进入 session（current_question_id=null）无法渲染第一题 → 新增 `SESSION_FIRST_QUESTION_ACTIVATED` 事件 + reducer 分支 + `assessment:startSession` IPC；②学生端无入口（listSessions 是 TEACHER/ADMIN only）→ 新增 `assessment:listMySessions` IPC + `StudentHomeView.vue`。决策点记录在 `.continue-here.md` Key Decisions。
+- **事件命名**：`SESSION_FIRST_QUESTION_ACTIVATED`（与 SESSION_STARTED/ABORTED 前缀一致；描述业务事实"学生点了开始"，比"QUESTION_POINTER_INITIALIZED"等实现细节命名更可读）。
+- **reducer 幂等策略**：applySessionFirstQuestionActivated 不依赖 `last_status_event_id`（该字段追踪 status 变更，本事件非 status 变更）。改为 SELECT `current_question_id`，非 NULL 则 skip；UPDATE 时只动 `last_applied_event_id`（与 `applyAnswerSubmitted` 同模式）。WHERE 加 `AND current_question_id IS NULL` 兜底防覆盖。冷启动重放（如 SESSION_STARTED → ANSWER_SUBMITTED → SESSION_FIRST_QUESTION_ACTIVATED 乱序）下，current_question_id 已被 ANSWER_SUBMITTED 推进，本事件 WHERE 0 row affected 无害 skip。
+- **handler startSession 幂等返回**：current_question_id 已非 NULL → 直接返回现有指针，**不写事件**（与 calculateResult 已有 result_record 时返回已有 resultId 同模式）。避免引入 `SESSION_ALREADY_STARTED` 新错误码。
+- **startSession status 映射**：复用 `statusToAnswerErrorCode`（与 submitAnswer 同映射），只允许 ACTIVE；EMOTION_INTERRUPTED→SESSION_PAUSED / REDLINE_HALTED→SESSION_HALTED / 终态→SESSION_NOT_ACTIVE。
+- **listMySessions**：复用 listSessions 的 SELECT + 行映射，仅 WHERE 改为 `student_id = caller.userId AND status IN (OPEN_SESSION_STATUSES)`。返回 SessionListItem[]（含 studentName 字段，虽对学生自查冗余但保持类型一致）。
+- **学生入口实现**：StudentLayout 从 placeholder 改为带 sidebar + RouterView 外壳；新增 StudentHomeView.vue（默认 `/student` 子路由）调 listMySessions 展示卡片列表，点击进入 AssessmentView。
+- **AssessmentView 题型分支**：TRUE_FALSE / SINGLE_CHOICE 用 radio；DRAG 简化为 select-per-item（MVP 阶段；真正 HTML5 拖拽 UI 后续迭代，计分逻辑 handler 已正确实现）。
+- **AssessmentListView 教师操作**：每行 inline 按钮（恢复/终止/触发红线）；红线触发用内嵌下拉选 reasonCode + contextPhase（一次只展开一行），与 `SAFETY_REASON_CODES` / `SAFETY_CONTEXT_PHASES` schema 枚举同步。
+- **测试规模**：13 单测（startSession 正常/幂等/ANSWER_SUBMITTED 之后不覆盖/FORBIDDEN/NOT_FOUND/SESSION_PAUSED/SESSION_HALTED/SESSION_NOT_ACTIVE/他人 session + listMySessions 4 项）。typecheck + build + 全量回归（353/353）通过。
+- **未验证项**：5.3 题库未交付，端到端真实答题验证推迟。手工冒烟需 5.3 题库就位后补。
+
 ---
 
 ## 项目约束检查（Writer 自检）

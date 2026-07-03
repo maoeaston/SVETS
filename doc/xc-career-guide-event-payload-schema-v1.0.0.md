@@ -6,6 +6,8 @@
 最后更新：2026-07-01  
 
 > 2026-07-01 修订：新增 `EMOTION_COLLAPSE_THRESHOLD_REACHED` 事件（PRD v1.0.5 §4.6 / §8.7），对应情绪崩溃兜底强制 `LEVEL_NOT_COMPETENT` 的领域事件。
+>
+> 2026-07-03 修订：新增 `SESSION_FIRST_QUESTION_ACTIVATED` 事件（5.4 Step 9b），学生首次点"开始答题"初始化 `assessment_session.current_question_id` 指针。`SESSION_STARTED` 创建 session 时该字段为 NULL；本事件将其推进到 MIN(ONLINE question_order) 题。
 
 ---
 
@@ -53,6 +55,7 @@ type ActorRole = 'STUDENT' | 'TEACHER' | 'ADMIN' | 'SYSTEM';
 
 type EventType =
   | 'SESSION_STARTED'
+  | 'SESSION_FIRST_QUESTION_ACTIVATED'
   | 'ANSWER_SUBMITTED'
   | 'EMOTION_INTERRUPTED'
   | 'EMOTION_RESUMED'
@@ -242,6 +245,27 @@ interface CollapseRecord {
 ```
 
 > 写入本事件后，后续 `RESULT_CALCULATED` 的 `level_result` 必须为 `LEVEL_NOT_COMPETENT`，且 `result_record.result_payload_json`（ABILITY_SCORE）的 `emotion_collapse_count` 与 `level_forced_by='EMOTION_COLLAPSE'` 必须同步落盘（见 JSON 字段规范 §10）。
+
+### 2.10 SESSION_FIRST_QUESTION_ACTIVATED
+
+学生首次点击"开始答题"按钮，初始化 `assessment_session.current_question_id` 指针。
+
+**为什么需要本事件**：`SESSION_STARTED`（§2.1）由 TEACHER 触发创建 session，reducer `applySessionStarted` 不设 `current_question_id`（INSERT 省略该列，默认 NULL）。`applyAnswerSubmitted`（§2.2）的"下一未答 ONLINE 题"推进逻辑在没有任何 answer_record 时也能算出第一题，但 `getSession` 读路径在 `current_question_id=NULL` 时返回 `currentQuestion=null`，渲染层无法渲染题目。本事件填补"教师创建 session"与"学生开始答第一题"之间的指针真空，让事件流显式记录"学生何时开始"（区别于 SESSION_STARTED 的"教师创建时刻"）。
+
+```typescript
+interface SessionFirstQuestionActivatedPayload {
+  session_id: string;
+  first_question_id: string;          // MIN(question_order) ONLINE 题的 question_id
+  first_question_order: number;       // 同上的 question_order（1-based）
+  activated_at: string;               // 学生点击时刻（ISO 8601 UTC）
+}
+```
+
+**幂等性**：reducer `applySessionFirstQuestionActivated` 在 `current_question_id` 已非 NULL 时 skip（无论被谁设——本事件重放或 `ANSWER_SUBMITTED` 已推进）。WHERE 加 `AND current_question_id IS NULL` 兜底。**刻意不更新 `last_status_event_id`**（非 status 变更，与 `ANSWER_SUBMITTED` 同模式），只更新 `last_applied_event_id`。
+
+**handler 幂等**：`assessment:startSession` 在 `current_question_id` 已非 NULL 时直接返回现有指针，不写事件。
+
+**触发条件**：`session.status === 'ACTIVE' AND current_question_id IS NULL`。其他 status 映射错误码（EMOTION_INTERRUPTED→SESSION_PAUSED / REDLINE_HALTED→SESSION_HALTED / 终态→SESSION_NOT_ACTIVE）。
 
 ---
 
