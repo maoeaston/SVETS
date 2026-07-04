@@ -410,12 +410,15 @@ export function createSession(db: DBAdapter, params: CreateSessionParams): Creat
     .all(strategy.job_code) as QuestionBankRow[]
 
   // 9. 组卷
+  const sessionId = uuidv4()
+  const paperSeed = `${sessionId}:${params.studentId}:${params.strategyId}:${params.strategyVersion}`
   const paper = generatePaper({
     onlineQuestionCount: strategy.online_question_count,
     offlineQuestionCount: strategy.offline_question_count,
     questionRatio: questionPolicy.question_ratio,
     requiredModules,
     questionBankRows: qbRows,
+    paperSeed,
     sensoryFilterMode: questionPolicy.sensory_filter_mode ?? 'SOFT'
   })
   if (!paper.ok) {
@@ -452,7 +455,6 @@ export function createSession(db: DBAdapter, params: CreateSessionParams): Creat
   // 10. 事务：writeEvent(SESSION_STARTED) + applyAssessmentEvent
   //     reducer applySessionStarted 承担 INSERT assessment_session（status=ACTIVE）
   //     + 50 行 assessment_session_question。
-  const sessionId = uuidv4()
   const questionIds = paper.questions.map((q) => q.questionId)
   const payload: SessionStartedPayload = {
     session_id: sessionId,

@@ -94,6 +94,9 @@
 - ✅ **Pinia**（渲染进程状态管理）
 - ✅ **Electron IPC**（主进程 ↔ 渲染进程通信）
 
+### Electron 主进程打包约束
+- `src/main/` 内引用本仓库本地模块时必须使用静态 `import`；不要用 `createRequire`、字符串动态 `require()` 或动态路径加载本地 TS 模块，避免 electron-vite 打包后在 `out/main/index.js` 残留无法解析的相对路径。
+
 ### 运行库数据运维
 - 命令行初始化或修复 `xc-career-guide.db` 时，若普通 Node 环境加载 `better-sqlite3` 出现 ABI 不一致，优先使用 `sqlite3` CLI 执行 `src/main/db/schema.sql` 和导入 SQL；不要为一次性数据运维重装依赖或改项目依赖版本。
 

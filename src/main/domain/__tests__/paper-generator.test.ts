@@ -111,6 +111,26 @@ describe('generatePaper', () => {
     expect(r1).toEqual(r2)
   })
 
+  it('可复现伪随机：相同 paperSeed 输出完全相同', () => {
+    const r1 = generatePaper(baseInput({ paperSeed: 'session-a-student-a-strategy-v1' }))
+    const r2 = generatePaper(baseInput({ paperSeed: 'session-a-student-a-strategy-v1' }))
+    expect(r1).toEqual(r2)
+  })
+
+  it('可复现伪随机：不同 paperSeed 在有余量题库时输出不同，且仍满足 42 ONLINE + 8 OFFLINE 配额', () => {
+    const r1 = generatePaper(baseInput({ paperSeed: 'session-a-student-a-strategy-v1' }))
+    const r2 = generatePaper(baseInput({ paperSeed: 'session-b-student-a-strategy-v1' }))
+    expect(r1.ok).toBe(true)
+    expect(r2.ok).toBe(true)
+    if (!r1.ok || !r2.ok) return
+
+    expect(r1.questions.map(q => q.questionId)).not.toEqual(r2.questions.map(q => q.questionId))
+    for (const r of [r1, r2]) {
+      expect(r.questions.filter(q => q.questionPhase === 'ONLINE')).toHaveLength(42)
+      expect(r.questions.filter(q => q.questionPhase === 'OFFLINE')).toHaveLength(8)
+    }
+  })
+
   it('极值 onlineQuestionCount=0 + ratio online 全 0 → 0 ONLINE + 8 OFFLINE', () => {
     const r = generatePaper(
       baseInput({

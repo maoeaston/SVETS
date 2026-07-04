@@ -1,7 +1,7 @@
 // 组卷服务（纯函数）。
 // 输入策略配置 + 题库行集合，输出 N 道 ONLINE + M 道 OFFLINE 题。
 // 无 DB 副作用——DB 查询在 handler 层做，本模块只做算法。
-// 确定性：相同输入产生相同输出（题库稳定排序 by question_id 取前 N，无随机）。
+// 确定性：无 paperSeed 时按 question_id 稳定取前 N；有 paperSeed 时按 seed 哈希排序取题。
 //
 // 模块均衡策略（策略 B，impl.md Step 3 指定）：
 // - 每模块精确 quota = floor(online / modules) + 余数前 N 模块 +1
@@ -10,6 +10,7 @@
 //   模块均衡优先于全局精确 ratio。
 
 import type { AbilityTag, QuestionPolicyJson } from '../../shared/types/json-schemas'
+import { createHash } from 'crypto'
 
 /**
  * handler 查出的题库行（组卷需要的最小字段）。
@@ -29,6 +30,8 @@ export interface GeneratePaperInput {
   questionRatio: QuestionPolicyJson['question_ratio']
   requiredModules: AbilityTag[]
   questionBankRows: QuestionBankRow[]
+  /** 可复现伪随机种子。相同 seed + 相同题库输出一致，不同 seed 在有余量时倾向输出不同。 */
+  paperSeed?: string
   /** 默认 SOFT。STRICT 完整过滤逻辑（avoidTags ∩ sensory_tags）5.3 交付。 */
   sensoryFilterMode?: 'SOFT' | 'STRICT'
 }
@@ -82,11 +85,20 @@ function allocateOnlineTypesByRatio(
 }
 
 /**
- * 从池中稳定取前 N 道（按 question_id 升序）。池不足返回 null。
+ * 从池中取前 N 道。无 seed 按 question_id 升序；有 seed 按 seed 哈希排序。
  */
-function takeStable(pool: QuestionBankRow[], need: number): QuestionBankRow[] | null {
+function takeStable(pool: QuestionBankRow[], need: number, paperSeed?: string): QuestionBankRow[] | null {
   if (pool.length < need) return null
-  return [...pool].sort((a, b) => a.question_id.localeCompare(b.question_id)).slice(0, need)
+  if (!paperSeed) {
+    return [...pool].sort((a, b) => a.question_id.localeCompare(b.question_id)).slice(0, need)
+  }
+  return [...pool]
+    .sort((a, b) => {
+      const rankA = createHash('sha256').update(`${paperSeed}\0${a.question_id}`).digest('hex')
+      const rankB = createHash('sha256').update(`${paperSeed}\0${b.question_id}`).digest('hex')
+      return rankA.localeCompare(rankB) || a.question_id.localeCompare(b.question_id)
+    })
+    .slice(0, need)
 }
 
 export function generatePaper(input: GeneratePaperInput): GeneratePaperOutput {
@@ -95,7 +107,8 @@ export function generatePaper(input: GeneratePaperInput): GeneratePaperOutput {
     offlineQuestionCount,
     questionRatio,
     requiredModules,
-    questionBankRows
+    questionBankRows,
+    paperSeed
   } = input
 
   // 1. 校验 question_ratio 之和
@@ -137,7 +150,7 @@ export function generatePaper(input: GeneratePaperInput): GeneratePaperOutput {
         const pool = questionBankRows.filter(
           r => r.module_type === moduleType && r.question_type === qtype
         )
-        const selected = takeStable(pool, need)
+        const selected = takeStable(pool, need, paperSeed)
         if (!selected) {
           return { ok: false, errorCode: 'QUESTION_BANK_INSUFFICIENT' }
         }
@@ -158,7 +171,7 @@ export function generatePaper(input: GeneratePaperInput): GeneratePaperOutput {
   const offlineQuestions: GeneratedQuestion[] = []
   if (offlineQuestionCount > 0) {
     const pool = questionBankRows.filter(r => r.question_type === 'OFFLINE_OPERATION')
-    const selected = takeStable(pool, offlineQuestionCount)
+    const selected = takeStable(pool, offlineQuestionCount, paperSeed)
     if (!selected) {
       return { ok: false, errorCode: 'QUESTION_BANK_INSUFFICIENT' }
     }
