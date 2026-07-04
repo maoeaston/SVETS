@@ -5,6 +5,28 @@ Corrections, insights, and knowledge gaps captured during development.
 **Categories**: correction | insight | knowledge_gap | best_practice
 
 ---
+## [LRN-20260704-001] correction
+
+**Logged**: 2026-07-04T11:53:20+08:00
+**Priority**: medium
+**Status**: pending
+**Area**: data
+
+### Summary
+题库 Excel 标题“单模块 40 题”表示每个模块至少 40 道题，不代表实际源数据必须恰好 40 道。
+
+### Details
+处理 `doc/通用基础能力评估题库.xlsx` 时，曾把模块题量超过 40 误判为源数据内部不一致。用户纠正：实际测评会从模块题库中抽取题目，“单模块 40 题”是最低题量口径。后续转换和导入应保留源表全量题目，不因超过 40 题而裁剪或标记为冲突。
+
+### Suggested Action
+处理题库导入、审核报告或交接记录时，将“单模块 40 题”描述为“每模块至少 40 题”；只有低于最低题量、枚举/字段不合法或门禁失败才标记为数据问题。
+
+### Metadata
+- Source: user_feedback
+- Related Files: doc/通用基础能力评估题库.xlsx, .continue-here.md
+- Tags: question-bank, data-import, acceptance-criteria
+
+---
 ## [LRN-20260702-001] correction
 
 **Logged**: 2026-07-02T16:32:49+08:00

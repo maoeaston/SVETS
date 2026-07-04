@@ -94,6 +94,9 @@
 - ✅ **Pinia**（渲染进程状态管理）
 - ✅ **Electron IPC**（主进程 ↔ 渲染进程通信）
 
+### 运行库数据运维
+- 命令行初始化或修复 `xc-career-guide.db` 时，若普通 Node 环境加载 `better-sqlite3` 出现 ABI 不一致，优先使用 `sqlite3` CLI 执行 `src/main/db/schema.sql` 和导入 SQL；不要为一次性数据运维重装依赖或改项目依赖版本。
+
 ---
 
 ## 测试策略
