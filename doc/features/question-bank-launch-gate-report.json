@@ -1,0 +1,57 @@
+{
+  "jobCode": "SUPERMARKET_SHELVER",
+  "passed": true,
+  "issues": [],
+  "summary": {
+    "totalRows": 253,
+    "byModule": {
+      "FINE_MOTOR": {
+        "total": 46,
+        "active": 9,
+        "onlineActive": 7,
+        "offlineActive": 2
+      },
+      "COGNITION": {
+        "total": 44,
+        "active": 9,
+        "onlineActive": 7,
+        "offlineActive": 2
+      },
+      "RULE_EXECUTION": {
+        "total": 42,
+        "active": 8,
+        "onlineActive": 7,
+        "offlineActive": 1
+      },
+      "EMOTION_REGULATION": {
+        "total": 41,
+        "active": 8,
+        "onlineActive": 7,
+        "offlineActive": 1
+      },
+      "BASIC_SOCIAL": {
+        "total": 40,
+        "active": 8,
+        "onlineActive": 7,
+        "offlineActive": 1
+      },
+      "SAFETY_OPERATION": {
+        "total": 40,
+        "active": 8,
+        "onlineActive": 7,
+        "offlineActive": 1
+      }
+    },
+    "byQuestionType": {
+      "TRUE_FALSE": 84,
+      "SINGLE_CHOICE": 74,
+      "DRAG": 49,
+      "OFFLINE_OPERATION": 46
+    },
+    "byStatus": {
+      "ACTIVE": 50,
+      "DRAFT": 203
+    },
+    "offlineActive": 8
+  }
+}
