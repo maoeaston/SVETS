@@ -195,6 +195,7 @@
 - `doc/features/student-profile-impl.md`：学生档案管理的实现步骤，适合继续教师端档案闭环。
 - `doc/features/strategy-config-prd.md`：`strategy_config` 管理功能的 Mini-PRD，定义策略创建、版本化、启停和约束。
 - `doc/features/strategy-config-impl.md`：`strategy_config` 的实现步骤，适合继续管理员端策略维护闭环。
+- `doc/features/question-bank-resources-prd.md`：5.3 题库与资源 Mini-PRD，定义题库源表导入、图片资源登记、题目审核门禁和 ACTIVE 题量上线门禁。
 - `doc/features/assessment-prd.md`：测评功能的 Mini-PRD，定义线上 `42` 题答题闭环、红线和等级判定服务。
 - `doc/features/assessment-impl.md`：测评功能实现拆解，适合继续事件写入、组卷、答题和投影链路。
 

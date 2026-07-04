@@ -14,7 +14,7 @@ describe('question-bank image asset seed helper', () => {
     const rows = parseAssetSeedTsv(
       [
         BASE_HEADER,
-        'asset_img_demo\tIMAGE\tQUESTION_MEDIA\tapp://assets/question-media/demo.png\tAIimages/demo.png\timage/png\thash123\t123\t1672\t941\tACTIVE\tTRUE_FALSE\tquestion_bank.media_asset_id\tdirect_attach\t演示素材'
+        'asset_img_demo\tIMAGE\tQUESTION_MEDIA\tapp://asset/asset_img_demo\tAIimages/demo.png\timage/png\thash123\t123\t1672\t941\tACTIVE\tTRUE_FALSE\tquestion_bank.media_asset_id\tdirect_attach\t演示素材'
       ].join('\n')
     )
 
@@ -33,7 +33,7 @@ describe('question-bank image asset seed helper', () => {
     const rows = parseAssetSeedTsv(
       [
         BASE_HEADER,
-        'asset_img_demo\tIMAGE\tQUESTION_MEDIA\tapp://assets/question-media/demo.png\tAIimages/demo.png\timage/png\t__TODO_SHA256__\t123\t1672\t941\tACTIVE\tTRUE_FALSE\tquestion_bank.media_asset_id\tdirect_attach\t演示素材'
+        'asset_img_demo\tIMAGE\tQUESTION_MEDIA\tapp://asset/asset_img_demo\tAIimages/demo.png\timage/png\t__TODO_SHA256__\t123\t1672\t941\tACTIVE\tTRUE_FALSE\tquestion_bank.media_asset_id\tdirect_attach\t演示素材'
       ].join('\n')
     )
 
@@ -44,7 +44,7 @@ describe('question-bank image asset seed helper', () => {
     const rows = parseAssetSeedTsv(
       [
         BASE_HEADER,
-        'asset_img_drg_obj02_goods_pack_v003\tIMAGE\tQUESTION_MEDIA\tapp://assets/question-media/drg-obj02-goods-facing-pack-v003.png\tAIimages/DRG-OBJ02-goods-facing-pack-v003.png\timage/png\thash123\t123\t1254\t1254\tACTIVE\tDRAG\tcontent_json.drag_items[].image_asset_id\tdirect_attach\t素材包总览图'
+        'asset_img_drg_obj02_goods_pack_v003\tIMAGE\tQUESTION_MEDIA\tapp://asset/asset_img_drg_obj02_goods_pack_v003\tAIimages/DRG-OBJ02-goods-facing-pack-v003.png\timage/png\thash123\t123\t1254\t1254\tACTIVE\tDRAG\tcontent_json.drag_items[].image_asset_id\tdirect_attach\t素材包总览图'
       ].join('\n')
     )
 
@@ -55,7 +55,7 @@ describe('question-bank image asset seed helper', () => {
     const rows = parseAssetSeedTsv(
       [
         BASE_HEADER,
-        'asset_img_drg_obj02_snack_box_blue_v002\tIMAGE\tQUESTION_MEDIA\tapp://assets/question-media/drg-obj02-snack-box-blue-v002.png\tAIimages/drg-obj02-snack-box-blue-v002.png\timage/png\thash123\t123\t1254\t1254\tACTIVE\tDRAG\tcontent_json.drag_items[].image_asset_id\tdirect_attach\t零食盒蓝色子素材'
+        'asset_img_drg_obj02_snack_box_blue_v002\tIMAGE\tQUESTION_MEDIA\tapp://asset/asset_img_drg_obj02_snack_box_blue_v002\tAIimages/drg-obj02-snack-box-blue-v002.png\timage/png\thash123\t123\t1254\t1254\tACTIVE\tDRAG\tcontent_json.drag_items[].image_asset_id\tdirect_attach\t零食盒蓝色子素材'
       ].join('\n')
     )
 
@@ -66,7 +66,7 @@ describe('question-bank image asset seed helper', () => {
     const rows = parseAssetSeedTsv(
       [
         BASE_HEADER,
-        'asset_img_demo\tIMAGE\tQUESTION_MEDIA\tapp://assets/question-media/demo.png\tAIimages/demo.png\timage/png\thash123\t123\t1672\t941\tACTIVE\tTRUE_FALSE\tquestion_bank.media_asset_id\tdirect_attach\t演示素材'
+        'asset_img_demo\tIMAGE\tQUESTION_MEDIA\tapp://asset/asset_img_demo\tAIimages/demo.png\timage/png\thash123\t123\t1672\t941\tACTIVE\tTRUE_FALSE\tquestion_bank.media_asset_id\tdirect_attach\t演示素材'
       ].join('\n')
     )
     validateAssetSeedRows(rows)
@@ -77,6 +77,17 @@ describe('question-bank image asset seed helper', () => {
     expect(sql).toContain("ON CONFLICT(asset_id) DO UPDATE SET")
     expect(sql).toContain("'2026-07-02T20:00:00+08:00'")
     expect(sql).toContain("'asset_img_demo'")
+  })
+
+  it('拒绝旧版 question-media app_uri 口径', () => {
+    const rows = parseAssetSeedTsv(
+      [
+        BASE_HEADER,
+        'asset_img_demo\tIMAGE\tQUESTION_MEDIA\tapp://assets/question-media/demo.png\tAIimages/demo.png\timage/png\thash123\t123\t1672\t941\tACTIVE\tTRUE_FALSE\tquestion_bank.media_asset_id\tdirect_attach\t演示素材'
+      ].join('\n')
+    )
+
+    expect(() => validateAssetSeedRows(rows)).toThrow(/app_uri must be app:\/\/asset\//)
   })
 
   it('按平台推导默认 DB 路径', () => {

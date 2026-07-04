@@ -64,21 +64,21 @@ AIimages/*.png
 
 | asset_id | local_path | app_uri | asset_type | asset_role | 建议状态 | 说明 |
 |---|---|---|---|---|---|---|
-| `asset_img_jdg_ms02_shelf_master_v001` | `AIimages/JDG-MS02-standard-shelf-master-v001.png` | `app://assets/question-media/jdg-ms02-standard-shelf-master-v001.png` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 货架判断题母版 |
-| `asset_img_jdg_ms02_facing_correct_v001` | `AIimages/JDG-MS02-facing-correct-v001.png` | `app://assets/question-media/jdg-ms02-facing-correct-v001.png` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 货架正确态 |
-| `asset_img_jdg_ms02_facing_wrong_v001` | `AIimages/JDG-MS02-facing-wrong-v001.png` | `app://assets/question-media/jdg-ms02-facing-wrong-v001.png` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 货架错误态 |
-| `asset_img_jdg_ms04_safety_master_v001` | `AIimages/JDG-MS04-safety-risk-master-v001.png` | `app://assets/question-media/jdg-ms04-safety-risk-master-v001.png` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 安全判断题母版 |
-| `asset_img_drg_bg01_shelf_board_v001` | `AIimages/DRG-BG01-shelf-alignment-board-v001.png` | `app://assets/question-media/drg-bg01-shelf-alignment-board-v001.png` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题货架底图 |
-| `asset_img_drg_obj02_goods_pack_v003` | `AIimages/DRG-OBJ02-goods-facing-pack-v003.png` | `app://assets/question-media/drg-obj02-goods-facing-pack-v003.png` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题商品素材包总图 v003 |
-| `asset_img_drg_obj02_snack_box_blue_v002` | `AIimages/drg-obj02-snack-box-blue-v002.png` | `app://assets/question-media/drg-obj02-snack-box-blue-v002.png` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题零食盒蓝色子素材 |
-| `asset_img_drg_obj02_snack_box_red_v002` | `AIimages/drg-obj02-snack-box-red-v002.png` | `app://assets/question-media/drg-obj02-snack-box-red-v002.png` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题零食盒红色子素材 |
-| `asset_img_drg_obj02_snack_box_yellow_v002` | `AIimages/drg-obj02-snack-box-yellow-v002.png` | `app://assets/question-media/drg-obj02-snack-box-yellow-v002.png` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题零食盒黄色子素材 |
-| `asset_img_drg_obj02_snack_box_green_v002` | `AIimages/drg-obj02-snack-box-green-v002.png` | `app://assets/question-media/drg-obj02-snack-box-green-v002.png` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题零食盒绿色子素材 |
-| `asset_img_drg_obj02_homecare_box_white_blue_v002` | `AIimages/drg-obj02-homecare-box-white-blue-v002.png` | `app://assets/question-media/drg-obj02-homecare-box-white-blue-v002.png` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题日化盒白蓝子素材 |
-| `asset_img_drg_obj02_homecare_box_white_orange_v002` | `AIimages/drg-obj02-homecare-box-white-orange-v002.png` | `app://assets/question-media/drg-obj02-homecare-box-white-orange-v002.png` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题日化盒白橙子素材 |
-| `asset_img_drg_obj02_homecare_box_purple_white_v002` | `AIimages/drg-obj02-homecare-box-purple-white-v002.png` | `app://assets/question-media/drg-obj02-homecare-box-purple-white-v002.png` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题日化盒紫白子素材 |
-| `asset_img_drg_obj02_drink_bottle_orange_v002` | `AIimages/drg-obj02-drink-bottle-orange-v002.png` | `app://assets/question-media/drg-obj02-drink-bottle-orange-v002.png` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题饮料瓶橙色子素材 |
-| `asset_img_drg_obj02_drink_bottle_green_v002` | `AIimages/drg-obj02-drink-bottle-green-v002.png` | `app://assets/question-media/drg-obj02-drink-bottle-green-v002.png` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题饮料瓶绿色子素材 |
+| `asset_img_jdg_ms02_shelf_master_v001` | `AIimages/JDG-MS02-standard-shelf-master-v001.png` | `app://asset/asset_img_jdg_ms02_shelf_master_v001` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 货架判断题母版 |
+| `asset_img_jdg_ms02_facing_correct_v001` | `AIimages/JDG-MS02-facing-correct-v001.png` | `app://asset/asset_img_jdg_ms02_facing_correct_v001` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 货架正确态 |
+| `asset_img_jdg_ms02_facing_wrong_v001` | `AIimages/JDG-MS02-facing-wrong-v001.png` | `app://asset/asset_img_jdg_ms02_facing_wrong_v001` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 货架错误态 |
+| `asset_img_jdg_ms04_safety_master_v001` | `AIimages/JDG-MS04-safety-risk-master-v001.png` | `app://asset/asset_img_jdg_ms04_safety_master_v001` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 安全判断题母版 |
+| `asset_img_drg_bg01_shelf_board_v001` | `AIimages/DRG-BG01-shelf-alignment-board-v001.png` | `app://asset/asset_img_drg_bg01_shelf_board_v001` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题货架底图 |
+| `asset_img_drg_obj02_goods_pack_v003` | `AIimages/DRG-OBJ02-goods-facing-pack-v003.png` | `app://asset/asset_img_drg_obj02_goods_pack_v003` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题商品素材包总图 v003 |
+| `asset_img_drg_obj02_snack_box_blue_v002` | `AIimages/drg-obj02-snack-box-blue-v002.png` | `app://asset/asset_img_drg_obj02_snack_box_blue_v002` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题零食盒蓝色子素材 |
+| `asset_img_drg_obj02_snack_box_red_v002` | `AIimages/drg-obj02-snack-box-red-v002.png` | `app://asset/asset_img_drg_obj02_snack_box_red_v002` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题零食盒红色子素材 |
+| `asset_img_drg_obj02_snack_box_yellow_v002` | `AIimages/drg-obj02-snack-box-yellow-v002.png` | `app://asset/asset_img_drg_obj02_snack_box_yellow_v002` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题零食盒黄色子素材 |
+| `asset_img_drg_obj02_snack_box_green_v002` | `AIimages/drg-obj02-snack-box-green-v002.png` | `app://asset/asset_img_drg_obj02_snack_box_green_v002` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题零食盒绿色子素材 |
+| `asset_img_drg_obj02_homecare_box_white_blue_v002` | `AIimages/drg-obj02-homecare-box-white-blue-v002.png` | `app://asset/asset_img_drg_obj02_homecare_box_white_blue_v002` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题日化盒白蓝子素材 |
+| `asset_img_drg_obj02_homecare_box_white_orange_v002` | `AIimages/drg-obj02-homecare-box-white-orange-v002.png` | `app://asset/asset_img_drg_obj02_homecare_box_white_orange_v002` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题日化盒白橙子素材 |
+| `asset_img_drg_obj02_homecare_box_purple_white_v002` | `AIimages/drg-obj02-homecare-box-purple-white-v002.png` | `app://asset/asset_img_drg_obj02_homecare_box_purple_white_v002` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题日化盒紫白子素材 |
+| `asset_img_drg_obj02_drink_bottle_orange_v002` | `AIimages/drg-obj02-drink-bottle-orange-v002.png` | `app://asset/asset_img_drg_obj02_drink_bottle_orange_v002` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题饮料瓶橙色子素材 |
+| `asset_img_drg_obj02_drink_bottle_green_v002` | `AIimages/drg-obj02-drink-bottle-green-v002.png` | `app://asset/asset_img_drg_obj02_drink_bottle_green_v002` | `IMAGE` | `QUESTION_MEDIA` | `ACTIVE` | 拖拽题饮料瓶绿色子素材 |
 
 ---
 
@@ -309,7 +309,7 @@ AIimages/*.png
 
 ### 6.2 仍未完成
 
-1. ⚠️ **渲染层 `app://` 协议未实现**：`asset_resource.app_uri` 全部是 `app://assets/question-media/...png`，但渲染进程没有任何 `registerFileProtocol` / `protocol.handle` 代码消费这个协议。`assessment.ts` 只把 `media_asset_id` 字符串传给前端就结束。**这意味着即使题目挂好 `asset_id`，渲染时也读不到图片。**
+1. ✅ **渲染层 `app://asset/<asset_id>` 协议已实现**：`src/main/protocol/app-asset.ts` 负责按 `asset_id` 解析资源，`asset_resource.app_uri` 应统一保存 `app://asset/<asset_id>`。
 2. ⚠️ **v001 总览图孤儿**：`asset_img_drg_obj02_goods_pack_v001` 仍 `status=ACTIVE`，但 v003 才是定稿，且 `question_bank` 无任何引用——应改为 `DEPRECATED`
 3. ⚠️ **`JDG-MS02` 判断题未挂接**：DB 里 4 张 JDG 资产已 ACTIVE，但没有任何 `TRUE_FALSE` 题写入 `content_json.variants[].media_asset_id`
 4. ⚠️ **`JDG-MS04` 仅有母版**：没有逐题正误变体
@@ -322,6 +322,6 @@ AIimages/*.png
 图片已定稿（部分）
 → asset_resource 全量入库 ✓
 → 拖拽题 DRAFT 落库 ✓
-→ 渲染层 app:// 协议未实现 ✗  ← 当前阻塞点
+→ 渲染层 app://asset 协议已实现 ✓
 → 判断题正式挂接未开始
 ```

@@ -89,3 +89,140 @@ describe('validateContentJson — TRUE_FALSE variants', () => {
     if (!r.ok) expect(r.reason).toMatch(/variants\[0\].*expected_answer/i)
   })
 })
+
+describe('validateContentJson — SINGLE_CHOICE', () => {
+  it('options[].key 重复 → 失败', () => {
+    const r = validateContentJson({
+      ...baseFields,
+      question_type: 'SINGLE_CHOICE',
+      options: [
+        { key: 'A', text: '放在正确货架' },
+        { key: 'A', text: '放在通道中央' }
+      ],
+      expected_answer: 'A'
+    })
+
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.reason).toMatch(/options\[1\]\.key/i)
+  })
+
+  it("expected_answer='D' 但无 D 选项 → 失败", () => {
+    const r = validateContentJson({
+      ...baseFields,
+      question_type: 'SINGLE_CHOICE',
+      options: [
+        { key: 'A', text: '放在正确货架' },
+        { key: 'B', text: '放在通道中央' },
+        { key: 'C', text: '先放到地上' }
+      ],
+      expected_answer: 'D'
+    })
+
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.reason).toMatch(/expected_answer/i)
+  })
+})
+
+describe('validateContentJson — DRAG', () => {
+  it('drag_items[].item_id 重复 → 失败', () => {
+    const r = validateContentJson({
+      ...baseFields,
+      question_type: 'DRAG',
+      drag_items: [
+        { item_id: 'milk', label: '牛奶' },
+        { item_id: 'milk', label: '第二瓶牛奶' }
+      ],
+      drop_zones: [
+        { zone_id: 'cold_shelf', label: '冷藏货架', accepts: ['milk'] }
+      ],
+      scoring_mode: 'ALL_OR_NOTHING'
+    })
+
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.reason).toMatch(/drag_items\[1\]\.item_id/i)
+  })
+
+  it('drop_zones[].accepts 引用不存在 item → 失败', () => {
+    const r = validateContentJson({
+      ...baseFields,
+      question_type: 'DRAG',
+      drag_items: [
+        { item_id: 'milk', label: '牛奶' },
+        { item_id: 'bread', label: '面包' }
+      ],
+      drop_zones: [
+        { zone_id: 'cold_shelf', label: '冷藏货架', accepts: ['milk', 'egg'] }
+      ],
+      scoring_mode: 'ALL_OR_NOTHING'
+    })
+
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.reason).toMatch(/accepts/i)
+  })
+})
+
+describe('validateContentJson — source', () => {
+  it('source 缺 imported_by → 失败', () => {
+    const r = validateContentJson({
+      ...baseFields,
+      question_type: 'TRUE_FALSE',
+      expected_answer: true,
+      source: {
+        import_batch_id: 'batch_001',
+        source_file: 'question-bank.csv',
+        source_row: 12,
+        imported_at: '2026-07-04T00:00:00.000Z'
+      }
+    })
+
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.reason).toMatch(/source\.imported_by/i)
+  })
+
+  it('source.source_row=0 → 失败', () => {
+    const r = validateContentJson({
+      ...baseFields,
+      question_type: 'TRUE_FALSE',
+      expected_answer: true,
+      source: {
+        import_batch_id: 'batch_001',
+        source_file: 'question-bank.csv',
+        source_row: 0,
+        imported_at: '2026-07-04T00:00:00.000Z',
+        imported_by: 'admin'
+      }
+    })
+
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.reason).toMatch(/source_row/i)
+  })
+})
+
+describe('validateContentJson — OFFLINE_OPERATION', () => {
+  it('rubric_criteria=[] → 失败', () => {
+    const r = validateContentJson({
+      ...baseFields,
+      question_type: 'OFFLINE_OPERATION',
+      offline_tool_brief: '货架、商品、标签',
+      rubric_criteria: []
+    })
+
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.reason).toMatch(/rubric_criteria/i)
+  })
+
+  it('rubric_criteria[].criterion_id 重复 → 失败', () => {
+    const r = validateContentJson({
+      ...baseFields,
+      question_type: 'OFFLINE_OPERATION',
+      offline_tool_brief: '货架、商品、标签',
+      rubric_criteria: [
+        { criterion_id: 'facing', description: '商品正面朝外' },
+        { criterion_id: 'facing', description: '商品摆放整齐' }
+      ]
+    })
+
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.reason).toMatch(/criterion_id/i)
+  })
+})

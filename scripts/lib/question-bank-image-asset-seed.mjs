@@ -74,6 +74,11 @@ export function validateAssetSeedRows(rows) {
     }
     seenAssetIds.add(assetId)
 
+    const expectedAppUri = `app://asset/${assetId}`
+    if (row.app_uri !== expectedAppUri) {
+      throw new Error(`[asset-seed] ${assetId} app_uri must be ${expectedAppUri}`)
+    }
+
     if (seenUris.has(row.app_uri)) {
       throw new Error(`[asset-seed] duplicate app_uri: ${row.app_uri}`)
     }

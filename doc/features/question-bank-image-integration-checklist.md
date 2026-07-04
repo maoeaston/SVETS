@@ -237,7 +237,7 @@ TSV 输入表
 3. 图片丢失时是否有错误处理
 4. `asset_resource.status != ACTIVE` 时是否会被拦截
 
-如果当前代码还没实现 `app_uri` 读取，这一步必须在交接中写明“未完成”，不能假装完成。
+当前代码已实现 `app://asset/<asset_id>` 读取；接入时需要确认 seed 数据不再写入旧口径 `app://assets/question-media/...`。
 
 ---
 
@@ -283,19 +283,19 @@ TSV 输入表
 | 3 | `JDG-MS02` 已有可落地的变体挂接方案 | ⚠️ | 方案有（§6.1），DB 里 JDG 资产已 ACTIVE，但 `question_bank` 未实际挂 `variants[].media_asset_id` |
 | 4 | `DRG-BG01` 已有可落地的主图挂接方案 | ✅ | `Q_BASE_FINE_MOTOR_DRAG_002` / `_005` 已落库，`media_asset_id = asset_img_drg_bg01_shelf_board_v001` |
 | 5 | 占位资产和正式挂接资产已明确区分 | ⚠️ | 草案区分清楚，但 v001 历史总览仍 `ACTIVE`，未标 `DEPRECATED` |
-| 6 | 渲染层可通过 `app_uri` 访问资源（§7） | ❌ | **当前硬阻塞**：Electron 主进程没有 `registerFileProtocol` / `protocol.handle` 实现 `app://` 协议，渲染层读不到图片 |
+| 6 | 渲染层可通过 `app_uri` 访问资源（§7） | ✅ | 主进程已实现 `app://asset/<asset_id>`；seed 数据需保持与 `asset_id` 一一对应 |
 
 ### 当前结论
 
 ```text
 DB 层 + 题库挂接层已就绪
-→ 但渲染层 app:// 协议未实现，无法实际显示图片
-→ 不能称为”图片接入完成”，只能称为”题库挂接 DRAFT 已落库”
+→ 渲染层 app://asset 协议已实现
+→ 仍需完成 JDG 判断题实际挂接后，才能称为“图片接入完成”
 ```
 
 ### 走向”完成”的剩余路径
 
-1. 实现 `app://assets/question-media/...` 协议处理器（Electron 主进程）
+1. 确认所有 seed 数据统一使用 `app://asset/<asset_id>`
 2. 把 `asset_img_drg_obj02_goods_pack_v001` 改为 `DEPRECATED`
 3. 实际挂接至少一道 `JDG-MS02` 判断题的 `variants[].media_asset_id` 走通端到端
 4. 决策 `Q_BASE_FINE_MOTOR_DRAG_002/005` 是保持 3-item DRAFT 还是扩成 6/9-item 正式版

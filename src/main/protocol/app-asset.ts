@@ -1,11 +1,21 @@
-import { app, net, protocol } from 'electron'
 import { existsSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { resolve, relative, isAbsolute } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { getDatabase } from '../db/connection'
 
 // asset_id 命名规则：asset_<小写字母数字下划线>。禁止 . / 等可被路径穿越利用的字符。
 const ASSET_ID_RE = /^asset_[a-z0-9_]+$/i
+const require = createRequire(import.meta.url)
+const ELECTRON_MODULE = 'electron'
+const DB_CONNECTION_MODULE = '../db/connection'
+
+function getElectron() {
+  return require(ELECTRON_MODULE)
+}
+
+function getDatabaseConnection() {
+  return require(DB_CONNECTION_MODULE).getDatabase
+}
 
 /**
  * 解析 app://asset/<asset_id> URL。
@@ -33,6 +43,7 @@ export function parseAppAssetUrl(url: string): { assetId: string } | null {
  * - 打包模式（未来）：资源会放在 process.resourcesPath
  */
 function getAssetsBasePath(): string {
+  const { app } = getElectron()
   if (app.isPackaged) {
     return process.resourcesPath
   }
@@ -53,6 +64,8 @@ function getAssetsBasePath(): string {
  * 3. 只服务 status='ACTIVE' 的资产，DEPRECATED/MISSING/CORRUPTED 一律 404
  */
 export function registerAppAssetProtocol(): void {
+  const { net, protocol } = getElectron()
+  const getDatabase = getDatabaseConnection()
   protocol.handle('app', async (request) => {
     const parsed = parseAppAssetUrl(request.url)
     if (!parsed) {

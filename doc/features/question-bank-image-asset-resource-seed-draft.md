@@ -90,7 +90,7 @@
 | `asset_id` | `TEXT PRIMARY KEY` | 是 | 资产稳定 ID，题目层只引用这个值 |
 | `asset_type` | `TEXT NOT NULL`，枚举：`VIDEO / IMAGE / AUDIO / PDF / JSON / SQLITE / OTHER` | 是 | 图片固定写 `IMAGE` |
 | `asset_role` | `TEXT`，可空，枚举：`QUESTION_MEDIA / TOOL_CHECKLIST / REPORT_FILE / VOICE_PROMPT / UI_ASSET / DATA_SNAPSHOT / OTHER` | 否 | 题库图片建议写 `QUESTION_MEDIA` |
-| `app_uri` | `TEXT NOT NULL UNIQUE` | 是 | 渲染层稳定访问 URI，例如 `app://assets/question-media/...png` |
+| `app_uri` | `TEXT NOT NULL UNIQUE` | 是 | 渲染层稳定访问 URI，例如 `app://asset/<asset_id>` |
 | `local_path` | `TEXT NOT NULL` | 是 | 仓库内或应用侧真实文件路径，当前草案用 `AIimages/...png` |
 | `mime_type` | `TEXT` | 否但应补 | PNG 固定可写 `image/png` |
 | `file_hash` | `TEXT NOT NULL` | 是 | 真实文件内容 hash，建议 `SHA-256` 十六进制 |
@@ -160,19 +160,19 @@ asset_img_drg_bg01_shelf_board_v001
 建议统一格式：
 
 ```text
-app://assets/question-media/<原文件名>
+app://asset/<asset_id>
 ```
 
 例如：
 
 ```text
-app://assets/question-media/jdg-ms02-facing-correct-v001.png
+app://asset/asset_img_jdg_ms02_facing_correct_v001
 ```
 
 规则说明：
 
-1. 统一归入 `question-media` 命名空间。
-2. URI 文件名部分使用标准文件名的小写形式。
+1. `app_uri` 必须与 `asset_id` 一一对应，格式固定为 `app://asset/<asset_id>`。
+2. 不再使用旧口径 `app://assets/question-media/<filename>`。
 3. `app_uri` 必须稳定且唯一，不能直接暴露本地绝对路径。
 4. 同一内容变更后若产出新版本文件，应对应新 URI，而不是覆盖旧 URI。
 
@@ -260,7 +260,7 @@ INSERT INTO asset_resource (
   'asset_img_jdg_ms02_shelf_master_v001',
   'IMAGE',
   'QUESTION_MEDIA',
-  'app://assets/question-media/jdg-ms02-standard-shelf-master-v001.png',
+  'app://asset/asset_img_jdg_ms02_shelf_master_v001',
   'AIimages/JDG-MS02-standard-shelf-master-v001.png',
   'image/png',
   '__TODO_SHA256__',
@@ -275,7 +275,7 @@ INSERT INTO asset_resource (
   'asset_img_jdg_ms02_facing_correct_v001',
   'IMAGE',
   'QUESTION_MEDIA',
-  'app://assets/question-media/jdg-ms02-facing-correct-v001.png',
+  'app://asset/asset_img_jdg_ms02_facing_correct_v001',
   'AIimages/JDG-MS02-facing-correct-v001.png',
   'image/png',
   '__TODO_SHA256__',
@@ -290,7 +290,7 @@ INSERT INTO asset_resource (
   'asset_img_jdg_ms02_facing_wrong_v001',
   'IMAGE',
   'QUESTION_MEDIA',
-  'app://assets/question-media/jdg-ms02-facing-wrong-v001.png',
+  'app://asset/asset_img_jdg_ms02_facing_wrong_v001',
   'AIimages/JDG-MS02-facing-wrong-v001.png',
   'image/png',
   '__TODO_SHA256__',
@@ -305,7 +305,7 @@ INSERT INTO asset_resource (
   'asset_img_jdg_ms04_safety_master_v001',
   'IMAGE',
   'QUESTION_MEDIA',
-  'app://assets/question-media/jdg-ms04-safety-risk-master-v001.png',
+  'app://asset/asset_img_jdg_ms04_safety_master_v001',
   'AIimages/JDG-MS04-safety-risk-master-v001.png',
   'image/png',
   '__TODO_SHA256__',
@@ -320,7 +320,7 @@ INSERT INTO asset_resource (
   'asset_img_drg_bg01_shelf_board_v001',
   'IMAGE',
   'QUESTION_MEDIA',
-  'app://assets/question-media/drg-bg01-shelf-alignment-board-v001.png',
+  'app://asset/asset_img_drg_bg01_shelf_board_v001',
   'AIimages/DRG-BG01-shelf-alignment-board-v001.png',
   'image/png',
   '__TODO_SHA256__',
@@ -335,7 +335,7 @@ INSERT INTO asset_resource (
   'asset_img_drg_obj02_goods_pack_v003',
   'IMAGE',
   'QUESTION_MEDIA',
-  'app://assets/question-media/drg-obj02-goods-facing-pack-v003.png',
+  'app://asset/asset_img_drg_obj02_goods_pack_v003',
   'AIimages/DRG-OBJ02-goods-facing-pack-v003.png',
   'image/png',
   '__TODO_SHA256__',
@@ -374,7 +374,7 @@ INSERT INTO asset_resource (
     "asset_id": "asset_img_jdg_ms02_facing_correct_v001",
     "asset_type": "IMAGE",
     "asset_role": "QUESTION_MEDIA",
-    "app_uri": "app://assets/question-media/jdg-ms02-facing-correct-v001.png",
+    "app_uri": "app://asset/asset_img_jdg_ms02_facing_correct_v001",
     "local_path": "AIimages/JDG-MS02-facing-correct-v001.png",
     "mime_type": "image/png",
     "file_hash": "__TODO_SHA256__",
@@ -405,7 +405,7 @@ INSERT INTO asset_resource (
 
 ```tsv
 asset_id	asset_type	asset_role	app_uri	local_path	mime_type	file_hash	file_size_bytes	width_px	height_px	status	target_question_type	attach_field	note
-asset_img_jdg_ms02_facing_correct_v001	IMAGE	QUESTION_MEDIA	app://assets/question-media/jdg-ms02-facing-correct-v001.png	AIimages/JDG-MS02-facing-correct-v001.png	image/png	__TODO_SHA256__	0			ACTIVE	TRUE_FALSE	content_json.variants[].media_asset_id	判断题正确态变体
+asset_img_jdg_ms02_facing_correct_v001	IMAGE	QUESTION_MEDIA	app://asset/asset_img_jdg_ms02_facing_correct_v001	AIimages/JDG-MS02-facing-correct-v001.png	image/png	__TODO_SHA256__	0			ACTIVE	TRUE_FALSE	content_json.variants[].media_asset_id	判断题正确态变体
 ```
 
 建议列顺序固定，原因是后续最常见的核对动作就是：
@@ -430,12 +430,12 @@ asset_img_jdg_ms02_facing_correct_v001	IMAGE	QUESTION_MEDIA	app://assets/questio
 
 | 标准文件 | 建议 `asset_id` | 建议 `app_uri` | 推荐挂接位点 | 当前定位 |
 |---|---|---|---|---|
-| `JDG-MS02-standard-shelf-master-v001.png` | `asset_img_jdg_ms02_shelf_master_v001` | `app://assets/question-media/jdg-ms02-standard-shelf-master-v001.png` | 可作为 `question_bank.media_asset_id` 的母版，或仅保留为场景基线 | 母版资产 |
-| `JDG-MS02-facing-correct-v001.png` | `asset_img_jdg_ms02_facing_correct_v001` | `app://assets/question-media/jdg-ms02-facing-correct-v001.png` | `content_json.variants[].media_asset_id` | 判断题正确态 |
-| `JDG-MS02-facing-wrong-v001.png` | `asset_img_jdg_ms02_facing_wrong_v001` | `app://assets/question-media/jdg-ms02-facing-wrong-v001.png` | `content_json.variants[].media_asset_id` | 判断题错误态 |
-| `JDG-MS04-safety-risk-master-v001.png` | `asset_img_jdg_ms04_safety_master_v001` | `app://assets/question-media/jdg-ms04-safety-risk-master-v001.png` | 当前仅适合 `question_bank.media_asset_id` 母版占位 | 安全题母版 |
-| `DRG-BG01-shelf-alignment-board-v001.png` | `asset_img_drg_bg01_shelf_board_v001` | `app://assets/question-media/drg-bg01-shelf-alignment-board-v001.png` | `question_bank.media_asset_id` | 拖拽题底图 |
-| `DRG-OBJ02-goods-facing-pack-v003.png` | `asset_img_drg_obj02_goods_pack_v003` | `app://assets/question-media/drg-obj02-goods-facing-pack-v003.png` | 当前不建议直接写入 `drag_items[].image_asset_id` | 素材包总览图 |
+| `JDG-MS02-standard-shelf-master-v001.png` | `asset_img_jdg_ms02_shelf_master_v001` | `app://asset/asset_img_jdg_ms02_shelf_master_v001` | 可作为 `question_bank.media_asset_id` 的母版，或仅保留为场景基线 | 母版资产 |
+| `JDG-MS02-facing-correct-v001.png` | `asset_img_jdg_ms02_facing_correct_v001` | `app://asset/asset_img_jdg_ms02_facing_correct_v001` | `content_json.variants[].media_asset_id` | 判断题正确态 |
+| `JDG-MS02-facing-wrong-v001.png` | `asset_img_jdg_ms02_facing_wrong_v001` | `app://asset/asset_img_jdg_ms02_facing_wrong_v001` | `content_json.variants[].media_asset_id` | 判断题错误态 |
+| `JDG-MS04-safety-risk-master-v001.png` | `asset_img_jdg_ms04_safety_master_v001` | `app://asset/asset_img_jdg_ms04_safety_master_v001` | 当前仅适合 `question_bank.media_asset_id` 母版占位 | 安全题母版 |
+| `DRG-BG01-shelf-alignment-board-v001.png` | `asset_img_drg_bg01_shelf_board_v001` | `app://asset/asset_img_drg_bg01_shelf_board_v001` | `question_bank.media_asset_id` | 拖拽题底图 |
+| `DRG-OBJ02-goods-facing-pack-v003.png` | `asset_img_drg_obj02_goods_pack_v003` | `app://asset/asset_img_drg_obj02_goods_pack_v003` | 当前不建议直接写入 `drag_items[].image_asset_id` | 素材包总览图 |
 
 ---
 
@@ -614,7 +614,7 @@ asset_img_jdg_ms02_facing_correct_v001	IMAGE	QUESTION_MEDIA	app://assets/questio
 
 ### 12.2 仍未完成
 
-1. ⚠️ **`app://assets/question-media/...` 协议在渲染层未实现**：DB 层 `app_uri` 已写入，但 Electron 主进程没有 `registerFileProtocol` / `protocol.handle` 注册代码，渲染进程读不到图片。这是当前链路的硬阻塞点。
+1. ✅ **渲染层访问口径已统一为 `app://asset/<asset_id>`**：Electron 主进程已有 `src/main/protocol/app-asset.ts` 处理该协议；本轮不再扩展旧口径 `app://assets/question-media/...`。
 2. ⚠️ **`question_id` ↔ `asset_id` 一一对应清单尚未形成正式文档**：当前 `Q_BASE_FINE_MOTOR_DRAG_002` / `_005` 是按 Excel 行号推命名，未与正式题库导入对照表核对。
 3. ⚠️ **v001 历史总览待标记 DEPRECATED**：`asset_img_drg_obj02_goods_pack_v001` 仍 `ACTIVE`，但定稿是 v003。
 4. ⚠️ **JDG 判断题挂接未开始**：4 张 JDG 资产已入库 ACTIVE，但 `question_bank` 中没有任何 `TRUE_FALSE` 题实际写入 `variants[].media_asset_id`。
@@ -625,7 +625,7 @@ asset_img_jdg_ms02_facing_correct_v001	IMAGE	QUESTION_MEDIA	app://assets/questio
 图片标准版已收口（部分，含 9 张 v002 子素材）
 → asset_resource 全量入库 ✓
 → 拖拽题 DRAFT 挂接 ✓
-→ 渲染层 app:// 协议未实现 ✗  ← 当前阻塞点
+→ 渲染层 app://asset 协议已实现 ✓
 → 判断题挂接未开始
 ```
 
