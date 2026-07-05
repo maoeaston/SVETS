@@ -5,7 +5,9 @@ import { v4 as uuidv4 } from 'uuid'
 import type { DBAdapter } from '../db/interface'
 import type {
   ActionLogEntry,
-  TrainingStartedPayload
+  TrainingStartedPayload,
+  TrainingStepPayload,
+  TrainingStepRetriedPayload
 } from '@shared/types/event-payloads'
 
 export function applyTrainingEvent(db: DBAdapter, entry: ActionLogEntry): void {
@@ -79,24 +81,117 @@ function applyTrainingStarted(db: DBAdapter, entry: ActionLogEntry): void {
 }
 
 // Step 5 实现
-function applyStepStarted(_db: DBAdapter, _entry: ActionLogEntry): void {
-  // TODO
+function applyStepStarted(db: DBAdapter, entry: ActionLogEntry): void {
+  const p = entry.payload as unknown as TrainingStepPayload
+
+  // 幂等：已应用则跳过
+  const step = db
+    .prepare(
+      `SELECT status, training_session_id FROM training_step_record WHERE training_step_record_id = ?`
+    )
+    .get(p.step_record_id) as { status: string; training_session_id: string } | undefined
+  if (!step || step.status === 'IN_PROGRESS') return
+
+  db.prepare(
+    `UPDATE training_step_record
+        SET status = 'IN_PROGRESS', started_at = ?, attempt_count = attempt_count + 1,
+            last_applied_event_id = ?, updated_at = datetime('now')
+      WHERE training_step_record_id = ?`
+  ).run(p.started_at ?? entry.created_at, entry.event_id, p.step_record_id)
+
+  // FSM：INIT → ACTIVE（第一个步骤开始时）
+  const session = db
+    .prepare(`SELECT status FROM training_session WHERE training_session_id = ?`)
+    .get(p.training_session_id) as { status: string } | undefined
+  if (session?.status === 'INIT') {
+    db.prepare(
+      `UPDATE training_session
+          SET status = 'ACTIVE', started_at = ?, last_applied_event_id = ?, last_status_event_id = ?, updated_at = datetime('now')
+        WHERE training_session_id = ?`
+    ).run(entry.created_at, entry.event_id, entry.event_id, p.training_session_id)
+  } else {
+    db.prepare(
+      `UPDATE training_session SET last_applied_event_id = ?, updated_at = datetime('now') WHERE training_session_id = ?`
+    ).run(entry.event_id, p.training_session_id)
+  }
 }
 
-function applyStepCompleted(_db: DBAdapter, _entry: ActionLogEntry): void {
-  // TODO
+function applyStepCompleted(db: DBAdapter, entry: ActionLogEntry): void {
+  const p = entry.payload as unknown as TrainingStepPayload
+
+  const step = db
+    .prepare(`SELECT status FROM training_step_record WHERE training_step_record_id = ?`)
+    .get(p.step_record_id) as { status: string } | undefined
+  if (!step || step.status === 'COMPLETED') return
+
+  db.prepare(
+    `UPDATE training_step_record
+        SET status = 'COMPLETED', completed_at = ?, last_applied_event_id = ?, updated_at = datetime('now')
+      WHERE training_step_record_id = ?`
+  ).run(p.completed_at ?? entry.created_at, entry.event_id, p.step_record_id)
+
+  db.prepare(
+    `UPDATE training_session
+        SET completed_step_count = completed_step_count + 1, last_applied_event_id = ?, updated_at = datetime('now')
+      WHERE training_session_id = ?`
+  ).run(entry.event_id, p.training_session_id)
 }
 
-function applyStepSkipped(_db: DBAdapter, _entry: ActionLogEntry): void {
-  // TODO
+function applyStepSkipped(db: DBAdapter, entry: ActionLogEntry): void {
+  const p = entry.payload as unknown as TrainingStepPayload
+
+  const step = db
+    .prepare(`SELECT status FROM training_step_record WHERE training_step_record_id = ?`)
+    .get(p.step_record_id) as { status: string } | undefined
+  if (!step || step.status === 'SKIPPED') return
+
+  db.prepare(
+    `UPDATE training_step_record
+        SET status = 'SKIPPED', last_applied_event_id = ?, updated_at = datetime('now')
+      WHERE training_step_record_id = ?`
+  ).run(entry.event_id, p.step_record_id)
+
+  db.prepare(
+    `UPDATE training_session SET last_applied_event_id = ?, updated_at = datetime('now') WHERE training_session_id = ?`
+  ).run(entry.event_id, p.training_session_id)
 }
 
-function applyStepFailed(_db: DBAdapter, _entry: ActionLogEntry): void {
-  // TODO
+function applyStepFailed(db: DBAdapter, entry: ActionLogEntry): void {
+  const p = entry.payload as unknown as TrainingStepPayload
+
+  const step = db
+    .prepare(`SELECT status FROM training_step_record WHERE training_step_record_id = ?`)
+    .get(p.step_record_id) as { status: string } | undefined
+  if (!step || step.status === 'FAILED') return
+
+  db.prepare(
+    `UPDATE training_step_record
+        SET status = 'FAILED', last_applied_event_id = ?, updated_at = datetime('now')
+      WHERE training_step_record_id = ?`
+  ).run(entry.event_id, p.step_record_id)
+
+  db.prepare(
+    `UPDATE training_session SET last_applied_event_id = ?, updated_at = datetime('now') WHERE training_session_id = ?`
+  ).run(entry.event_id, p.training_session_id)
 }
 
-function applyStepRetried(_db: DBAdapter, _entry: ActionLogEntry): void {
-  // TODO
+function applyStepRetried(db: DBAdapter, entry: ActionLogEntry): void {
+  const p = entry.payload as unknown as TrainingStepRetriedPayload
+
+  const step = db
+    .prepare(`SELECT status FROM training_step_record WHERE training_step_record_id = ?`)
+    .get(p.step_record_id) as { status: string } | undefined
+  if (!step || step.status === 'IN_PROGRESS') return
+
+  db.prepare(
+    `UPDATE training_step_record
+        SET status = 'IN_PROGRESS', attempt_count = ?, last_applied_event_id = ?, updated_at = datetime('now')
+      WHERE training_step_record_id = ?`
+  ).run(p.attempt_count, entry.event_id, p.step_record_id)
+
+  db.prepare(
+    `UPDATE training_session SET last_applied_event_id = ?, updated_at = datetime('now') WHERE training_session_id = ?`
+  ).run(entry.event_id, p.training_session_id)
 }
 
 // Step 6 实现
