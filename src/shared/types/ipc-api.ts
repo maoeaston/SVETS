@@ -57,6 +57,12 @@ import type {
   TrainingStepActionParams,
   TrainingStepActionResult
 } from './training'
+import type {
+  SubmitOperationScoresParams,
+  SubmitOperationScoresResult,
+  GetOperationScoresParams,
+  GetOperationScoresResult
+} from './operation-scoring'
 
 export interface LoginSuccess {
   success: true
@@ -126,6 +132,8 @@ export interface IpcApi {
     calculateResult: (
       params: CalculateResultParams
     ) => Promise<CalculateResultResult>
+    submitOperationScores: (params: SubmitOperationScoresParams) => Promise<SubmitOperationScoresResult>
+    getOperationScores: (params: GetOperationScoresParams) => Promise<GetOperationScoresResult>
   }
   training: {
     createSession: (params: CreateTrainingSessionParams) => Promise<CreateTrainingSessionResult>

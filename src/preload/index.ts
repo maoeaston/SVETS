@@ -37,7 +37,9 @@ const api = {
     emotionResume: (params: unknown) => ipcRenderer.invoke('assessment:emotionResume', params),
     abortSession: (params: unknown) => ipcRenderer.invoke('assessment:abortSession', params),
     triggerRedline: (params: unknown) => ipcRenderer.invoke('assessment:triggerRedline', params),
-    calculateResult: (params: unknown) => ipcRenderer.invoke('assessment:calculateResult', params)
+    calculateResult: (params: unknown) => ipcRenderer.invoke('assessment:calculateResult', params),
+    submitOperationScores: (params: unknown) => ipcRenderer.invoke('assessment:submitOperationScores', params),
+    getOperationScores: (params: unknown) => ipcRenderer.invoke('assessment:getOperationScores', params)
   },
   training: {
     createSession: (params: unknown) => ipcRenderer.invoke('training:createSession', params),
