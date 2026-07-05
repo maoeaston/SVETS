@@ -23,7 +23,7 @@ Corrections, insights, and knowledge gaps captured during development.
 
 ### Metadata
 - Source: user_feedback
-- Related Files: doc/通用基础能力评估题库.xlsx, .continue-here.md
+- Related Files: doc/reference/通用基础能力评估题库.xlsx, .continue-here.md
 - Tags: question-bank, data-import, acceptance-criteria
 
 ---
@@ -45,7 +45,7 @@ Corrections, insights, and knowledge gaps captured during development.
 
 ### Metadata
 - Source: user_feedback
-- Related Files: doc/features/question-bank-image-plan.md, doc/features/question-bank-image-batch-plan-v001.json, doc/features/question-bank-image-batch-pilot-v001.json, doc/features/question-bank-image-batch-pilot-acceptance.md
+- Related Files: doc/features/question-bank-image-plan.md, doc/features/archive/question-bank-image-batch-plan-v001.json, doc/features/archive/question-bank-image-batch-pilot-v001.json, doc/features/question-bank-image-batch-pilot-acceptance.md
 - Tags: imagegen, localization, prompt, china-mainland, east-asian
 
 ---
