@@ -33,6 +33,14 @@ const router = createRouter({
         {
           path: 'assessments/new',
           component: () => import('../views/teacher/AssessmentCreateView.vue')
+        },
+        {
+          path: 'trainings',
+          component: () => import('../views/teacher/TrainingListView.vue')
+        },
+        {
+          path: 'trainings/create',
+          component: () => import('../views/teacher/TrainingCreateView.vue')
         }
       ]
     },
@@ -80,6 +88,10 @@ const router = createRouter({
         {
           path: 'assessment/:sessionId',
           component: () => import('../views/student/AssessmentView.vue')
+        },
+        {
+          path: 'training/:sessionId',
+          component: () => import('../views/student/TrainingView.vue')
         }
       ]
     }
