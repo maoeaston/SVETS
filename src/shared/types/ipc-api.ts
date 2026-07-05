@@ -47,6 +47,16 @@ import type {
   CalculateResultParams,
   CalculateResultResult
 } from './assessment'
+import type {
+  CreateTrainingSessionParams,
+  CreateTrainingSessionResult,
+  ListTrainingSessionsParams,
+  ListTrainingSessionsResult,
+  GetTrainingSessionParams,
+  GetTrainingSessionResult,
+  TrainingStepActionParams,
+  TrainingStepActionResult
+} from './training'
 
 export interface LoginSuccess {
   success: true
@@ -116,5 +126,15 @@ export interface IpcApi {
     calculateResult: (
       params: CalculateResultParams
     ) => Promise<CalculateResultResult>
+  }
+  training: {
+    createSession: (params: CreateTrainingSessionParams) => Promise<CreateTrainingSessionResult>
+    listSessions: (params: ListTrainingSessionsParams) => Promise<ListTrainingSessionsResult>
+    getSession: (params: GetTrainingSessionParams) => Promise<GetTrainingSessionResult>
+    startStep: (params: TrainingStepActionParams) => Promise<TrainingStepActionResult>
+    completeStep: (params: TrainingStepActionParams) => Promise<TrainingStepActionResult>
+    skipStep: (params: TrainingStepActionParams) => Promise<TrainingStepActionResult>
+    failStep: (params: TrainingStepActionParams) => Promise<TrainingStepActionResult>
+    retryStep: (params: TrainingStepActionParams) => Promise<TrainingStepActionResult>
   }
 }
