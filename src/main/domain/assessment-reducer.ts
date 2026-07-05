@@ -31,6 +31,7 @@ import type {
   AnswerSubmittedPayload,
   EmotionInterruptedPayload,
   EmotionResumedPayload,
+  OfflineScoreSubmittedPayload,
   SessionCompletedPayload,
   SessionAbortedPayload,
   RedlineTriggeredPayload,
@@ -73,6 +74,9 @@ export function applyAssessmentEvent(db: DBAdapter, event: ActionLogEntry): void
       break
     case 'RESULT_CALCULATED':
       applyResultCalculated(db, event)
+      break
+    case 'OFFLINE_SCORE_SUBMITTED':
+      applyOfflineScoreSubmitted(db, event)
       break
     default:
       // 未知 event_type：no-op，向前兼容
@@ -366,7 +370,42 @@ function applyRedlineTriggered(db: DBAdapter, event: ActionLogEntry): void {
   }
 }
 
-// RESULT_CALCULATED → INSERT result_record
+// OFFLINE_SCORE_SUBMITTED → INSERT offline_score_record
+// 幂等：offline_score_id 存在则 skip。
+// TASK_OPERATION 轨道：question_id 固定 NULL，task_operation_code 非空。
+// 不更新 assessment_session 状态（OFFLINE_PENDING 保持不变，由 submitOperationScores handler 驱动）。
+function applyOfflineScoreSubmitted(db: DBAdapter, event: ActionLogEntry): void {
+  const p = event.payload as unknown as OfflineScoreSubmittedPayload
+  const existing = db
+    .prepare('SELECT offline_score_id FROM offline_score_record WHERE offline_score_id = ?')
+    .get(p.offline_score_id)
+  if (existing) return
+
+  // criterion_scores 单维度：取第一项 score（TASK_OPERATION 只有 1 个 criterion）
+  const score = p.criterion_scores[0]?.score ?? 0
+
+  db.prepare(
+    `INSERT INTO offline_score_record
+       (offline_score_id, session_id, question_id, score_scope, task_operation_code,
+        score, scoring_rubric_json, observation_note,
+        scored_by, scored_event_id, scored_at,
+        tool_checklist_confirmed, revision_no, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'VALID')`
+  ).run(
+    p.offline_score_id,
+    p.session_id,
+    p.question_id ?? null,
+    p.score_scope,
+    p.task_operation_code ?? null,
+    score,
+    p.scoring_rubric_json,
+    p.observation_note ?? null,
+    p.scored_by,
+    event.event_id,
+    p.scored_at,
+    p.tool_checklist_confirmed ? 1 : 0
+  )
+}
 // 幂等：result_record.result_id 存在则 skip。
 // safety_overridden / redline_incident_id：level_result=LEVEL_FAIL_BY_SAFETY 时从 session
 //   读 redline_incident_id（result_record CHECK 要求三字段一致）。
