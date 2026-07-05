@@ -4,10 +4,12 @@ import { registerAuthHandlers } from './handlers/auth'
 import { registerStudentHandlers } from './handlers/student'
 import { registerStrategyHandlers } from './handlers/strategy'
 import { registerAssessmentHandlers } from './handlers/assessment'
+import { registerTrainingHandlers } from './handlers/training'
 
 registerAuthHandlers()
 registerStudentHandlers()
 registerStrategyHandlers()
 registerAssessmentHandlers()
+registerTrainingHandlers()
 
 export {}

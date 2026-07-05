@@ -38,6 +38,16 @@ const api = {
     abortSession: (params: unknown) => ipcRenderer.invoke('assessment:abortSession', params),
     triggerRedline: (params: unknown) => ipcRenderer.invoke('assessment:triggerRedline', params),
     calculateResult: (params: unknown) => ipcRenderer.invoke('assessment:calculateResult', params)
+  },
+  training: {
+    createSession: (params: unknown) => ipcRenderer.invoke('training:createSession', params),
+    listSessions:  (params: unknown) => ipcRenderer.invoke('training:listSessions', params),
+    getSession:    (params: unknown) => ipcRenderer.invoke('training:getSession', params),
+    startStep:     (params: unknown) => ipcRenderer.invoke('training:startStep', params),
+    completeStep:  (params: unknown) => ipcRenderer.invoke('training:completeStep', params),
+    skipStep:      (params: unknown) => ipcRenderer.invoke('training:skipStep', params),
+    failStep:      (params: unknown) => ipcRenderer.invoke('training:failStep', params),
+    retryStep:     (params: unknown) => ipcRenderer.invoke('training:retryStep', params)
   }
 }
 
