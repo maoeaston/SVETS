@@ -7,7 +7,8 @@ import type {
   ActionLogEntry,
   TrainingStartedPayload,
   TrainingStepPayload,
-  TrainingStepRetriedPayload
+  TrainingStepRetriedPayload,
+  TrainingCompletedPayload
 } from '@shared/types/event-payloads'
 
 export function applyTrainingEvent(db: DBAdapter, entry: ActionLogEntry): void {
@@ -195,6 +196,88 @@ function applyStepRetried(db: DBAdapter, entry: ActionLogEntry): void {
 }
 
 // Step 6 实现
-function applyTrainingCompleted(_db: DBAdapter, _entry: ActionLogEntry): void {
-  // TODO
+function applyTrainingCompleted(db: DBAdapter, entry: ActionLogEntry): void {
+  const p = entry.payload as unknown as TrainingCompletedPayload
+
+  // 幂等：终态已设置则跳过
+  const session = db
+    .prepare(`SELECT status FROM training_session WHERE training_session_id = ?`)
+    .get(p.training_session_id) as { status: string } | undefined
+  if (!session || session.status === 'COMPLETED') return
+
+  db.prepare(
+    `UPDATE training_session
+        SET status = 'COMPLETED', completed_at = ?, completion_rate = ?,
+            completed_step_count = ?, last_applied_event_id = ?, last_status_event_id = ?,
+            updated_at = datetime('now')
+      WHERE training_session_id = ?`
+  ).run(
+    p.completed_at,
+    p.completion_rate,
+    p.completed_steps,
+    entry.event_id,
+    entry.event_id,
+    p.training_session_id
+  )
+
+  // 读 training_session 以获取 student_id / job_code / task_code / strategy_id / strategy_version
+  const ts = db
+    .prepare(
+      `SELECT student_id, job_code, task_code, strategy_id, strategy_version, created_by
+         FROM training_session WHERE training_session_id = ?`
+    )
+    .get(p.training_session_id) as {
+    student_id: string
+    job_code: string
+    task_code: string
+    strategy_id: string
+    strategy_version: number
+    created_by: string
+  } | undefined
+  if (!ts) return
+
+  // 从 strategy_config 读 level_rules（不硬编码阈值）
+  const sc = db
+    .prepare(
+      `SELECT scoring_policy_json FROM strategy_config WHERE strategy_id = ? AND version = ?`
+    )
+    .get(ts.strategy_id, ts.strategy_version) as { scoring_policy_json: string } | undefined
+
+  let levelResult = 'LEVEL_CONDITIONAL'
+  if (sc) {
+    try {
+      const policy = JSON.parse(sc.scoring_policy_json) as {
+        level_rules: Array<{ min: number; max: number; level: string }>
+      }
+      for (const rule of policy.level_rules) {
+        if (p.completion_rate >= rule.min && p.completion_rate <= rule.max) {
+          levelResult = rule.level
+          break
+        }
+      }
+    } catch {
+      // 解析失败保持默认
+    }
+  }
+
+  const resultId = uuidv4()
+  db.prepare(
+    `INSERT OR IGNORE INTO result_record (
+       result_id, result_type, source_aggregate_type, source_aggregate_id,
+       student_id, job_code,
+       normalized_score, level_result, completion_ratio,
+       generated_event_id, generated_at, safety_overridden
+     ) VALUES (?, 'TRAINING_COMPLETION', 'TRAINING_SESSION', ?,
+               ?, ?, ?, ?, ?, ?, ?, 0)`
+  ).run(
+    resultId,
+    p.training_session_id,
+    ts.student_id,
+    ts.job_code,
+    p.completion_rate,
+    levelResult,
+    p.completion_rate / 100,
+    entry.event_id,
+    p.completed_at
+  )
 }

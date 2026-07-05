@@ -17,12 +17,23 @@ import type {
   CreateTrainingSessionResult,
   ListTrainingSessionsParams,
   ListTrainingSessionsResult,
+  ListTrainingSessionsSuccess,
+  TrainingSessionListItem,
   GetTrainingSessionParams,
   GetTrainingSessionResult,
+  GetTrainingSessionSuccess,
+  TrainingSessionDetail,
+  TrainingStepView,
   TrainingStepActionParams,
-  TrainingStepActionResult
+  TrainingStepActionResult,
+  TrainingSessionStatus,
+  TrainingStepStatus,
+  TrainingStepType
 } from '@shared/types/training'
-import type { TrainingStartedPayload } from '@shared/types/event-payloads'
+import type {
+  TrainingStartedPayload,
+  TrainingCompletedPayload
+} from '@shared/types/event-payloads'
 import { applyTrainingEvent } from '../../domain/training-reducer'
 
 // 开放训练会话状态（与 schema partial unique index WHERE 子句一致）
@@ -162,25 +173,235 @@ export function createTrainingSession(
 }
 
 // ---------------------------------------------------------------------------
-// listTrainingSessions — Step 6 实现
+// finalizeTrainingSession — 内部：所有步骤处理完毕时调用（Step 6）
 // ---------------------------------------------------------------------------
-export function listTrainingSessions(
-  _db: DBAdapter,
-  _params: ListTrainingSessionsParams
-): ListTrainingSessionsResult {
-  // TODO: Step 6 实现
-  return { success: false, errorCode: 'TRAINING_SYSTEM_ERROR' }
+
+function finalizeTrainingSession(db: DBAdapter, trainingSessionId: string): void {
+  const ts = db
+    .prepare(
+      `SELECT total_step_count, student_id, created_by FROM training_session WHERE training_session_id = ?`
+    )
+    .get(trainingSessionId) as {
+    total_step_count: number
+    student_id: string
+    created_by: string
+  } | undefined
+  if (!ts) return
+
+  const counts = db
+    .prepare(
+      `SELECT
+         SUM(CASE WHEN status = 'COMPLETED' THEN 1 ELSE 0 END) as completed_steps,
+         SUM(CASE WHEN status = 'SKIPPED'   THEN 1 ELSE 0 END) as skipped_steps,
+         SUM(CASE WHEN status = 'FAILED'    THEN 1 ELSE 0 END) as failed_steps
+       FROM training_step_record
+      WHERE training_session_id = ?`
+    )
+    .get(trainingSessionId) as {
+    completed_steps: number
+    skipped_steps: number
+    failed_steps: number
+  }
+
+  const totalSteps = ts.total_step_count
+  const completedSteps = counts.completed_steps ?? 0
+  const completionRate = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0
+
+  const payload: TrainingCompletedPayload = {
+    training_session_id: trainingSessionId,
+    completed_at: new Date().toISOString(),
+    total_steps: totalSteps,
+    completed_steps: completedSteps,
+    skipped_steps: counts.skipped_steps ?? 0,
+    failed_steps: counts.failed_steps ?? 0,
+    completion_rate: completionRate
+  }
+
+  const tx = db.transaction(() => {
+    const entry = writeEvent({
+      aggregateType: 'TRAINING_SESSION',
+      aggregateId: trainingSessionId,
+      eventType: 'TRAINING_COMPLETED',
+      payload: payload as unknown as Record<string, unknown>,
+      actorId: ts.created_by,
+      actorRole: 'SYSTEM'
+    })
+    applyTrainingEvent(db, entry)
+  })
+  tx()
 }
 
 // ---------------------------------------------------------------------------
-// getTrainingSession — Step 6 实现
+// listTrainingSessions — Step 6
 // ---------------------------------------------------------------------------
+
+interface TrainingSessionListRow {
+  training_session_id: string
+  student_id: string
+  module_type: string | null
+  status: string
+  total_step_count: number
+  completed_step_count: number
+  completion_rate: number | null
+  created_by: string
+  started_at: string | null
+  completed_at: string | null
+}
+
+export function listTrainingSessions(
+  db: DBAdapter,
+  params: ListTrainingSessionsParams
+): ListTrainingSessionsResult {
+  const caller = assertCaller(db, params.callerUserId, params.callerRole)
+  if (!caller.ok) return { success: false, errorCode: 'FORBIDDEN' }
+
+  const limit = typeof params.limit === 'number' ? params.limit : 50
+  const offset = typeof params.offset === 'number' ? params.offset : 0
+
+  const rows = db
+    .prepare(
+      `SELECT ts.training_session_id, ts.student_id, ts.module_type, ts.status,
+              ts.total_step_count, ts.completed_step_count, ts.completion_rate,
+              ts.created_by, ts.started_at, ts.completed_at
+         FROM training_session ts
+        WHERE (ts.student_id = ? OR ? IS NULL)
+          AND (ts.status = ? OR ? IS NULL)
+        ORDER BY ts.updated_at DESC
+        LIMIT ? OFFSET ?`
+    )
+    .all(
+      params.studentId ?? null,
+      params.studentId ?? null,
+      params.status ?? null,
+      params.status ?? null,
+      limit,
+      offset
+    ) as TrainingSessionListRow[]
+
+  const countRow = db
+    .prepare(
+      `SELECT COUNT(*) as total FROM training_session
+        WHERE (student_id = ? OR ? IS NULL) AND (status = ? OR ? IS NULL)`
+    )
+    .get(
+      params.studentId ?? null,
+      params.studentId ?? null,
+      params.status ?? null,
+      params.status ?? null
+    ) as { total: number }
+
+  const sessions: TrainingSessionListItem[] = rows.map((r) => ({
+    trainingSessionId: r.training_session_id,
+    studentId: r.student_id,
+    moduleType: r.module_type,
+    status: r.status as TrainingSessionStatus,
+    totalStepCount: r.total_step_count,
+    completedStepCount: r.completed_step_count,
+    completionRate: r.completion_rate,
+    createdBy: r.created_by,
+    startedAt: r.started_at,
+    completedAt: r.completed_at
+  }))
+
+  const success: ListTrainingSessionsSuccess = { success: true, sessions, total: countRow.total }
+  return success
+}
+
+// ---------------------------------------------------------------------------
+// getTrainingSession — Step 6
+// ---------------------------------------------------------------------------
+
+interface TrainingStepRow {
+  training_step_record_id: string
+  step_code: string
+  step_name: string
+  step_order: number
+  step_type: string
+  status: string
+  attempt_count: number
+  started_at: string | null
+  completed_at: string | null
+}
+
 export function getTrainingSession(
-  _db: DBAdapter,
-  _params: GetTrainingSessionParams
+  db: DBAdapter,
+  params: GetTrainingSessionParams
 ): GetTrainingSessionResult {
-  // TODO: Step 6 实现
-  return { success: false, errorCode: 'TRAINING_SYSTEM_ERROR' }
+  if (typeof params.trainingSessionId !== 'string' || params.trainingSessionId.length === 0) {
+    return { success: false, errorCode: 'NOT_FOUND' }
+  }
+
+  // TEACHER/ADMIN 或 STUDENT（只能读自己的）
+  const isTeacher = params.callerRole === 'TEACHER' || params.callerRole === 'ADMIN'
+  const isStudent = params.callerRole === 'STUDENT'
+  if (!isTeacher && !isStudent) return { success: false, errorCode: 'FORBIDDEN' }
+
+  // 验证 caller 账号存在且 ACTIVE
+  const callerRow = db
+    .prepare(`SELECT user_id, role, status FROM user_account WHERE user_id = ? AND status = 'ACTIVE'`)
+    .get(params.callerUserId) as { user_id: string; role: string; status: string } | undefined
+  if (!callerRow || callerRow.role !== params.callerRole) {
+    return { success: false, errorCode: 'FORBIDDEN' }
+  }
+
+  const session = db
+    .prepare(
+      `SELECT training_session_id, student_id, strategy_id, strategy_version,
+              module_type, status, total_step_count, completed_step_count,
+              completion_rate, created_by, started_at, completed_at
+         FROM training_session WHERE training_session_id = ?`
+    )
+    .get(params.trainingSessionId) as (TrainingSessionListRow & {
+    strategy_id: string
+    strategy_version: number
+  }) | undefined
+  if (!session) return { success: false, errorCode: 'NOT_FOUND' }
+
+  // STUDENT 只能读自己的
+  if (isStudent && session.student_id !== params.callerUserId) {
+    return { success: false, errorCode: 'FORBIDDEN' }
+  }
+
+  const stepRows = db
+    .prepare(
+      `SELECT training_step_record_id, step_code, step_name, step_order, step_type,
+              status, attempt_count, started_at, completed_at
+         FROM training_step_record
+        WHERE training_session_id = ?
+        ORDER BY step_order ASC`
+    )
+    .all(params.trainingSessionId) as TrainingStepRow[]
+
+  const steps: TrainingStepView[] = stepRows.map((s) => ({
+    stepRecordId: s.training_step_record_id,
+    stepCode: s.step_code,
+    stepName: s.step_name,
+    stepOrder: s.step_order,
+    stepType: s.step_type as TrainingStepType,
+    status: s.status as TrainingStepStatus,
+    attemptCount: s.attempt_count,
+    startedAt: s.started_at,
+    completedAt: s.completed_at
+  }))
+
+  const detail: TrainingSessionDetail = {
+    trainingSessionId: session.training_session_id,
+    studentId: session.student_id,
+    strategyId: session.strategy_id,
+    strategyVersion: session.strategy_version,
+    moduleType: session.module_type,
+    status: session.status as TrainingSessionStatus,
+    totalStepCount: session.total_step_count,
+    completedStepCount: session.completed_step_count,
+    completionRate: session.completion_rate,
+    steps,
+    createdBy: session.created_by,
+    startedAt: session.started_at,
+    completedAt: session.completed_at
+  }
+
+  const success: GetTrainingSessionSuccess = { success: true, session: detail }
+  return success
 }
 
 // ---------------------------------------------------------------------------
@@ -355,6 +576,9 @@ export function completeStep(
   }
 
   const sessionCompleted = checkSessionCompletion(db, session.training_session_id)
+  if (sessionCompleted) {
+    finalizeTrainingSession(db, session.training_session_id)
+  }
   return { success: true, stepRecordId: step.training_step_record_id, newStatus: 'COMPLETED', sessionCompleted }
 }
 
@@ -395,6 +619,9 @@ export function skipStep(
   }
 
   const sessionCompleted = checkSessionCompletion(db, session.training_session_id)
+  if (sessionCompleted) {
+    finalizeTrainingSession(db, session.training_session_id)
+  }
   return { success: true, stepRecordId: step.training_step_record_id, newStatus: 'SKIPPED', sessionCompleted }
 }
 
@@ -433,6 +660,9 @@ export function failStep(
   }
 
   const sessionCompleted = checkSessionCompletion(db, session.training_session_id)
+  if (sessionCompleted) {
+    finalizeTrainingSession(db, session.training_session_id)
+  }
   return { success: true, stepRecordId: step.training_step_record_id, newStatus: 'FAILED', sessionCompleted }
 }
 
