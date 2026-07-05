@@ -239,12 +239,20 @@ function applyAnswerSubmitted(db: DBAdapter, event: ActionLogEntry): void {
        WHERE session_id = ?`
     ).run(next.question_id, event.event_id, p.session_id)
   } else {
+    // All online questions answered — transition to OFFLINE_PENDING (if offline questions exist) or COMPLETED.
+    const sessRow = db
+      .prepare('SELECT offline_question_count FROM assessment_session WHERE session_id = ?')
+      .get(p.session_id) as { offline_question_count: number } | undefined
+    const nextStatus =
+      (sessRow?.offline_question_count ?? 0) > 0 ? 'OFFLINE_PENDING' : 'COMPLETED'
     db.prepare(
       `UPDATE assessment_session
        SET online_completed_count = online_completed_count + 1,
+           status = ?,
+           last_status_event_id = ?,
            last_applied_event_id = ?
        WHERE session_id = ?`
-    ).run(event.event_id, p.session_id)
+    ).run(nextStatus, event.event_id, event.event_id, p.session_id)
   }
 }
 
