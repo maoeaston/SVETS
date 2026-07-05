@@ -35,6 +35,10 @@ const router = createRouter({
           component: () => import('../views/teacher/AssessmentCreateView.vue')
         },
         {
+          path: 'assessments/:sessionId/scoring',
+          component: () => import('../views/teacher/OperationScoringView.vue')
+        },
+        {
           path: 'trainings',
           component: () => import('../views/teacher/TrainingListView.vue')
         },

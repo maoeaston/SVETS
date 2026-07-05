@@ -68,6 +68,15 @@
           </td>
           <td>{{ formatTime(row.startedAt ?? row.createdAt) }}</td>
           <td class="col-action">
+            <!-- OFFLINE_PENDING 态：显示"实操评分"入口 -->
+            <RouterLink
+              v-if="row.status === 'OFFLINE_PENDING'"
+              :to="`/teacher/assessments/${row.sessionId}/scoring`"
+              class="btn-inline btn-scoring"
+            >
+              实操评分
+            </RouterLink>
+
             <!-- EMOTION_INTERRUPTED 态：显示"恢复" -->
             <button
               v-if="row.status === 'EMOTION_INTERRUPTED'"
@@ -433,6 +442,11 @@ onMounted(() => {
 .btn-resume {
   color: #166534;
   border-color: #86efac;
+}
+.btn-scoring {
+  color: #1d4ed8;
+  border-color: #93c5fd;
+  text-decoration: none;
 }
 .btn-abort {
   color: #b45309;
