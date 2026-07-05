@@ -24,6 +24,7 @@ import { getDatabase } from '../../db/connection'
 import { assertCaller, assertStudent, assertSessionOwner } from '../../utils/auth-context'
 import { validateContentJson } from '../../utils/validate-content-json'
 import { writeEvent } from '../../domain/event-writer'
+import { haltTrainingSessionSteps } from './training'
 import { applyAssessmentEvent } from '../../domain/assessment-reducer'
 import {
   generatePaper,
@@ -1432,7 +1433,11 @@ export function triggerRedline(db: DBAdapter, params: TriggerRedlineParams): Tri
     return { success: false, errorCode: 'REDLINE_TRIGGER_SYSTEM_ERROR' }
   }
 
-  // 6. 审计 REDLINE_TRIGGERED（INFO，TEACHER/ADMIN 关键操作）
+  // 6. 安全红线应用层级联：将该学生同任务的开放训练会话的 IN_PROGRESS 步骤归档为 FAILED
+  // （schema trigger 已将 training_session 置 REDLINE_HALTED；本步骤处理步骤级联）
+  haltTrainingSessionSteps(db, session.student_id, session.task_code)
+
+  // 7. 审计 REDLINE_TRIGGERED（INFO，TEACHER/ADMIN 关键操作）
   logAssessmentEvent(db, 'REDLINE_TRIGGERED', 'INFO', params.sessionId, caller.row.user_id, {
     incidentId,
     reasonCode: params.reasonCode,

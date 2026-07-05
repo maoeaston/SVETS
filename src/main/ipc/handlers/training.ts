@@ -707,14 +707,27 @@ export function retryStep(
 }
 
 // ---------------------------------------------------------------------------
-// haltTrainingSessionSteps — Step 7 实现（供 assessment:triggerRedline 调用）
+// haltTrainingSessionSteps — Step 7：安全红线应用层级联
+// 由 assessment:triggerRedline 事务提交后调用（在事务外，schema trigger 已 HALT session）
 // ---------------------------------------------------------------------------
 export function haltTrainingSessionSteps(
-  _db: DBAdapter,
-  _studentId: string,
-  _taskCode: string
+  db: DBAdapter,
+  studentId: string,
+  taskCode: string
 ): void {
-  // TODO: Step 7 实现
+  const haltedSessions = db
+    .prepare(
+      `SELECT training_session_id FROM training_session
+        WHERE student_id = ? AND task_code = ? AND status = 'REDLINE_HALTED'`
+    )
+    .all(studentId, taskCode) as Array<{ training_session_id: string }>
+
+  for (const { training_session_id } of haltedSessions) {
+    db.prepare(
+      `UPDATE training_step_record SET status = 'FAILED', updated_at = datetime('now')
+        WHERE training_session_id = ? AND status = 'IN_PROGRESS'`
+    ).run(training_session_id)
+  }
 }
 
 // ---------------------------------------------------------------------------
