@@ -1,6 +1,7 @@
 // 对应 doc/xc-career-guide-event-payload-schema-v1.0.0.md
 
 import type { AbilityTag } from './json-schemas'
+import type { OperationPassRatePayload } from './operation-scoring'
 
 export type AggregateType =
   | 'ASSESSMENT_SESSION'
@@ -157,6 +158,10 @@ export interface OfflineScoreSubmittedPayload {
   total_score: number
   scored_by: string
   scored_at: string
+  // 以下三字段在 operation-scoring Step 1 中扩展（事件溯源：投影可从事件流重建）
+  scoring_rubric_json: string        // 评分标准 JSON 快照（OperationRubric JSON.stringify）
+  observation_note?: string | null   // 教师观察备注
+  tool_checklist_confirmed: boolean  // 教具清单确认标志
 }
 
 export interface RedlineTriggeredPayload {
@@ -235,8 +240,8 @@ export interface ResultCalculatedPayload {
   // result_record.result_payload_json 的来源（schema.sql:989 列可空）。
   // 事件溯源原则：投影字段必须可从事件流重建，故 breakdown 跟随事件 payload
   // 而非 handler 后置 UPDATE。ABILITY_SCORE 类型由 persistRedlineResult 填充
-  // AbilityScorePayload；TRAINING_COMPLETION / OPERATION_PASS_RATE 由后续 Step 填充。
-  breakdown?: AbilityScorePayload | null
+  // AbilityScorePayload；OPERATION_PASS_RATE 由 operation-scoring Step 3 填充。
+  breakdown?: AbilityScorePayload | OperationPassRatePayload | null
 }
 
 export interface ModuleScore {
