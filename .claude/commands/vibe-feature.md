@@ -13,11 +13,11 @@
 按顺序读取以下文件，理解当前工程状态：
 
 1. `AGENTS.md` — 架构原则、禁止清单、关键约束
-2. `doc/炫灿-职途向导系统_MVP_PRD_v1.0.4.md` — 主 PRD，确认本次需求是否已在范围内
-3. `doc/xc-career-guide-mvp-schema-v0.1.7-consistency-guard.sql` — 当前数据模型
+2. `doc/specs/PRD_v1.0.6.md` — 主 PRD，确认本次需求是否已在范围内
+3. `src/main/db/schema.sql` — 当前数据模型（权威 schema，在代码库中）
 4. 根据需求内容，按需读取：
-   - `doc/xc-career-guide-json-field-schema-v1.0.0.md`
-   - `doc/xc-career-guide-event-payload-schema-v1.0.0.md`
+   - `doc/specs/xc-career-guide-json-field-schema-v1.0.0.md`
+   - `doc/specs/xc-career-guide-event-payload-schema-v1.0.0.md`
    - 相关的 `src/` 文件
 
 ### Step 2：分析影响范围
@@ -51,7 +51,7 @@
 
 启动 Reviewer subagent，提供 Mini-PRD 全文，要求它：
 
-- 检查是否与 PRD v1.0.4 的约束冲突（特别是 §2 MVP 范围、§6 并发约束、§7 结果体系）
+- 检查是否与 PRD v1.0.6 的约束冲突（特别是 §2 MVP 范围、§6 并发约束、§7 结果体系）
 - 检查是否遗漏边界条件（空数据、重复操作、并发会话、红线触发中）
 - 检查安全相关内容是否符合两级权限模型
 - 提出具体修改意见，不只说"有问题"

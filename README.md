@@ -92,10 +92,11 @@ SVETS/
 
 | 文档 | 说明 |
 |---|---|
-| `doc/炫灿-职途向导系统_MVP_PRD_v1.0.6.md` | 当前产品需求文档（功能范围、验收标准、评分收口基线） |
+| `doc/specs/PRD_v1.0.6.md` | 当前产品需求文档（功能范围、验收标准、评分收口基线） |
 | `src/main/db/schema.sql` | 当前 SQLite schema（表、触发器、状态机、投影约束） |
-| `doc/xc-career-guide-json-field-schema-v1.0.0.md` | 各 JSON TEXT 字段的结构定义 |
-| `doc/xc-career-guide-event-payload-schema-v1.0.0.md` | 领域事件载荷格式 + action_log.jsonl 规范 |
+| `doc/specs/xc-career-guide-json-field-schema-v1.0.0.md` | 各 JSON TEXT 字段的结构定义 |
+| `doc/specs/xc-career-guide-event-payload-schema-v1.0.0.md` | 领域事件载荷格式 + action_log.jsonl 规范 |
+| `doc/specs/题库分层架构说明.md` | 四层题库设计与 question_role 字段规划 |
 | `doc/index.md` | 文档入口索引，说明不同任务应先读哪些文档 |
 
 ---

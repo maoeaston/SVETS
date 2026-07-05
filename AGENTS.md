@@ -6,74 +6,13 @@
 
 ---
 
-## 架构原则
-
-### 事件溯源 + SQLite 投影
-- `action_log.jsonl` 是唯一事实来源，只追加、不修改
-- SQLite 是查询投影，可删除重建
-- 所有状态变更必须先写事件、再更新投影
-- 冷启动时从 JSONL 回放事件重建 SQLite
-
-### 单一策略配置源
-- `strategy_config` 表是组卷、评分、红线规则的唯一定义
-- `version` 字段不可变，修改即新增版本
-- 会话创建时锁定 `strategy_id` + `version`，运行中不得切换
-
-### 安全红线优先级
-- `LEVEL_FAIL_BY_SAFETY` 覆盖所有基于分数的等级判定
-- 红线触发后，会话立即进入 `REDLINE_HALTED` 终态，不可恢复
-- 触发器在数据库层强制执行，应用层不得绕过
-
----
-
 ## 文件结构
 
 - 主进程：`src/main/` — `db/`（schema + connection）| `domain/`（event-writer 等领域服务）| `ipc/handlers/`
 - 渲染进程：`src/renderer/src/` — `views/` | `stores/`（Pinia）| `router/`
 - 共享类型：`src/shared/types/` — `event-payloads.ts` | `json-schemas.ts` | `ipc-api.ts`
-- 设计文档：`doc/` — PRD | schema SQL | JSON 字段规范 | 事件规范 | 功能 Mini-PRD（`doc/features/`）
+- 设计文档：`doc/specs/` — PRD | JSON 字段规范 | 事件规范 | 题库架构说明 | `doc/features/` — 功能 Mini-PRD + 实现文档 | `doc/reference/` — 原始素材 | `doc/archive/` — 已归档历史文档
 - Skill 命令：`.claude/commands/` — `vibe-feature.md` | `vibe-impl.md` | `vibe-review.md` | `vibe-accept.md`
-
----
-
-## 关键约束
-
-### JSON 字段必须验证
-- 写入任何 JSON TEXT 字段前，必须按 `doc/xc-career-guide-json-field-schema-v1.0.0.md` 验证结构
-- 新增 JSON 结构字段时，必须同时补共享类型、运行时校验器和至少一个消费路径测试，三者缺一不可
-- `content_json` 的 `question_type` 必须与 `question_bank.question_type` 一致
-- `strategy_config` 的 `competent_threshold > conditional_threshold` 必须满足
-- 所有 `asset_id` 引用必须存在于 `asset_resource` 且 `status = 'ACTIVE'`
-
-### 事件写入顺序（不可颠倒）
-1. 生成 payload
-2. 计算 checksum: `SHA-256(JSON.stringify(payload))`
-3. 分配 event_id (UUID v4) 和 event_sequence (aggregate 内递增)
-4. 追加写入 `action_log.jsonl`（文件锁）
-5. 写入 `domain_event_projection`
-6. 调用 reducer 更新投影表
-
-### 状态机强制路径
-- `assessment_session.status`:
-  - 开放态包括 `INIT` / `ACTIVE` / `EMOTION_INTERRUPTED` / `SUSPENDED_REVIEW_REQUIRED` / `OFFLINE_PENDING`
-  - `EMOTION_INTERRUPTED` 可从 `ACTIVE` 进入，恢复后回到 `ACTIVE`
-  - `SUSPENDED_REVIEW_REQUIRED` 是坐次间歇 / 待复核开放态，可回 `ACTIVE` 或终止
-  - `OFFLINE_PENDING` 是线上完成后等待基础能力线下 8 题评分的开放态
-  - 终态（`COMPLETED` / `ABORTED` / `REDLINE_HALTED`）不可转出
-  - 红线可从任一开放态进入 `REDLINE_HALTED`
-- 触发器在 DB 层阻止非法迁移，应用层不应尝试绕过
-
-### 结果分离展示（不可合并）
-- `ABILITY_SCORE` - 能力测评分（百分制 + 等级）
-- `TRAINING_COMPLETION` - 训练完成度（完成率百分比）
-- `OPERATION_PASS_RATE` - 实操达标率（各维度 0/1/2 分）
-- 三者独立计算、独立展示，禁止合成"总分"
-
-### 字段/枚举变更的下游全仓扫描
-- 修改 `strategy_config` 字段名、`level_result` 枚举值、schema 版本号或 PRD 版本号后，必须对每个旧 token 执行 `grep -rn` 跨 `src/` + `doc/`
-- 每个命中点逐一判定：需更新 / 历史性引用（patch notes、迁移说明、决策记录——应保留）
-- 不能只改"显然的几份文档"（PRD / JSON 字段规范 / 功能文档）；事件 payload 规范、共享类型定义、AGENTS.md 工程基线、`.continue-here.md` 决策记录都在扫描范围内
-- 起因：v0.1.8 修订时差点漏掉 `event-payload-schema` 文档的 `EMOTION_COLLAPSE_THRESHOLD_REACHED` 同步，靠 review 才发现
 
 ---
 
@@ -102,26 +41,6 @@
 
 ---
 
-## 测试策略
-
-### 单元测试（Vitest）
-- 事件 checksum 计算
-- JSON Schema 验证函数
-- 组卷算法（策略 → 题目列表）
-- 评分计算逻辑
-
-### 集成测试
-- 完整事件写入 → 投影 → 回放流程
-- 红线触发 → 批量熔断 → 状态验证
-- 报告生成 → 导出 → 锁定
-
-### 端到端测试（手工验收）
-- 教师创建测评 → 学生答题 → 线下评分 → 报告查看
-- 情绪中断 → 恢复 → 继续答题
-- 安全红线触发 → 会话强制终止 → 安全事件记录
-
----
-
 ## 验收标准（17 项功能）
 
 参考 PRD §17，每项功能有明确的输入、预期输出和验证方式。实现任何功能前，先确认对应的验收标准。
@@ -139,44 +58,27 @@
 - 发现 PRD / Schema 不一致时，标记为 [!] 并说明冲突点
 - 建议技术方案时，列出至少一个备选方案和权衡
 
-## 编码规范
-
-- 实现前先明确假设；有多种合理解读时，列出选项，不要静默选择
-- 写解决问题所需的最少代码，不做投机性功能、不为一次性代码建抽象
-- 只改任务要求改的地方；不"顺手优化"相邻代码、注释或格式
-- 沿用文件中已有的风格，即使你会选择不同的写法
-- 发现不相关的死代码或 bug，指出但不私自修复
-- 重命名函数、类型、变量时，分别搜索：直接引用、类型层引用、字符串字面量、动态导入、re-export、测试文件，一次 grep 不够
-
-## Git 规范
-
-- 提交信息使用语义化前缀（feat / fix / refactor / chore / docs / test）
-- 禁止使用 `--no-verify` 绕过 pre-commit hook，除非用户明确要求
-- 单人开发，不走 PR：功能分支验收通过后本地 squash merge 到 main，直接推 main 备份
-
-## Secrets 规范
-
-- 禁止在代码中硬编码 API key、token、密码或连接字符串
-- 提交前扫描暂存内容是否含有凭证；发现即停止并提醒
-- Secrets 存放在 `.env` 文件中，`.env` 必须在 `.gitignore` 内
-
-## 自我改进
-
-- 当用户纠正、反驳、表达不满，或本次任务暴露可复用教训时，完成任务后提出一条精简规则更新建议
-- 先判断作用域：全局（适用所有项目）、项目（仅本仓库）或不沉淀（一次性）；说明判断理由
-- 提出 diff，等用户确认后再改；提案前先检索 AGENTS.md 中是否已有覆盖此规则的条目
-- 单次会话建议超过 2 条规则时，停下来问是否在过度修正
-- AGENTS.md 超过 200 行时，提出删除或合并建议，而不是只追加
-
 ---
 
 ## 开发流程
 
-每个新功能按以下步骤推进，不跳过 PRD 和实现文档直接写代码：
+不跳过 PRD 和实现文档直接写代码。
 
-1. `/vibe-feature` — 读取项目上下文，Writer 生成 Mini-PRD，Reviewer subagent 审查，存入 `doc/features/`
-2. `/vibe-impl` — 将 PRD 拆成步骤化实现文档，每步对应一个 commit，含测试设计
-3. 逐步实现 — 按实现文档执行，每步完成后运行 `/vibe-accept`（typecheck + build + vitest）
-4. 合并到 main — 所有步骤验收通过后本地 squash merge 到 main 并推送（单人开发，不走 PR）
+### 标准新功能路径
 
-高风险改动（FSM 路径 / safety_incident / schema 变更）额外运行 `/vibe-review` 进行双 AI 审查。
+1. `waza think`（可选）— 有架构方案取舍或"要不要做"时先运行；输出确定方向后再进下一步
+2. `/vibe-feature` — 加载 SVETS 上下文，生成 Mini-PRD + 领域 Reviewer 审查，存入 `doc/features/`
+3. `/vibe-impl` — PRD → 步骤化实现文档，每步对应一个 commit，含测试设计
+4. 逐步实现 — 按 impl.md 执行；每步完成后运行 `/vibe-accept`（typecheck + build + vitest + 领域专项）
+5. 推送 — `/vibe-accept` 全通过后运行 `waza check`（ship mode）执行 git 操作；squash merge 到 main
+
+高风险改动（FSM 路径 / safety_incident / schema 变更）在步骤 4 后额外运行 `/vibe-review`。
+
+### 实现中遇到问题
+
+| 情况 | 使用 | 规则 |
+|------|------|------|
+| bug / 回归 | `waza hunt` | 没有一句话根因不动代码；三次假设失败强制 handoff |
+| 渲染进程 UI | `waza design` | 方向锁定 + 截图迭代，不猜测视觉效果 |
+| 外部文档/研究 | `waza read` / `waza learn` | — |
+| AI 配置/文档腐烂 | `waza health` | 每隔数个功能迭代跑一次 |
