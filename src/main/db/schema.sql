@@ -2136,6 +2136,46 @@ INSERT OR IGNORE INTO strategy_config (
   1
 );
 
+INSERT OR IGNORE INTO strategy_config (
+  strategy_id,
+  strategy_type,
+  job_code,
+  strategy_name,
+  online_question_count,
+  offline_question_count,
+  max_score,
+  competent_threshold,
+  conditional_threshold,
+  module_veto_threshold,
+  emotion_collapse_threshold,
+  question_policy_json,
+  scoring_policy_json,
+  supports_redline_halt,
+  allows_emotion_interrupt,
+  requires_offline_scoring,
+  version,
+  is_active
+) VALUES (
+  'strategy_training_shelver_v1',
+  'TRAINING_PRACTICE',
+  'SUPERMARKET_SHELVER',
+  '理货员拆箱与上架训练 v1',
+  0,
+  0,
+  100,
+  80,
+  60,
+  0.5,
+  3,
+  '{"module_scope":"SINGLE_MODULE","step_types":["WATCH","LEARN","PRACTICE","DO"]}',
+  '{"score_values":[0,100],"normalization":"completed_steps/total_steps*100","safety_override_enabled":true,"level_rules":[{"min":100,"max":100,"level":"LEVEL_COMPETENT"},{"min":1,"max":99,"level":"LEVEL_CONDITIONAL"},{"min":0,"max":0,"level":"LEVEL_NOT_COMPETENT"}]}',
+  1,
+  0,
+  0,
+  1,
+  1
+);
+
 -- ============================================================================
 -- End of schema.sql v0.1.10-scoring-closure
 -- ============================================================================

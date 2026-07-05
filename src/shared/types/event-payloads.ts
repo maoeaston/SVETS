@@ -34,6 +34,8 @@ export type EventType =
   | 'TRAINING_STEP_COMPLETED'
   | 'TRAINING_STEP_SKIPPED'
   | 'TRAINING_STEP_FAILED'
+  | 'TRAINING_STEP_RETRIED'
+  | 'TRAINING_ABORTED'
   | 'TRAINING_COMPLETED'
   | 'RESULT_CALCULATED'
   | 'REPORT_GENERATED'
@@ -387,4 +389,20 @@ export interface RecoveryLogTruncatedPayload {
   archived_event_count: number
   retained_event_count: number
   oldest_retained_event_id: string
+}
+
+export interface TrainingStepRetriedPayload {
+  training_session_id: string
+  step_record_id: string
+  step_type: 'WATCH' | 'LEARN' | 'PRACTICE' | 'DO'
+  step_order: number
+  attempt_count: number   // 重试后的新 attempt_count
+  retried_at: string
+}
+
+export interface TrainingAbortedPayload {
+  training_session_id: string
+  aborted_at: string
+  aborted_by: string
+  reason?: string | null
 }
