@@ -4,6 +4,43 @@ Command failures and integration errors.
 
 ---
 
+## [ERR-20260706-001] claude-mem-windows-bun-from-wsl-path
+
+**Logged**: 2026-07-06T16:31:00+08:00
+**Priority**: high
+**Status**: resolved
+**Area**: infra
+
+### Summary
+Installing claude-mem from WSL started the worker with Windows Bun because WSL did not have a Linux Bun binary earlier in `PATH`.
+
+### Error
+```
+command -v bun
+/mnt/c/Users/maoea/AppData/Roaming/npm/bun
+
+claude-mem health reported:
+platform: win32
+workerPath: \\wsl.localhost\Ubuntu\home\maoea\.claude\plugins\marketplaces\thedotmack\plugin\scripts\worker-service.cjs
+```
+
+### Context
+- Command/operation attempted: `npx claude-mem install` followed by `npm run worker:start`
+- Root cause: no WSL Linux Bun was installed, so `bun` resolved to Windows via `/mnt/c/...` in WSL `PATH`
+- Result: worker used `C:\Users\maoea\.claude-mem\settings.json` instead of `/home/maoea/.claude-mem/settings.json`
+
+### Suggested Fix
+Install Linux Bun in WSL and ensure `command -v bun` points to a WSL path before starting claude-mem. Stop any Windows-side Bun worker left from the failed start.
+
+### Metadata
+- Reproducible: yes
+- Related Files: /home/maoea/.claude-mem/settings.json, /home/maoea/.claude/plugins/marketplaces/thedotmack/plugin/scripts/worker-service.cjs
+
+### Resolution
+- **Resolved**: 2026-07-06T16:31:00+08:00
+- **Commit/PR**: local environment change
+- **Notes**: Stopped the Windows Bun worker, installed Linux Bun via WSL npm, confirmed `command -v bun` is `/home/maoea/.nvm/versions/node/v24.14.1/bin/bun`, and verified claude-mem worker health reports `platform: linux` on `127.0.0.1:37700`.
+
 ## [ERR-20260704-003] electron-vite-dynamic-require-local-module
 
 **Logged**: 2026-07-04T12:18:00+08:00
