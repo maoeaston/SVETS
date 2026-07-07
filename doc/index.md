@@ -26,16 +26,32 @@ doc/
 
 ## 2. specs/ — 活跃工程规范
 
+### 2.1 当前已实现基线
+
+以下文件对应**当前代码真实状态**：`schema.sql v0.1.10-scoring-closure` + `PRD v1.0.6`（见 AGENTS.md 工程基线）。
+
 | 文件 | 用途 | 何时读 |
 |------|------|--------|
 | `specs/PRD_v1.0.6.md` | MVP 产品说明、功能范围、结果模型、验收基线 | 判断功能边界、确认验收口径 |
 | `specs/xc-career-guide-json-field-schema-v1.0.0.md` | 所有 JSON TEXT 字段结构规范 | 写或校验 `content_json`、`scoring_policy_json` 等 |
 | `specs/xc-career-guide-event-payload-schema-v1.0.0.md` | 事件载荷与 JSONL 信封规范 | 涉及 `action_log.jsonl`、事件写入、回放 |
-| `specs/题库分层架构说明.md` | 四层题库（MASTER/变式/泛化/结业）设计与 `question_role` 字段规划 | 题库新增、组卷策略、结业逻辑设计 |
-| `specs/分数解释手册+施测者操作手册.md` | 评分等级解释与施测操作规程 | 评分展示、报告输出、施测流程核对 |
+| `specs/题库分层架构说明.md` | 四层题库（MASTER/变式/泛化/结业）设计与 `question_role` 字段规划（Post-MVP 参考，MVP 不落地） | 题库新增、组卷策略、结业逻辑设计 |
+| `specs/《分数解释手册》v1.0+《施测者操作手册》v1.md` | 评分等级解释与施测操作规程（专业岗位题库来源材料） | 评分展示、报告输出、施测流程核对 |
 
 **数据库 schema 基线在代码库中：**
 - `src/main/db/schema.sql` — 当前权威 schema，改表结构、触发器、状态机时必读
+
+### 2.2 专业岗位测评 / 题库治理 PRD 链（尚未实现，下一阶段目标基线）
+
+以下三份文件是**差异修订版**体例：每份只写相对上一版的增量，未提及的章节自动沿用上一版（`PRD v1.0.6` 是链的起点）。**当前代码尚未实现这条链的任何一条**——阅读时不要误当作已落地的现状。三份必须按顺序整体读完，后一份不重复前一份已定的合同。
+
+| 文件 | 相对上一版的核心增量 | 目标 schema |
+|------|------|------|
+| `specs/MVP_PRD_v1.0.7-question-contract-closure.md` | 题库数据合同收口：`SOFTWARE_TASK`、`item_usage`、interaction/presentation 两层模型、`scoring_rule_json` v1.1、`response_status`、支持等级、素材冻结、`report_content_json` v1.1 | v0.1.11（未生成） |
+| `specs/MVP_PRD_v1.0.8-job-bank-governance-closure.md` | 专业岗位题库（M1-M6）治理：`bank_domain` 域隔离、`job_module_code`、`TEACHER_OBSERVATION`、`VIDEO_SCENE`、施测变体合同（`content_json.administration`）、旧库重导规则 | 并入 v0.1.12（v0.1.11 未单独生成） |
+| `specs/MVP_PRD_v1.0.9-job-skill-assessment-mvp-closure.md` | 专业岗位示范测评运行时：`JOB_SKILL_ASSESSMENT` 策略、固定 18+6 题（+0-3 观察项）示范卷、`JOB_SKILL_SCORE`、M1-M6 模块画像、专业岗位报告、与"拆箱与上架"训练的推荐衔接 | v0.1.12（当前目标基线，未生成） |
+
+> M1-M6 题库口径在讨论过程中出现过一次真实的版本误判（曾把 549 题初始池当成最终口径），完整经过和数据事实见 `doc/archive/M1-M6题库软件化审查报告-v2-db298口径-通向v1.0.8.md`；旧误判稿保留在同目录 `...-v1-已废弃-549题误判终稿.md` 仅作教训记录。启动这条 PRD 链的编码前必读该 v2 报告。
 
 ---
 
@@ -68,7 +84,8 @@ doc/
 | 改状态机、红线、事件顺序 | `schema.sql` + `event-payload-schema` |
 | 写或校验 JSON 字段 | `json-field-schema` |
 | 改功能边界、结果口径、验收标准 | 主 PRD |
-| 改题库、组卷逻辑 | `specs/题库分层架构说明.md` |
+| 改题库、组卷逻辑（现有基础能力题库） | `specs/题库分层架构说明.md` |
+| 启动专业岗位测评 / M1-M6 题库相关新功能 | §2.2 PRD 链（v1.0.7 → v1.0.8 → v1.0.9，按顺序整体读完）+ `doc/reference/` 中 M1-M6 298 条导出 |
 | 实现某具体功能 | 对应 `features/*-prd.md` + `*-impl.md` |
 
 ---
@@ -104,8 +121,10 @@ doc/
 
 agents 不需要主动读，仅在需要核对源数据时查阅：
 
-- `通用基础能力评估题库.xlsx` — Q_BASE_* 题来源
-- `专业岗位能力测评题库2026.7.3_终稿.pdf` — M1–M6 题来源（298题终稿）
+- `通用基础能力评估题库.xlsx` — Q_BASE_* 题旧版来源
+- `通用基础能力正式测评候选题库_v0.2-软件优先版.xlsx` — 基础能力题库现行候选池（PRD v1.0.7 题库基线，96 条软件优先候选题）
+- `专业岗位能力测评题库2026.7.3_终稿.pdf` — **[!] 文件名含"终稿"但实为 M1-M6 初始题目池（实测 549 题/项），仅作追溯查漏，不是最终口径，不要据此判断题量或答案**
+- `专业岗位能力测评题库-M1-M6-数据库导出-298条.csv` / `.json` — **M1-M6 题库真正的最终口径**（从 `question_bank` 实测导出的 298 条），专业岗位题库改造与 PRD v1.0.8/v1.0.9 均以此为准；已知数据缺陷（答案键存疑、rubric 缺三档锚点、`ability_tags` 非法值等）见 `doc/archive/M1-M6题库软件化审查报告-v2-db298口径-通向v1.0.8.md`
 - `超市素材需求清单更新版.md` — 图片资产需求
 - `chatgpt建议.md` — 题库分层设计输入建议（已被 `specs/题库分层架构说明.md` 吸收）
 - 其余 PDF — 背景研究文献，不影响编码实现
@@ -121,5 +140,6 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | 改数据库/状态机 | `src/main/db/schema.sql` |
 | 改事件写入/回放 | `specs/xc-career-guide-event-payload-schema-v1.0.0.md` |
 | 改 JSON 字段 | `specs/xc-career-guide-json-field-schema-v1.0.0.md` |
-| 题库/组卷相关 | `specs/题库分层架构说明.md` |
+| 题库/组卷相关（现有基础能力题库） | `specs/题库分层架构说明.md` |
 | 功能范围判断 | `specs/PRD_v1.0.6.md` |
+| 专业岗位测评 / M1-M6 题库开发 | §2.2 PRD 链（v1.0.7→v1.0.8→v1.0.9）+ `doc/reference/` M1-M6 298 条导出 |
