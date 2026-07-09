@@ -82,7 +82,7 @@ import {
   createTestDb,
   seedCaller,
   seedStudent,
-  seedQuestionBank,
+  seedQuestionBankDraft,
   baseStrategyInput
 } from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
@@ -161,6 +161,8 @@ function setupSession(
   for (const [questionType, content] of Object.entries(contentByType)) {
     seedContentJsonByType(questionType as OnlineQuestionType, content)
   }
+  // v0.1.12: 激活所有 DRAFT 题，满足 session_question_insert_validation
+  db.prepare("UPDATE question_bank SET status = 'ACTIVE' WHERE status = 'DRAFT'").run()
   const result = createSession(db, {
     callerUserId: callerId,
     callerRole: 'TEACHER',
@@ -247,7 +249,7 @@ beforeEach(() => {
   callerId = seedCaller(db, 'TEACHER')
   studentId = seedStudent(db)
   seedStrategyRow()
-  seedQuestionBank(db)
+  seedQuestionBankDraft(db)
   mockState.db = db
 })
 

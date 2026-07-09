@@ -332,12 +332,16 @@ describe('createVersion — JSON 校验失败', () => {
       baseParams({
         strategy: baseStrategyInput({
           scoringPolicy: {
-            score_values: [0, 1, 2],
-            normalization: 'raw_score/max_score*100',
+            schema_version: 'scoring-policy-v1.1' as const,
+            online_score_values: [0, 2] as [0, 2],
+            offline_score_values: [0, 1, 2] as [0, 1, 2],
+            normalization: 'raw_score/max_score*100' as const,
             safety_override_enabled: true,
+            placement_advice_enabled: false,
+            score_values: [0, 1, 2] as [0, 1, 2],
             level_rules: [
-              { min: 0, max: 59, level: 'LEVEL_NOT_COMPETENT' },
-              { min: 80, max: 100, level: 'LEVEL_COMPETENT' }
+              { min: 0, max: 59, level: 'LEVEL_NOT_COMPETENT' as const },
+              { min: 80, max: 100, level: 'LEVEL_COMPETENT' as const }
             ]
           }
         })
@@ -375,13 +379,17 @@ describe('createVersion — JSON 校验失败', () => {
         strategy: baseStrategyInput({
           competentThreshold: 80,
           scoringPolicy: {
-            score_values: [0, 1, 2],
-            normalization: 'raw_score/max_score*100',
+            schema_version: 'scoring-policy-v1.1' as const,
+            online_score_values: [0, 2] as [0, 2],
+            offline_score_values: [0, 1, 2] as [0, 1, 2],
+            normalization: 'raw_score/max_score*100' as const,
             safety_override_enabled: true,
+            placement_advice_enabled: false,
+            score_values: [0, 1, 2] as [0, 1, 2],
             level_rules: [
-              { min: 0, max: 59, level: 'LEVEL_NOT_COMPETENT' },
-              { min: 60, max: 84, level: 'LEVEL_CONDITIONAL' },
-              { min: 85, max: 100, level: 'LEVEL_COMPETENT' }
+              { min: 0, max: 59, level: 'LEVEL_NOT_COMPETENT' as const },
+              { min: 60, max: 84, level: 'LEVEL_CONDITIONAL' as const },
+              { min: 85, max: 100, level: 'LEVEL_COMPETENT' as const }
             ]
           }
         })

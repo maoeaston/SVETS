@@ -169,7 +169,7 @@ describe('get — Detail 含解析后 JSON', () => {
     expect(d.strategyId).toBe('s1')
     expect(d.version).toBe(1)
     expect(d.questionPolicy.module_scope).toBe('CROSS_MODULE')
-    expect(d.scoringPolicy.score_values).toEqual([0, 1, 2])
+    expect((d.scoringPolicy as { score_values?: unknown }).score_values).toEqual([0, 1, 2])
     expect(d.supportsRedlineHalt).toBe(true)
     expect(d.allowsEmotionInterrupt).toBe(true)
     expect(d.requiresOfflineScoring).toBe(true)

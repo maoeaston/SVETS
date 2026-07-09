@@ -86,13 +86,17 @@ describe('updateStrategy — 正常路径', () => {
       baseParams(target, {
         competentThreshold: 85,
         scoringPolicy: {
-          score_values: [0, 1, 2],
-          normalization: 'raw_score/max_score*100',
+          schema_version: 'scoring-policy-v1.1' as const,
+          online_score_values: [0, 2] as [0, 2],
+          offline_score_values: [0, 1, 2] as [0, 1, 2],
+          normalization: 'raw_score/max_score*100' as const,
           safety_override_enabled: true,
+          placement_advice_enabled: false,
+          score_values: [0, 1, 2] as [0, 1, 2],
           level_rules: [
-            { min: 0, max: 59, level: 'LEVEL_NOT_COMPETENT' },
-            { min: 60, max: 84, level: 'LEVEL_CONDITIONAL' },
-            { min: 85, max: 100, level: 'LEVEL_COMPETENT' }
+            { min: 0, max: 59, level: 'LEVEL_NOT_COMPETENT' as const },
+            { min: 60, max: 84, level: 'LEVEL_CONDITIONAL' as const },
+            { min: 85, max: 100, level: 'LEVEL_COMPETENT' as const }
           ]
         }
       })
@@ -173,13 +177,17 @@ describe('updateStrategy — level_rules 与表列漂移防护', () => {
       db,
       baseParams(target, {
         scoringPolicy: {
-          score_values: [0, 1, 2],
-          normalization: 'raw_score/max_score*100',
+          schema_version: 'scoring-policy-v1.1' as const,
+          online_score_values: [0, 2] as [0, 2],
+          offline_score_values: [0, 1, 2] as [0, 1, 2],
+          normalization: 'raw_score/max_score*100' as const,
           safety_override_enabled: true,
+          placement_advice_enabled: false,
+          score_values: [0, 1, 2] as [0, 1, 2],
           level_rules: [
-            { min: 0, max: 59, level: 'LEVEL_NOT_COMPETENT' },
-            { min: 60, max: 84, level: 'LEVEL_CONDITIONAL' },
-            { min: 85, max: 100, level: 'LEVEL_COMPETENT' }
+            { min: 0, max: 59, level: 'LEVEL_NOT_COMPETENT' as const },
+            { min: 60, max: 84, level: 'LEVEL_CONDITIONAL' as const },
+            { min: 85, max: 100, level: 'LEVEL_COMPETENT' as const }
           ]
         }
       })

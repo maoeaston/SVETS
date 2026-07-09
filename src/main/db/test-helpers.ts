@@ -76,13 +76,17 @@ export function baseStrategyInput(over: Partial<StrategyInput> = {}): StrategyIn
       question_ratio: { TRUE_FALSE: 14, SINGLE_CHOICE: 14, DRAG: 14, OFFLINE_OPERATION: 8 }
     },
     scoringPolicy: {
-      score_values: [0, 1, 2],
-      normalization: 'raw_score/max_score*100',
+      schema_version: 'scoring-policy-v1.1' as const,
+      online_score_values: [0, 2] as [0, 2],
+      offline_score_values: [0, 1, 2] as [0, 1, 2],
+      normalization: 'raw_score/max_score*100' as const,
       safety_override_enabled: true,
+      placement_advice_enabled: false,
+      score_values: [0, 1, 2] as [0, 1, 2],
       level_rules: [
-        { min: 0, max: 59, level: 'LEVEL_NOT_COMPETENT' },
-        { min: 60, max: 79, level: 'LEVEL_CONDITIONAL' },
-        { min: 80, max: 100, level: 'LEVEL_COMPETENT' }
+        { min: 0, max: 59, level: 'LEVEL_NOT_COMPETENT' as const },
+        { min: 60, max: 79, level: 'LEVEL_CONDITIONAL' as const },
+        { min: 80, max: 100, level: 'LEVEL_COMPETENT' as const }
       ]
     },
     supportsRedlineHalt: true,
@@ -224,8 +228,41 @@ export function seedQuestionBank(
   const offlineN = over.offlinePerModule ?? 3
   const stmt = db.prepare(
     `INSERT INTO question_bank
-       (question_id, job_code, module_type, question_type, content_json, scoring_rule_json)
-     VALUES (?, ?, ?, ?, '{"seed":true}', '{"seed":true}')`
+       (question_id, job_code, bank_domain, module_type, question_type, item_usage,
+        content_json, scoring_rule_json, status)
+     VALUES (?, ?, 'BASE_ABILITY', ?, ?, 'SCORED_ITEM', '{"seed":true}', '{"seed":true}', 'DRAFT')`
+  )
+  for (const moduleType of SEED_MODULES) {
+    for (const questionType of SEED_ONLINE_TYPES) {
+      for (let i = 0; i < onlineN; i++) {
+        stmt.run(uuidv4(), jobCode, moduleType, questionType)
+      }
+    }
+    for (let i = 0; i < offlineN; i++) {
+      stmt.run(uuidv4(), jobCode, moduleType, 'OFFLINE_OPERATION')
+    }
+  }
+  // v0.1.12: 激活所有 DRAFT 题，满足 trg_assessment_session_question_insert_validation
+  db.prepare("UPDATE question_bank SET status = 'ACTIVE' WHERE status = 'DRAFT'").run()
+}
+
+/**
+ * 与 seedQuestionBank 相同，但保持 DRAFT 状态不激活。
+ * 用于需要在激活前修改 content_json 的测试（如 assessment-answer.test.ts）。
+ * 调用方负责在组卷前执行 UPDATE question_bank SET status='ACTIVE' WHERE status='DRAFT'。
+ */
+export function seedQuestionBankDraft(
+  db: DBAdapter,
+  over: { jobCode?: string; onlinePerModule?: number; offlinePerModule?: number } = {}
+): void {
+  const jobCode = over.jobCode ?? 'SUPERMARKET_SHELVER'
+  const onlineN = over.onlinePerModule ?? 5
+  const offlineN = over.offlinePerModule ?? 3
+  const stmt = db.prepare(
+    `INSERT INTO question_bank
+       (question_id, job_code, bank_domain, module_type, question_type, item_usage,
+        content_json, scoring_rule_json, status)
+     VALUES (?, ?, 'BASE_ABILITY', ?, ?, 'SCORED_ITEM', '{"seed":true}', '{"seed":true}', 'DRAFT')`
   )
   for (const moduleType of SEED_MODULES) {
     for (const questionType of SEED_ONLINE_TYPES) {

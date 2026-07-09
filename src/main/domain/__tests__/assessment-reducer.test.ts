@@ -135,7 +135,14 @@ function seedSafetyIncident(
 }
 
 // 构造标准 SESSION_STARTED 事件（50 题：42 ONLINE + 8 OFFLINE）。
+// v0.1.12: phase 由 question_type 决定（OFFLINE_OPERATION → OFFLINE），故前 42 必须是非 OFFLINE 题。
 function makeSessionStartedEvent(sessionId: string): ActionLogEntry {
+  // 按类型分组，确保 ONLINE 题在前、OFFLINE 题在后（与 paper-generator 约定一致）
+  const allRows = db
+    .prepare('SELECT question_id, question_type FROM question_bank')
+    .all() as { question_id: string; question_type: string }[]
+  const onlineIds = allRows.filter(r => r.question_type !== 'OFFLINE_OPERATION').map(r => r.question_id).slice(0, 42)
+  const offlineIds = allRows.filter(r => r.question_type === 'OFFLINE_OPERATION').map(r => r.question_id).slice(0, 8)
   const payload: SessionStartedPayload = {
     session_id: sessionId,
     student_id: studentId,
@@ -146,18 +153,23 @@ function makeSessionStartedEvent(sessionId: string): ActionLogEntry {
     task_code: taskCode,
     online_question_count: 42,
     offline_question_count: 8,
-    question_ids: questionIds.slice(0, 50)
+    question_ids: [...onlineIds, ...offlineIds]
   }
   return makeEvent('SESSION_STARTED', sessionId, payload as unknown as Record<string, unknown>, { actor_id: teacherId, actor_role: 'TEACHER' })
 }
 
 function makeAnswerEvent(sessionId: string, answerId: string, questionId: string, order: number): ActionLogEntry {
+  // v0.1.12: trg_answer_record_session_question_validation 要求 question_type 与 assessment_session_question 一致
+  const qb = db.prepare('SELECT question_type FROM question_bank WHERE question_id = ?').get(questionId) as
+    | { question_type: string }
+    | undefined
+  const questionType = (qb?.question_type ?? 'TRUE_FALSE') as 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG'
   const payload: AnswerSubmittedPayload = {
     session_id: sessionId,
     answer_id: answerId,
     question_id: questionId,
-    question_type: 'TRUE_FALSE',
-    answer_payload: { question_type: 'TRUE_FALSE', selected: true },
+    question_type: questionType,
+    answer_payload: { question_type: 'TRUE_FALSE' as const, selected: true },
     is_correct: true,
     score: 2,
     question_order: order,
@@ -210,9 +222,13 @@ beforeEach(() => {
     version: strategyVersion
   })
   seedQuestionBank(db, { jobCode })
-  questionIds = (db.prepare('SELECT question_id FROM question_bank').all() as { question_id: string }[]).map(
-    r => r.question_id
-  )
+  // questionIds 顺序与 makeSessionStartedEvent 保持一致：42 非OFFLINE题在前，8 OFFLINE题在后
+  const allQRows = db
+    .prepare('SELECT question_id, question_type FROM question_bank')
+    .all() as { question_id: string; question_type: string }[]
+  const onlineQIds = allQRows.filter(r => r.question_type !== 'OFFLINE_OPERATION').map(r => r.question_id).slice(0, 42)
+  const offlineQIds = allQRows.filter(r => r.question_type === 'OFFLINE_OPERATION').map(r => r.question_id).slice(0, 8)
+  questionIds = [...onlineQIds, ...offlineQIds]
 })
 
 // ---------- SESSION_STARTED ----------
@@ -492,9 +508,13 @@ describe('applyAssessmentEvent — REDLINE_TRIGGERED', () => {
         version: strategyVersion
       })
       seedQuestionBank(coldDb, { jobCode })
-      const cQuestionIds = (
-        coldDb.prepare('SELECT question_id FROM question_bank LIMIT 50').all() as { question_id: string }[]
-      ).map(r => r.question_id)
+      coldDb.prepare("UPDATE question_bank SET status = 'ACTIVE' WHERE status = 'DRAFT'").run()
+      const allColdRows = coldDb
+        .prepare('SELECT question_id, question_type FROM question_bank')
+        .all() as { question_id: string; question_type: string }[]
+      const cOnlineIds = allColdRows.filter(r => r.question_type !== 'OFFLINE_OPERATION').map(r => r.question_id).slice(0, 42)
+      const cOfflineIds = allColdRows.filter(r => r.question_type === 'OFFLINE_OPERATION').map(r => r.question_id).slice(0, 8)
+      const cQuestionIds = [...cOnlineIds, ...cOfflineIds]
 
       const sessionId = uuidv4()
       const startPayload: SessionStartedPayload = {

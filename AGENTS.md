@@ -74,6 +74,18 @@
 
 高风险改动（FSM 路径 / safety_incident / schema 变更）在步骤 4 后额外运行 `/vibe-review`。
 
+### 子模型分工（节省 token）
+
+机械性实现步骤（按 impl.md 直接编码、补 type、加路由、写样板 IPC handler）优先用 `model: "haiku"` 子 agent 执行；架构判断、PRD 对齐检查、红线逻辑审计、FSM 路径评审留主循环（Sonnet/Opus）。
+
+判断依据：**纯机械 → haiku；需要约束上下文或跨文件判断 → 主循环。**
+
+**子 agent 产出验证**：子 agent 结束后先用 `git status --porcelain` 核实实际文件变更，再采信任何文字汇报。`tool_uses` 数字明显偏高（>50）且无实际产出时，说明可能陷入重试循环，应切换策略由主循环直接执行，而非重新委托。
+
+### 任务书与工程约束冲突处理
+
+执行 `doc/specs/impl/07-implementation-task-book.md` 或其他设计文档中的任务前，先对照 AGENTS.md + `.claude/rules/` 扫描是否存在更具体的工程约束覆盖该路径（典型案例：任务书写 TS 文件，但 AGENTS.md 明确规定一次性数据运维用 sqlite3 CLI）。发现冲突时用 AskUserQuestion 列方案让用户选，不要默认服从任务书字面写法。
+
 ### 实现中遇到问题
 
 | 情况 | 使用 | 规则 |

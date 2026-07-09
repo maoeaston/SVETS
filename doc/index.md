@@ -85,8 +85,25 @@ doc/
 | 写或校验 JSON 字段 | `json-field-schema` |
 | 改功能边界、结果口径、验收标准 | 主 PRD |
 | 改题库、组卷逻辑（现有基础能力题库） | `specs/题库分层架构说明.md` |
-| 启动专业岗位测评 / M1-M6 题库相关新功能 | §2.2 PRD 链（v1.0.7 → v1.0.8 → v1.0.9，按顺序整体读完）+ `doc/reference/` 中 M1-M6 298 条导出 |
+| 启动专业岗位测评 / M1-M6 题库相关新功能 | §2.2 PRD 链（v1.0.7 → v1.0.8 → v1.0.9，按顺序整体读完）+ §2.3 实施文档链 + `doc/reference/` 中 M1-M6 298 条导出 |
 | 实现某具体功能 | 对应 `features/*-prd.md` + `*-impl.md` |
+
+### 2.3 专业岗位技术实施文档（doc/specs/impl/）
+
+**与 §2.2 PRD 链的关系：** PRD 是"要做什么"的产品合同，impl/ 是"怎么做"的技术方案。impl/ 基于三份 PRD 增量（v1.0.7 + v1.0.8 + v1.0.9）产出，将分散的技术决策收拢为 8 份可执行文档。
+
+| 序号 | 文档 | 内容 | 何时读 |
+|---|---|---|---|
+| 00 | `impl/00-implementation-overview.md` | 一句话目标、统一范围边界、BASE_ABILITY vs JOB_SPECIFIC 架构对比、与 v0.1.10 兼容性、文档依赖关系 | 启动实施前的总览入口 |
+| 01 | `impl/01-schema-v0.1.12-design.md` + `.sql` | schema v0.1.12 完整设计文档 + 可执行 SQL（合并 v1.0.7/v1.0.8/v1.0.9 全部 schema 要求） | 建库、改表结构、写触发器 |
+| 02 | `impl/02-json-contracts-and-types.md` | 完整 TypeScript 类型定义（可合并进 json-schemas.ts）+ validateQuestionContract() 规则逻辑 | 写或校验 JSON 字段、实现 validator |
+| 03 | `impl/03-job-skill-demo-paper-spec.md` | 固定 18+6 示范卷具体题目 ID 清单（从 298 条中选出）+ 素材需求 + rubric 三档锚点 | 固定卷题目确认、素材制作、答案审核 |
+| 04 | `impl/04-question-bank-import-cleaning-spec.md` | 298 条从旧库到新库的完整清洗规则 + dry-run 报告格式 + 导入执行顺序 | 实现导入脚本、数据清洗 |
+| 05 | `impl/05-state-machine-and-events.md` | assessment_session 三阶段状态机（ONLINE/OFFLINE/OBSERVATION）+ 新增事件 payload 定义 | 状态流转、事件写入、reducer |
+| 06 | `impl/06-acceptance-test-plan.md` | 120 条验收用例（按功能域分组，三段式：输入/步骤/预期） | 写测试用例、执行验收 |
+| 07 | `impl/07-implementation-task-book.md` | 12 个任务（T1-T12）的拆解：文件范围、具体步骤、自查方式、依赖关系 | 分配编码任务、任务进度跟踪 |
+
+**阅读顺序：** 启动实施 → 00 总览 → 按任务书 07 的顺序读对应文档（T1 读 02，T2 读 01，T4 读 04，等等）。
 
 ---
 
@@ -142,4 +159,6 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | 改 JSON 字段 | `specs/xc-career-guide-json-field-schema-v1.0.0.md` |
 | 题库/组卷相关（现有基础能力题库） | `specs/题库分层架构说明.md` |
 | 功能范围判断 | `specs/PRD_v1.0.6.md` |
-| 专业岗位测评 / M1-M6 题库开发 | §2.2 PRD 链（v1.0.7→v1.0.8→v1.0.9）+ `doc/reference/` M1-M6 298 条导出 |
+| **专业岗位测评实施（v0.1.10 → v0.1.12）** | **§2.3 实施文档（impl/）：00 总览 → 07 任务书 → 按任务顺序读对应文档** |
+| 专业岗位 PRD 理解（要做什么） | §2.2 PRD 链（v1.0.7→v1.0.8→v1.0.9，按顺序整体读完） |
+| 298 条题库数据核对 | `doc/reference/` M1-M6 298 条导出 + `doc/archive/` 审查报告 v2 |

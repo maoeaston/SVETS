@@ -84,7 +84,7 @@ import {
   createTestDb,
   seedCaller,
   seedStudent,
-  seedQuestionBank,
+  seedQuestionBankDraft,
   baseStrategyInput
 } from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
@@ -153,12 +153,15 @@ function setupSession(opts: {
 } = {}): SetupResult {
   if (opts.contentByType) {
     for (const [type, content] of Object.entries(opts.contentByType)) {
-      db.prepare('UPDATE question_bank SET content_json = ? WHERE question_type = ?').run(
+      db.prepare('UPDATE question_bank SET content_json = ? WHERE question_type = ? AND status = ?').run(
         JSON.stringify(content),
-        type
+        type,
+        'DRAFT'
       )
     }
   }
+  // v0.1.12: 激活所有 DRAFT 题
+  db.prepare("UPDATE question_bank SET status = 'ACTIVE' WHERE status = 'DRAFT'").run()
   const useStrategyId = opts.strategyIdOverride ?? strategyId
   const result = createSession(db, {
     callerUserId: callerId,
@@ -358,7 +361,7 @@ beforeEach(() => {
   callerId = seedCaller(db, 'TEACHER')
   studentId = seedStudent(db)
   strategyId = seedStrategyRow()
-  seedQuestionBank(db)
+  seedQuestionBankDraft(db)
   mockState.db = db
 })
 

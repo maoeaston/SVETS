@@ -77,8 +77,10 @@ describe('schema v0.1.10 scoring closure constraints', () => {
     ).run(studentId, teacherId)
     db.prepare(
       `INSERT INTO assessment_session_question
-         (session_question_id, session_id, question_id, question_order, question_phase, module_type, question_type)
-       SELECT 'sq1', 's1', question_id, 1, 'ONLINE', module_type, question_type
+         (session_question_id, session_id, question_id, question_order, question_phase,
+          bank_domain, module_type, question_type, item_usage)
+       SELECT 'sq1', 's1', question_id, 1, 'ONLINE',
+              bank_domain, module_type, question_type, item_usage
          FROM question_bank WHERE question_id = ?`
     ).run(q.question_id)
 
@@ -88,8 +90,8 @@ describe('schema v0.1.10 scoring closure constraints', () => {
 
     db.prepare(
       `INSERT INTO question_bank
-         (question_id, job_code, module_type, question_type, difficulty_level, content_json, scoring_rule_json, status)
-       SELECT question_id || '_V2', job_code, module_type, question_type, difficulty_level,
+         (question_id, job_code, bank_domain, module_type, question_type, item_usage, difficulty_level, content_json, scoring_rule_json, status)
+       SELECT question_id || '_V2', job_code, bank_domain, module_type, question_type, item_usage, difficulty_level,
               content_json, scoring_rule_json, 'ACTIVE'
          FROM question_bank WHERE question_id = ?`
     ).run(q.question_id)
@@ -115,6 +117,16 @@ describe('schema v0.1.10 scoring closure constraints', () => {
                'SHELVE_TASK', 1, 'ACTIVE', 42, 8, ?)`
     ).run(studentId, teacherId)
     seedSystemEvent('ev_answer_binary')
+
+    // v0.1.12: answer_record 需要先在 assessment_session_question 中存在（trg_answer_record_session_question_validation）
+    db.prepare(
+      `INSERT INTO assessment_session_question
+         (session_question_id, session_id, question_id, question_order, question_phase,
+          bank_domain, module_type, question_type, item_usage)
+       SELECT 'sq_binary', 's_binary', question_id, 1, 'ONLINE',
+              bank_domain, module_type, question_type, item_usage
+         FROM question_bank WHERE question_id = ?`
+    ).run(q.question_id)
 
     expect(() => {
       db.prepare(
