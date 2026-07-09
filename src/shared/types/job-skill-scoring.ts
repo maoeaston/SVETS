@@ -67,3 +67,26 @@ export interface GetJobSkillOfflineScoresSuccess {
 export type GetJobSkillOfflineScoresResult =
   | GetJobSkillOfflineScoresSuccess
   | { success: false; errorCode: JobSkillScoringErrorCode }
+
+// ---------------------------------------------------------------------------
+// getSessionScoringQuestions（纯读：前端组卷显示用）
+// ---------------------------------------------------------------------------
+
+export interface GetSessionScoringQuestionsParams {
+  callerUserId: string
+  callerRole: string
+  sessionId: string
+}
+
+export interface SessionScoringQuestion {
+  questionId: string
+  jobModuleCode: string
+}
+
+export type GetSessionScoringQuestionsResult =
+  | {
+      success: true
+      offlineQuestions: SessionScoringQuestion[]
+      observationQuestions: SessionScoringQuestion[]
+    }
+  | { success: false; errorCode: JobSkillScoringErrorCode }

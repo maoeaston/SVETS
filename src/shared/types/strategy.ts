@@ -7,7 +7,7 @@ import type { QuestionPolicyJson, ScoringPolicyJson } from './json-schemas'
 export type { QuestionPolicyJson, ScoringPolicyJson }
 
 // 对应 schema strategy_config.strategy_type CHECK 枚举
-export type StrategyType = 'BASELINE_ASSESSMENT' | 'MOCK_EXAM' | 'TRAINING_PRACTICE'
+export type StrategyType = 'BASELINE_ASSESSMENT' | 'MOCK_EXAM' | 'TRAINING_PRACTICE' | 'JOB_SKILL_ASSESSMENT'
 
 // 统一错误码（所有 strategy:* 失败路径共用）
 export type StrategyErrorCode =

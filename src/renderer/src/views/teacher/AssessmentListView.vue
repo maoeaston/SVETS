@@ -68,9 +68,24 @@
           </td>
           <td>{{ formatTime(row.startedAt ?? row.createdAt) }}</td>
           <td class="col-action">
-            <!-- OFFLINE_PENDING 态：显示"实操评分"入口 -->
+            <!-- JOB_SKILL OFFLINE_PENDING：线下评分 + 观察录入 -->
+            <template v-if="row.status === 'OFFLINE_PENDING' && row.strategyType === 'JOB_SKILL_ASSESSMENT'">
+              <RouterLink
+                :to="`/teacher/assessments/${row.sessionId}/job-skill-scoring`"
+                class="btn-inline btn-scoring"
+              >
+                线下评分
+              </RouterLink>
+              <RouterLink
+                :to="`/teacher/assessments/${row.sessionId}/observations`"
+                class="btn-inline btn-obs"
+              >
+                观察录入
+              </RouterLink>
+            </template>
+            <!-- BASE_ABILITY OFFLINE_PENDING：实操评分 -->
             <RouterLink
-              v-if="row.status === 'OFFLINE_PENDING'"
+              v-else-if="row.status === 'OFFLINE_PENDING'"
               :to="`/teacher/assessments/${row.sessionId}/scoring`"
               class="btn-inline btn-scoring"
             >
@@ -209,7 +224,10 @@ async function fetchList(): Promise<void> {
 }
 
 function formatType(t: SessionListItem['strategyType']): string {
-  return t === 'BASELINE_ASSESSMENT' ? '能力测评' : t === 'MOCK_EXAM' ? '模拟考试' : '未知'
+  return t === 'BASELINE_ASSESSMENT' ? '能力测评'
+    : t === 'MOCK_EXAM' ? '模拟考试'
+    : t === 'JOB_SKILL_ASSESSMENT' ? '专业岗位测评'
+    : '未知'
 }
 
 function formatStatus(s: SessionStatus): string {
@@ -446,6 +464,11 @@ onMounted(() => {
 .btn-scoring {
   color: #1d4ed8;
   border-color: #93c5fd;
+  text-decoration: none;
+}
+.btn-obs {
+  color: #166534;
+  border-color: #86efac;
   text-decoration: none;
 }
 .btn-abort {

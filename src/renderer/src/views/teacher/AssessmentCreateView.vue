@@ -21,6 +21,29 @@
     </p>
 
     <form @submit.prevent="submit">
+      <!-- 测评类型 -->
+      <fieldset class="block">
+        <legend>测评类型</legend>
+        <div class="type-radio-group">
+          <label class="type-radio-label">
+            <input
+              v-model="assessmentType"
+              type="radio"
+              value="BASELINE_ASSESSMENT"
+            >
+            能力测评（基础认知）
+          </label>
+          <label class="type-radio-label">
+            <input
+              v-model="assessmentType"
+              type="radio"
+              value="JOB_SKILL_ASSESSMENT"
+            >
+            专业岗位测评
+          </label>
+        </div>
+      </fieldset>
+
       <!-- 学生选择 -->
       <fieldset class="block">
         <legend>学生</legend>
@@ -107,14 +130,14 @@
           <label class="field">
             <span>任务</span>
             <input
-              :value="form.taskCode"
+              :value="computedTaskCode"
               type="text"
               readonly
             >
           </label>
         </div>
         <p class="hint">
-          MVP 范围：单一岗位（超市理货员）+ 单一任务（拆箱与上架），暂不支持选择
+          MVP 范围：单一岗位（超市理货员），策略类型决定任务代码
         </p>
       </fieldset>
 
@@ -145,7 +168,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 import { useAssessmentStore } from '../../stores/assessment'
 import type { StudentSummary } from '@shared/types/student'
@@ -158,6 +181,11 @@ const submitting = ref(false)
 const errorMsg = ref('')
 const createdSessionId = ref('')
 
+const assessmentType = ref<StrategyType>('BASELINE_ASSESSMENT')
+const computedTaskCode = computed(() =>
+  assessmentType.value === 'JOB_SKILL_ASSESSMENT' ? 'JOB_SKILL_DEMO_M1M6' : 'UNBOXING_AND_SHELVING'
+)
+
 const searchInput = ref('')
 const searchQuery = ref('') // 防抖后的实际查询值
 
@@ -169,8 +197,7 @@ const form = reactive({
   studentId: '',
   strategyId: '',
   strategyVersion: 0,
-  jobCode: 'SUPERMARKET_SHELVER',
-  taskCode: 'UNBOXING_AND_SHELVING'
+  jobCode: 'SUPERMARKET_SHELVER'
 })
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
@@ -205,7 +232,7 @@ async function fetchStrategies(): Promise<void> {
     const res = await window.api.strategy.list({
       callerUserId: auth.userId,
       callerRole: auth.role,
-      strategyType: 'BASELINE_ASSESSMENT', // 仅能力测评（MVP 范围；MOCK_EXAM 后续开放）
+      strategyType: assessmentType.value,
       jobCode: form.jobCode,
       includeInactive: false,
       page: 1
@@ -247,7 +274,9 @@ function formatType(t: StrategyType): string {
       ? '模拟考试'
       : t === 'TRAINING_PRACTICE'
         ? '训练'
-        : '未知'
+        : t === 'JOB_SKILL_ASSESSMENT'
+          ? '专业岗位测评'
+          : '未知'
 }
 
 function mapError(code: string): string {
@@ -277,7 +306,7 @@ async function submit(): Promise<void> {
     studentId: form.studentId,
     strategyId: form.strategyId,
     strategyVersion: form.strategyVersion,
-    taskCode: form.taskCode
+    taskCode: computedTaskCode.value
   })
   submitting.value = false
 
@@ -287,6 +316,15 @@ async function submit(): Promise<void> {
   }
   createdSessionId.value = result.sessionId
 }
+
+// 测评类型切换：重置策略选择并重新拉取策略列表
+watch(assessmentType, () => {
+  form.strategyId = ''
+  form.strategyVersion = 0
+  strategyOptions.value = []
+  versionOptions.value = []
+  void fetchStrategies()
+})
 
 // 学生搜索防抖 300ms
 watch(searchInput, (val) => {
@@ -438,5 +476,17 @@ onMounted(() => {
 }
 .link:hover {
   text-decoration: underline;
+}
+.type-radio-group {
+  display: flex;
+  gap: 24px;
+  padding: 4px 0 12px;
+}
+.type-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  cursor: pointer;
 }
 </style>

@@ -39,6 +39,14 @@ const router = createRouter({
           component: () => import('../views/teacher/OperationScoringView.vue')
         },
         {
+          path: 'assessments/:sessionId/job-skill-scoring',
+          component: () => import('../views/teacher/JobSkillScoringView.vue')
+        },
+        {
+          path: 'assessments/:sessionId/observations',
+          component: () => import('../views/teacher/TeacherObservationView.vue')
+        },
+        {
           path: 'trainings',
           component: () => import('../views/teacher/TrainingListView.vue')
         },

@@ -20,7 +20,10 @@ import type {
   SubmitJobSkillOfflineScoresResult,
   GetJobSkillOfflineScoresParams,
   GetJobSkillOfflineScoresResult,
-  JobSkillOfflineScoreView
+  GetSessionScoringQuestionsParams,
+  GetSessionScoringQuestionsResult,
+  JobSkillOfflineScoreView,
+  SessionScoringQuestion
 } from '../../../shared/types/job-skill-scoring'
 import type { OfflineScoreSubmittedPayload } from '@shared/types/event-payloads'
 import { maybeGenerateJobSkillResult } from './job-skill-result'
@@ -242,6 +245,62 @@ export function getJobSkillOfflineScores(
 }
 
 // ---------------------------------------------------------------------------
+// getSessionScoringQuestions — 纯读：返回 session 的线下/观察题 ID + 模块信息
+// ---------------------------------------------------------------------------
+
+/**
+ * 供前端 JobSkillScoringView / TeacherObservationView 使用，
+ * 在评分/录入前查询该 session 的题目 ID 和所属模块。
+ */
+export function getSessionScoringQuestions(
+  db: DBAdapter,
+  params: GetSessionScoringQuestionsParams
+): GetSessionScoringQuestionsResult {
+  const caller = assertCaller(db, params.callerUserId, params.callerRole)
+  if (!caller.ok) {
+    return { success: false, errorCode: 'FORBIDDEN' }
+  }
+
+  if (typeof params.sessionId !== 'string' || params.sessionId.length === 0) {
+    return { success: false, errorCode: 'NOT_FOUND' }
+  }
+
+  const sessionExists = db
+    .prepare('SELECT 1 FROM assessment_session WHERE session_id = ?')
+    .get(params.sessionId)
+  if (!sessionExists) {
+    return { success: false, errorCode: 'NOT_FOUND' }
+  }
+
+  const offlineRows = db
+    .prepare(
+      `SELECT question_id, job_module_code FROM assessment_session_question
+        WHERE session_id = ? AND question_phase = 'OFFLINE' AND item_usage = 'SCORED_ITEM'
+        ORDER BY question_order`
+    )
+    .all(params.sessionId) as { question_id: string; job_module_code: string }[]
+
+  const obsRows = db
+    .prepare(
+      `SELECT question_id, job_module_code FROM assessment_session_question
+        WHERE session_id = ? AND question_phase = 'OBSERVATION'
+        ORDER BY question_order`
+    )
+    .all(params.sessionId) as { question_id: string; job_module_code: string }[]
+
+  const offlineQuestions: SessionScoringQuestion[] = offlineRows.map((r) => ({
+    questionId: r.question_id,
+    jobModuleCode: r.job_module_code
+  }))
+  const observationQuestions: SessionScoringQuestion[] = obsRows.map((r) => ({
+    questionId: r.question_id,
+    jobModuleCode: r.job_module_code
+  }))
+
+  return { success: true, offlineQuestions, observationQuestions }
+}
+
+// ---------------------------------------------------------------------------
 // registerJobSkillScoringHandlers — IPC 注册（薄包装）
 // ---------------------------------------------------------------------------
 
@@ -256,5 +315,9 @@ export function registerJobSkillScoringHandlers(getDb: () => DBAdapter = default
 
   ipcMain.handle('assessment:getJobSkillOfflineScores', (_event, params: unknown) => {
     return getJobSkillOfflineScores(getDb(), params as GetJobSkillOfflineScoresParams)
+  })
+
+  ipcMain.handle('assessment:getSessionScoringQuestions', (_event, params: unknown) => {
+    return getSessionScoringQuestions(getDb(), params as GetSessionScoringQuestionsParams)
   })
 }

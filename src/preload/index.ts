@@ -44,6 +44,8 @@ const api = {
       ipcRenderer.invoke('assessment:submitJobSkillOfflineScores', params),
     getJobSkillOfflineScores: (params: unknown) =>
       ipcRenderer.invoke('assessment:getJobSkillOfflineScores', params),
+    getSessionScoringQuestions: (params: unknown) =>
+      ipcRenderer.invoke('assessment:getSessionScoringQuestions', params),
     recordTeacherObservation: (params: unknown) =>
       ipcRenderer.invoke('assessment:recordTeacherObservation', params),
     getTeacherObservations: (params: unknown) =>

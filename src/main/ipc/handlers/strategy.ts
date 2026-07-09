@@ -39,7 +39,8 @@ import type {
 const STRATEGY_TYPES: readonly StrategyType[] = [
   'BASELINE_ASSESSMENT',
   'MOCK_EXAM',
-  'TRAINING_PRACTICE'
+  'TRAINING_PRACTICE',
+  'JOB_SKILL_ASSESSMENT'
 ]
 
 // --- 错误码 seed + 审计 ---

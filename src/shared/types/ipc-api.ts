@@ -67,7 +67,9 @@ import type {
   SubmitJobSkillOfflineScoresParams,
   SubmitJobSkillOfflineScoresResult,
   GetJobSkillOfflineScoresParams,
-  GetJobSkillOfflineScoresResult
+  GetJobSkillOfflineScoresResult,
+  GetSessionScoringQuestionsParams,
+  GetSessionScoringQuestionsResult
 } from './job-skill-scoring'
 import type {
   RecordTeacherObservationParams,
@@ -152,6 +154,9 @@ export interface IpcApi {
     getJobSkillOfflineScores: (
       params: GetJobSkillOfflineScoresParams
     ) => Promise<GetJobSkillOfflineScoresResult>
+    getSessionScoringQuestions: (
+      params: GetSessionScoringQuestionsParams
+    ) => Promise<GetSessionScoringQuestionsResult>
     recordTeacherObservation: (
       params: RecordTeacherObservationParams
     ) => Promise<RecordTeacherObservationResult>
