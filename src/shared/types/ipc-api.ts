@@ -63,6 +63,18 @@ import type {
   GetOperationScoresParams,
   GetOperationScoresResult
 } from './operation-scoring'
+import type {
+  SubmitJobSkillOfflineScoresParams,
+  SubmitJobSkillOfflineScoresResult,
+  GetJobSkillOfflineScoresParams,
+  GetJobSkillOfflineScoresResult
+} from './job-skill-scoring'
+import type {
+  RecordTeacherObservationParams,
+  RecordTeacherObservationResult,
+  GetTeacherObservationsParams,
+  GetTeacherObservationsResult
+} from './teacher-observation'
 
 export interface LoginSuccess {
   success: true
@@ -134,6 +146,18 @@ export interface IpcApi {
     ) => Promise<CalculateResultResult>
     submitOperationScores: (params: SubmitOperationScoresParams) => Promise<SubmitOperationScoresResult>
     getOperationScores: (params: GetOperationScoresParams) => Promise<GetOperationScoresResult>
+    submitJobSkillOfflineScores: (
+      params: SubmitJobSkillOfflineScoresParams
+    ) => Promise<SubmitJobSkillOfflineScoresResult>
+    getJobSkillOfflineScores: (
+      params: GetJobSkillOfflineScoresParams
+    ) => Promise<GetJobSkillOfflineScoresResult>
+    recordTeacherObservation: (
+      params: RecordTeacherObservationParams
+    ) => Promise<RecordTeacherObservationResult>
+    getTeacherObservations: (
+      params: GetTeacherObservationsParams
+    ) => Promise<GetTeacherObservationsResult>
   }
   training: {
     createSession: (params: CreateTrainingSessionParams) => Promise<CreateTrainingSessionResult>

@@ -35,7 +35,8 @@ import type {
   SessionCompletedPayload,
   SessionAbortedPayload,
   RedlineTriggeredPayload,
-  ResultCalculatedPayload
+  ResultCalculatedPayload,
+  TeacherObservationRecordedPayload
 } from '@shared/types/event-payloads'
 
 /**
@@ -77,6 +78,9 @@ export function applyAssessmentEvent(db: DBAdapter, event: ActionLogEntry): void
       break
     case 'OFFLINE_SCORE_SUBMITTED':
       applyOfflineScoreSubmitted(db, event)
+      break
+    case 'TEACHER_OBSERVATION_RECORDED':
+      applyTeacherObservationRecorded(db, event)
       break
     default:
       // 未知 event_type：no-op，向前兼容
@@ -470,5 +474,36 @@ function applyResultCalculated(db: DBAdapter, event: ActionLogEntry): void {
     p.breakdown ? JSON.stringify(p.breakdown) : null,
     event.event_id,
     p.calculated_at
+  )
+}
+
+// TEACHER_OBSERVATION_RECORDED → INSERT offline_score_record（score=NULL）
+// 幂等：offline_score_id 存在则 skip。
+// schema CHECK 要求：score_scope=TEACHER_OBSERVATION 时 score=NULL + observation_payload_json IS NOT NULL
+function applyTeacherObservationRecorded(db: DBAdapter, event: ActionLogEntry): void {
+  const p = event.payload as unknown as TeacherObservationRecordedPayload
+  const existing = db
+    .prepare('SELECT offline_score_id FROM offline_score_record WHERE offline_score_id = ?')
+    .get(p.offline_score_id)
+  if (existing) return
+
+  db.prepare(
+    `INSERT INTO offline_score_record
+       (offline_score_id, session_id, question_id, score_scope, task_operation_code,
+        response_status, score, observation_payload_json,
+        scored_by, scored_event_id, scored_at,
+        tool_checklist_confirmed, revision_no, status)
+     VALUES (?, ?, ?, 'TEACHER_OBSERVATION', NULL,
+             'ANSWERED', NULL, ?,
+             ?, ?, ?,
+             0, 1, 'VALID')`
+  ).run(
+    p.offline_score_id,
+    p.session_id,
+    p.question_id,
+    JSON.stringify(p.observation_payload),
+    p.recorded_by,
+    event.event_id,
+    p.recorded_at
   )
 }

@@ -39,7 +39,15 @@ const api = {
     triggerRedline: (params: unknown) => ipcRenderer.invoke('assessment:triggerRedline', params),
     calculateResult: (params: unknown) => ipcRenderer.invoke('assessment:calculateResult', params),
     submitOperationScores: (params: unknown) => ipcRenderer.invoke('assessment:submitOperationScores', params),
-    getOperationScores: (params: unknown) => ipcRenderer.invoke('assessment:getOperationScores', params)
+    getOperationScores: (params: unknown) => ipcRenderer.invoke('assessment:getOperationScores', params),
+    submitJobSkillOfflineScores: (params: unknown) =>
+      ipcRenderer.invoke('assessment:submitJobSkillOfflineScores', params),
+    getJobSkillOfflineScores: (params: unknown) =>
+      ipcRenderer.invoke('assessment:getJobSkillOfflineScores', params),
+    recordTeacherObservation: (params: unknown) =>
+      ipcRenderer.invoke('assessment:recordTeacherObservation', params),
+    getTeacherObservations: (params: unknown) =>
+      ipcRenderer.invoke('assessment:getTeacherObservations', params)
   },
   training: {
     createSession: (params: unknown) => ipcRenderer.invoke('training:createSession', params),

@@ -1,6 +1,6 @@
 // 对应 doc/xc-career-guide-event-payload-schema-v1.0.0.md
 
-import type { AbilityTag } from './json-schemas'
+import type { AbilityTag, TeacherObservationPayload, JobSkillResultPayload } from './json-schemas'
 import type { OperationPassRatePayload } from './operation-scoring'
 
 export type AggregateType =
@@ -27,6 +27,7 @@ export type EventType =
   | 'EMOTION_COLLAPSE_RECORDED'
   | 'EMOTION_COLLAPSE_THRESHOLD_REACHED'
   | 'OFFLINE_SCORE_SUBMITTED'
+  | 'TEACHER_OBSERVATION_RECORDED'
   | 'REDLINE_TRIGGERED'
   | 'SESSION_COMPLETED'
   | 'SESSION_ABORTED'
@@ -152,7 +153,7 @@ export interface OfflineScoreSubmittedPayload {
   session_id: string
   offline_score_id: string
   question_id?: string | null
-  score_scope: 'OFFLINE_ABILITY' | 'TASK_OPERATION'
+  score_scope: 'OFFLINE_ABILITY' | 'JOB_SKILL' | 'TASK_OPERATION'
   task_operation_code?: string | null
   criterion_scores: CriterionScore[]
   total_score: number
@@ -224,7 +225,7 @@ export interface TrainingCompletedPayload {
 
 export interface ResultCalculatedPayload {
   result_id: string
-  result_type: 'ABILITY_SCORE' | 'TRAINING_COMPLETION' | 'OPERATION_PASS_RATE'
+  result_type: 'ABILITY_SCORE' | 'TRAINING_COMPLETION' | 'OPERATION_PASS_RATE' | 'JOB_SKILL_SCORE'
   source_type: 'ASSESSMENT_SESSION' | 'TRAINING_SESSION'
   source_id: string
   student_id: string
@@ -241,7 +242,7 @@ export interface ResultCalculatedPayload {
   // 事件溯源原则：投影字段必须可从事件流重建，故 breakdown 跟随事件 payload
   // 而非 handler 后置 UPDATE。ABILITY_SCORE 类型由 persistRedlineResult 填充
   // AbilityScorePayload；OPERATION_PASS_RATE 由 operation-scoring Step 3 填充。
-  breakdown?: AbilityScorePayload | OperationPassRatePayload | null
+  breakdown?: AbilityScorePayload | OperationPassRatePayload | JobSkillResultPayload | null
 }
 
 export interface ModuleScore {
@@ -410,4 +411,13 @@ export interface TrainingAbortedPayload {
   aborted_at: string
   aborted_by: string
   reason?: string | null
+}
+
+export interface TeacherObservationRecordedPayload {
+  session_id: string
+  offline_score_id: string
+  question_id: string
+  observation_payload: TeacherObservationPayload
+  recorded_by: string
+  recorded_at: string
 }
