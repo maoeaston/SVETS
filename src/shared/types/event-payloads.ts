@@ -78,7 +78,7 @@ export interface SessionStartedPayload {
   session_id: string
   student_id: string
   strategy_id: string
-  strategy_type: 'BASELINE_ASSESSMENT' | 'MOCK_EXAM'
+  strategy_type: 'BASELINE_ASSESSMENT' | 'MOCK_EXAM' | 'JOB_SKILL_ASSESSMENT'
   strategy_version: number
   job_code: string
   task_code: string
