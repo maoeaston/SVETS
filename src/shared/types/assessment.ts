@@ -19,8 +19,8 @@ export type SessionStatus =
   | 'REDLINE_HALTED'
   | 'ABORTED'
 
-// assessment 仅接受 BASELINE_ASSESSMENT / MOCK_EXAM（TRAINING_PRACTICE 走训练功能）
-export type AssessmentStrategyType = 'BASELINE_ASSESSMENT' | 'MOCK_EXAM'
+// assessment 仅接受 BASELINE_ASSESSMENT / MOCK_EXAM / JOB_SKILL_ASSESSMENT
+export type AssessmentStrategyType = 'BASELINE_ASSESSMENT' | 'MOCK_EXAM' | 'JOB_SKILL_ASSESSMENT'
 
 // 统一错误码（所有 assessment:* 失败路径共用）
 // 业务校验码（FORBIDDEN / NOT_FOUND / SESSION_* / QUESTION_* / BLOCKED_* / VALIDATION_ERROR）

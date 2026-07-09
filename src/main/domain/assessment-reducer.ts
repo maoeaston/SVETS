@@ -126,16 +126,16 @@ function applySessionStarted(db: DBAdapter, event: ActionLogEntry): void {
   const insertQ = db.prepare(
     `INSERT INTO assessment_session_question
        (session_question_id, session_id, question_id, question_order, question_phase,
-        bank_domain, module_type, question_type, item_usage, generated_event_id)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        bank_domain, module_type, question_type, item_usage, job_module_code, generated_event_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   )
   const lookupQ = db.prepare(
-    'SELECT bank_domain, module_type, question_type, item_usage FROM question_bank WHERE question_id = ?'
+    'SELECT bank_domain, module_type, question_type, item_usage, job_module_code FROM question_bank WHERE question_id = ?'
   )
   for (let i = 0; i < p.question_ids.length; i++) {
     const questionId = p.question_ids[i]
     const qb = lookupQ.get(questionId) as
-      | { bank_domain: string; module_type: string; question_type: string; item_usage: string }
+      | { bank_domain: string; module_type: string | null; question_type: string; item_usage: string; job_module_code: string | null }
       | undefined
     if (!qb) {
       // question_bank 缺行 → FK 必然失败；显式抛错便于定位（冷启动重放时题库应已就位）
@@ -143,9 +143,14 @@ function applySessionStarted(db: DBAdapter, event: ActionLogEntry): void {
         `applySessionStarted: question_id ${questionId} not found in question_bank (FK violation)`
       )
     }
-    // v0.1.12: phase 必须根据 question_type 决定（触发器强制 OFFLINE_OPERATION → OFFLINE，其他 → ONLINE）
-    // 而非根据位置（i < online_count）。paper-generator 已确保 payload.question_ids 的顺序正确。
-    const phase = qb.question_type === 'OFFLINE_OPERATION' ? 'OFFLINE' : 'ONLINE'
+    // v0.1.12: phase 优先级：OBSERVATION_ONLY → OBSERVATION；OFFLINE_OPERATION → OFFLINE；其他 → ONLINE
+    // bank_domain=JOB_SPECIFIC 题（item_usage=OBSERVATION_ONLY）phase=OBSERVATION，不进 online/offline count。
+    const phase =
+      qb.item_usage === 'OBSERVATION_ONLY'
+        ? 'OBSERVATION'
+        : qb.question_type === 'OFFLINE_OPERATION'
+          ? 'OFFLINE'
+          : 'ONLINE'
     insertQ.run(
       uuidv4(),
       p.session_id,
@@ -156,6 +161,7 @@ function applySessionStarted(db: DBAdapter, event: ActionLogEntry): void {
       qb.module_type,
       qb.question_type,
       qb.item_usage,
+      qb.job_module_code,
       event.event_id
     )
   }

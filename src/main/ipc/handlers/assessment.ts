@@ -30,7 +30,7 @@ import {
   generatePaper,
   type QuestionBankRow
 } from '../../domain/paper-generator'
-import type { AbilityTag, QuestionPolicyJson } from '../../../shared/types/json-schemas'
+import type { AbilityTag, QuestionPolicyJson, QuestionPolicyJobSkillFixedSet } from '../../../shared/types/json-schemas'
 import type {
   SessionStartedPayload,
   SessionFirstQuestionActivatedPayload,
@@ -329,8 +329,12 @@ export function createSession(db: DBAdapter, params: CreateSessionParams): Creat
     return { success: false, errorCode: 'NOT_FOUND' }
   }
 
-  // 4. 校验 strategy_type（assessment 仅接受 BASELINE/MOCK；TRAINING_PRACTICE 走训练功能）
-  if (strategy.strategy_type !== 'BASELINE_ASSESSMENT' && strategy.strategy_type !== 'MOCK_EXAM') {
+  // 4. 校验 strategy_type（assessment 仅接受 BASELINE_ASSESSMENT/MOCK_EXAM/JOB_SKILL_ASSESSMENT；TRAINING_PRACTICE 走训练功能）
+  if (
+    strategy.strategy_type !== 'BASELINE_ASSESSMENT' &&
+    strategy.strategy_type !== 'MOCK_EXAM' &&
+    strategy.strategy_type !== 'JOB_SKILL_ASSESSMENT'
+  ) {
     return { success: false, errorCode: 'VALIDATION_ERROR' }
   }
   const strategyType = strategy.strategy_type as AssessmentStrategyType
@@ -382,81 +386,168 @@ export function createSession(db: DBAdapter, params: CreateSessionParams): Creat
     return { success: false, errorCode: 'BLOCKED_BY_SAFETY_INCIDENT' }
   }
 
-  // 8. 解析 question_policy_json + 查 ACTIVE question_bank
-  let questionPolicy: QuestionPolicyJson
-  try {
-    questionPolicy = JSON.parse(strategy.question_policy_json) as QuestionPolicyJson
-  } catch (err) {
-    const sessionId = uuidv4() // 审计需要 aggId，用临时 UUID 占位（事务尚未开始）
-    logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', sessionId, caller.row.user_id, {
-      operation: 'createSession',
-      error: `parse question_policy_json: ${String(err)}`,
-      strategyId: params.strategyId,
-      strategyVersion: params.strategyVersion
-    })
-    return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
-  }
-
-  const requiredModules =
-    Array.isArray(questionPolicy.required_modules) && questionPolicy.required_modules.length > 0
-      ? questionPolicy.required_modules
-      : DEFAULT_REQUIRED_MODULES
-
-  const qbRows = db
-    .prepare(
-      `SELECT question_id, module_type, question_type, sensory_tags_json
-         FROM question_bank
-        WHERE job_code = ? AND status = 'ACTIVE'`
-    )
-    .all(strategy.job_code) as QuestionBankRow[]
-
-  // 9. 组卷
+  // 8-9. 解析 question_policy_json，按策略类型选题
   const sessionId = uuidv4()
-  const paperSeed = `${sessionId}:${params.studentId}:${params.strategyId}:${params.strategyVersion}`
-  const paper = generatePaper({
-    onlineQuestionCount: strategy.online_question_count,
-    offlineQuestionCount: strategy.offline_question_count,
-    questionRatio: questionPolicy.question_ratio,
-    requiredModules,
-    questionBankRows: qbRows,
-    paperSeed,
-    sensoryFilterMode: questionPolicy.sensory_filter_mode ?? 'SOFT'
-  })
-  if (!paper.ok) {
-    // INVALID_POLICY → 策略配置异常（question_ratio 之和与 count 不符），属系统级
-    // QUESTION_BANK_INSUFFICIENT → 题库未配足，运营需补题（写审计给运营可见性）
-    if (paper.errorCode === 'QUESTION_BANK_INSUFFICIENT') {
-      logAssessmentEvent(
-        db,
-        'QUESTION_BANK_INSUFFICIENT',
-        'ERROR',
-        'unknown',
-        caller.row.user_id,
-        {
+  let questionIds: string[]
+  let onlineQuestionsToReturn: SessionQuestionView[]
+
+  if (strategyType === 'JOB_SKILL_ASSESSMENT') {
+    // FIXED_SET 路径：从策略配置读固定题集，不走随机组卷
+    let fixedPolicy: QuestionPolicyJobSkillFixedSet
+    try {
+      fixedPolicy = JSON.parse(strategy.question_policy_json) as QuestionPolicyJobSkillFixedSet
+    } catch (err) {
+      logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', sessionId, caller.row.user_id, {
+        operation: 'createSession',
+        error: `parse question_policy_json: ${String(err)}`,
+        strategyId: params.strategyId,
+        strategyVersion: params.strategyVersion
+      })
+      return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
+    }
+
+    const scoredIds = fixedPolicy.fixed_scored_question_ids ?? []
+    const obsIds = fixedPolicy.embedded_observation_question_ids ?? []
+
+    if (scoredIds.length === 0) {
+      logAssessmentEvent(db, 'QUESTION_BANK_INSUFFICIENT', 'ERROR', 'unknown', caller.row.user_id, {
+        operation: 'createSession',
+        strategyId: params.strategyId,
+        strategyVersion: params.strategyVersion,
+        error: 'fixed_scored_question_ids is empty — strategy not configured'
+      })
+      return { success: false, errorCode: 'QUESTION_BANK_INSUFFICIENT' }
+    }
+
+    // 验证所有固定题（scored + obs）存在且 ACTIVE；同时读 question_type 供排序和返回
+    type FixedQbRow = {
+      question_id: string
+      status: string
+      question_type: string
+      item_usage: string
+      job_module_code: string | null
+    }
+    const allCandidateIds = [...scoredIds, ...obsIds]
+    const placeholders = allCandidateIds.map(() => '?').join(',')
+    const fixedQbRows = db
+      .prepare(
+        `SELECT question_id, status, question_type, item_usage, job_module_code
+           FROM question_bank
+          WHERE question_id IN (${placeholders})`
+      )
+      .all(...allCandidateIds) as FixedQbRow[]
+    const fixedQbMap = new Map(fixedQbRows.map((r) => [r.question_id, r]))
+
+    for (const qid of allCandidateIds) {
+      const row = fixedQbMap.get(qid)
+      if (!row || row.status !== 'ACTIVE') {
+        logAssessmentEvent(db, 'QUESTION_BANK_INSUFFICIENT', 'ERROR', 'unknown', caller.row.user_id, {
+          operation: 'createSession',
+          strategyId: params.strategyId,
+          strategyVersion: params.strategyVersion,
+          questionId: qid,
+          error: row ? `question status=${row.status}` : 'question not found in bank'
+        })
+        return { success: false, errorCode: 'QUESTION_BANK_INSUFFICIENT' }
+      }
+    }
+
+    // 排序：ONLINE scored（非 OFFLINE_OPERATION）→ OFFLINE scored → OBSERVATION
+    // reducer 根据 item_usage/question_type 决定 phase，顺序决定 question_order
+    const onlineScoredIds = scoredIds.filter(
+      (id) => fixedQbMap.get(id)!.question_type !== 'OFFLINE_OPERATION'
+    )
+    const offlineScoredIds = scoredIds.filter(
+      (id) => fixedQbMap.get(id)!.question_type === 'OFFLINE_OPERATION'
+    )
+    questionIds = [...onlineScoredIds, ...offlineScoredIds, ...obsIds]
+
+    // 返回仅 ONLINE scored 题（OFFLINE/OBSERVATION 不进答题指针）
+    onlineQuestionsToReturn = onlineScoredIds.map((qid, i) => {
+      const qb = fixedQbMap.get(qid)!
+      return {
+        questionId: qid,
+        questionOrder: i + 1,
+        questionPhase: 'ONLINE' as const,
+        // JOB_SPECIFIC 题 module_type=NULL；job_module_code 作 moduleType 字段传递
+        moduleType: (qb.job_module_code ?? '') as AbilityTag,
+        questionType: qb.question_type as 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG'
+      }
+    })
+  } else {
+    // BASE_ABILITY / MOCK 路径（现有随机组卷逻辑）
+    let questionPolicy: QuestionPolicyJson
+    try {
+      questionPolicy = JSON.parse(strategy.question_policy_json) as QuestionPolicyJson
+    } catch (err) {
+      logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', sessionId, caller.row.user_id, {
+        operation: 'createSession',
+        error: `parse question_policy_json: ${String(err)}`,
+        strategyId: params.strategyId,
+        strategyVersion: params.strategyVersion
+      })
+      return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
+    }
+
+    const requiredModules =
+      Array.isArray(questionPolicy.required_modules) && questionPolicy.required_modules.length > 0
+        ? questionPolicy.required_modules
+        : DEFAULT_REQUIRED_MODULES
+
+    const qbRows = db
+      .prepare(
+        `SELECT question_id, module_type, question_type, sensory_tags_json
+           FROM question_bank
+          WHERE job_code = ? AND status = 'ACTIVE'`
+      )
+      .all(strategy.job_code) as QuestionBankRow[]
+
+    const paperSeed = `${sessionId}:${params.studentId}:${params.strategyId}:${params.strategyVersion}`
+    const paper = generatePaper({
+      onlineQuestionCount: strategy.online_question_count,
+      offlineQuestionCount: strategy.offline_question_count,
+      questionRatio: questionPolicy.question_ratio,
+      requiredModules,
+      questionBankRows: qbRows,
+      paperSeed,
+      sensoryFilterMode: questionPolicy.sensory_filter_mode ?? 'SOFT'
+    })
+    if (!paper.ok) {
+      if (paper.errorCode === 'QUESTION_BANK_INSUFFICIENT') {
+        logAssessmentEvent(db, 'QUESTION_BANK_INSUFFICIENT', 'ERROR', 'unknown', caller.row.user_id, {
           operation: 'createSession',
           strategyId: params.strategyId,
           strategyVersion: params.strategyVersion,
           studentId: params.studentId,
           activeQuestionCount: qbRows.length
-        }
-      )
-      return { success: false, errorCode: 'QUESTION_BANK_INSUFFICIENT' }
+        })
+        return { success: false, errorCode: 'QUESTION_BANK_INSUFFICIENT' }
+      }
+      // INVALID_POLICY
+      logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', sessionId, caller.row.user_id, {
+        operation: 'createSession',
+        error: 'generatePaper INVALID_POLICY',
+        strategyId: params.strategyId,
+        strategyVersion: params.strategyVersion
+      })
+      return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
     }
-    // INVALID_POLICY
-    const sessionId = uuidv4()
-    logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', sessionId, caller.row.user_id, {
-      operation: 'createSession',
-      error: `generatePaper INVALID_POLICY`,
-      strategyId: params.strategyId,
-      strategyVersion: params.strategyVersion
-    })
-    return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
+
+    questionIds = paper.questions.map((q) => q.questionId)
+    onlineQuestionsToReturn = paper.questions
+      .filter((q) => q.questionPhase === 'ONLINE')
+      .map((q) => ({
+        questionId: q.questionId,
+        questionOrder: q.questionOrder,
+        questionPhase: 'ONLINE' as const,
+        moduleType: q.moduleType,
+        questionType: q.questionType as 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG'
+      }))
   }
 
   // 10. 事务：writeEvent(SESSION_STARTED) + applyAssessmentEvent
   //     reducer applySessionStarted 承担 INSERT assessment_session（status=ACTIVE）
-  //     + 50 行 assessment_session_question。
-  const questionIds = paper.questions.map((q) => q.questionId)
+  //     + assessment_session_question 行（ONLINE/OFFLINE/OBSERVATION phase 由 reducer 判定）
   const payload: SessionStartedPayload = {
     session_id: sessionId,
     student_id: params.studentId,
@@ -502,21 +593,11 @@ export function createSession(db: DBAdapter, params: CreateSessionParams): Creat
     taskCode: params.taskCode
   })
 
-  // 12. 返回（仅 ONLINE 题，学生立即可答；OFFLINE 题由线下评分流程处理）
-  const onlineQuestions: SessionQuestionView[] = paper.questions
-    .filter((q) => q.questionPhase === 'ONLINE')
-    .map((q) => ({
-      questionId: q.questionId,
-      questionOrder: q.questionOrder,
-      questionPhase: 'ONLINE',
-      moduleType: q.moduleType,
-      questionType: q.questionType as 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG'
-    }))
-
+  // 12. 返回（仅 ONLINE 题，学生立即可答；OFFLINE/OBSERVATION 由线下评分/教师观察流程处理）
   const result: CreateSessionSuccess = {
     success: true,
     sessionId,
-    questions: onlineQuestions
+    questions: onlineQuestionsToReturn
   }
   return result
 }
