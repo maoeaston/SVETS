@@ -136,6 +136,7 @@ async function submit() {
       errorMsg.value = msgs[result.errorCode] ?? result.errorCode
     }
   } catch (e) {
+    console.error('[TrainingCreateView] submit failed:', e)
     errorMsg.value = String(e)
   } finally {
     submitting.value = false

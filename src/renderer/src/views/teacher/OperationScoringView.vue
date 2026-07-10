@@ -259,6 +259,7 @@ onMounted(async () => {
       }
     }
   } catch (err) {
+    console.error('[OperationScoringView] load failed:', err)
     errorMsg.value = '加载失败，请重试'
   } finally {
     loading.value = false
@@ -317,6 +318,7 @@ async function handleSubmit(): Promise<void> {
       }
     }
   } catch (err) {
+    console.error('[OperationScoringView] submit failed:', err)
     errorMsg.value = '提交失败，请重试'
   } finally {
     submitting.value = false

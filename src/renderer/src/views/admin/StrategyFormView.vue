@@ -604,12 +604,12 @@ function applyDetailToForm(d: StrategyDetail, versionOverride?: number): void {
   form.supportsRedlineHalt = d.supportsRedlineHalt
   form.allowsEmotionInterrupt = d.allowsEmotionInterrupt
   form.requiresOfflineScoring = d.requiresOfflineScoring
-  form.questionPolicy.module_scope = d.questionPolicy.module_scope
+  form.questionPolicy.module_scope = d.questionPolicy.module_scope ?? 'CROSS_MODULE'
   form.questionPolicy.question_ratio = {
-    TRUE_FALSE: d.questionPolicy.question_ratio.TRUE_FALSE ?? 0,
-    SINGLE_CHOICE: d.questionPolicy.question_ratio.SINGLE_CHOICE ?? 0,
-    DRAG: d.questionPolicy.question_ratio.DRAG ?? 0,
-    OFFLINE_OPERATION: d.questionPolicy.question_ratio.OFFLINE_OPERATION ?? 0
+    TRUE_FALSE: d.questionPolicy.question_ratio?.TRUE_FALSE ?? 0,
+    SINGLE_CHOICE: d.questionPolicy.question_ratio?.SINGLE_CHOICE ?? 0,
+    DRAG: d.questionPolicy.question_ratio?.DRAG ?? 0,
+    OFFLINE_OPERATION: d.questionPolicy.question_ratio?.OFFLINE_OPERATION ?? 0
   }
   form.questionPolicy.required_modules = [...(d.questionPolicy.required_modules ?? [])]
   form.questionPolicy.difficulty_distribution_input = d.questionPolicy.difficulty_distribution
@@ -663,7 +663,8 @@ async function loadForNewVersion(sid: string): Promise<void> {
       return
     }
     applyDetailToForm(detailRes.strategy, latestSummary.version + 1)
-  } catch {
+  } catch (err) {
+    console.error('[StrategyFormView] loadForNewVersion failed:', err)
     loadError.value = '加载失败'
   }
 }
@@ -686,7 +687,8 @@ async function loadForEdit(sid: string, version: number): Promise<void> {
     }
     applyDetailToForm(res.strategy)
     initialSnapshot.value = res.strategy
-  } catch {
+  } catch (err) {
+    console.error('[StrategyFormView] loadForEdit failed:', err)
     loadError.value = '加载失败'
   }
 }
@@ -835,7 +837,8 @@ async function submit(): Promise<void> {
       }
       await router.push(`/admin/strategies/${strategy.strategyId}`)
     }
-  } catch {
+  } catch (err) {
+    console.error('[StrategyFormView] submit failed:', err)
     errorMsg.value = '系统异常'
   } finally {
     submitting.value = false

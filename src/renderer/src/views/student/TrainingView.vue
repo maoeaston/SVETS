@@ -113,6 +113,7 @@ async function load() {
       error.value = `加载失败：${result.errorCode}`
     }
   } catch (e) {
+    console.error('[TrainingView] loadSession failed:', e)
     error.value = String(e)
   } finally {
     loading.value = false
@@ -142,6 +143,7 @@ async function stepAction(
       stepError.value[step.stepRecordId] = msgs[result.errorCode] ?? result.errorCode
     }
   } catch (e) {
+    console.error('[TrainingView] stepAction failed:', e)
     stepError.value[step.stepRecordId] = String(e)
   }
 }

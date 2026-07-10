@@ -176,7 +176,8 @@ async function fetchVersions(): Promise<void> {
     familyStrategyType.value = res.familyStrategyType
     familyJobCode.value = res.familyJobCode
     familyLoaded.value = true
-  } catch {
+  } catch (err) {
+    console.error('[StrategyVersionListView] fetchVersions failed:', err)
     errorMsg.value = '系统异常'
     items.value = []
     familyLoaded.value = false
@@ -210,7 +211,8 @@ async function toggleActive(row: StrategySummary): Promise<void> {
     const verb = row.isActive ? '停用' : '启用'
     await fetchVersions()
     toggleMsg.value = `v${row.version} 已${verb}`
-  } catch {
+  } catch (err) {
+    console.error('[StrategyVersionListView] toggleActive failed:', err)
     toggleMsg.value = '系统异常'
   } finally {
     togglingVersion.value = null

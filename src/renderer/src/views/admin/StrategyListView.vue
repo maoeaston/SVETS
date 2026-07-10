@@ -205,7 +205,8 @@ async function fetchList(): Promise<void> {
       return
     }
     items.value = res.items
-  } catch {
+  } catch (err) {
+    console.error('[StrategyListView] fetchStrategies failed:', err)
     errorMsg.value = '系统异常'
     items.value = []
   } finally {

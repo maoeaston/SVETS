@@ -221,7 +221,8 @@ async function fetchStudents(): Promise<void> {
       return
     }
     studentOptions.value = res.items
-  } catch {
+  } catch (err) {
+    console.error('[AssessmentCreateView] fetchStudents failed:', err)
     studentOptions.value = []
   }
 }
@@ -242,7 +243,8 @@ async function fetchStrategies(): Promise<void> {
       return
     }
     strategyOptions.value = res.items
-  } catch {
+  } catch (err) {
+    console.error('[AssessmentCreateView] fetchStrategies failed:', err)
     strategyOptions.value = []
   }
 }
@@ -262,7 +264,8 @@ async function onStrategyChange(): Promise<void> {
       return
     }
     versionOptions.value = res.items
-  } catch {
+  } catch (err) {
+    console.error('[AssessmentCreateView] onStrategyChange failed:', err)
     versionOptions.value = []
   }
 }

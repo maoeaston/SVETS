@@ -103,7 +103,7 @@ onMounted(async () => {
     offlineQuestions.value = qRes.offlineQuestions
     if (sRes.items.length > 0) { isReadOnly.value = true; existingItems.value = sRes.items; return }
     for (const q of qRes.offlineQuestions) { scores[q.questionId] = null; notes[q.questionId] = '' }
-  } catch { errorMsg.value = '加载失败，请重试' } finally { loading.value = false }
+  } catch (err) { console.error('[JobSkillScoringView] load failed:', err); errorMsg.value = '加载失败，请重试' } finally { loading.value = false }
 })
 
 async function handleSubmit(): Promise<void> {
@@ -122,7 +122,7 @@ async function handleSubmit(): Promise<void> {
     isReadOnly.value = true
     const detail = await window.api.assessment.getJobSkillOfflineScores({ callerUserId: auth.userId!, callerRole: auth.role!, sessionId })
     if (detail.success) existingItems.value = detail.items
-  } catch { errorMsg.value = '提交失败，请重试' } finally { submitting.value = false }
+  } catch (err) { console.error('[JobSkillScoringView] submit failed:', err); errorMsg.value = '提交失败，请重试' } finally { submitting.value = false }
 }
 </script>
 

@@ -91,7 +91,7 @@ onMounted(async () => {
     for (const q of qRes.observationQuestions) {
       if (!recordedMap[q.questionId]) forms[q.questionId] = { observed: false, promptLevel: '', note: '' }
     }
-  } catch { errorMsg.value = '加载失败，请重试' } finally { loading.value = false }
+  } catch (err) { console.error('[TeacherObservationView] load failed:', err); errorMsg.value = '加载失败，请重试' } finally { loading.value = false }
 })
 
 async function submitOne(questionId: string): Promise<void> {
@@ -127,7 +127,7 @@ async function submitOne(questionId: string): Promise<void> {
     if (rRes.success) {
       for (const r of rRes.records) recordedMap[r.questionId] = r
     }
-  } catch { submitErrors[questionId] = '提交失败，请重试' } finally { submittingId.value = null }
+  } catch (err) { console.error('[TeacherObservationView] submitOne failed:', err); submitErrors[questionId] = '提交失败，请重试' } finally { submittingId.value = null }
 }
 </script>
 

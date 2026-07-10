@@ -84,6 +84,7 @@ async function load() {
       error.value = `加载失败：${result.errorCode}`
     }
   } catch (e) {
+    console.error('[TrainingListView] fetchList failed:', e)
     error.value = String(e)
   } finally {
     loading.value = false

@@ -301,7 +301,8 @@ async function loadForEdit(studentId: string): Promise<void> {
       form.sp.avoidTagsInput = (s.sensoryProfile.avoid_tags ?? []).join(', ')
       form.sp.notes = s.sensoryProfile.notes ?? ''
     }
-  } catch {
+  } catch (err) {
+    console.error('[StudentFormView] loadStudent failed:', err)
     loadError.value = '加载失败'
   }
 }
@@ -359,7 +360,8 @@ async function submit(): Promise<void> {
       }
     }
     await router.push('/teacher/students')
-  } catch {
+  } catch (err) {
+    console.error('[StudentFormView] submit failed:', err)
     errorMsg.value = '系统异常'
   } finally {
     submitting.value = false
@@ -389,7 +391,8 @@ async function handleArchive(): Promise<void> {
       return
     }
     await router.push('/teacher/students')
-  } catch {
+  } catch (err) {
+    console.error('[StudentFormView] handleArchive failed:', err)
     errorMsg.value = '系统异常'
   } finally {
     submitting.value = false

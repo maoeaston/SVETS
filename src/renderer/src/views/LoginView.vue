@@ -84,7 +84,8 @@ async function handleLogin(): Promise<void> {
       // TEACHER 和 ADMIN 均进入教师端
       await router.push('/teacher')
     }
-  } catch {
+  } catch (err) {
+    console.error('[LoginView] login failed:', err)
     error.value = '系统异常，请重试'
   } finally {
     loading.value = false

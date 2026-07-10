@@ -152,7 +152,8 @@ async function fetchList(): Promise<void> {
       return
     }
     items.value = res.items
-  } catch {
+  } catch (err) {
+    console.error('[StudentListView] fetchStudents failed:', err)
     errorMsg.value = '系统异常'
     items.value = []
   } finally {

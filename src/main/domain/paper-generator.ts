@@ -112,6 +112,9 @@ export function generatePaper(input: GeneratePaperInput): GeneratePaperOutput {
   } = input
 
   // 1. 校验 question_ratio 之和
+  if (!questionRatio) {
+    return { ok: false, errorCode: 'INVALID_POLICY' }
+  }
   const onlineRatioSum =
     (questionRatio.TRUE_FALSE ?? 0) +
     (questionRatio.SINGLE_CHOICE ?? 0) +

@@ -85,7 +85,8 @@ export const useAssessmentStore = defineStore('assessment', () => {
       currentSession.value = res.session
       currentQuestion.value = res.currentQuestion
       return { ok: true }
-    } catch {
+    } catch (err) {
+      console.error('[assessment store] loadSession failed:', err)
       errorMsg.value = '系统异常'
       currentSession.value = null
       currentQuestion.value = null
@@ -120,7 +121,8 @@ export const useAssessmentStore = defineStore('assessment', () => {
         return { ok: false, errorCode: refresh.errorCode }
       }
       return { ok: true }
-    } catch {
+    } catch (err) {
+      console.error('[assessment store] startSession failed:', err)
       errorMsg.value = '系统异常'
       return { ok: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
     }
@@ -154,7 +156,8 @@ export const useAssessmentStore = defineStore('assessment', () => {
         return { ok: false, errorCode: refresh.errorCode }
       }
       return { ok: true, isCorrect: res.isCorrect, score: res.score }
-    } catch {
+    } catch (err) {
+      console.error('[assessment store] submitAnswer failed:', err)
       errorMsg.value = '系统异常'
       return { ok: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
     }
@@ -189,7 +192,8 @@ export const useAssessmentStore = defineStore('assessment', () => {
         return { ok: false, errorCode: refresh.errorCode }
       }
       return { ok: true }
-    } catch {
+    } catch (err) {
+      console.error('[assessment store] emotionInterrupt failed:', err)
       errorMsg.value = '系统异常'
       return { ok: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
     }
@@ -214,7 +218,8 @@ export const useAssessmentStore = defineStore('assessment', () => {
       }
       sessionList.value = res.items
       return { ok: true }
-    } catch {
+    } catch (err) {
+      console.error('[assessment store] loadMySessions failed:', err)
       errorMsg.value = '系统异常'
       sessionList.value = []
       return { ok: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
@@ -243,7 +248,8 @@ export const useAssessmentStore = defineStore('assessment', () => {
       }
       sessionList.value = res.items
       return { ok: true }
-    } catch {
+    } catch (err) {
+      console.error('[assessment store] loadTeacherSessions failed:', err)
       errorMsg.value = '系统异常'
       sessionList.value = []
       return { ok: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
@@ -259,7 +265,8 @@ export const useAssessmentStore = defineStore('assessment', () => {
   ): Promise<CreateSessionResult> {
     try {
       return await window.api.assessment.createSession(params)
-    } catch {
+    } catch (err) {
+      console.error('[assessment store] createSession failed:', err)
       return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
     }
   }
@@ -274,7 +281,8 @@ export const useAssessmentStore = defineStore('assessment', () => {
         return { ok: false, errorCode: res.errorCode }
       }
       return { ok: true }
-    } catch {
+    } catch (err) {
+      console.error('[assessment store] abortSession failed:', err)
       errorMsg.value = '系统异常'
       return { ok: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
     }
@@ -285,7 +293,8 @@ export const useAssessmentStore = defineStore('assessment', () => {
   ): Promise<TriggerRedlineResult> {
     try {
       return await window.api.assessment.triggerRedline(params)
-    } catch {
+    } catch (err) {
+      console.error('[assessment store] triggerRedline failed:', err)
       return { success: false, errorCode: 'REDLINE_TRIGGER_SYSTEM_ERROR' }
     }
   }
@@ -300,7 +309,8 @@ export const useAssessmentStore = defineStore('assessment', () => {
         return { ok: false, errorCode: res.errorCode }
       }
       return { ok: true }
-    } catch {
+    } catch (err) {
+      console.error('[assessment store] emotionResume failed:', err)
       errorMsg.value = '系统异常'
       return { ok: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
     }
@@ -311,7 +321,8 @@ export const useAssessmentStore = defineStore('assessment', () => {
   ): Promise<CalculateResultResult> {
     try {
       return await window.api.assessment.calculateResult(params)
-    } catch {
+    } catch (err) {
+      console.error('[assessment store] calculateResult failed:', err)
       return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
     }
   }
