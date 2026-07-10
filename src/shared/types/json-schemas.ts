@@ -445,7 +445,7 @@ export interface ScoringRuleOffline {
  */
 export interface QuestionPolicyJson {
   module_scope: 'SINGLE_MODULE' | 'CROSS_MODULE'
-  question_ratio: Partial<Record<'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG' | 'OFFLINE_OPERATION', number>>
+  question_ratio: Partial<Record<'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG' | 'SOFTWARE_TASK' | 'OFFLINE_OPERATION', number>>
   required_modules?: AbilityTag[]
   difficulty_distribution?: Record<string, number>
   sensory_filter_mode?: 'SOFT' | 'STRICT'

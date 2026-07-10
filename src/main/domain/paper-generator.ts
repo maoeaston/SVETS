@@ -20,7 +20,7 @@ import { createHash } from 'crypto'
 export interface QuestionBankRow {
   question_id: string
   module_type: AbilityTag
-  question_type: 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG' | 'OFFLINE_OPERATION'
+  question_type: 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG' | 'SOFTWARE_TASK' | 'OFFLINE_OPERATION'
   sensory_tags_json?: string | null
 }
 
@@ -39,7 +39,7 @@ export interface GeneratePaperInput {
 export interface GeneratedQuestion {
   questionId: string
   questionPhase: 'ONLINE' | 'OFFLINE'
-  questionType: 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG' | 'OFFLINE_OPERATION'
+  questionType: 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG' | 'SOFTWARE_TASK' | 'OFFLINE_OPERATION'
   moduleType: AbilityTag
   questionOrder: number
 }
@@ -48,7 +48,7 @@ export type GeneratePaperOutput =
   | { ok: true; questions: GeneratedQuestion[] }
   | { ok: false; errorCode: 'QUESTION_BANK_INSUFFICIENT' | 'INVALID_POLICY' }
 
-const ONLINE_TYPES = ['TRUE_FALSE', 'SINGLE_CHOICE', 'DRAG'] as const
+const ONLINE_TYPES = ['TRUE_FALSE', 'SINGLE_CHOICE', 'DRAG', 'SOFTWARE_TASK'] as const
 type OnlineQuestionType = (typeof ONLINE_TYPES)[number]
 
 /**
@@ -60,14 +60,15 @@ function allocateOnlineTypesByRatio(
 ): Record<OnlineQuestionType, number> {
   const sum = ONLINE_TYPES.reduce((s, t) => s + (ratio[t] ?? 0), 0)
   if (sum === 0) {
-    return { TRUE_FALSE: 0, SINGLE_CHOICE: 0, DRAG: 0 }
+    return { TRUE_FALSE: 0, SINGLE_CHOICE: 0, DRAG: 0, SOFTWARE_TASK: 0 }
   }
   const base: Record<OnlineQuestionType, number> = {
     TRUE_FALSE: Math.floor((quota * (ratio.TRUE_FALSE ?? 0)) / sum),
     SINGLE_CHOICE: Math.floor((quota * (ratio.SINGLE_CHOICE ?? 0)) / sum),
-    DRAG: Math.floor((quota * (ratio.DRAG ?? 0)) / sum)
+    DRAG: Math.floor((quota * (ratio.DRAG ?? 0)) / sum),
+    SOFTWARE_TASK: Math.floor((quota * (ratio.SOFTWARE_TASK ?? 0)) / sum)
   }
-  let remainder = quota - (base.TRUE_FALSE + base.SINGLE_CHOICE + base.DRAG)
+  let remainder = quota - (base.TRUE_FALSE + base.SINGLE_CHOICE + base.DRAG + base.SOFTWARE_TASK)
   if (remainder > 0) {
     const order = [...ONLINE_TYPES].sort(
       (a, b) =>
@@ -118,7 +119,8 @@ export function generatePaper(input: GeneratePaperInput): GeneratePaperOutput {
   const onlineRatioSum =
     (questionRatio.TRUE_FALSE ?? 0) +
     (questionRatio.SINGLE_CHOICE ?? 0) +
-    (questionRatio.DRAG ?? 0)
+    (questionRatio.DRAG ?? 0) +
+    (questionRatio.SOFTWARE_TASK ?? 0)
   if (onlineRatioSum !== onlineQuestionCount) {
     return { ok: false, errorCode: 'INVALID_POLICY' }
   }

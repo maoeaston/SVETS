@@ -55,7 +55,7 @@ export interface SessionQuestionView {
   questionOrder: number
   questionPhase: 'ONLINE' | 'OFFLINE'
   moduleType: AbilityTag
-  questionType: 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG'
+  questionType: 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG' | 'SOFTWARE_TASK'
 }
 
 // assessment_session 的投影视图（getSession 返回）
@@ -116,7 +116,7 @@ export interface SessionQuestionContent {
   questionOrder: number
   questionPhase: 'ONLINE' | 'OFFLINE'
   moduleType: AbilityTag
-  questionType: 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG'
+  questionType: 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG' | 'SOFTWARE_TASK'
   prompt: string
   assessmentPoint: string
   // SINGLE_CHOICE 选项（已脱敏，无 is_correct）

@@ -541,7 +541,7 @@ export function createSession(db: DBAdapter, params: CreateSessionParams): Creat
         questionOrder: q.questionOrder,
         questionPhase: 'ONLINE' as const,
         moduleType: q.moduleType,
-        questionType: q.questionType as 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG'
+        questionType: q.questionType as 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG' | 'SOFTWARE_TASK'
       }))
   }
 

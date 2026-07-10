@@ -61,6 +61,45 @@ npm run build
 npm test
 ```
 
+### 开发账号初始化
+
+首次运行 `npm run dev` 后，数据库为空，需要插入种子账号：
+
+```bash
+node -e "
+const { pbkdf2Sync, randomBytes } = require('crypto');
+const Database = require('better-sqlite3');
+const { v4 } = require('uuid');
+const path = require('path');
+const os = require('os');
+
+function hash(pw) {
+  const salt = randomBytes(16).toString('hex');
+  const h = pbkdf2Sync(pw, salt, 100000, 64, 'sha512').toString('hex');
+  return \`pbkdf2:sha512:100000:\${salt}:\${h}\`;
+}
+
+const dbPath = path.join(os.homedir(), '.config', 'xc-career-guide', 'data', 'xc-career-guide.db');
+const db = new Database(dbPath);
+const stmt = db.prepare(\`INSERT OR IGNORE INTO user_account (user_id, username, password_hash, role, display_name, status) VALUES (?, ?, ?, ?, ?, 'ACTIVE')\`);
+[
+  ['admin',   'Admin@123',   'ADMIN',   '系统管理员'],
+  ['teacher', 'Teacher@123', 'TEACHER', '测试教师'],
+  ['student', 'Student@123', 'STUDENT', '测试学生'],
+].forEach(([u, p, r, n]) => stmt.run(v4(), u, hash(p), r, n));
+db.close();
+console.log('账号已写入');
+"
+```
+
+> 注：Windows 下将路径中 `os.homedir(), '.config'` 改为 `os.homedir(), 'AppData', 'Roaming'`。
+
+| 用户名 | 密码 | 角色 |
+|---|---|---|
+| `admin` | `Admin@123` | ADMIN（系统管理员）|
+| `teacher` | `Teacher@123` | TEACHER（教师）|
+| `student` | `Student@123` | STUDENT（学生）|
+
 ---
 
 ## 项目结构
