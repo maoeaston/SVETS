@@ -154,6 +154,8 @@ function makeObsPayload(overrides: Partial<TeacherObservationPayload> = {}): Tea
     prompt_level: null,
     accommodations_used: [],
     observation_note: null,
+    recorded_by: 'test-teacher',
+    recorded_at: '2024-01-01T00:00:00.000Z',
     ...overrides
   }
 }

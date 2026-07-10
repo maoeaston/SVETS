@@ -42,7 +42,6 @@ import { maybeGenerateJobSkillResult } from '../job-skill-result'
 import { createTestDb, seedCaller, seedStudent } from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
 import type { CreateSessionParams } from '../../../../shared/types/assessment'
-import type { JobSkillResultPayload } from '../../../../shared/types/json-schemas'
 
 const JOB_MODULES = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6'] as const
 const JOB_TASK_CODE = 'JOB_SKILL_DEMO_M1M6'
