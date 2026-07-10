@@ -8,6 +8,7 @@ AIimages/.apimart-tasks/
 
 # Runtime data
 data/
+debug/
 *.db
 *.db-journal
 action_log.jsonl
