@@ -1781,7 +1781,7 @@ INSERT OR IGNORE INTO strategy_config (
   'SUPERMARKET_SHELVER',
   '理货员专业岗位示范测评 v1',
   18, 6, 48, 80, 60, 0.5, 3,
-  '{"schema_version":"question-policy-v1.2","bank_domain":"JOB_SPECIFIC","selection_mode":"FIXED_SET","job_module_quotas":{"M1":{"online":3,"offline":1},"M2":{"online":3,"offline":1},"M3":{"online":3,"offline":1},"M4":{"online":3,"offline":1},"M5":{"online":3,"offline":1},"M6":{"online":3,"offline":1}},"fixed_scored_question_ids":[],"embedded_observation_question_ids":[],"fallback_strategy":"BLOCK"}',
+  '{"schema_version":"question-policy-v1.2","bank_domain":"JOB_SPECIFIC","selection_mode":"FIXED_SET","job_module_quotas":{"M1":{"online":3,"offline":1},"M2":{"online":3,"offline":1},"M3":{"online":3,"offline":1},"M4":{"online":3,"offline":1},"M5":{"online":3,"offline":1},"M6":{"online":3,"offline":1}},"fixed_scored_question_ids":["M1_SC_001","M1_SC_004","M1_SC_007","M1_OP_033","M2_SC_002","M2_SC_003","M2_SC_005","M2_OP_027","M3_SC_001","M3_SC_005","M3_SC_019","M3_OP_043","M4_SC_001","M4_SC_003","M4_SC_005","M4_OP_029","M5_SC_001","M5_SC_002","M5_SC_009","M5_OP_039","M6_SC_003","M6_SC_009","M6_SC_012","M6_OP_035"],"embedded_observation_question_ids":[],"fallback_strategy":"BLOCK"}',
   '{"schema_version":"scoring-policy-v1.2","assessment_scope":"JOB_SKILL","online_score_values":[0,2],"offline_score_values":[0,1,2],"normalization":"raw_score/max_score*100","module_veto_mode":"DISABLED_RECORD_ONLY","training_focus_threshold":0.6,"safety_override_enabled":true,"placement_advice_enabled":false}',
   1, 1, 1, 1, 1
 );
