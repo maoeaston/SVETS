@@ -10,14 +10,14 @@
 
 | 阶段 | 状态 |
 |---|---|
-| PRD v1.0.6-scoring-closure | ✅ 当前基线 |
-| Schema v0.1.10-scoring-closure | ✅ 当前基线 |
+| PRD v1.0.9-job-skill-assessment-mvp-closure | ✅ 当前基线 |
+| Schema v0.1.12-job-skill-assessment-mvp-closure | ✅ 当前基线 |
 | JSON 字段规范 | ✅ 已完成 |
 | 事件载荷规范 | ✅ 已完成 |
 | Electron 脚手架 | ✅ 已就绪（typecheck + build 通过）|
-| 功能开发 | 🚧 进行中（已完成登录、学生档案、策略配置、测评核心闭环；下一步：DRAG题拖拽渲染组件（drag-render））|
+| 功能开发 | 🚧 进行中（已完成登录、学生档案、策略配置、测评核心闭环、DRAG题拖拽渲染组件）|
 | 教学素材 | 🚧 进行中（图片资产链路已接入，视频、步骤卡待制作）|
-| 题库审核 | 🚧 进行中（题库与图片资产 seed 已接入，仍需按 v1.0.6 上线门禁复核 ACTIVE 完成度）|
+| 题库审核 | 🚧 进行中（BASE_ABILITY 96题来自 v0.2 xlsx 已导入 DRAFT；JOB_SPECIFIC 298题已导入 DRAFT；待试测后升为 ACTIVE）|
 
 ---
 
@@ -61,38 +61,28 @@ npm run build
 npm test
 ```
 
-### 开发账号初始化
+### 开发账号与题库初始化
 
-首次运行 `npm run dev` 后，数据库为空，需要插入种子账号：
+首次运行或重建数据库后，按以下顺序运行种子脚本：
 
 ```bash
-node -e "
-const { pbkdf2Sync, randomBytes } = require('crypto');
-const Database = require('better-sqlite3');
-const { v4 } = require('uuid');
-const path = require('path');
-const os = require('os');
+# 1. 开发账号（admin / teacher / student）
+node scripts/seed-dev-accounts.mjs
 
-function hash(pw) {
-  const salt = randomBytes(16).toString('hex');
-  const h = pbkdf2Sync(pw, salt, 100000, 64, 'sha512').toString('hex');
-  return \`pbkdf2:sha512:100000:\${salt}:\${h}\`;
-}
+# 2. 图片资产（asset_resource）
+node scripts/seed-question-bank-image-assets.mjs
 
-const dbPath = path.join(os.homedir(), '.config', 'xc-career-guide', 'data', 'xc-career-guide.db');
-const db = new Database(dbPath);
-const stmt = db.prepare(\`INSERT OR IGNORE INTO user_account (user_id, username, password_hash, role, display_name, status) VALUES (?, ?, ?, ?, ?, 'ACTIVE')\`);
-[
-  ['admin',   'Admin@123',   'ADMIN',   '系统管理员'],
-  ['teacher', 'Teacher@123', 'TEACHER', '测试教师'],
-  ['student', 'Student@123', 'STUDENT', '测试学生'],
-].forEach(([u, p, r, n]) => stmt.run(v4(), u, hash(p), r, n));
-db.close();
-console.log('账号已写入');
-"
+# 3. BASE_ABILITY 96题（来自 v0.2 xlsx，权威来源）
+node scripts/seed-base-ability-v02.mjs
+
+# 4. JOB_SPECIFIC 298题
+sqlite3 ~/.config/xc-career-guide/data/xc-career-guide.db < doc/features/question-bank-import.sql
+
+# 5. DRAG 题（2条，BASE_ABILITY FINE_MOTOR）
+node scripts/seed-question-bank-image-drag-questions.mjs
 ```
 
-> 注：Windows 下将路径中 `os.homedir(), '.config'` 改为 `os.homedir(), 'AppData', 'Roaming'`。
+> **注：** `doc/reference/通用基础能力评估题库.xlsx`（旧版）和 `doc/features/question-bank-import-base-ability.sql`（旧版产物）已归档，**不要使用**。BASE_ABILITY 唯一权威来源是 `doc/reference/通用基础能力正式测评候选题库_v0.2-软件优先版.xlsx`。
 
 | 用户名 | 密码 | 角色 |
 |---|---|---|
@@ -131,7 +121,7 @@ SVETS/
 
 | 文档 | 说明 |
 |---|---|
-| `doc/specs/PRD_v1.0.6.md` | 当前产品需求文档（功能范围、验收标准、评分收口基线） |
+| `doc/specs/MVP_PRD_v1.0.9-job-skill-assessment-mvp-closure.md` | 当前产品需求文档（功能范围、验收标准） |
 | `src/main/db/schema.sql` | 当前 SQLite schema（表、触发器、状态机、投影约束） |
 | `doc/specs/xc-career-guide-json-field-schema-v1.0.0.md` | 各 JSON TEXT 字段的结构定义 |
 | `doc/specs/xc-career-guide-event-payload-schema-v1.0.0.md` | 领域事件载荷格式 + action_log.jsonl 规范 |

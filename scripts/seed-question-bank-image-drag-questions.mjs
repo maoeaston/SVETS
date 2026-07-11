@@ -144,6 +144,7 @@ const sql = [
   ...questions.map((q) => `INSERT INTO question_bank (
   question_id,
   job_code,
+  bank_domain,
   module_type,
   question_type,
   difficulty_level,
@@ -158,6 +159,7 @@ const sql = [
 ) VALUES (
   ${sqlStr(q.question_id)},
   'SUPERMARKET_SHELVER',
+  'BASE_ABILITY',
   'FINE_MOTOR',
   'DRAG',
   ${q.difficulty_level},

@@ -1,6 +1,6 @@
 # 炫灿-职途向导系统 MVP
 
-**工程基线：** schema v0.1.10-scoring-closure | PRD v1.0.6  
+**工程基线：** schema v0.1.12-job-skill-assessment-mvp-closure | PRD v1.0.9  
 **技术栈：** Electron + Vue3 + TypeScript + SQLite  
 **MVP 范围：** 一岗位（超市理货员）| 一任务（拆箱与上架）| 一闭环（测评→训练→评分→报告）
 
@@ -11,7 +11,7 @@
 - 主进程：`src/main/` — `db/`（schema + connection）| `domain/`（event-writer 等领域服务）| `ipc/handlers/`
 - 渲染进程：`src/renderer/src/` — `views/` | `stores/`（Pinia）| `router/`
 - 共享类型：`src/shared/types/` — `event-payloads.ts` | `json-schemas.ts` | `ipc-api.ts`
-- 设计文档：`doc/specs/` — PRD | JSON 字段规范 | 事件规范 | 题库架构说明 | `doc/features/` — 功能 Mini-PRD + 实现文档 | `doc/reference/` — 原始素材 | `doc/archive/` — 已归档历史文档
+- 设计文档：`doc/specs/` — PRD | JSON 字段规范 | 事件规范 | 题库架构说明 | `doc/features/` — 功能 Mini-PRD + 实现文档 | `doc/reference/` — 原始素材 | `doc/features/archive/` 和 `doc/reference/archive/` — 已归档历史文档
 - Skill 命令：`.claude/commands/` — `vibe-feature.md` | `vibe-impl.md` | `vibe-review.md` | `vibe-accept.md`
 
 ---
