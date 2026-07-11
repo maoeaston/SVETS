@@ -184,40 +184,15 @@
         </label>
       </div>
 
-      <!-- DRAG：简化为 select-per-item（MVP；真正拖拽 UI 后续迭代） -->
-      <div
+      <!-- DRAG：拖拽放置 UI -->
+      <DragDropQuestion
         v-else
-        class="answer-area drag-area"
-      >
-        <div
-          v-for="item in currentQuestion.dragItems ?? []"
-          :key="item.itemId"
-          class="drag-row"
-        >
-          <img
-            v-if="item.imageAssetId"
-            :src="'app://asset/' + item.imageAssetId"
-            :alt="item.label"
-            class="drag-image"
-          >
-          <span class="drag-label">{{ item.label }}</span>
-          <select
-            v-model="dragMap[item.itemId]"
-            class="drag-select"
-          >
-            <option value="">
-              — 选择放置区 —
-            </option>
-            <option
-              v-for="zone in currentQuestion.dropZones ?? []"
-              :key="zone.zoneId"
-              :value="zone.zoneId"
-            >
-              {{ zone.label }}
-            </option>
-          </select>
-        </div>
-      </div>
+        v-model="dragMap"
+        :drag-items="currentQuestion.dragItems ?? []"
+        :drop-zones="currentQuestion.dropZones ?? []"
+        :background-asset-id="currentQuestion.mediaAssetId"
+        class="answer-area"
+      />
 
       <div class="actions">
         <button
@@ -250,6 +225,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import DragDropQuestion from '../../components/DragDropQuestion.vue'
 import { useAuthStore } from '../../stores/auth'
 import { useAssessmentStore } from '../../stores/assessment'
 import type { AbilityTag } from '@shared/types/json-schemas'
@@ -551,15 +527,6 @@ onMounted(() => {
   background: #f9fafb;
   flex-shrink: 0;
 }
-.drag-image {
-  flex: 0 0 64px;
-  width: 64px;
-  height: 64px;
-  object-fit: contain;
-  border-radius: 4px;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
-}
 .answer-area {
   margin: 20px 0;
 }
@@ -578,29 +545,6 @@ onMounted(() => {
 }
 .choice:hover {
   background: #f9fafb;
-}
-.drag-area {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.drag-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-}
-.drag-label {
-  flex: 0 0 120px;
-  font-size: 14px;
-  color: #374151;
-}
-.drag-select {
-  flex: 1;
-  padding: 8px 12px;
-  border: 1px solid #d0d7de;
-  border-radius: 6px;
-  font-size: 14px;
 }
 .actions {
   display: flex;
