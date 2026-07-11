@@ -1,5 +1,15 @@
-import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
+import { describe, expect, it, beforeAll } from 'vitest'
+import { readFileSync, existsSync } from 'node:fs'
+import { execFileSync } from 'node:child_process'
+
+// SQL 文件是派生产物（gitignored），测试前按需生成
+beforeAll(() => {
+  if (!existsSync('doc/features/question-bank-image-drag-question-seed.sql')) {
+    execFileSync('node', ['scripts/seed-question-bank-image-drag-questions.mjs', '--dry-run'], {
+      stdio: 'inherit',
+    })
+  }
+})
 
 describe('question-bank drag question seed sql', () => {
   it('包含 ROW 35 / 38 的正式 DRAFT 拖拽题与图片挂接', () => {
