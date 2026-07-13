@@ -1,7 +1,9 @@
 ---
 description: 单元测试、集成测试、端到端测试策略
-globs: src/**/*.test.ts, src/**/*.spec.ts
-alwaysApply: false
+paths:
+  - "src/**/*.test.ts"
+  - "src/**/*.spec.ts"
+  - "vitest.config.*"
 ---
 
 ## 测试策略

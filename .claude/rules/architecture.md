@@ -1,7 +1,9 @@
 ---
 description: 事件溯源架构原则、状态机约束、安全红线、JSON 字段验证规则
-globs: src/main/**/*.ts, src/shared/**/*.ts
-alwaysApply: false
+paths:
+  - "src/main/**/*.ts"
+  - "src/shared/**/*.ts"
+  - "src/main/db/**"
 ---
 
 ## 架构原则

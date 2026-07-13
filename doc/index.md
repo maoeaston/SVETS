@@ -144,6 +144,9 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 - `专业岗位能力测评题库-M1-M6-数据库导出-298条.csv` / `.json` — **M1-M6 题库真正的最终口径**（从 `question_bank` 实测导出的 298 条），专业岗位题库改造与 PRD v1.0.8/v1.0.9 均以此为准；已知数据缺陷（答案键存疑、rubric 缺三档锚点、`ability_tags` 非法值等）见 `doc/archive/M1-M6题库软件化审查报告-v2-db298口径-通向v1.0.8.md`
 - `超市素材需求清单更新版.md` — 图片资产需求
 - `chatgpt建议.md` — 题库分层设计输入建议（已被 `specs/题库分层架构说明.md` 吸收）
+- `chatgpt建议 (2).md` / `chatgpt建议 (3).md` — 线下工具包方案外部审阅意见（已被 `offline-toolkit-procurement-spec.md` v2.1 吸收）
+- `question-bank-viewer.html` — 394题（BASE_ABILITY 96 + JOB_SPECIFIC 298）全量题库可视化浏览器（含选项、评分规则、媒体需求标记）
+- `offline-toolkit-procurement-spec.md` — **线下评测工具包采购规格书 v2.1**：25件商品 + 14件日期属性矩阵 + 6场景包 + 开箱验收清单（模拟工作日：2026-09-10）
 - 其余 PDF — 背景研究文献，不影响编码实现
 
 ---

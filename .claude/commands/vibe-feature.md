@@ -2,6 +2,16 @@
 
 用于在正式编码前，为一个新功能建立清晰的上下文和 PRD。
 
+## 标准新功能路径（全流程概览）
+
+1. `waza think`（可选）— 有架构方案取舍或"要不要做"时先运行
+2. **`/vibe-feature`（本命令）** — 生成 Mini-PRD + 领域 Reviewer 审查，存入 `doc/features/`
+3. `/vibe-impl` — PRD → 步骤化实现文档，每步对应一个 commit
+4. 逐步实现 — 按 impl.md 执行；每步完成后运行 `/vibe-accept`
+5. 推送 — `/vibe-accept` 全通过后 squash merge 到 main
+
+高风险改动（FSM 路径 / safety_incident / schema 变更）在步骤 4 后额外运行 `/vibe-review`。
+
 ## 触发时机
 
 用户描述了一个新需求或新功能，但尚未形成正式 PRD，或 PRD 不够完整。
