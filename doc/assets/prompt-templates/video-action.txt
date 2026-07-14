@@ -1,0 +1,18 @@
+[TEMPLATE_ID: video-action]
+[VERSION: v1.2.4]
+
+[SUBJECT]
+Use the approved worker, green work vest, and relevant product references. Keep the worker's face, hairstyle, body proportions, clothing, and movement style consistent.
+
+[SCENE]
+Use the approved scene anchor for this scene family. Keep the shelf or work area geometry, neutral retail lighting, fixed camera position, and worker-to-object scale consistent.
+
+[AUDIO]
+Silent. No dialogue, music, ambient sound, or success/failure sound.
+
+[SHOT]
+Fixed readable shot. One continuous shot with no zoom, cut, camera shake, or transition.
+Single scored action: {{description}}
+Required visible cue: {{target_cue}}
+
+Do not show answer text, check marks, crosses, arrows, highlights, or color-coded correctness cues. Do not generate dates, prices, quantities, barcodes, QR codes, or other data-critical text.

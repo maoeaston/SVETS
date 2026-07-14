@@ -1,0 +1,12 @@
+[TEMPLATE_ID: damaged-product]
+[VERSION: v1.2.2]
+
+Photorealistic damaged or abnormal product derived from the approved normal product master.
+Keep package shape, camera angle, lighting, scale, and base color identical to the normal master.
+Uniform light gray #F0F0F0 background with clean edges for later cutout.
+
+Abnormal condition: {{description}}
+Required visible cue: {{target_cue}}
+
+Do not add warning text, arrows, circles, check marks, crosses, or color-coded answer hints.
+Dates and other data-critical evidence must be added programmatically.

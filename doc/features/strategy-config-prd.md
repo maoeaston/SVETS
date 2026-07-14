@@ -5,7 +5,7 @@
 文件名：`strategy-config-prd.md`
 PRD 版本：v1.0.0
 创建日期：2026-07-01
-对应主 PRD：炫灿-职途向导系统 MVP PRD v1.0.5（§5.2 任务与岗位配置、§7.6 策略配置版本锁定、§7.2 统一百分制模型、§7.3 结果等级）
+对应主 PRD：`doc/specs/MVP_PRD_v1.0.9-authoritative.md`（§5.2、§7.2、§7.3、§7.6）
 对应 schema：`xc-career-guide-mvp-schema-v0.1.8-base-ability-rebalance`
 状态：已定稿（二审通过，可进入 /vibe-impl）
 

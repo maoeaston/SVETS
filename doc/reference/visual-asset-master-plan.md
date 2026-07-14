@@ -1,12 +1,26 @@
 # 视觉素材统一规划书 — 炫灿职途向导系统 MVP
 
-**版本：** v1.2.2-consistency-fix  
-**日期：** 2026-07-13  
+**版本：** v1.2.4-video-sop
+**日期：** 2026-07-14
 **范围：** 全部 394 题（BASE_ABILITY 96 + JOB_SKILL 298）+ 系统通用 UI  
 **用途：** 视觉资产范围规划 + 风格方向 + 混合生产流水线规范  
-**生图平台：** APIMart GPT-Image-2（official 路由）/ 视频生成平台待定  
+**生成平台：** APIMart；图片主模型 `gpt-image-2`，视频模型 `doubao-seedance-2.0`
 **目标设备：** Windows 触控一体机（1920×1080, 21-27寸）  
 **生产方法：** AI 生成基础视觉 + 程序化合成 + 人工专业审核（三层架构）
+
+> **v1.2.4-video-sop 修订说明：**
+> - 将 Seedance 生产输入收敛为 `SUBJECT / SCENE / AUDIO / SHOT` 四段合同
+> - A 类判断题固定为单 Shot、单一可评分动作；G 类训练示范最多三个 Shot
+> - 不向 Seedance 上传完整故事板，不写逐秒时间戳，不使用长篇情绪或镜头修辞
+> - 增加视频场景锚图前置条件和 720p 候选抽选流程，内容通过后才允许有条件放大
+> - 新增 `visual-asset-video-production-sop.md` 和逐资产 Prompt 编译新会话指南
+
+> **v1.2.3-routing-fix 修订说明：**
+> - 图片主模型改为性价比优先的 `gpt-image-2`；`gpt-image-2-official` 仅允许主模型不可用或人工明确指定时兜底
+> - A 类与 G 类视频改用 `doubao-seedance-2.0`，统一走 `/v1/videos/generations`，不得使用 GPT 图片模型
+> - 视频输出统一为 720p、16:9、默认静音；判断题 5 秒，线下操作示范 8 秒
+> - 移除 `gpt-image-2` 接口未列为支持字段的 `quality` / `background` / `output_format` 请求参数
+> - Manifest Schema 升级为 v0.3.1，增加 official 兜底条件与实际使用原因记录
 
 > **v1.2.2-consistency-fix 修订说明：**  
 > - 删除"中文文字不由AI直接生成"一刀切禁止，改为三级文字处理规则（普通/识别关键/数据关键）
@@ -150,7 +164,7 @@
 | A. 短视频（判断题配套） | 68 段 | JOB_SKILL TF | AI 视频生成 |
 | B. 货架/场景插图 | ~20 张 | JOB_SKILL DRAG+SC | AI 图片生成 |
 | C. 商品单品图 | 32 张 | JOB_SKILL + 系统通用 | AI 图片生成 |
-| D. 临损/异常商品图 | 9 张 | 系统通用（已有 spec） | AI 图片生成 |
+| D. 临损/异常商品图 | 9 个异常母题 / 11 个交付件 | 系统通用（已有 spec） | AI 图片生成 + 程序叠加 |
 | E. 交互界面素材（SOFTWARE_TASK） | ~50 组 | BASE_ABILITY | AI 图 + 前端组件 |
 | F. 系统通用 UI 图标/头像/背景 | 40+ 张 | 系统 | AI 图片生成 |
 | G. 线下实操示范图/视频 | ~10 组 | OFFLINE（108题参考） | AI 图/视频 |
@@ -286,26 +300,22 @@
 
 ### 4.3 视频生成 Prompt 模板
 
-```
-[GLOBAL STYLE]
-Photorealistic short video clip, 5-8 seconds, 24fps, 1920x1080.
-Scene: well-lit modern Chinese supermarket aisle, generic mid-size chain store environment.
-3-tier metal/wood shelving with generic fictional Chinese FMCG products (no real trademarks).
-Character: one young Chinese store worker in green work vest/apron,
-calm natural movements, neutral friendly expression.
-Camera: fixed front-facing shot, no zooms, no cuts, no camera shake.
-Audio: NONE (silent).
-Color: natural warm indoor lighting, standard supermarket fluorescent.
-IMPORTANT: Avoid decorative red as focal point. Safety signage red (stop/fire) is acceptable per §1.1.
-Lighting: soft overhead fluorescent, realistic indoor retail lighting.
-Culture: Chinese mainland retail environment. Do NOT render legible product names, dates, prices, barcodes, QR codes, or store signage — reserve clean blank label areas for programmatic overlays.
+```text
+[SUBJECT]
+使用已批准的理货员、绿色工作马甲和相关商品参考图，保持人物一致。
 
-[ACTION]
-{具体动作描述，从 media_brief 扩展}
+[SCENE]
+使用对应场景族的已批准锚图，保持货架结构、光照、机位和人物比例一致。
 
-[MOOD]
-Calm, methodical, everyday workplace demonstration. Natural expressions only.
+[AUDIO]
+完全静音。无对白、音乐、环境音或反馈音。
+
+[SHOT]
+固定可读机位，一个连续镜头，只呈现一个可评分动作：{具体动作描述}。
+必须可见：{target_cue}。无缩放、剪切、晃动或转场。
 ```
+
+实际模板见 `doc/assets/prompt-templates/video-action.txt`。Prompt 不写题目正误，不泄露 `expected_answer`，不要求模型生成日期、价格、数量、条形码、二维码或系统文字。
 
 ### 4.4 视频命名规范
 
@@ -315,12 +325,23 @@ Calm, methodical, everyday workplace demonstration. Natural expressions only.
 
 ### 4.6 视频音频规则
 
-1. 正式测评用 TRUE_FALSE 视频默认静音：无人物对白、无背景音乐、无情绪化或答案提示性音效。题干及操作说明由系统 TTS 独立朗读。
-2. 不得使用警报声、成功音、失败音、紧张音乐或夸张环境音暗示题目正误。
-3. 当真实声音本身属于目标职业线索时，可在训练示范视频中使用低音量、自然、可控的功能性声音，例如扫码提示音、货架异响或包装漏气声。
-4. 功能性声音不得作为唯一判断依据，必须同时提供清晰的视觉证据，保证听觉敏感、听力受限或关闭声音的学生仍可完成任务。
-5. 安全和应急视频不得使用尖叫、突然爆裂、高音量警报或恐怖化音效。
-6. VID_C04 正式测评视频保持静音，通过近景展示袋体按压后明显塌陷、松手后不能恢复饱满状态。训练示范版本可选配轻微、自然的漏气声音，但该声音不得成为判断答案的唯一线索。
+1. 当前 A 类判断题和 G 类训练示范统一设置 `generate_audio=false`。
+2. 无人物对白、背景音乐、环境音、成功音、失败音、警报声或答案提示音。
+3. 题干和操作说明由系统 TTS 独立朗读，不写入视频 Prompt。
+4. 职业线索必须在画面中独立成立，不得依赖声音完成判断。
+5. VID_C04 通过近景展示袋体按压后明显塌陷、松手后不能恢复饱满状态，不生成漏气声音。
+6. 未来如新增功能性音效，必须先另行修订 Manifest 音频合同和无障碍验收规则，不能在单个 Prompt 中临时开启。
+
+### 4.7 Seedance 生产规则
+
+1. A 类视频使用一个连续 Shot，只呈现一个可评分动作；G 类视频最多三个 Shot，每个 Shot 一个动作。
+2. 主体与场景信息由已批准参考图提供，Prompt 只补充本资产的可观察动作和必要约束。
+3. 不上传完整故事板，不写镜头运动曲线、Highlight 表格或逐秒时间戳。
+4. 抽选阶段固定 720p。每类先做代表资产试跑，模板冻结后再批量生成。
+5. 标准资产先生成两个候选，必要时再生成第三个；测评关键和安全关键资产生成三个候选。
+6. 只有通过内容审核的候选才能进入放大处理。MVP 仅在目标设备实测不清楚时放大到 1080p，不要求 4K。
+
+完整执行步骤、示例和验收清单见 `doc/features/visual-asset-video-production-sop.md`。
 
 ### 4.5 视频生产分类（Production Method + Review Level）
 
@@ -409,12 +430,10 @@ DRAG 和 SINGLE_CHOICE 题目的配图，学生看图后做出判断或拖拽分
 
 ```json
 {
-  "model": "gpt-image-2-official",
+  "model": "gpt-image-2",
   "size": "3:2",
   "resolution": "2k",
-  "quality": "high",
-  "background": "auto",
-  "output_format": "png"
+  "n": 1
 }
 ```
 
@@ -455,16 +474,14 @@ Educational clarity — lighting even, no dark shadows, all elements clearly vis
 
 ```json
 {
-  "model": "gpt-image-2-official",
+  "model": "gpt-image-2",
   "size": "1:1",
   "resolution": "2k",
-  "quality": "high",
-  "background": "auto",
-  "output_format": "png"
+  "n": 1
 }
 ```
 
-> **技术说明：** GPT-Image-2 不支持 `"background": "transparent"`（会静默降级为 `auto`）。所有需要透明底的素材采用以下流程：
+> **技术说明：** GPT-Image-2 主接口未提供 `background=transparent` 参数。所有需要透明底的素材采用以下流程：
 > 1. 生成时使用纯浅灰底 `#F0F0F0`（Prompt 中指定 "on uniform light gray #F0F0F0 background"）
 > 2. 后处理执行主体分割 + Alpha 通道生成
 > 3. 人工抽查边缘质量（发丝、瓶身、塑料袋、透明孔洞）
@@ -554,7 +571,9 @@ Background will be removed — ensure clean edges for cutout.]
 
 ---
 
-## 七、D 类：临损/异常商品图（9 张）
+## 七、D 类：临损/异常商品图（9 个异常母题 / 11 个交付件）
+
+> 计数口径：牛奶过期、面包过期各拆为训练版和测评版，因此异常概念仍为 9 个，Manifest 中必须登记 11 个独立交付件。
 
 ### 7.1 统一参数
 
@@ -847,7 +866,7 @@ Single character on clean background.
 | 类别 | 数量 | 交付方式 | 说明 |
 |:---|:---|:---|:---|
 | 商品单品图 | 32 | AI 生成 | 写实产品摄影风格 |
-| 临损商品图 | 9 | AI 生成 | 三级难度损伤 |
+| 临损商品图 | 11 | AI 生成 + 程序叠加 | 9 个异常母题；两项拆训练/测评版 |
 | 货架场景图 | 6 | AI 生成 | 写实中国超市场景 |
 | 动物头像 | 10 | AI 生成 | 学生个人头像选择 |
 | 系统状态图标 | 8 | SVG/CSS | 求助/星/奖牌/正确/重试/休息 |
@@ -856,19 +875,19 @@ Single character on clean background.
 | 表情/状态图标 | 3 | SVG/CSS | 开心/平静/低落 |
 | 情绪状态卡 | 6 | SVG/CSS | BASE_ABILITY 情绪题核心 |
 | AAC 图标 | 8 | SVG/CSS | BASE_ABILITY 社交题核心 |
-| **P0 小计** | **92 项** | **57 AI + 35 SVG/CSS** | |
+| **P0 小计** | **94 项** | **59 AI/合成 + 35 SVG/CSS** | |
 
 ### P1 — MVP 验收需要
 
 | 类别 | 数量 | 交付方式 | 说明 |
 |:---|:---|:---|:---|
 | 判断题视频 | 68 段 | AI 视频生成 | 所有 TRUE_FALSE 题配套 |
-| 扩展场景图 | 14 | AI 生成 | M1/M6 DRAG 和 SC 配图 |
+| 扩展场景图 | 12 | AI 生成/合成 | B 类 14 项中另 2 项已计入 P0 |
 | SOFTWARE_TASK 定制图 | 16 组 | AI + 前端组合 | 拖拽路径/触控交互背景 |
 | 操作提示图标 | 5 | SVG/CSS | 视频播放/计时/拖拽/触控/滑动 |
 | 人物角色图 | 3 | AI 生成 | 理货员/同事/负责人 |
 | 背景/装饰 | 4 | AI 生成 | 测评头/报告头/应用图标/启动画面 |
-| **P1 小计** | **~110 项** | **105 AI + 5 SVG/CSS** | |
+| **P1 小计** | **108 项** | **103 AI/合成 + 5 SVG/CSS** | |
 
 ### P2 — 完整体验增强
 
@@ -877,9 +896,10 @@ Single character on clean background.
 | 线下示范视频 | 6 组 | OFFLINE_OPERATION 施测辅助 |
 | 工具识别卡 | 12 | 实物工具照片/插图 |
 | 流程步骤条 | 6 | 横向步骤图解 |
-| 临损商品图 | 9 | 复用 P0 资产，新增量 0 |
+| 补货流程步骤图 | 5 | 写实训练步骤图 |
+| 临损商品图 | 9 个异常母题 / 11 个交付件 | 复用 P0 资产，新增量 0 |
 | 相似品图 | 5 | 复用 P0 资产，新增量 0 |
-| **P2 小计** | **~24 项（新增生产）** | |
+| **P2 小计** | **29 项（新增生产）** | |
 
 ---
 
@@ -1004,6 +1024,7 @@ assets/
 ### 13.2 命名规则
 
 - 全小写，下划线分隔
+- 规划书中的素材 ID 在 Manifest 中记录为 `plan_key`；运行时 `asset_id` 固定为 `asset_${plan_key}`，以兼容 `app://asset/<asset_id>` 协议
 - 商品：`{category}_{name}_{variant:02d}.png`
 - 场景：`scene_{description}.png`
 - 视频：`vid_{template}_{seq:02d}_{question_id_lower}.mp4`
@@ -1025,14 +1046,15 @@ assets/
 
 | 素材类型 | 数量 | 生成方式 |
 |:---|:---|:---|
-| 写实静态图片（商品/场景/人物/步骤/背景） | ~77 张 | AI 图片生成（写实风格） |
+| A-G 明确交付资产 | 231 项 | P0 94 + P1 108 + P2 29 |
+| 核心参考资产 R1-R6 | 6 项 | 生产前先生成并冻结 |
+| 写实静态图片（商品/场景/人物/步骤/背景） | 按 Manifest 分类统计 | AI 图片生成（写实风格） |
 | 动物头像 | 10 张 | AI 图片生成（扁平插画风格） |
 | SVG/CSS 图标及符号（系统/模块/分区/操作/情绪/AAC） | ~40 项 | 前端开发（AI 仅用于风格探索，不作为最终交付） |
 | 交互界面定制素材 | ~16 组 | AI 图片 + 前端组合 |
 | 短视频 | 68 + 6 = 74 段 | AI 视频生成 |
 | 前端组件（无需图片） | 34 组 | 纯开发实现 |
-| **总计需 AI 生成** | **~177 项** | |
-| **总计 SVG/CSS 开发** | **~40 项** | |
+| **Manifest 合同总计** | **237 项** | 231 个交付项 + 6 个参考资产 |
 
 ---
 
@@ -1089,27 +1111,54 @@ assets/
 | 视频 `ai_plus_overlay`（含程序叠加信息） | AI 视频底片 | FFmpeg 信息面板叠加 | 职业 + 测评审核 |
 | 视频 `composite` / `safety_critical`（安全/情绪） | AI 视频 + 分镜合成 | 可能需叠加 | 全部五道 + 逐帧审核 |
 
-### 16.3 APIMart 参数锁定
+### 16.3 APIMart 模型路由与参数锁定
 
-生产时所有 API 调用必须使用以下固定参数集，并在资产记录中保存完整调用信息：
+图片统一调用 `POST /v1/images/generations`。主模型固定为 `gpt-image-2`；高价 `gpt-image-2-official` 不得作为默认模型，只能在主模型连接/服务不可用或人工明确指定时使用。内容审核失败、画面质量不满意和普通重试不属于自动切换 official 的理由。
 
 ```json
 {
   "provider": "apimart",
-  "model": "gpt-image-2-official",
-  "route": "official",
-  "generation_date": "ISO-8601",
-  "params": {
+  "model": "gpt-image-2",
+  "route": "/v1/images/generations",
+  "fallback_model": "gpt-image-2-official",
+  "fallback_route": "/v1/images/generations",
+  "fallback_allowed_when": ["primary_unavailable", "manual_override"],
+  "fallback_used": false,
+  "fallback_reason": null,
+  "generation_params": {
     "size": "1:1 | 3:2 | 16:9",
     "resolution": "2k",
-    "quality": "high",
-    "background": "auto",
-    "output_format": "png",
     "n": 1
-  },
-  "reference_images": ["R1.png", "..."]
+  }
 }
 ```
+
+`gpt-image-2` 接口文档只列出 `model/prompt/n/size/resolution/image_urls` 等请求字段，未列出的 `quality/background/output_format` 不得写入生产请求；交付格式由后处理与 `delivery_format` 管理。
+
+视频统一调用 `POST /v1/videos/generations`，使用 APIMart `doubao-seedance-2.0`：
+
+```json
+{
+  "provider": "apimart",
+  "model": "doubao-seedance-2.0",
+  "route": "/v1/videos/generations",
+  "fallback_model": null,
+  "fallback_route": null,
+  "fallback_allowed_when": [],
+  "fallback_used": false,
+  "fallback_reason": null,
+  "generation_params": {
+    "size": "16:9",
+    "resolution": "720p",
+    "duration": 5,
+    "generate_audio": false
+  }
+}
+```
+
+A 类判断题 `duration=5`；G 类线下操作示范 `duration=8`。
+
+接口依据：[GPT-Image-2 图像生成](https://docs.apimart.ai/cn/api-reference/images/gpt-image-2/generation)、[doubao-seedance-2.0 视频生成](https://docs.apimart.ai/cn/api-reference/videos/doubao-seedance-2-0/generation)。
 
 ---
 
@@ -1117,7 +1166,7 @@ assets/
 
 Markdown 规划书保留为设计说明文档。**机器可执行的单一事实来源**是 `asset-manifest.json`，每项资产一条记录。
 
-> **重要区分：** `doc/assets/` 是**生产合同目录**（设计规范、Prompt 模板、参考图、验收记录），不是运行时资产目录。运行时资产在构建后输出到 `src/renderer/src/assets/`（前端引用）或 `resources/`（Electron 打包）。两者通过 `source_path` / `runtime_path` 字段关联。
+> **重要区分：** `doc/assets/` 是**生产合同目录**（设计规范、Prompt 模板、参考图、验收记录），不是运行时资产目录。当前统一运行时目录为 `resources/assets/`，通过 `app://asset/<asset_id>` 访问；生产文件与运行时文件通过 `source_path` / `runtime_path` 字段关联。
 
 ### 17.1 目录结构
 
@@ -1130,14 +1179,17 @@ doc/assets/                         # 生产合同目录（不进入运行时打
 │   ├── scene-shelf.txt
 │   ├── icon-flat.txt
 │   ├── character.txt
-│   └── video-action.txt
+│   ├── video-action.txt
+│   ├── offline-video.txt
+│   └── offline-demo.txt
 ├── reference-assets/               # 标准参考图资产包 (R1-R6)
 │   ├── R1_character_sheet/
 │   ├── R2_vest_standard.png
 │   ├── R3_shelf_standard.png
 │   ├── R4_product_masters/
 │   ├── R5_lighting_camera_ref/
-│   └── R6_icon_style_board.png
+│   ├── R6_icon_style_board.png
+│   └── video-scene-anchors/         # 视频生产场景锚图，不计入运行时交付数
 └── qa-results/                     # 验收记录
     ├── batch_001_review.json
     └── ...
@@ -1145,14 +1197,18 @@ doc/assets/                         # 生产合同目录（不进入运行时打
 
 ### 17.2 每项资产必须记录的字段
 
-> 机器可执行合同见 `asset-manifest.schema.json` v0.2.0。下表为人类可读摘要。
+> 机器可执行合同见 `asset-manifest.schema.json` v0.3.1。下表为人类可读摘要。
 
 | 字段 | 类型 | 必填 | 说明 |
 |:---|:---|:---:|:---|
-| `asset_id` | string | ✓ | 唯一标识符，全小写，与文件名一致（不含扩展名），pattern: `^[a-z][a-z0-9_]*$` |
+| `asset_id` | string | ✓ | 运行时唯一标识符，固定为 `asset_${plan_key}`，pattern: `^asset_[a-z0-9_]+$` |
+| `plan_key` | string | ✓ | 本规划书表格中的素材 ID，与交付文件名主体一致 |
+| `category` | enum | ✓ | `A`–`G` 或 `REFERENCE` |
+| `priority` | enum | ✓ | `P0` / `P1` / `P2` / `REFERENCE` |
 | `question_ids` | string[] | — | 关联题目 ID 数组（`uniqueItems: true`）；系统通用素材使用空数组 |
-| `asset_type` | enum | ✓ | `product_photo` \| `scene` \| `damaged` \| `icon_svg` \| `aac_svg` \| `emotion_svg` \| `character` \| `video` \| `bg` \| `step_illustration` \| `avatar` \| `app_icon` \| `reference` |
-| `usage_mode` | enum | ✓ | `training` \| `assessment` \| `both` \| `system` |
+| `asset_type` | enum | ✓ | 图片、视频、SVG、SOFTWARE_TASK、工具卡、步骤条或参考资产类型 |
+| `asset_role` | enum | ✓ | 对应 `asset_resource.asset_role` 的运行时角色 |
+| `usage_mode` | enum | ✓ | `training` \| `assessment` \| `both` \| `system` \| `production` |
 | `delivery_format` | enum | ✓ | `png` \| `webp` \| `svg` \| `css` \| `mp4` |
 | `production_method` | enum | ✓ | `ai_direct` \| `ai_plus_overlay` \| `programmatic` \| `composite` |
 | `review_level` | enum | ✓ | `standard` \| `assessment_critical` \| `safety_critical` |
@@ -1166,18 +1222,15 @@ doc/assets/                         # 生产合同目录（不进入运行时打
 | `prompt_version` | string\|null | — | Prompt 模板版本 |
 | `prompt_text` | string\|null | — | 实际使用的完整 Prompt |
 | `provider` | enum\|null | — | `apimart` \| `manual` \| `codegen` |
-| `model` | string\|null | — | AI 模型标识 |
-| `route` | string\|null | — | API 路由 |
-| `size` | string\|null | — | 请求尺寸（如 `1:1`、`16:9`） |
-| `resolution` | string\|null | — | 分辨率（如 `2k`、`1080p`） |
-| `quality` | enum\|null | — | `high` \| `medium` \| `low` \| `auto` |
-| `background` | enum\|null | — | `auto`（GPT-Image-2 不支持 transparent） |
-| `output_format` | enum\|null | — | `png` \| `webp` \| `jpeg` |
-| `n` | integer\|null | — | 单次请求生成数量（1–10） |
+| `model` | string\|null | — | 主模型；图片固定 `gpt-image-2`，视频固定 `doubao-seedance-2.0` |
+| `route` | string\|null | — | APIMart API 路径（图片或视频 generations） |
+| `fallback_model` / `fallback_route` | string\|null | — | 图片 official 兜底模型与接口；视频必须为 null |
+| `fallback_allowed_when` | string[] | — | 只允许 `primary_unavailable` / `manual_override` |
+| `fallback_used` / `fallback_reason` | boolean / string\|null | — | 是否实际使用兜底及审计原因 |
+| `generation_params` | object\|null | — | 图片：`size/resolution/n`；视频：`size/resolution/duration/generate_audio` |
 | `generation_date` | string(date)\|null | — | 生成日期 |
 | `source_path` | string\|null | — | 生产合同目录中的原始文件路径（`lifecycle_status ≥ generated` 时必填） |
 | `runtime_path` | string\|null | — | 运行时打包后的文件路径（全小写） |
-| `crop_safe_area` | object\|null | — | 裁切安全区 `{top, right, bottom, left}` |
 | `overlay_spec` | object\|null | — | Layer 2 叠加规格 |
 | `expected_answer` | string\|boolean\|null | — | 正确答案同步副本（**题库为唯一事实来源**；Manifest 不允许独立维护第二套答案） |
 | `text_handling` | enum\|null | — | `none` \| `ai_reviewed` \| `programmatic` \| `mixed`（文字生成与审核方式） |
@@ -1216,9 +1269,14 @@ doc/assets/                         # 生产合同目录（不进入运行时打
 
 ```json
 {
-  "asset_id": "fruit_apple_01",
+  "asset_id": "asset_fruit_apple_01",
+  "plan_key": "fruit_apple_01",
+  "category": "C",
+  "priority": "P0",
+  "description": "红富士苹果",
   "question_ids": ["M1_SC_014"],
   "asset_type": "product_photo",
+  "asset_role": "QUESTION_MEDIA",
   "usage_mode": "both",
   "complexity_level": "L0",
   "production_method": "ai_direct",
@@ -1228,23 +1286,27 @@ doc/assets/                         # 生产合同目录（不进入运行时打
   "construct": "商品外观识别",
   "target_cue": "红富士苹果正常外观",
   "distractors": [],
-  "reference_asset_ids": ["ref_r4_fruit_master"],
+  "reference_asset_ids": ["asset_ref_r4_product_masters", "asset_ref_r5_lighting_camera"],
+  "reference_pack": "core",
   "prompt_template_id": "product-photo",
-  "prompt_version": "v1.2.1",
+  "prompt_version": "v1.2.2",
   "prompt_text": null,
   "provider": "apimart",
-  "model": "gpt-image-2-official",
-  "route": "official",
-  "size": "1:1",
-  "resolution": "2k",
-  "quality": "high",
-  "background": "auto",
-  "output_format": "png",
-  "n": 1,
+  "model": "gpt-image-2",
+  "route": "/v1/images/generations",
+  "fallback_model": "gpt-image-2-official",
+  "fallback_route": "/v1/images/generations",
+  "fallback_allowed_when": ["primary_unavailable", "manual_override"],
+  "fallback_used": false,
+  "fallback_reason": null,
+  "generation_params": {
+    "size": "1:1",
+    "resolution": "2k",
+    "n": 1
+  },
   "generation_date": null,
   "source_path": null,
-  "runtime_path": "src/renderer/src/assets/products/fruit_apple_01.png",
-  "crop_safe_area": null,
+  "runtime_path": "resources/assets/products/fruit_apple_01.png",
   "overlay_spec": null,
   "expected_answer": null,
   "policy_basis": null,
@@ -1263,7 +1325,7 @@ doc/assets/                         # 生产合同目录（不进入运行时打
     "license": null,
     "attribution_required": false,
     "source_reference": null,
-    "commercial_use_cleared": true
+    "commercial_use_cleared": false
   },
   "qa_record_paths": [],
   "file_hash": null
@@ -1272,7 +1334,7 @@ doc/assets/                         # 生产合同目录（不进入运行时打
 
 ### 17.3 与题库的关联
 
-双向引用：资产通过 `question_ids` 数组声明关联题目，题库通过 `media_asset_ids` 字段引用资产。一个题目可引用多个素材，一个素材可被多题复用（`question_ids` 数组 + `uniqueItems: true`）。系统通用素材使用空数组 `[]`。关联关系以题库为主、资产合同为辅。
+双向引用：资产通过 `question_ids` 数组声明关联题目；题库通过 `question_bank.media_asset_id`、`content_json.variants[].media_asset_id`、`content_json.options[].image_asset_id` 或 `content_json.drag_items[].image_asset_id` 引用资产。一个题目可引用多个素材，一个素材可被多题复用。系统通用素材使用空数组 `[]`。关联关系以题库为主、资产合同为辅。
 
 ### 17.4 跨文件校验清单（P0 批量生产前必做）
 
@@ -1289,7 +1351,7 @@ JSON Schema 仅能校验单条记录内的结构与条件约束，以下跨记�
 | 7 | `file_hash` 与文件一致 | 计算实际文件哈希并与 manifest 记录比对 |
 | 8 | 已批准资产完成全部必需验收门 | 所有 `required: true` 的门状态必须为 `passed` |
 
-本清单在 P0 批量生产启动前必须实现为可执行脚本（或 CI 步骤）。MVP 阶段允许手动逐项核查，但不得跳过。
+本清单已由 `scripts/validate-visual-asset-manifest.mjs` 实现。P0 批量生产前、每次审核状态变更后和入库前都必须执行；不得以手工目视检查替代该脚本。
 
 ---
 
@@ -1340,10 +1402,10 @@ GPT/Claude 可作为 `ai_pre_review` 辅助工具，对素材进行初步筛查�
   "reviewer": "张老师",
   "reviewer_role": "sped",
   "gate": 4,
-  "assets_reviewed": ["fruit_apple_01", "fruit_banana_01", "..."],
+  "assets_reviewed": ["asset_fruit_apple_01", "asset_fruit_banana_01", "..."],
   "results": {
-    "fruit_apple_01": { "status": "passed", "notes": null },
-    "fruit_banana_01": { "status": "revision", "notes": "颜色过于鲜艳，刺激度偏高" }
+    "asset_fruit_apple_01": { "status": "passed", "notes": null },
+    "asset_fruit_banana_01": { "status": "revision_required", "notes": "颜色过于鲜艳，刺激度偏高" }
   }
 }
 ```

@@ -1,6 +1,6 @@
 > **⚠️ 文档状态：SUPERSEDED（已废止）**
 > 本文档已被 `architecture-plan-b-multi-device-v2.2-authoritative-baseline.md`（v2.2 唯一权威基线）取代，不再作为实施依据。
-> 实施人员只阅读：当前正式 Schema（`src/main/db/schema.sql`）+ 当前正式 PRD（`MVP_PRD_v1.0.9-*.md`）+ v2.2 三份工件。
+> 实施人员只阅读：当前正式 Schema（`src/main/db/schema.sql`）+ 当前正式 PRD（`MVP_PRD_v1.0.9-authoritative.md`）+ v2.2 三份工件。
 
 # 方案 B 多设备架构 v2.1 — 验证报告
 
@@ -16,7 +16,7 @@
 | `src/main/db/schema.sql` | 已全文读取 | Schema 基线（v0.1.12-job-skill-assessment-mvp-closure） |
 | `doc/specs/architecture-plan-b-multi-device-v2.0-authoritative-baseline.md` | 已全文读取 | v2.0 输入 |
 | `doc/specs/architecture-plan-b-multi-device-v2.0.1-schema-alignment.md` | 已全文读取 | v2.0.1 输入 |
-| `doc/specs/MVP_PRD_v1.0.9-job-skill-assessment-mvp-closure.md` | 已全文读取 | PRD 基线 |
+| `doc/specs/MVP_PRD_v1.0.9-authoritative.md` | 已全文读取 | PRD 基线 |
 | `doc/specs/2.1.md` | 已全文读取 | 任务规范 |
 
 ---
@@ -26,7 +26,7 @@
 | 工件 | 版本 | 路径 |
 |------|------|------|
 | Schema | v0.1.12-job-skill-assessment-mvp-closure | `src/main/db/schema.sql` |
-| PRD | v1.0.9 | `doc/specs/MVP_PRD_v1.0.9-job-skill-assessment-mvp-closure.md` |
+| PRD | v1.0.9 | `doc/specs/MVP_PRD_v1.0.9-authoritative.md` |
 
 ---
 

@@ -1,13 +1,13 @@
 > **⚠️ 文档状态：SUPERSEDED（已废止）**
 > 本文档已被 `architecture-plan-b-multi-device-v2.2-authoritative-baseline.md`（v2.2 唯一权威基线）取代，不再作为实施依据。
-> 实施人员只阅读：当前正式 Schema（`src/main/db/schema.sql`）+ 当前正式 PRD（`MVP_PRD_v1.0.9-*.md`）+ v2.2 三份工件。
+> 实施人员只阅读：当前正式 Schema（`src/main/db/schema.sql`）+ 当前正式 PRD（`MVP_PRD_v1.0.9-authoritative.md`）+ v2.2 三份工件。
 
 # 方案 B 多设备架构 v2.1 — 唯一权威实施基线（已废止）
 
 > **文档状态：** SUPERSEDED（原 AUTHORITATIVE BASELINE，已被 v2.2 取代）  
 > **生效日期：** 2026-07-14  
 > **正式 Schema 基线：** `src/main/db/schema.sql` v0.1.12-job-skill-assessment-mvp-closure  
-> **正式 PRD 基线：** `doc/specs/MVP_PRD_v1.0.9-job-skill-assessment-mvp-closure.md`  
+> **正式 PRD 基线：** `doc/specs/MVP_PRD_v1.0.9-authoritative.md`
 > **技术栈：** Electron 33+ / Vue 3 / TypeScript 5 / SQLite 3.45+ (WAL) / better-sqlite3  
 > **范围：** 局域网多设备架构（学生触摸一体机 + 教师平板浏览器 + 未来学生自主 Web 门户）
 
@@ -21,7 +21,7 @@
 - architecture-plan-b-multi-device-v2.0-authoritative-baseline.md
 - architecture-plan-b-multi-device-v2.0.1-schema-alignment.md
 
-**实施人员只需阅读本文 v2.1 + 正式 Schema (`src/main/db/schema.sql`) + 正式 PRD (`doc/specs/MVP_PRD_v1.0.9-job-skill-assessment-mvp-closure.md`)。**
+**实施人员只需阅读本文 v2.1 + 正式 Schema (`src/main/db/schema.sql`) + 正式 PRD (`doc/specs/MVP_PRD_v1.0.9-authoritative.md`)。**
 
 ---
 

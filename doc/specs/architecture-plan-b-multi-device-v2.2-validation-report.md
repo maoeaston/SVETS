@@ -12,7 +12,7 @@
 | 文件 | 读取 | 用途 |
 |------|------|------|
 | `src/main/db/schema.sql` | 全文（1791 行） | Schema 基线 v0.1.12（实测 20 表 / 48 触发器 / 73 索引） |
-| `doc/specs/MVP_PRD_v1.0.9-job-skill-assessment-mvp-closure.md` | 关键节全文 | PRD 基线 v1.0.9 |
+| `doc/specs/MVP_PRD_v1.0.9-authoritative.md` | 关键节全文 | PRD 基线 v1.0.9 |
 | `doc/specs/architecture-plan-b-multi-device-v2.1-authoritative-baseline.md` | 全文（2195 行） | v2.1 输入 |
 | `doc/specs/architecture-plan-b-multi-device-v2.1-coverage-matrix.md` | 全文 | v2.1 输入 |
 | `doc/specs/architecture-plan-b-multi-device-v2.1-validation-report.md` | 全文 | v2.1 输入 |
@@ -29,7 +29,7 @@
 | 工件 | 版本 | 路径 | 依据 |
 |------|------|------|------|
 | Schema | v0.1.12-job-skill-assessment-mvp-closure | `src/main/db/schema.sql` | 文件头 + schema_migration 记录 line 69-70 |
-| PRD | v1.0.9 | `doc/specs/MVP_PRD_v1.0.9-job-skill-assessment-mvp-closure.md` | 目录下最新版本（另有 v1.0.6/1.0.7/1.0.8），schema 注释与 v2.1 均以其为基线 |
+| PRD | v1.0.9 authoritative | `doc/specs/MVP_PRD_v1.0.9-authoritative.md` | 当前唯一产品合同；v1.0.6～v1.0.9 差异版仅作历史追溯 |
 
 **候选 PRD 文件甄别：** 目录存在 PRD_v1.0.6 / MVP_PRD_v1.0.7 / v1.0.8 / v1.0.9。选 v1.0.9 为正式基线，因其版本号最高、内含 v0.1.12 schema 对应的 JOB_SKILL_ASSESSMENT 全链路合同、且 schema.sql 头注释明确"merge PRD v1.0.7+v1.0.8+v1.0.9"。
 

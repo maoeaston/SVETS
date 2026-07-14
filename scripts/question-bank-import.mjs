@@ -16,7 +16,7 @@ import { join } from 'node:path'
 import { homedir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { mapImportRow, buildQuestionBankImportSql, buildQuestionImportedEventsSql, buildDryRunReport } from './lib/question-bank-import.mjs'
-import { resolveDefaultDbPath } from './lib/question-bank-image-asset-seed.mjs'
+import { resolveDefaultDbPath } from './lib/database-path.mjs'
 
 function parseArgs(argv) {
   const args = { dbPath: null, outPath: null, dryRun: false, sourcePath: null }

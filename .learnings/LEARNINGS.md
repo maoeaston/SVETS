@@ -5,6 +5,33 @@ Corrections, insights, and knowledge gaps captured during development.
 **Categories**: correction | insight | knowledge_gap | best_practice
 
 ---
+## [LRN-20260714-001] correction
+
+**Logged**: 2026-07-14T15:30:00+08:00
+**Priority**: high
+**Status**: resolved
+**Area**: config
+
+### Summary
+视觉资产生产必须区分图片与视频模型，并以成本更低的 GPT-Image-2 路由作为图片默认值。
+
+### Details
+用户指出 `gpt-image-2-official` 单价较高，只能在 `gpt-image-2` 不可用或人工明确指定时兜底；GPT 图片模型不能生成视频。APIMart 视频合同应使用 `doubao-seedance-2.0`、`/v1/videos/generations` 和 720p。正式测评视频保持静音。
+
+### Suggested Action
+在 Manifest 生成器和校验器中固化主备模型、兜底原因、图片/视频接口隔离与 720p 视频参数，防止配置回退。
+
+### Metadata
+- Source: user_feedback
+- Related Files: scripts/build-visual-asset-manifest.mjs, scripts/lib/visual-asset-manifest.mjs, doc/assets/asset-manifest.json
+- Tags: apimart, image-generation, video-generation, cost-control, routing
+
+### Resolution
+- **Resolved**: 2026-07-14T15:30:00+08:00
+- **Commit/PR**: pending
+- **Notes**: Manifest v0.3.1 改为图片 `gpt-image-2` 主模型、official 受控兜底；视频改为 Seedance 2.0 720p 静音。
+
+---
 ## [LRN-20260704-001] correction
 
 **Logged**: 2026-07-04T11:53:20+08:00

@@ -1,5 +1,7 @@
 # 编码任务 T1：共享类型升级
 
+> **RETIRED**：T1 已完成，本文只保留当时的任务输入。不得按本文所写的 v0.1.10“当前状态”重新执行；当前权威合同见 `doc/specs/MVP_PRD_v1.0.9-authoritative.md`，当前类型见 `src/shared/types/json-schemas.ts`。
+
 ## 给 Agent 的启动 Prompt
 
 ---
@@ -47,4 +49,3 @@
 - 不引入 ORM、CSV 解析库、Markdown 渲染库（见 AGENTS.md）
 - 不修改已有类型的行为（新增不破坏现有代码）
 - 有不确定的技术事实，明确说不确定，不编造
-

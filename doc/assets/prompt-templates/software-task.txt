@@ -1,0 +1,11 @@
+[TEMPLATE_ID: software-task]
+[VERSION: v1.2.2]
+
+Clean task background for a touch-first vocational assessment interface.
+Use approved shelf and icon references, low visual load, clear spatial regions, and stable geometry.
+
+Task background: {{description}}
+Required visible cue: {{target_cue}}
+
+Do not render controls, labels, answers, highlights, arrows, dates, prices, or quantities.
+All interactive controls and data-critical text will be composed by the Vue frontend.

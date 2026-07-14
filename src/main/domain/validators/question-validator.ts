@@ -244,10 +244,11 @@ export function validateQuestionContract(input: ValidateQuestionContractInput): 
   // ══════════════════════════════════════════════
   // 补充规则: RUBRIC_BASED / DRAG_PARTIAL 禁止入库
   // ══════════════════════════════════════════════
-  if ((s as any).scoring_type === 'RUBRIC_BASED')
+  const runtimeScoring = s as unknown as Record<string, unknown>
+  if (runtimeScoring.scoring_type === 'RUBRIC_BASED')
     errors.push({ code: 'LEGACY_001', field: 'scoring_type',
       message: 'RUBRIC_BASED 已废止，须迁移为 OFFLINE_RUBRIC' })
-  if ((s as any).scoring_type === 'DRAG_PARTIAL')
+  if (runtimeScoring.scoring_type === 'DRAG_PARTIAL')
     errors.push({ code: 'LEGACY_002', field: 'scoring_type',
       message: 'DRAG_PARTIAL 已废止，须迁移为 ORDER_MATCH 或 MAPPING_MATCH' })
 
@@ -255,9 +256,9 @@ export function validateQuestionContract(input: ValidateQuestionContractInput): 
   // 补充规则: 线上 pass_score 固定 2, fail_score 固定 0
   // ══════════════════════════════════════════════
   if (s.scoring_type !== 'OFFLINE_RUBRIC' && s.scoring_type !== 'NO_SCORE') {
-    if ((s as any).pass_score !== 2)
+    if (runtimeScoring.pass_score !== 2)
       errors.push({ code: 'SCORE_VALUE_001', field: 'pass_score', message: '线上 pass_score 必须为 2' })
-    if ((s as any).fail_score !== 0)
+    if (runtimeScoring.fail_score !== 0)
       errors.push({ code: 'SCORE_VALUE_002', field: 'fail_score', message: '线上 fail_score 必须为 0' })
   }
 

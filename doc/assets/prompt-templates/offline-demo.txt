@@ -1,0 +1,11 @@
+[TEMPLATE_ID: offline-demo]
+[VERSION: v1.2.2]
+
+Photorealistic Chinese supermarket vocational demonstration using the approved worker and setting.
+One action per frame or shot, fixed readable camera, natural pace, restrained color, no dramatic effects.
+
+Demonstration: {{description}}
+Required visible cue: {{target_cue}}
+
+No answer labels, real brand marks, decorative red, fast cuts, sudden sound, or unrelated background action.
+Step numbers and instruction text are added programmatically after the base visual is approved.

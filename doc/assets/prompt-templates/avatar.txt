@@ -1,0 +1,10 @@
+[TEMPLATE_ID: avatar]
+[VERSION: v1.2.2]
+
+Friendly animal avatar portrait facing forward with a gentle natural smile.
+Flat illustration, rounded soft lines, simple centered composition, restrained pastel palette.
+
+Animal: {{description}}
+
+No complex background, dramatic expression, decorative text, or red-dominant palette.
+Generate on a clean light-gray background for post-process cutout.

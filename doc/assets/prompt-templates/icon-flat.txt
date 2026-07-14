@@ -1,0 +1,10 @@
+[TEMPLATE_ID: icon-flat]
+[VERSION: v1.2.2]
+
+Minimal flat icon reference, recognizable at 64px.
+Three to five visual elements at most, rounded forms, optical balance, no gradient, no shadow.
+Use one restrained color from the SVETS palette. Avoid decorative red; safety icons may use red.
+
+Meaning: {{description}}
+
+This output is a style reference only. The shipping asset must be rebuilt as normalized SVG or CSS.

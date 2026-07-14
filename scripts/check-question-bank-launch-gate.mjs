@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import initSqlJs from 'sql.js'
 import { fileURLToPath } from 'node:url'
 import { checkQuestionBankLaunchGate } from './lib/question-bank-launch-gate.mjs'
-import { resolveDefaultDbPath } from './lib/question-bank-image-asset-seed.mjs'
+import { resolveDefaultDbPath } from './lib/database-path.mjs'
 
 let sqlPromise
 
@@ -166,4 +166,3 @@ if (isDirectRun) {
       process.exit(1)
     })
 }
-

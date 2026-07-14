@@ -1,5 +1,7 @@
 # 炫灿-职途向导系统 MVP 产品需求文档｜专业岗位示范测评收口版
 
+> **SUPERSEDED / 历史差异版**：本文件是 v1.0.9 的增量来源，不是完整 PRD。当前唯一产品合同是 `doc/specs/MVP_PRD_v1.0.9-authoritative.md`。
+
 版本：PRD v1.0.9-job-skill-assessment-mvp-closure
 当前工程基线：`schema.sql v0.1.10-scoring-closure`（现状事实一律以 `src/main/db/schema.sql` 为准）
 当前类型基线：`src/shared/types/json-schemas.ts`（已实现状态，不代表目标合同已落地；升级差异见附录 E）

@@ -10,7 +10,7 @@ import {
   parseCsv,
   summarizeQuestionRows
 } from './lib/question-bank-source-seed.mjs'
-import { resolveDefaultDbPath } from './lib/question-bank-image-asset-seed.mjs'
+import { resolveDefaultDbPath } from './lib/database-path.mjs'
 
 function parseArgs(argv) {
   const args = { csvPath: null, dbPath: null, outPath: null, dryRun: false, importedBy: 'codex' }

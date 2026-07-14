@@ -2,6 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { validateQuestionContract } from '../question-validator'
 import type { ValidateQuestionContractInput, ScoringRuleOffline } from '../../../../shared/types/json-schemas'
 
+type ContentJson = ValidateQuestionContractInput['contentJson']
+type ScoringRuleJson = ValidateQuestionContractInput['scoringRuleJson']
+
 // ──────────────────────────────────────────────────────────
 // Minimal valid fixture factory
 // ──────────────────────────────────────────────────────────
@@ -31,7 +34,7 @@ function makeInput(over: Partial<ValidateQuestionContractInput> = {}): ValidateQ
       support_policy: { allowed_prompt_levels: [], allowed_accommodations: [] },
       termination_policy: { allow_pause_on_distress: false, technical_failure_is_not_zero: false },
       review: { answer_key_status: 'VERIFIED', answer_key_reviewed_by: null, answer_key_reviewed_at: null, answer_key_review_note: null },
-    } as any,
+    } as unknown as ContentJson,
     scoringRuleJson: {
       schema_version: 'scoring-rule-v1.1',
       scoring_type: 'EXACT_MATCH',
@@ -85,7 +88,7 @@ describe('规则1 DOMAIN_PAIR', () => {
   it('DOMAIN_PAIR_003: JOB_SPECIFIC 题有非 null module_type', () => {
     const r = validateQuestionContract(makeInput({
       questionRow: { ...makeInput().questionRow, bank_domain: 'JOB_SPECIFIC', module_type: 'FINE_MOTOR', job_module_code: 'M1' },
-      contentJson: { ...makeInput().contentJson, ability_tags: [] } as any,
+      contentJson: { ...makeInput().contentJson, ability_tags: [] } as unknown as ContentJson,
     }))
     expect(hasError(r, 'DOMAIN_PAIR_003')).toBe(true)
   })
@@ -93,7 +96,7 @@ describe('规则1 DOMAIN_PAIR', () => {
   it('DOMAIN_PAIR_004: JOB_SPECIFIC 题缺 job_module_code', () => {
     const r = validateQuestionContract(makeInput({
       questionRow: { ...makeInput().questionRow, bank_domain: 'JOB_SPECIFIC', module_type: null, job_module_code: null },
-      contentJson: { ...makeInput().contentJson, ability_tags: [] } as any,
+      contentJson: { ...makeInput().contentJson, ability_tags: [] } as unknown as ContentJson,
     }))
     expect(hasError(r, 'DOMAIN_PAIR_004')).toBe(true)
   })
@@ -106,7 +109,7 @@ describe('规则2 STRATEGY_DOMAIN', () => {
   it('STRATEGY_DOMAIN_001: BASELINE_ASSESSMENT 选了 JOB_SPECIFIC 题', () => {
     const r = validateQuestionContract(makeInput({
       questionRow: { ...makeInput().questionRow, bank_domain: 'JOB_SPECIFIC', module_type: null, job_module_code: 'M1' },
-      contentJson: { ...makeInput().contentJson, ability_tags: [] } as any,
+      contentJson: { ...makeInput().contentJson, ability_tags: [] } as unknown as ContentJson,
       strategyType: 'BASELINE_ASSESSMENT',
     }))
     expect(hasError(r, 'STRATEGY_DOMAIN_001')).toBe(true)
@@ -138,7 +141,7 @@ describe('规则3 USAGE_INTERACTION', () => {
       contentJson: {
         ...makeInput().contentJson,
         interaction: { interaction_type: 'TEACHER_OBSERVATION', config: {} },
-      } as any,
+      } as unknown as ContentJson,
     }))
     expect(hasError(r, 'USAGE_INTERACTION_002')).toBe(true)
   })
@@ -173,7 +176,7 @@ describe('规则5 TYPE_MATCH', () => {
       contentJson: {
         ...makeInput().contentJson,
         question_type: 'SINGLE_CHOICE',
-      } as any,
+      } as unknown as ContentJson,
     }))
     expect(hasError(r, 'TYPE_MATCH_001')).toBe(true)
   })
@@ -193,7 +196,7 @@ describe('规则7 ASSET_ROLE', () => {
           standard_instruction: 'test',
           assets: [], // no SCENE_VIDEO asset
         },
-      } as any,
+      } as unknown as ContentJson,
     }))
     expect(hasError(r, 'ASSET_ROLE_001')).toBe(true)
   })
@@ -208,7 +211,7 @@ describe('规则7 ASSET_ROLE', () => {
           standard_instruction: 'test',
           assets: [{ asset_key: 'v1', asset_id: 'a1', role: 'SCENE_VIDEO', required: false, alt_text: '' }],
         },
-      } as any,
+      } as unknown as ContentJson,
     }))
     expect(hasError(r, 'ASSET_ROLE_001')).toBe(true)
   })
@@ -224,7 +227,7 @@ describe('规则8 DEGRADE', () => {
         ...makeInput().contentJson,
         source: { import_batch_id: 'b1', source_file: 'f', source_row: 1, imported_at: '', imported_by: '', transformation: 'VIDEO_TO_IMAGE_CARD' },
         // no professional_review
-      } as any,
+      } as unknown as ContentJson,
     }))
     expect(hasError(r, 'DEGRADE_001')).toBe(true)
   })
@@ -235,7 +238,7 @@ describe('规则8 DEGRADE', () => {
         ...makeInput().contentJson,
         source: { import_batch_id: 'b1', source_file: 'f', source_row: 1, imported_at: '', imported_by: '', transformation: 'VIDEO_TO_IMAGE_CARD' },
         professional_review: { required: true, review_type: null, status: 'PENDING', reviewed_by: null, reviewed_at: null },
-      } as any,
+      } as unknown as ContentJson,
     }))
     expect(hasError(r, 'DEGRADE_001')).toBe(true)
   })
@@ -250,7 +253,7 @@ describe('规则9 ANSWER_KEY', () => {
       contentJson: {
         ...makeInput().contentJson,
         review: { answer_key_status: 'PENDING', answer_key_reviewed_by: null, answer_key_reviewed_at: null, answer_key_review_note: null },
-      } as any,
+      } as unknown as ContentJson,
     }))
     expect(hasError(r, 'ANSWER_KEY_001')).toBe(true)
   })
@@ -260,7 +263,7 @@ describe('规则9 ANSWER_KEY', () => {
       contentJson: {
         ...makeInput().contentJson,
         review: undefined,
-      } as any,
+      } as unknown as ContentJson,
     }))
     expect(hasError(r, 'ANSWER_KEY_001')).toBe(true)
   })
@@ -279,7 +282,7 @@ describe('规则10 RUBRIC', () => {
     question_type: 'OFFLINE_OPERATION',
     offline_tool_brief: 'test',
     rubric_criteria: [],
-  } as any
+  } as unknown as ContentJson
   const offlineScoring: ScoringRuleOffline = {
     schema_version: 'scoring-rule-v1.1',
     scoring_type: 'OFFLINE_RUBRIC',
@@ -339,7 +342,7 @@ describe('规则11 PROF_REVIEW', () => {
       contentJson: {
         ...makeInput().contentJson,
         professional_review: { required: true, review_type: null, status: 'PENDING', reviewed_by: null, reviewed_at: null },
-      } as any,
+      } as unknown as ContentJson,
     }))
     expect(hasError(r, 'PROF_REVIEW_002')).toBe(true)
   })
@@ -376,7 +379,7 @@ describe('规则13 ASSET', () => {
       standard_instruction: 'test',
       assets: [{ asset_key: 'img1', asset_id: 'asset-001', role: 'PRIMARY_STIMULUS', required: true, alt_text: 'img' }],
     },
-  } as any
+  } as unknown as ContentJson
 
   it('ASSET_001: required asset 不存在', () => {
     const r = validateQuestionContract(makeInput({
@@ -427,8 +430,8 @@ describe('规则14 TAGS', () => {
     const r = validateQuestionContract(makeInput({
       contentJson: {
         ...makeInput().contentJson,
-        ability_tags: ['INVALID_TAG'] as any,
-      } as any,
+        ability_tags: ['INVALID_TAG'],
+      } as unknown as ContentJson,
     }))
     expect(hasError(r, 'TAGS_001')).toBe(true)
   })
@@ -438,7 +441,7 @@ describe('规则14 TAGS', () => {
       contentJson: {
         ...makeInput().contentJson,
         ability_tags: [],
-      } as any,
+      } as unknown as ContentJson,
     }))
     expect(hasError(r, 'TAGS_002')).toBe(true)
   })
@@ -490,14 +493,14 @@ describe('补充规则 SCORING_TYPE', () => {
 describe('补充规则 LEGACY', () => {
   it('LEGACY_001: scoring_type=RUBRIC_BASED', () => {
     const r = validateQuestionContract(makeInput({
-      scoringRuleJson: { scoring_type: 'RUBRIC_BASED' } as any,
+      scoringRuleJson: { scoring_type: 'RUBRIC_BASED' } as unknown as ScoringRuleJson,
     }))
     expect(hasError(r, 'LEGACY_001')).toBe(true)
   })
 
   it('LEGACY_002: scoring_type=DRAG_PARTIAL', () => {
     const r = validateQuestionContract(makeInput({
-      scoringRuleJson: { scoring_type: 'DRAG_PARTIAL' } as any,
+      scoringRuleJson: { scoring_type: 'DRAG_PARTIAL' } as unknown as ScoringRuleJson,
     }))
     expect(hasError(r, 'LEGACY_002')).toBe(true)
   })
@@ -514,7 +517,7 @@ describe('补充规则 SCORE_VALUE', () => {
         scoring_type: 'EXACT_MATCH',
         scoring_mode: 'AUTOMATIC',
         expected_answer: true,
-        pass_score: 1 as any,
+        pass_score: 1 as unknown as 2,
         fail_score: 0,
         scoring_engine_version: '1.0',
       },
@@ -530,7 +533,7 @@ describe('补充规则 SCORE_VALUE', () => {
         scoring_mode: 'AUTOMATIC',
         expected_answer: true,
         pass_score: 2,
-        fail_score: 1 as any,
+        fail_score: 1 as unknown as 0,
         scoring_engine_version: '1.0',
       },
     }))
@@ -544,7 +547,7 @@ describe('补充规则 SCORE_VALUE', () => {
 describe('补充规则 NOTE', () => {
   it('NOTE_001: note 疑似存储状态值', () => {
     const r = validateQuestionContract(makeInput({
-      contentJson: { ...makeInput().contentJson, note: 'ACTIVE' } as any,
+      contentJson: { ...makeInput().contentJson, note: 'ACTIVE' } as unknown as ContentJson,
     }))
     expect(hasWarning(r, 'NOTE_001')).toBe(true)
   })

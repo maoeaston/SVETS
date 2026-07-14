@@ -1,0 +1,14 @@
+[TEMPLATE_ID: scene-shelf]
+[VERSION: v1.2.2]
+
+Photorealistic Chinese supermarket or storeroom scene in a generic mid-size store.
+Metal and warm-gray wood shelving, standard fluorescent lighting, clean and maintained.
+Generic fictional Chinese FMCG packaging only; no recognizable store or product trademarks.
+Front-facing or slightly elevated camera, even light, clear educational composition.
+
+Scene: {{description}}
+Required visible cue: {{target_cue}}
+
+Do not generate dates, prices, quantities, barcodes, QR codes, or data-critical signage.
+Leave those areas clean for programmatic overlays. Safety-sign red is allowed only where realistic;
+do not use decorative red or color as the only information channel.

@@ -3,7 +3,7 @@
 > **文档状态：** AUTHORITATIVE BASELINE — 唯一权威来源
 > **生效日期：** 2026-07-14
 > **正式 Schema 基线：** `src/main/db/schema.sql` v0.1.12-job-skill-assessment-mvp-closure（实测 20 表 / 48 触发器 / 73 索引）
-> **正式 PRD 基线：** `doc/specs/MVP_PRD_v1.0.9-job-skill-assessment-mvp-closure.md`
+> **正式 PRD 基线：** `doc/specs/MVP_PRD_v1.0.9-authoritative.md`
 > **技术栈：** Electron 33+ / Vue 3 / TypeScript 5 / SQLite 3.45+ (WAL) / better-sqlite3
 > **范围：** 局域网多设备架构（学生触摸一体机 + 教师平板浏览器 + 未来学生自主 Web 门户）
 
@@ -14,7 +14,7 @@
 本文档是"炫灿·职途向导系统"方案 B 多设备架构的**唯一权威来源、自包含文档**。实施人员只需阅读以下三类文件即可实施：
 
 1. 当前正式 Schema：`src/main/db/schema.sql`（v0.1.12-job-skill-assessment-mvp-closure）
-2. 当前正式 PRD：`doc/specs/MVP_PRD_v1.0.9-job-skill-assessment-mvp-closure.md`
+2. 当前正式 PRD：`doc/specs/MVP_PRD_v1.0.9-authoritative.md`
 3. 本文档 v2.2
 
 本文档不依赖任何旧架构文档；所有有效设计均已完整写入本文正文。
@@ -23,7 +23,7 @@
 
 以下文档在 v2.2 审查通过后全部标记为 `SUPERSEDED`，不再作为实施依据：
 
-- `PRD_v1.0.6.md`（架构方案早期稿，非本系列）
+- `archive/prd-history/PRD_v1.0.6.md`（架构方案早期稿，非本系列）
 - v1.0 方案 B 初稿
 - `architecture-review-plan-b-multi-device-v1.1.md`
 - `architecture-review-plan-b-multi-device-v1.2-consistency-closure.md`
@@ -2839,4 +2839,3 @@ ln -sfn generations/gen-002 current.tmp && mv -T current.tmp current
 ---
 
 **文档结束** — v2.2 AUTHORITATIVE BASELINE
-

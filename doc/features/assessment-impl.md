@@ -1,7 +1,7 @@
 # 5.4 测评功能 实现文档
 
 **输入**：`doc/features/assessment-prd.md`（Mini-PRD）
-**工程基线**：schema v0.1.9-strategy-composite-pk | PRD v1.0.5 | 事件溯源首次大规模实战
+**当前产品合同**：`doc/specs/MVP_PRD_v1.0.9-authoritative.md` | **原实施基线**：schema v0.1.9 / PRD v1.0.5
 **预估步数**：10 步（每步一个 commit；Step 6 拆为 6a/6b）
 **高风险**：FSM / safety_incident / 事件一致性——整体跑 `/vibe-review`，Step 5/8 额外重点
 

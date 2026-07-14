@@ -10,13 +10,13 @@
 
 | 阶段 | 状态 |
 |---|---|
-| PRD v1.0.9-job-skill-assessment-mvp-closure | ✅ 当前基线 |
-| Schema v0.1.12-job-skill-assessment-mvp-closure | ✅ 当前基线 |
+| PRD v1.0.9 consolidated authoritative baseline | ✅ 当前唯一产品合同 |
+| Schema v0.1.13-multi-device-m1-identity | ✅ 当前工程基线（MVP 功能合同由 v0.1.12 承载） |
 | JSON 字段规范 | ✅ 已完成 |
 | 事件载荷规范 | ✅ 已完成 |
 | Electron 脚手架 | ✅ 已就绪（typecheck + build 通过）|
-| 功能开发 | 🚧 进行中（已完成登录、学生档案、策略配置、测评核心闭环、DRAG题拖拽渲染组件）|
-| 教学素材 | 🚧 进行中（图片资产链路已接入，视频、步骤卡待制作）|
+| 功能开发 | 🚧 进行中（已完成登录、学生档案、策略配置、基础能力测评、专业岗位固定卷/评分/观察/结果/报告核心链路、DRAG 渲染）|
+| 教学素材 | 🚧 进行中（237 条视觉资产合同已落地，当前 0 条 approved；待先制作 R1-R6）|
 | 题库审核 | 🚧 进行中（BASE_ABILITY 96题来自 v0.2 xlsx 已导入 DRAFT；JOB_SPECIFIC 298题已导入 DRAFT；待试测后升为 ACTIVE）|
 
 ---
@@ -35,7 +35,7 @@
 - 岗位：超市理货员
 - 任务：拆箱与上架
 - 用户角色：学生 / 教师 / 管理员
-- 核心流程：测评 → 四步训练（看学练做）→ 线下实操评分 → 三类结果 → 任务报告
+- 核心流程：基础能力或专业岗位测评 → 四步训练（看学练做）→ 线下实操评分 → 四类独立结果投影 → 对应报告
 - 平台：Windows 10 / 11，最低分辨率 1366×768，离线运行
 
 ---
@@ -69,20 +69,22 @@ npm test
 # 1. 开发账号（admin / teacher / student）
 node scripts/seed-dev-accounts.mjs
 
-# 2. 图片资产（asset_resource）
-node scripts/seed-question-bank-image-assets.mjs
-
-# 3. BASE_ABILITY 96题（来自 v0.2 xlsx，权威来源）
+# 2. BASE_ABILITY 96题（来自 v0.2 xlsx，权威来源）
 node scripts/seed-base-ability-v02.mjs
 
-# 4. JOB_SPECIFIC 298题
+# 3. JOB_SPECIFIC 298题
 sqlite3 ~/.config/xc-career-guide/data/xc-career-guide.db < doc/features/question-bank-import.sql
 
-# 5. DRAG 题（2条，BASE_ABILITY FINE_MOTOR）
-node scripts/seed-question-bank-image-drag-questions.mjs
+# 4. 校验视觉资产合同
+npm run asset:validate
+
+# 5. 仅当 Manifest 已有 approved 资产时，投影到 asset_resource
+node scripts/seed-question-bank-image-assets.mjs
 ```
 
-> **注：** `doc/reference/通用基础能力评估题库.xlsx`（旧版）和 `doc/features/question-bank-import-base-ability.sql`（旧版产物）已归档，**不要使用**。BASE_ABILITY 唯一权威来源是 `doc/reference/通用基础能力正式测评候选题库_v0.2-软件优先版.xlsx`。
+> **注：** `doc/reference/通用基础能力评估题库.xlsx`（旧版）和 `doc/features/archive/legacy-data/question-bank-import-base-ability.sql`（旧版产物）已归档，**不要使用**。BASE_ABILITY 唯一权威来源是 `doc/reference/通用基础能力正式测评候选题库_v0.2-软件优先版.xlsx`。
+>
+> 视觉资产以 `doc/reference/visual-asset-master-plan.md` 为风格基线、`doc/assets/asset-manifest.json` 为机器合同。脚本只会把 `lifecycle_status='approved'` 且通过文件、版权和验收门校验的资产写成 `ACTIVE`；当前全量资产仍为 `planned` 时，第 5 步会拒绝修改数据库。
 
 | 用户名 | 密码 | 角色 |
 |---|---|---|
@@ -121,11 +123,15 @@ SVETS/
 
 | 文档 | 说明 |
 |---|---|
-| `doc/specs/MVP_PRD_v1.0.9-job-skill-assessment-mvp-closure.md` | 当前产品需求文档（功能范围、验收标准） |
+| `doc/specs/MVP_PRD_v1.0.9-authoritative.md` | 当前唯一产品需求合同（完整功能范围、数据合同、验收标准） |
 | `src/main/db/schema.sql` | 当前 SQLite schema（表、触发器、状态机、投影约束） |
 | `doc/specs/xc-career-guide-json-field-schema-v1.0.0.md` | 各 JSON TEXT 字段的结构定义 |
 | `doc/specs/xc-career-guide-event-payload-schema-v1.0.0.md` | 领域事件载荷格式 + action_log.jsonl 规范 |
 | `doc/specs/题库分层架构说明.md` | 四层题库设计与 question_role 字段规划 |
+| `doc/reference/visual-asset-master-plan.md` | 视觉风格、资产范围、生产与审核规则唯一规划基线 |
+| `doc/assets/asset-manifest.json` | 231 个交付项 + 6 个参考资产的机器执行合同 |
+| `doc/features/visual-asset-video-production-sop.md` | Seedance 视频生产、抽选和验收 SOP |
+| `doc/features/visual-asset-prompt-compilation-session-guide.md` | 逐资产 Prompt 编译的新会话启动与复核模板 |
 | `doc/index.md` | 文档入口索引，说明不同任务应先读哪些文档 |
 
 ---

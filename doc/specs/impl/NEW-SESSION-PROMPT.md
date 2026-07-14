@@ -1,84 +1,30 @@
-# 新会话启动 Prompt（通用模板）
+# 新会话启动 Prompt（当前模板）
 
-使用方法：在新会话开始时，把下方"---开始复制---"到"---结束复制---"之间的内容粘贴给 Agent。
-根据当前要执行的任务，在末尾补充具体的任务编号（T1-T12）。
+> v0.1.10 → v0.1.12 的 T1-T12 已完成。`impl/` 目录主体是历史实施记录，不再把“待实现”状态复制到新会话。
 
 ---开始复制---
 
-## 项目背景
+你正在维护 **SVETS（炫灿-职途向导系统）**，技术栈为 Electron + Vue3 + TypeScript + SQLite。
 
-你正在开发 **SVETS（炫灿-职途向导系统）**，一个 Electron + Vue3 + TypeScript + SQLite 的职业能力测评 App。
+请按顺序读取：
 
-工程基线请读 `AGENTS.md`。
+1. `AGENTS.md`
+2. `.continue-here.md`
+3. `doc/specs/MVP_PRD_v1.0.9-authoritative.md`（仅在任务涉及产品范围、结果、题库、评分、报告或验收时读取相关章节）
+4. `src/main/db/schema.sql`（仅在任务涉及数据库、状态机或约束时读取）
+5. 当前任务对应的 `doc/features/*-prd.md` 与 `*-impl.md`
 
-## 当前代码状态（重要：不要假设）
+当前工程事实：
 
-| 项 | 已实现 | 代码文件 |
-|---|---|---|
-| 基础能力测评（42+8 题，BASELINE_ASSESSMENT） | ✅ | src/main/, src/renderer/ |
-| 训练任务（TRAINING_PRACTICE） | ✅ | 同上 |
-| 实操评分（OFFLINE_ABILITY）、安全红线 | ✅ | 同上 |
-| schema v0.1.10 | ✅ | src/main/db/schema.sql |
-| **专业岗位测评（JOB_SKILL_ASSESSMENT）** | ❌ 完全没有 | — |
-| **题库域隔离（bank_domain 字段）** | ❌ 字段不存在 | — |
-| **TEACHER_OBSERVATION、JOB_SKILL_SCORE** | ❌ 枚举不存在 | — |
+- 产品合同：PRD v1.0.9 consolidated authoritative baseline
+- schema：v0.1.13-multi-device-m1-identity
+- v0.1.12 的 JOB_SKILL_ASSESSMENT、bank_domain、TEACHER_OBSERVATION、JOB_SKILL_SCORE 已落地
+- 历史 PRD 差异版和 `doc/specs/impl/` 中的“待实现”描述只用于追溯，不代表当前代码状态
 
-目标：把代码从 v0.1.10 + PRD v1.0.6 升级到 v0.1.12 + PRD v1.0.9。
+本次任务：
 
-## 实施文档位置
+<!-- 在这里写清具体目标、范围和验收标准。 -->
 
-所有设计文档在 `doc/specs/impl/`（本次新产出，不是历史文档）：
-
-- `00-START-HERE.md` — 现状快照 + 前置检查 + 常见陷阱
-- `00-implementation-overview.md` — 整体目标和范围边界
-- `01-schema-v0.1.12-design.md` + `01-schema-v0.1.12.sql` — schema 设计
-- `02-json-contracts-and-types.md` — TypeScript 类型合同
-- `03-job-skill-demo-paper-spec.md` — 固定示范卷（含真实题目 ID）
-- `04-question-bank-import-cleaning-spec.md` — 导入清洗规格
-- `05-state-machine-and-events.md` — 状态机与事件
-- `06-acceptance-test-plan.md` — 验收测试用例（120 条）
-- `07-implementation-task-book.md` — 任务书（T1-T12，含依赖关系）
-
-## 开始前必须做的两件事
-
-1. **读 `doc/specs/impl/00-START-HERE.md`**（5分钟，避免踩常见坑）
-2. **读当前任务对应的 impl/ 文档**（见下方任务编号）
-
-## 本次要执行的任务
-
-<!-- 在这里填写任务编号，例如：T1 / T2 / T4 等 -->
-<!-- 任务详细说明在 doc/specs/impl/07-implementation-task-book.md -->
-
-**任务：[在此填写 T?]**
-
-请先读 `doc/specs/impl/00-START-HERE.md`，确认前置条件，然后说明你的实施计划再开始编码。
+修改前先核对当前代码和 Git 状态；发现 PRD、schema 与实现不一致时标记 `[!]`，不要按历史目标文档覆盖当前实现。
 
 ---结束复制---
-
----
-
-## 使用示例
-
-### 开始 T1（类型升级）时：
-在最后一行改为：
-```
-任务：T1 — 升级 src/shared/types/json-schemas.ts
-对应文档：doc/specs/impl/02-json-contracts-and-types.md
-```
-
-### 开始 T2（schema 重建）时：
-```
-任务：T2 — 产出 src/main/db/schema.sql v0.1.12
-对应文档：doc/specs/impl/01-schema-v0.1.12-design.md + 01-schema-v0.1.12.sql（SQL 草案已有）
-前置任务：T1 必须已完成（类型已稳定）
-```
-
-### 开始 T4（导入脚本）时：
-```
-任务：T4 — 实现 question-importer.ts，先跑 dry-run
-对应文档：doc/specs/impl/04-question-bank-import-cleaning-spec.md
-数据源：doc/reference/专业岗位能力测评题库-M1-M6-数据库导出-298条.json
-前置任务：T2（schema 已部署）、T3（validator 已实现）
-注意：298 条题目全部应导出为 DRAFT，不得直接 ACTIVE
-```
-

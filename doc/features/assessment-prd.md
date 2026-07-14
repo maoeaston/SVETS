@@ -1,6 +1,6 @@
 # 5.4 测评功能 Mini-PRD
 
-**工程基线**：schema v0.1.9-strategy-composite-pk | PRD v1.0.5 | 事件溯源架构首次大规模实战
+**当前产品合同**：`doc/specs/MVP_PRD_v1.0.9-authoritative.md` | **原实施基线**：schema v0.1.9 / PRD v1.0.5
 **前置依赖**：5.1 学生档案（已交付）、5.2 strategy_config（已交付）
 **未交付依赖（明确边界）**：5.3 题库与资源（未交付）、线下实操评分（拆为独立功能）、5.8 报告（未交付）
 

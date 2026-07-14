@@ -1,8 +1,10 @@
 # 实现总览：从 schema v0.1.10 到 v0.1.12
 
+> **IMPLEMENTED / 历史实施记录**：本文说明 v0.1.12 当时如何实现。当前产品合同以 `doc/specs/MVP_PRD_v1.0.9-authoritative.md` 为准，当前数据库以 `src/main/db/schema.sql`（v0.1.13）为准。
+
 版本：impl-overview v1.0  
 日期：2026-07-07  
-PRD 链：v1.0.7 → v1.0.8 → v1.0.9  
+产品合同：`MVP_PRD_v1.0.9-authoritative.md`（历史来源链：v1.0.7 → v1.0.8 → v1.0.9）
 目标 schema：v0.1.12-job-skill-assessment-mvp-closure  
 
 ---

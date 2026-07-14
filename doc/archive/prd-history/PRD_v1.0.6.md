@@ -1,5 +1,7 @@
 # 炫灿-职途向导系统 MVP 产品需求文档
 
+> **SUPERSEDED / 历史差异版**：本文件只用于追溯评分收口来源。当前唯一产品合同是 `doc/specs/MVP_PRD_v1.0.9-authoritative.md`，新开发不得把本文件作为现行基线。
+
 版本：PRD v1.0.6-scoring-closure  
 工程基线：`schema.sql v0.1.10-scoring-closure`（在 v0.1.9-strategy-composite-pk 基础上修订，见 §0.3）  
 历史基线：`schema.sql v0.1.4 ~ v0.1.8` 已全部纳入  

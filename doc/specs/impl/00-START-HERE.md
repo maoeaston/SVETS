@@ -1,8 +1,10 @@
 # 实施启动检查清单
 
+> **IMPLEMENTED / 历史实施快照**：本文记录从 schema v0.1.10 升级到 v0.1.12 之前的启动状态，正文中的“待实现”已经过期。当前开发先读 `doc/specs/MVP_PRD_v1.0.9-authoritative.md`、`src/main/db/schema.sql` 和对应 feature 文档；仅在追溯 v0.1.12 实施决策时阅读本文。
+
 版本：start-here v1.0
 日期：2026-07-07
-用途：编码 Agent 新会话启动时的唯一入口，避免误把"目标状态"当成"已实现状态"
+用途：追溯 schema v0.1.12 实施前状态，不再作为新会话入口
 
 ---
 
@@ -156,4 +158,3 @@ T12: 全量回归验收
 4. **M1_TF_015 必须保持 DRAFT** 直到人工核验（H1）。
 5. **三条嵌入观察（M1_OB_048、M5_OP_048、M5_OP_055）当前 status=DRAFT，scoring_type 是错误的 RUBRIC_BASED**，重导时必须修复。
 6. **不要新建 job_skill_assessment_session 表**，复用 assessment_session。
-

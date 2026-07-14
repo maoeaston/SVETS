@@ -1,93 +1,46 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "asset-manifest.schema.json",
-  "title": "Visual Asset Manifest",
-  "description": "炫灿职途向导系统视觉资产合同 Schema v0.2.1 — 每项资产一条记录",
+  "title": "SVETS Visual Asset Manifest",
+  "description": "视觉资产生产、审核与运行时登记合同 v0.3.1",
   "type": "object",
-  "required": ["version", "assets"],
+  "required": ["version", "plan_version", "generated_at", "assets"],
   "properties": {
-    "$schema": {
-      "type": "string"
-    },
-    "version": {
-      "type": "string",
-      "description": "Schema 版本号",
-      "pattern": "^\\d+\\.\\d+\\.\\d+$"
-    },
-    "generated_at": {
-      "type": "string",
-      "format": "date-time",
-      "description": "Manifest 最后生成/更新时间"
-    },
+    "$schema": { "type": "string" },
+    "version": { "const": "0.3.1" },
+    "plan_version": { "type": "string", "minLength": 1 },
+    "generated_at": { "type": "string", "format": "date-time" },
     "assets": {
       "type": "array",
+      "minItems": 1,
       "items": { "$ref": "#/$defs/asset" }
     }
   },
+  "additionalProperties": false,
   "$defs": {
-    "gate_review": {
+    "gateReview": {
       "type": "object",
-      "required": ["required", "status"],
+      "required": ["required", "status", "reviewer_kind", "reviewer_name", "reviewed_at", "report_path", "notes"],
       "properties": {
-        "required": {
-          "type": "boolean",
-          "description": "该门是否为本资产的必需验收"
-        },
-        "status": {
-          "type": "string",
-          "enum": ["pending", "passed", "rejected", "waived", "revision_required"],
-          "description": "验收状态"
-        },
-        "reviewer_kind": {
-          "type": "string",
-          "enum": ["human", "script", "ai_advisory"],
-          "description": "审核人类型"
-        },
-        "reviewer_name": {
-          "type": ["string", "null"],
-          "description": "审核人姓名或脚本标识"
-        },
-        "reviewed_at": {
-          "type": ["string", "null"],
-          "format": "date",
-          "description": "审核日期"
-        },
-        "report_path": {
-          "type": ["string", "null"],
-          "description": "审核报告路径（相对仓库根）"
-        },
-        "notes": {
-          "type": ["string", "null"],
-          "description": "审核备注"
-        }
+        "required": { "type": "boolean" },
+        "status": { "enum": ["pending", "passed", "rejected", "waived", "revision_required"] },
+        "reviewer_kind": { "enum": ["human", "script", "ai_advisory"] },
+        "reviewer_name": { "type": ["string", "null"] },
+        "reviewed_at": { "type": ["string", "null"], "format": "date" },
+        "report_path": { "type": ["string", "null"] },
+        "notes": { "type": ["string", "null"] }
       },
       "additionalProperties": false
     },
-    "rights_info": {
+    "rights": {
       "type": "object",
-      "required": ["source_type", "attribution_required", "commercial_use_cleared"],
+      "required": ["source_type", "license", "attribution_required", "source_reference", "commercial_use_cleared"],
       "properties": {
-        "source_type": {
-          "type": "string",
-          "enum": ["ai_generated", "original", "licensed_library", "public_domain"],
-          "description": "素材来源类型"
-        },
-        "license": {
-          "type": ["string", "null"],
-          "description": "许可证标识（如 CC-BY-4.0）"
-        },
-        "attribution_required": {
-          "type": "boolean",
-          "description": "是否需要署名"
-        },
-        "source_reference": {
-          "type": ["string", "null"],
-          "description": "来源引用（如符号库名称或 URL）"
-        },
-        "commercial_use_cleared": {
-          "type": "boolean",
-          "description": "商业使用是否已确认"
-        }
+        "source_type": { "enum": ["ai_generated", "original", "licensed_library", "public_domain"] },
+        "license": { "type": ["string", "null"] },
+        "attribution_required": { "type": "boolean" },
+        "source_reference": { "type": ["string", "null"] },
+        "commercial_use_cleared": { "type": "boolean" }
       },
       "additionalProperties": false
     },
@@ -95,30 +48,67 @@
       "type": "object",
       "required": [
         "asset_id",
+        "plan_key",
+        "category",
+        "priority",
+        "description",
+        "question_ids",
         "asset_type",
+        "asset_role",
         "usage_mode",
         "delivery_format",
-        "lifecycle_status",
         "production_method",
         "review_level",
-        "question_ids",
+        "lifecycle_status",
+        "complexity_level",
+        "reference_pack",
+        "reference_asset_ids",
+        "prompt_template_id",
+        "prompt_version",
+        "prompt_text",
+        "provider",
+        "model",
+        "route",
+        "fallback_model",
+        "fallback_route",
+        "fallback_allowed_when",
+        "fallback_used",
+        "fallback_reason",
+        "generation_params",
+        "generation_date",
+        "source_path",
+        "runtime_path",
+        "file_hash",
+        "expected_answer",
+        "text_handling",
+        "construct",
+        "target_cue",
+        "distractors",
+        "policy_basis",
+        "forbidden_visual_cues",
+        "required_overlay",
+        "overlay_spec",
         "gate_reviews",
-        "rights"
+        "ai_pre_review",
+        "rights",
+        "qa_record_paths"
       ],
       "properties": {
         "asset_id": {
           "type": "string",
-          "description": "唯一标识符，与文件名一致（不含扩展名），全小写",
-          "pattern": "^[a-z][a-z0-9_]*$"
+          "pattern": "^asset_[a-z0-9_]+$",
+          "description": "运行时稳定 ID，兼容 app://asset/<asset_id>"
         },
-        "question_ids": {
-          "type": "array",
-          "items": { "type": "string" },
-          "uniqueItems": true,
-          "description": "关联题目 ID 列表；系统通用素材使用空数组"
-        },
-        "asset_type": {
+        "plan_key": {
           "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "visual-asset-master-plan.md 中的素材 ID"
+        },
+        "category": { "enum": ["A", "B", "C", "D", "E", "F", "G", "REFERENCE"] },
+        "priority": { "enum": ["P0", "P1", "P2", "REFERENCE"] },
+        "description": { "type": "string", "minLength": 1 },
+        "question_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "asset_type": {
           "enum": [
             "product_photo",
             "scene",
@@ -132,364 +122,95 @@
             "step_illustration",
             "avatar",
             "app_icon",
-            "reference"
-          ],
-          "description": "资产类型"
+            "reference",
+            "software_task",
+            "tool_card",
+            "process_strip"
+          ]
         },
-        "usage_mode": {
-          "type": "string",
-          "enum": ["training", "assessment", "both", "system"],
-          "description": "使用模式"
-        },
-        "complexity_level": {
-          "type": ["string", "null"],
-          "enum": ["L0", "L1", "L2", "L3", null],
-          "description": "素材复杂度等级，由测量构念决定"
-        },
-        "production_method": {
-          "type": "string",
-          "enum": ["ai_direct", "ai_plus_overlay", "programmatic", "composite"],
-          "description": "生产方式"
-        },
-        "review_level": {
-          "type": "string",
-          "enum": ["standard", "assessment_critical", "safety_critical"],
-          "description": "审核风险级别"
-        },
-        "lifecycle_status": {
-          "type": "string",
-          "enum": ["planned", "generated", "composited", "reviewing", "approved", "retired"],
-          "description": "生产生命周期状态"
-        },
-        "delivery_format": {
-          "type": "string",
-          "enum": ["png", "webp", "svg", "css", "mp4"],
-          "description": "最终交付格式"
-        },
-        "text_handling": {
-          "type": ["string", "null"],
-          "enum": ["none", "ai_reviewed", "programmatic", "mixed", null],
-          "description": "文字处理方式：none=无文字 | ai_reviewed=AI生成+人工审核 | programmatic=程序生成 | mixed=混合"
-        },
-        "construct": {
-          "type": ["string", "null"],
-          "description": "测量构念"
-        },
-        "target_cue": {
-          "type": ["string", "null"],
-          "description": "正确视觉目标"
-        },
-        "distractors": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "干扰项描述"
-        },
+        "asset_role": { "enum": ["QUESTION_MEDIA", "UI_ASSET", "TOOL_CHECKLIST", "OTHER"] },
+        "usage_mode": { "enum": ["training", "assessment", "both", "system", "production"] },
+        "delivery_format": { "enum": ["png", "webp", "svg", "css", "mp4"] },
+        "production_method": { "enum": ["ai_direct", "ai_plus_overlay", "programmatic", "composite"] },
+        "review_level": { "enum": ["standard", "assessment_critical", "safety_critical"] },
+        "lifecycle_status": { "enum": ["planned", "generated", "composited", "reviewing", "approved", "retired"] },
+        "complexity_level": { "type": ["string", "null"], "enum": ["L0", "L1", "L2", "L3", null] },
+        "reference_pack": { "enum": ["core", "extended"] },
         "reference_asset_ids": {
           "type": "array",
-          "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
-          "description": "使用了哪些参考图（全小写 asset_id）"
+          "items": { "type": "string", "pattern": "^asset_[a-z0-9_]+$" },
+          "uniqueItems": true
         },
-        "reference_pack": {
-          "type": "string",
-          "enum": ["core", "extended"],
-          "default": "core",
-          "description": "所属参考包层级"
-        },
-        "prompt_template_id": {
-          "type": ["string", "null"],
-          "description": "Prompt 模板 ID"
-        },
-        "prompt_version": {
-          "type": ["string", "null"],
-          "description": "Prompt 模板版本"
-        },
-        "prompt_text": {
-          "type": ["string", "null"],
-          "description": "实际使用的完整 Prompt"
-        },
-        "provider": {
-          "type": ["string", "null"],
-          "enum": ["apimart", "manual", "codegen", null],
-          "description": "生成平台"
-        },
-        "model": {
-          "type": ["string", "null"],
-          "description": "AI 模型标识"
-        },
-        "route": {
-          "type": ["string", "null"],
-          "description": "API 路由"
-        },
-        "size": {
-          "type": ["string", "null"],
-          "description": "请求尺寸（如 1:1, 3:2, 16:9）"
-        },
-        "resolution": {
-          "type": ["string", "null"],
-          "description": "分辨率（如 2k, 1080p）"
-        },
-        "quality": {
-          "type": ["string", "null"],
-          "enum": ["high", "medium", "low", "auto", null],
-          "description": "生成质量参数"
-        },
-        "background": {
-          "type": ["string", "null"],
-          "enum": ["auto", null],
-          "description": "背景参数"
-        },
-        "output_format": {
-          "type": ["string", "null"],
-          "enum": ["png", "webp", "jpeg", null],
-          "description": "AI 输出格式"
-        },
-        "n": {
-          "type": ["integer", "null"],
-          "minimum": 1,
-          "maximum": 10,
-          "description": "单次请求生成数量"
-        },
-        "generation_date": {
-          "type": ["string", "null"],
-          "format": "date",
-          "description": "生成日期"
-        },
-        "source_path": {
-          "type": ["string", "null"],
-          "description": "原始文件路径（相对于仓库根）"
-        },
-        "runtime_path": {
-          "type": ["string", "null"],
-          "description": "运行时资产路径（全小写）"
-        },
-        "crop_safe_area": {
-          "type": ["object", "null"],
-          "description": "裁切安全区",
-          "properties": {
-            "top": { "type": "number" },
-            "right": { "type": "number" },
-            "bottom": { "type": "number" },
-            "left": { "type": "number" }
-          }
-        },
-        "overlay_spec": {
-          "type": ["object", "null"],
-          "description": "Layer 2 叠加规格"
-        },
-        "expected_answer": {
-          "oneOf": [
-            { "type": "string" },
-            { "type": "boolean" },
-            { "type": "null" }
-          ],
-          "description": "题目正确答案——题库数据合同为唯一事实来源，此字段为同步副本"
-        },
-        "policy_basis": {
-          "type": ["string", "null"],
-          "description": "答案依据的门店规则"
-        },
-        "forbidden_visual_cues": {
+        "prompt_template_id": { "type": ["string", "null"] },
+        "prompt_version": { "type": ["string", "null"] },
+        "prompt_text": { "type": ["string", "null"] },
+        "provider": { "type": ["string", "null"], "enum": ["apimart", "manual", "codegen", null] },
+        "model": { "type": ["string", "null"] },
+        "route": { "type": ["string", "null"] },
+        "fallback_model": { "type": ["string", "null"] },
+        "fallback_route": { "type": ["string", "null"] },
+        "fallback_allowed_when": {
           "type": "array",
-          "items": { "type": "string" },
-          "description": "禁止出现的答案线索"
+          "items": { "enum": ["primary_unavailable", "manual_override"] },
+          "uniqueItems": true
         },
-        "required_overlay": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "必须叠加的程序化内容"
+        "fallback_used": { "type": "boolean" },
+        "fallback_reason": {
+          "type": ["string", "null"],
+          "enum": ["primary_unavailable", "manual_override", null]
         },
-        "gate_reviews": {
-          "type": "object",
-          "description": "五道验收门记录",
+        "generation_params": {
+          "type": ["object", "null"],
           "properties": {
-            "technical": { "$ref": "#/$defs/gate_review" },
-            "visual": { "$ref": "#/$defs/gate_review" },
-            "vocational": { "$ref": "#/$defs/gate_review" },
-            "special_education": { "$ref": "#/$defs/gate_review" },
-            "assessment": { "$ref": "#/$defs/gate_review" }
+            "size": { "type": ["string", "null"] },
+            "resolution": { "type": ["string", "null"] },
+            "n": { "type": ["integer", "null"], "minimum": 1, "maximum": 1 },
+            "duration": { "type": ["integer", "null"], "minimum": 5, "maximum": 15 },
+            "generate_audio": { "type": ["boolean", "null"] }
           },
           "additionalProperties": false
         },
-        "ai_pre_review": {
-          "type": ["object", "null"],
-          "description": "AI 预审结果（仅供参考）",
+        "generation_date": { "type": ["string", "null"], "format": "date" },
+        "source_path": { "type": ["string", "null"] },
+        "runtime_path": { "type": ["string", "null"] },
+        "file_hash": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+        "width_px": { "type": ["integer", "null"], "minimum": 1 },
+        "height_px": { "type": ["integer", "null"], "minimum": 1 },
+        "duration_ms": { "type": ["integer", "null"], "minimum": 1 },
+        "expected_answer": { "type": ["string", "boolean", "null"] },
+        "text_handling": { "type": ["string", "null"], "enum": ["none", "ai_reviewed", "programmatic", "mixed", null] },
+        "construct": { "type": ["string", "null"] },
+        "target_cue": { "type": ["string", "null"] },
+        "distractors": { "type": "array", "items": { "type": "string" } },
+        "policy_basis": { "type": ["string", "null"] },
+        "forbidden_visual_cues": { "type": "array", "items": { "type": "string" } },
+        "required_overlay": { "type": "array", "items": { "type": "string" } },
+        "overlay_spec": { "type": ["object", "null"] },
+        "gate_reviews": {
+          "type": "object",
+          "required": ["technical", "visual", "vocational", "special_education", "assessment"],
           "properties": {
-            "model": { "type": "string" },
-            "date": { "type": "string", "format": "date" },
-            "result": { "type": "string", "enum": ["pass", "flag", "reject"] },
-            "notes": { "type": ["string", "null"] }
-          }
+            "technical": { "$ref": "#/$defs/gateReview" },
+            "visual": { "$ref": "#/$defs/gateReview" },
+            "vocational": { "$ref": "#/$defs/gateReview" },
+            "special_education": { "$ref": "#/$defs/gateReview" },
+            "assessment": { "$ref": "#/$defs/gateReview" }
+          },
+          "additionalProperties": false
         },
-        "rights": {
-          "$ref": "#/$defs/rights_info",
-          "description": "版权与许可追踪"
-        },
-        "qa_record_paths": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "相关 QA 记录文件路径"
-        },
-        "file_hash": {
-          "type": ["string", "null"],
-          "description": "SHA-256 文件哈希，用于检测漂移"
-        }
+        "ai_pre_review": { "type": ["object", "null"] },
+        "rights": { "$ref": "#/$defs/rights" },
+        "qa_record_paths": { "type": "array", "items": { "type": "string" } }
       },
       "additionalProperties": false,
       "allOf": [
         {
-          "if": {
-            "properties": { "lifecycle_status": { "const": "generated" } },
-            "required": ["lifecycle_status"]
-          },
-          "then": {
-            "properties": {
-              "generation_date": { "type": "string", "format": "date" },
-              "source_path": { "type": "string", "minLength": 1 },
-              "file_hash": { "type": "string", "minLength": 1 }
-            },
-            "required": ["generation_date", "source_path", "file_hash"]
-          }
+          "if": { "properties": { "lifecycle_status": { "enum": ["generated", "composited", "reviewing", "approved"] } } },
+          "then": { "required": ["source_path", "file_hash"] }
         },
         {
-          "if": {
-            "properties": { "lifecycle_status": { "const": "composited" } },
-            "required": ["lifecycle_status"]
-          },
-          "then": {
-            "properties": {
-              "source_path": { "type": "string", "minLength": 1 },
-              "file_hash": { "type": "string", "minLength": 1 },
-              "production_method": { "enum": ["ai_plus_overlay", "programmatic", "composite"] }
-            },
-            "required": ["source_path", "file_hash"]
-          }
-        },
-        {
-          "if": {
-            "properties": { "lifecycle_status": { "const": "reviewing" } },
-            "required": ["lifecycle_status"]
-          },
-          "then": {
-            "properties": {
-              "source_path": { "type": "string", "minLength": 1 },
-              "file_hash": { "type": "string", "minLength": 1 }
-            },
-            "required": ["source_path", "file_hash"]
-          }
-        },
-        {
-          "if": {
-            "properties": { "lifecycle_status": { "const": "approved" } },
-            "required": ["lifecycle_status"]
-          },
-          "then": {
-            "properties": {
-              "source_path": { "type": "string", "minLength": 1 },
-              "runtime_path": { "type": "string", "minLength": 1 },
-              "file_hash": { "type": "string", "minLength": 1 }
-            },
-            "required": ["source_path", "runtime_path", "file_hash"]
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "production_method": { "enum": ["ai_direct", "ai_plus_overlay"] }
-            },
-            "required": ["production_method"]
-          },
-          "then": {
-            "properties": {
-              "prompt_template_id": { "type": "string", "minLength": 1 }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "production_method": { "const": "ai_plus_overlay" }
-            },
-            "required": ["production_method"]
-          },
-          "then": {
-            "properties": {
-              "required_overlay": { "type": "array", "minItems": 1 },
-              "overlay_spec": { "type": "object" }
-            },
-            "required": ["required_overlay", "overlay_spec"]
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "production_method": { "const": "composite" }
-            },
-            "required": ["production_method"]
-          },
-          "then": {
-            "properties": {
-              "reference_asset_ids": { "type": "array", "minItems": 1 },
-              "overlay_spec": { "type": "object" }
-            },
-            "required": ["reference_asset_ids", "overlay_spec"]
-          }
-        },
-        {
-          "if": {
-            "properties": { "review_level": { "const": "standard" } },
-            "required": ["review_level"]
-          },
-          "then": {
-            "properties": {
-              "gate_reviews": {
-                "type": "object",
-                "properties": {
-                  "technical": { "type": "object", "properties": { "required": { "const": true } } },
-                  "visual": { "type": "object", "properties": { "required": { "const": true } } }
-                }
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": { "review_level": { "const": "assessment_critical" } },
-            "required": ["review_level"]
-          },
-          "then": {
-            "properties": {
-              "gate_reviews": {
-                "type": "object",
-                "properties": {
-                  "technical": { "type": "object", "properties": { "required": { "const": true } } },
-                  "visual": { "type": "object", "properties": { "required": { "const": true } } },
-                  "assessment": { "type": "object", "properties": { "required": { "const": true } } },
-                  "vocational": { "type": "object", "properties": { "required": { "const": true } } },
-                  "special_education": { "type": "object", "properties": { "required": { "const": true } } }
-                }
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": { "review_level": { "const": "safety_critical" } },
-            "required": ["review_level"]
-          },
-          "then": {
-            "properties": {
-              "gate_reviews": {
-                "type": "object",
-                "properties": {
-                  "technical": { "type": "object", "properties": { "required": { "const": true } } },
-                  "visual": { "type": "object", "properties": { "required": { "const": true } } },
-                  "vocational": { "type": "object", "properties": { "required": { "const": true } } },
-                  "special_education": { "type": "object", "properties": { "required": { "const": true } } },
-                  "assessment": { "type": "object", "properties": { "required": { "const": true } } }
-                }
-              }
-            }
-          }
+          "if": { "properties": { "lifecycle_status": { "const": "approved" } } },
+          "then": { "required": ["runtime_path"] }
         }
       ]
     }

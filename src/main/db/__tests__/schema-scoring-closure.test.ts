@@ -67,7 +67,9 @@ describe('schema v0.1.10 scoring closure constraints', () => {
     const teacherId = seedCaller(db, 'TEACHER')
     const studentId = seedStudent(db)
     seedQuestionBank(db)
-    const q = db.prepare('SELECT question_id FROM question_bank LIMIT 1').get() as { question_id: string }
+    const q = db
+      .prepare("SELECT question_id FROM question_bank WHERE question_type <> 'OFFLINE_OPERATION' ORDER BY question_id LIMIT 1")
+      .get() as { question_id: string }
     db.prepare(
       `INSERT INTO assessment_session
          (session_id, student_id, strategy_id, strategy_type, job_code, task_code, strategy_version,

@@ -1,5 +1,7 @@
 # 炫灿-职途向导系统 MVP 产品需求文档｜题库数据合同收口差异版
 
+> **SUPERSEDED / 历史差异版**：本文件只用于追溯题库合同来源。当前唯一产品合同是 `doc/specs/MVP_PRD_v1.0.9-authoritative.md`，其中已物化本版全部有效规则。
+
 版本：PRD v1.0.7-question-contract-closure  
 当前工程基线：`schema.sql v0.1.10-scoring-closure`  
 目标工程基线：`schema.sql v0.1.11-question-contract-closure`（待 Codex 按本文实现）  

@@ -1,8 +1,9 @@
 # 炫灿-职途向导系统 JSON 字段规范
 
 版本：v1.0.0  
-工程基线：`schema.sql v0.1.10-scoring-closure`，`PRD v1.0.6`  
-文档状态：草案（首期落地实施前置文档）  
+原始工程基线：`schema.sql v0.1.10-scoring-closure`，`PRD v1.0.6`
+当前产品合同：`doc/specs/MVP_PRD_v1.0.9-authoritative.md`
+文档状态：历史可读规范；当前类型事实源为 `src/shared/types/json-schemas.ts`
 最后更新：2026-07-03  
 
 > 2026-07-01 修订：`scoring_policy_json` 内部键 `pass_threshold / improve_threshold` 随 schema v0.1.8 表字段一并更名为 `competent_threshold / conditional_threshold`；`module_veto_threshold / emotion_collapse_threshold` 提升为 `strategy_config` 表级字段后从 JSON 移除；`level_rules.level` 枚举切换为 `LEVEL_COMPETENT / LEVEL_CONDITIONAL / LEVEL_NOT_COMPETENT`。

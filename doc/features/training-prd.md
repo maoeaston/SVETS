@@ -1,7 +1,7 @@
 # 训练功能 Mini-PRD
 
 **功能代号：** training  
-**关联 PRD：** v1.0.6 §5.5（训练）/ §17.1（功能验收）  
+**关联 PRD：** `doc/specs/MVP_PRD_v1.0.9-authoritative.md` §5.5 / §17.1
 **schema 基线：** v0.1.10-scoring-closure  
 **状态：** v1.0（Reviewer 审查通过，6处已修订）
 

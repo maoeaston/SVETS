@@ -1,8 +1,8 @@
 # 炫灿-职途向导系统 MVP
 
-**工程基线：** schema v0.1.12-job-skill-assessment-mvp-closure | PRD v1.0.9  
+**工程基线：** schema v0.1.13-multi-device-m1-identity | PRD v1.0.9 authoritative
 **技术栈：** Electron + Vue3 + TypeScript + SQLite  
-**MVP 范围：** 一岗位（超市理货员）| 一任务（拆箱与上架）| 一闭环（测评→训练→评分→报告）
+**MVP 范围：** 一岗位（超市理货员）| 一任务（拆箱与上架）| 两条测评路径（BASE_ABILITY / JOB_SKILL）| 一闭环（测评→训练→评分→报告）
 
 ---
 
@@ -12,6 +12,7 @@
 - 渲染进程：`src/renderer/src/` — `views/` | `stores/`（Pinia）| `router/`
 - 共享类型：`src/shared/types/` — `event-payloads.ts` | `json-schemas.ts` | `ipc-api.ts`
 - 设计文档：`doc/specs/` — PRD | JSON 字段规范 | 事件规范 | 题库架构说明 | `doc/features/` — 功能 Mini-PRD + 实现文档 | `doc/reference/` — 原始素材
+- 当前唯一产品合同：`doc/specs/MVP_PRD_v1.0.9-authoritative.md`；v1.0.6～v1.0.9 差异版只用于历史追溯
 
 ---
 
@@ -36,6 +37,10 @@
 
 命令行初始化或修复 `xc-career-guide.db` 时，若 `better-sqlite3` 出现 ABI 不一致，优先使用 `sqlite3` CLI 执行 schema.sql；不要为一次性运维改依赖版本。
 
+### 文档索引同步
+
+新增、移动、重命名或归档 `doc/` 下的文档后，运行 `npm run docs:index:update` 更新 `doc/index.md` 的自动清单，再运行 `npm run docs:index:check`。自动清单标记区块不得手工编辑；阅读顺序和权威性说明仍由 `doc/index.md` 的人工导航部分维护。
+
 ---
 
 ## 验收标准
@@ -50,5 +55,6 @@
 - 不奉承，不同意时给具体理由
 - 不知道的技术事实要验证，不编造
 - 完成前必须确认：类型检查、linter、相关测试通过
+- 涉及文档增删或移动时，必须确认 `npm run docs:index:check` 通过
 - 修改代码前先说明影响范围
 - 发现 PRD / Schema 不一致时，标记 [!] 并说明冲突点

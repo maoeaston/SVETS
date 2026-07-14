@@ -2,7 +2,7 @@
 
 版本：v0.1  
 功能代号：drag-render  
-关联 PRD：PRD v1.0.6 §2.4（线上 42 题含拖拽题）  
+关联 PRD：`doc/specs/MVP_PRD_v1.0.9-authoritative.md` §2.4 / §5.3（线上 42 题与拖拽合同）
 日期：2026-07-10
 
 ---

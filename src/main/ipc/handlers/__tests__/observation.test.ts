@@ -288,10 +288,9 @@ describe('TC-I: TEACHER_OBSERVATION 录入', () => {
   })
 
   it('STUDENT 身份被拒绝（FORBIDDEN）', () => {
-    const studentCallerId = seedCaller(db, 'STUDENT' as any)
     const sessionId = createActiveSession()
     const result = recordTeacherObservation(db, {
-      callerUserId: studentCallerId,
+      callerUserId: studentId,
       callerRole: 'STUDENT',
       sessionId,
       questionId: bankIds.obsIds[0],

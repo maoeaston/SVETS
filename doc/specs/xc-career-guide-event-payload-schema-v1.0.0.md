@@ -1,8 +1,9 @@
 # 炫灿-职途向导系统 事件载荷规范
 
 版本：v1.0.0  
-工程基线：`schema.sql v0.1.10-scoring-closure`，`PRD v1.0.6`  
-文档状态：草案（首期落地实施前置文档）  
+原始工程基线：`schema.sql v0.1.10-scoring-closure`，`PRD v1.0.6`
+当前产品合同：`doc/specs/MVP_PRD_v1.0.9-authoritative.md`
+文档状态：历史可读规范；当前事件类型事实源为 `src/shared/types/event-payloads.ts`
 最后更新：2026-07-03  
 
 > 2026-07-01 修订：新增 `EMOTION_COLLAPSE_THRESHOLD_REACHED` 事件（PRD v1.0.5 §4.6 / §8.7），对应情绪崩溃兜底强制 `LEVEL_NOT_COMPETENT` 的领域事件。

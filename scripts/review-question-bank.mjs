@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import initSqlJs from 'sql.js'
 import { fileURLToPath } from 'node:url'
 import { buildActivateEligibleSql, reviewQuestionBankRows } from './lib/question-bank-review-gate.mjs'
-import { resolveDefaultDbPath } from './lib/question-bank-image-asset-seed.mjs'
+import { resolveDefaultDbPath } from './lib/database-path.mjs'
 
 let sqlPromise
 

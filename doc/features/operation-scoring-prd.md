@@ -1,7 +1,7 @@
 # 实操评分（Operation Scoring）Mini-PRD
 
 版本：v1.0.1（经 Reviewer 审查修订）  
-关联 PRD：v1.0.6 §5.6（线下实操评分 — 双轨分离 TASK_OPERATION 轨道）  
+关联 PRD：`doc/specs/MVP_PRD_v1.0.9-authoritative.md` §5.6 / §11.4（TASK_OPERATION 评分轨道）
 schema 基线：v0.1.10-scoring-closure
 
 ---

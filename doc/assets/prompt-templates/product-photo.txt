@@ -1,0 +1,14 @@
+[TEMPLATE_ID: product-photo]
+[VERSION: v1.2.2]
+
+Professional product photography on a uniform light gray #F0F0F0 background.
+Generic fictional Chinese consumer product with no real brand name or trademark.
+Studio light from the upper left, true-to-life color and texture, clean cutout edges.
+45-degree front-side view, one centered product, no props.
+
+Subject: {{description}}
+Required visible cue: {{target_cue}}
+
+Render a short Simplified Chinese product name only when the asset contract requests it.
+Do not render dates, prices, quantities, barcodes, QR codes, random characters, or extra labels.
+Avoid large decorative red areas. Reserve clean label regions for programmatic overlays.

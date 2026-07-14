@@ -1,5 +1,7 @@
 # 炫灿-职途向导系统 MVP 产品需求文档｜专业岗位题库治理收口差异版
 
+> **SUPERSEDED / 历史差异版**：本文件只用于追溯专业岗位题库治理来源。当前唯一产品合同是 `doc/specs/MVP_PRD_v1.0.9-authoritative.md`；本版中被 v1.0.9 废止的运行时范围判断不得继续执行。
+
 版本：PRD v1.0.8-job-bank-governance-closure
 当前工程基线：`schema.sql v0.1.10-scoring-closure`
 目标工程基线：`schema.sql v0.1.11-question-contract-closure`（合并 PRD v1.0.7 全部 schema 要求与本版增量，一次性生成全量基线；本版不另出 v0.1.12）

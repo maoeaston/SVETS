@@ -1,0 +1,18 @@
+[TEMPLATE_ID: offline-video]
+[VERSION: v1.2.4]
+
+[SUBJECT]
+Use the approved worker and green work vest references. Keep the worker's face, hairstyle, body proportions, clothing, and movement style consistent across all shots.
+
+[SCENE]
+Use the approved offline-operation scene anchor. Keep the work area, tools, shelf geometry, neutral retail lighting, and worker-to-object scale consistent.
+
+[AUDIO]
+Silent. No dialogue, music, ambient sound, or feedback sound.
+
+[SHOT]
+Photorealistic vocational demonstration at a natural pace. Use one shot for one action, or at most three shots for a short sequence. Each shot shows only one observable action. Do not use timestamps, fast cuts, camera tricks, or dramatic effects.
+Demonstration: {{description}}
+Required visible cue: {{target_cue}}
+
+Do not show answer labels, real brand marks, decorative red, or unrelated background action. Do not generate step numbers or instruction text; those are added programmatically after approval.
