@@ -1,6 +1,10 @@
-# 方案 B 多设备架构 v2.0 — 权威实施基线
+> **⚠️ 文档状态：SUPERSEDED（已废止）**
+> 本文档已被 `architecture-plan-b-multi-device-v2.2-authoritative-baseline.md`（v2.2 唯一权威基线）取代，不再作为实施依据。
+> 实施人员只阅读：当前正式 Schema（`src/main/db/schema.sql`）+ 当前正式 PRD（`MVP_PRD_v1.0.9-*.md`）+ v2.2 三份工件。
 
-> **文档状态：** AUTHORITATIVE BASELINE  
+# 方案 B 多设备架构 v2.0 — 权威实施基线（已废止）
+
+> **文档状态：** SUPERSEDED（原 AUTHORITATIVE BASELINE，已被 v2.2 取代）  
 > **生效日期：** 2026-07-14  
 > **废止声明：** v1.0、v1.1 (a4eeee9)、v1.2 一致性闭环修订稿均为历史文档，不再作为实施依据。所有实施工作以本文 v2.0 为唯一权威来源。  
 > **技术栈：** Electron 33+ / Vue 3 / TypeScript 5 / SQLite 3.45+ (WAL) / better-sqlite3  

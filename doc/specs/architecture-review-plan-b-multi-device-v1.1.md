@@ -1,3 +1,7 @@
+> **⚠️ 文档状态：SUPERSEDED（已废止）**
+> 本文档已被 `architecture-plan-b-multi-device-v2.2-authoritative-baseline.md`（v2.2 唯一权威基线）取代，不再作为实施依据。
+> 实施人员只阅读：当前正式 Schema（`src/main/db/schema.sql`）+ 当前正式 PRD（`MVP_PRD_v1.0.9-*.md`）+ v2.2 三份工件。
+
 # 方案 B 架构审查报告 v1.1：Electron 内嵌本地服务 + 教师平板浏览器 + 学生触摸一体机
 
 > **修订说明：** 本文在 v1.0 基础上逐项关闭交叉评审提出的 18 条架构问题。  
