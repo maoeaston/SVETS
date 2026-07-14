@@ -1,5 +1,5 @@
 -- ============================================================================
--- 炫灿-职途向导系统 MVP schema.sql v0.1.12-job-skill-assessment-mvp-closure
+-- 炫灿-职途向导系统 MVP schema.sql v0.1.13-multi-device-m1-identity
 -- Architecture baseline:
 --   1. Lightweight event sourcing + SQLite projection.
 --   2. action_log.jsonl is the source of truth; SQLite is a query snapshot.
@@ -15,6 +15,17 @@
 --  12. JOB_SKILL_ASSESSMENT strategy supports fixed demo paper with M1-M6 modules.
 -- ----------------------------------------------------------------------------
 -- Merged from v0.1.10-scoring-closure + PRD v1.0.7 + v1.0.8 + v1.0.9.
+-- v0.1.13 patch notes (multi-device M1 — identity & topology foundation):
+--   Ref: doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md §7.2 T1-T5, §7.3 B1, §7.4
+--   1. New tables (pure additive): organization, node, device, device_runtime_session, auth_session.
+--   2. student_profile: inline new nullable user_id (FK -> user_account, ON DELETE SET NULL).
+--   3. New indexes: ux_device_one_active_runtime, idx_auth_session_user_status,
+--      idx_auth_session_token, ux_student_profile_user_id.
+--   4. No triggers, no changes to existing business tables/FSM/safety semantics (deferred to M2+).
+--   5. organization NOT seeded here (UUID generated at install; no fixed org_default).
+--   Note: existing dev DB must be recreated (CREATE TABLE IF NOT EXISTS will not add the inline
+--   student_profile.user_id to a pre-existing table). Pre-release, seed-only data — same policy as
+--   the v0.1.10 -> v0.1.12 full-baseline regeneration.
 -- v0.1.12 patch notes:
 --   1. question_bank: status DEFAULT 'DRAFT'; question_type adds SOFTWARE_TASK;
 --      new columns item_usage, bank_domain, job_module_code; module_type nullable;
@@ -67,7 +78,9 @@ INSERT OR IGNORE INTO schema_migration (
   ('2026-07-03_mvp_schema_v0_1_10_scoring_closure', '0.1.10-scoring-closure',
    'MVP schema v0.1.10-scoring-closure'),
   ('2026-07-07_mvp_schema_v0_1_12_job_skill_assessment_mvp_closure', '0.1.12-job-skill-assessment-mvp-closure',
-   'MVP schema v0.1.12: merge PRD v1.0.7 question-contract + v1.0.8 job-bank-governance + v1.0.9 job-skill-assessment-mvp into one full baseline from v0.1.10');
+   'MVP schema v0.1.12: merge PRD v1.0.7 question-contract + v1.0.8 job-bank-governance + v1.0.9 job-skill-assessment-mvp into one full baseline from v0.1.10'),
+  ('2026-07-14_mvp_schema_v0_1_13_multi_device_m1_identity', '0.1.13-multi-device-m1-identity',
+   'M1: identity+topology tables (organization/node/device/device_runtime_session/auth_session) + student_profile.user_id; pure additive, no triggers');
 
 -- ----------------------------------------------------------------------------
 -- 1. Accounts and student profiles
@@ -95,6 +108,9 @@ CREATE TABLE IF NOT EXISTS student_profile (
   birth_date           TEXT,
   guardian_contact     TEXT,
   sensory_profile_json TEXT,
+  -- v0.1.13 (M1): optional link to a login account; allows account-less student profiles
+  -- (teacher-created). ON DELETE SET NULL: deleting the account detaches, never deletes the profile.
+  user_id              TEXT REFERENCES user_account(user_id) ON DELETE SET NULL,
   status               TEXT NOT NULL DEFAULT 'ACTIVE'
                         CHECK (status IN ('ACTIVE', 'INACTIVE', 'ARCHIVED')),
   created_at           TEXT NOT NULL DEFAULT (datetime('now')),
@@ -103,6 +119,109 @@ CREATE TABLE IF NOT EXISTS student_profile (
 
 CREATE INDEX IF NOT EXISTS idx_student_profile_status
   ON student_profile(status);
+
+-- v0.1.13 (M1): one account maps to at most one profile
+CREATE UNIQUE INDEX IF NOT EXISTS ux_student_profile_user_id
+  ON student_profile(user_id) WHERE user_id IS NOT NULL;
+
+-- ----------------------------------------------------------------------------
+-- 1b. Multi-device identity & topology (M1)
+--     Pure additive; FK closure within {user_account + these 5 tables}.
+--     Dependency order: organization -> node -> device -> device_runtime_session -> auth_session.
+--     Ref: architecture-plan-b-multi-device-v2.2 §7.2 T1-T5.
+-- ----------------------------------------------------------------------------
+
+-- organization: installed-time UUID; NO fixed org_default seed here.
+CREATE TABLE IF NOT EXISTS organization (
+  organization_id  TEXT PRIMARY KEY,
+  name             TEXT NOT NULL,
+  type             TEXT NOT NULL DEFAULT 'SCHOOL'
+                    CHECK (type IN ('SCHOOL', 'CENTER', 'DISTRICT')),
+  status           TEXT NOT NULL DEFAULT 'ACTIVE'
+                    CHECK (status IN ('ACTIVE', 'DISABLED', 'ARCHIVED')),
+  created_at       TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at       TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS node (
+  node_id          TEXT PRIMARY KEY,
+  organization_id  TEXT NOT NULL REFERENCES organization(organization_id),
+  node_name        TEXT NOT NULL,
+  node_type        TEXT NOT NULL DEFAULT 'ELECTRON_KIOSK'
+                    CHECK (node_type IN ('ELECTRON_KIOSK', 'STANDALONE_SERVER', 'CLOUD')),
+  installed_at     TEXT NOT NULL DEFAULT (datetime('now')),
+  app_version      TEXT,
+  schema_version   TEXT,
+  status           TEXT NOT NULL DEFAULT 'ACTIVE'
+                    CHECK (status IN ('ACTIVE', 'DISABLED', 'DECOMMISSIONED')),
+  created_at       TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at       TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS device (
+  device_id          TEXT PRIMARY KEY,
+  node_id            TEXT NOT NULL REFERENCES node(node_id),
+  device_name        TEXT NOT NULL,
+  device_role        TEXT NOT NULL
+                      CHECK (device_role IN ('STUDENT_WORKSTATION', 'TEACHER_TABLET',
+                                             'ADMIN_TERMINAL', 'HYBRID')),
+  credential_hash    TEXT,
+  trust_state        TEXT NOT NULL DEFAULT 'PENDING'
+                      CHECK (trust_state IN ('PENDING', 'TRUSTED', 'REVOKED')),
+  is_kiosk_enabled   INTEGER NOT NULL DEFAULT 0 CHECK (is_kiosk_enabled IN (0, 1)),
+  allows_self_login  INTEGER NOT NULL DEFAULT 1 CHECK (allows_self_login IN (0, 1)),
+  capabilities_json  TEXT CHECK (capabilities_json IS NULL OR json_valid(capabilities_json)),
+  last_heartbeat_at  TEXT,
+  status             TEXT NOT NULL DEFAULT 'ACTIVE'
+                      CHECK (status IN ('ACTIVE', 'DISABLED', 'DECOMMISSIONED')),
+  created_at         TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at         TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS device_runtime_session (
+  device_runtime_session_id TEXT PRIMARY KEY,
+  device_id                 TEXT NOT NULL REFERENCES device(device_id),
+  started_at                TEXT NOT NULL DEFAULT (datetime('now')),
+  last_heartbeat_at         TEXT NOT NULL DEFAULT (datetime('now')),
+  ended_at                  TEXT,
+  end_reason                TEXT CHECK (end_reason IS NULL OR end_reason IN (
+                              'HEARTBEAT_TIMEOUT', 'GRACEFUL_SHUTDOWN', 'ADMIN_TERMINATED', 'REPLACED')),
+  client_version            TEXT,
+  status                    TEXT NOT NULL DEFAULT 'ACTIVE'
+                             CHECK (status IN ('ACTIVE', 'ENDED')),
+  created_at                TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- At most one ACTIVE runtime session per device.
+CREATE UNIQUE INDEX IF NOT EXISTS ux_device_one_active_runtime
+  ON device_runtime_session(device_id) WHERE status = 'ACTIVE';
+
+CREATE TABLE IF NOT EXISTS auth_session (
+  auth_session_id           TEXT PRIMARY KEY,
+  user_id                   TEXT NOT NULL REFERENCES user_account(user_id),
+  device_runtime_session_id TEXT REFERENCES device_runtime_session(device_runtime_session_id),
+  auth_method               TEXT NOT NULL CHECK (auth_method IN (
+                              'PASSWORD', 'DELEGATED', 'PIN', 'DEVICE_KEY')),
+  granted_by                TEXT REFERENCES user_account(user_id),
+  capabilities_json         TEXT NOT NULL DEFAULT '[]'
+                             CHECK (json_valid(capabilities_json)),
+  token_hash                TEXT NOT NULL UNIQUE,
+  refresh_token_hash        TEXT UNIQUE,
+  issued_at                 TEXT NOT NULL DEFAULT (datetime('now')),
+  expires_at                TEXT NOT NULL,
+  last_activity_at          TEXT NOT NULL DEFAULT (datetime('now')),
+  status                    TEXT NOT NULL DEFAULT 'ACTIVE'
+                             CHECK (status IN ('ACTIVE', 'EXPIRED', 'REVOKED')),
+  revoke_reason             TEXT,
+  created_at                TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at                TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_auth_session_user_status
+  ON auth_session(user_id, status);
+
+CREATE INDEX IF NOT EXISTS idx_auth_session_token
+  ON auth_session(token_hash);
 
 -- ----------------------------------------------------------------------------
 -- 2. Strategy configuration: scoring, question generation, thresholds
