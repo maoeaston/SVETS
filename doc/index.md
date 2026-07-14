@@ -28,7 +28,7 @@ doc/
 
 ### 2.1 当前已实现基线
 
-以下文件对应**当前代码真实状态**：`schema.sql v0.1.10-scoring-closure` + `PRD v1.0.6`（见 AGENTS.md 工程基线）。
+当前工程基线以 **AGENTS.md + `src/main/db/schema.sql`** 为准（现为 `schema.sql v0.1.13-multi-device-m1-identity`，MVP 功能基线 `PRD v1.0.9` / `schema v0.1.12`）。以下文件是跨版本稳定的规范类文档：
 
 | 文件 | 用途 | 何时读 |
 |------|------|--------|
@@ -41,14 +41,16 @@ doc/
 **数据库 schema 基线在代码库中：**
 - `src/main/db/schema.sql` — 当前权威 schema，改表结构、触发器、状态机时必读
 
-### 2.2 方案 B 多设备架构设计（未实现，演进方向）
+### 2.2 方案 B 多设备架构（v2.2 唯一权威基线，M1 已落地）
 
 | 文件 | 用途 | 何时读 |
 |------|------|--------|
-| `specs/architecture-review-plan-b-multi-device.md` | 方案 B 第一版架构草案（v1.0，已被 v1.1 取代） | 仅追溯历史决策 |
-| `specs/architecture-review-plan-b-multi-device-v1.1.md` | **方案 B 修订稿（v1.1，当前活跃）**：关闭 18 条交叉审查意见，含完整 Schema 草案、一致性协议、安全方案、REST API 合同、状态分离模型 | 多设备架构实施、认证/设备/授权设计、JSONL 一致性、HTTPS 配对 |
+| `specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md` | **v2.2 唯一权威实施基线**：完整 DDL、delivery_phase 状态机、命令熔断、安全聚合键、发布模型、离线评分草稿、资产授权、回滚 | 多设备架构实施、认证/设备/授权设计、JSONL 一致性、状态机与触发器 |
+| `specs/architecture-plan-b-multi-device-v2.2-coverage-matrix.md` | 36 设计域覆盖矩阵 + 机械提取的 DDL 清单 + 13 问题 / 10 硬化项收口状态 | 核对某设计域是否收口、DDL 差异清单 |
+| `specs/architecture-plan-b-multi-device-v2.2-validation-report.md` | 真实 SQLite 执行验证记录（迁移、触发器行为、哈希、DDL diff、禁用/必需词检查） | 复核验证口径、重跑验证 |
+| `features/multi-device-v2.2-migration-prd.md` | v2.2 拆分为 M1-M7 里程碑的迁移 PRD（**M1 身份拓扑已实施并验收**，M2+ 待推进） | 推进多设备实施、确认里程碑边界 |
 
-> v1.1 是架构设计文档，不是已批准的编码基线。实施前需逐阶段确认。
+> v1.1 / v1.2 / v2.0 / v2.0.1 / v2.1 已全部标记 SUPERSEDED，仅作历史决策追溯，不再作为实施依据。
 
 ### 2.3 专业岗位测评 / 题库治理 PRD 链（尚未实现，下一阶段目标基线）
 
@@ -61,6 +63,23 @@ doc/
 | `specs/MVP_PRD_v1.0.9-job-skill-assessment-mvp-closure.md` | 专业岗位示范测评运行时：`JOB_SKILL_ASSESSMENT` 策略、固定 18+6 题（+0-3 观察项）示范卷、`JOB_SKILL_SCORE`、M1-M6 模块画像、专业岗位报告、与"拆箱与上架"训练的推荐衔接 | v0.1.12（当前目标基线，未生成） |
 
 > M1-M6 题库口径在讨论过程中出现过一次真实的版本误判（曾把 549 题初始池当成最终口径），完整经过和数据事实见 `doc/archive/M1-M6题库软件化审查报告-v2-db298口径-通向v1.0.8.md`；旧误判稿保留在同目录 `...-v1-已废弃-549题误判终稿.md` 仅作教训记录。启动这条 PRD 链的编码前必读该 v2 报告。
+
+### 2.4 专业岗位技术实施文档（doc/specs/impl/）
+
+**与 §2.3 PRD 链的关系：** PRD 是"要做什么"的产品合同，impl/ 是"怎么做"的技术方案。impl/ 基于三份 PRD 增量（v1.0.7 + v1.0.8 + v1.0.9）产出，将分散的技术决策收拢为 8 份可执行文档。
+
+| 序号 | 文档 | 内容 | 何时读 |
+|---|---|---|---|
+| 00 | `impl/00-implementation-overview.md` | 一句话目标、统一范围边界、BASE_ABILITY vs JOB_SPECIFIC 架构对比、与 v0.1.10 兼容性、文档依赖关系 | 启动实施前的总览入口 |
+| 01 | `impl/01-schema-v0.1.12-design.md` + `.sql` | schema v0.1.12 完整设计文档 + 可执行 SQL（合并 v1.0.7/v1.0.8/v1.0.9 全部 schema 要求） | 建库、改表结构、写触发器 |
+| 02 | `impl/02-json-contracts-and-types.md` | 完整 TypeScript 类型定义（可合并进 json-schemas.ts）+ validateQuestionContract() 规则逻辑 | 写或校验 JSON 字段、实现 validator |
+| 03 | `impl/03-job-skill-demo-paper-spec.md` | 固定 18+6 示范卷具体题目 ID 清单（从 298 条中选出）+ 素材需求 + rubric 三档锚点 | 固定卷题目确认、素材制作、答案审核 |
+| 04 | `impl/04-question-bank-import-cleaning-spec.md` | 298 条从旧库到新库的完整清洗规则 + dry-run 报告格式 + 导入执行顺序 | 实现导入脚本、数据清洗 |
+| 05 | `impl/05-state-machine-and-events.md` | assessment_session 三阶段状态机（ONLINE/OFFLINE/OBSERVATION）+ 新增事件 payload 定义 | 状态流转、事件写入、reducer |
+| 06 | `impl/06-acceptance-test-plan.md` | 120 条验收用例（按功能域分组，三段式：输入/步骤/预期） | 写测试用例、执行验收 |
+| 07 | `impl/07-implementation-task-book.md` | 12 个任务（T1-T12）的拆解：文件范围、具体步骤、自查方式、依赖关系 | 分配编码任务、任务进度跟踪 |
+
+**阅读顺序：** 启动实施 → 00 总览 → 按任务书 07 的顺序读对应文档（T1 读 02，T2 读 01，T4 读 04，等等）。
 
 ---
 
@@ -94,25 +113,8 @@ doc/
 | 写或校验 JSON 字段 | `json-field-schema` |
 | 改功能边界、结果口径、验收标准 | 主 PRD |
 | 改题库、组卷逻辑（现有基础能力题库） | `specs/题库分层架构说明.md` |
-| 启动专业岗位测评 / M1-M6 题库相关新功能 | §2.2 PRD 链（v1.0.7 → v1.0.8 → v1.0.9，按顺序整体读完）+ §2.3 实施文档链 + `doc/reference/` 中 M1-M6 298 条导出 |
+| 启动专业岗位测评 / M1-M6 题库相关新功能 | §2.3 PRD 链（v1.0.7 → v1.0.8 → v1.0.9，按顺序整体读完）+ §2.4 实施文档链 + `doc/reference/` 中 M1-M6 298 条导出 |
 | 实现某具体功能 | 对应 `features/*-prd.md` + `*-impl.md` |
-
-### 2.4 专业岗位技术实施文档（doc/specs/impl/）
-
-**与 §2.2 PRD 链的关系：** PRD 是"要做什么"的产品合同，impl/ 是"怎么做"的技术方案。impl/ 基于三份 PRD 增量（v1.0.7 + v1.0.8 + v1.0.9）产出，将分散的技术决策收拢为 8 份可执行文档。
-
-| 序号 | 文档 | 内容 | 何时读 |
-|---|---|---|---|
-| 00 | `impl/00-implementation-overview.md` | 一句话目标、统一范围边界、BASE_ABILITY vs JOB_SPECIFIC 架构对比、与 v0.1.10 兼容性、文档依赖关系 | 启动实施前的总览入口 |
-| 01 | `impl/01-schema-v0.1.12-design.md` + `.sql` | schema v0.1.12 完整设计文档 + 可执行 SQL（合并 v1.0.7/v1.0.8/v1.0.9 全部 schema 要求） | 建库、改表结构、写触发器 |
-| 02 | `impl/02-json-contracts-and-types.md` | 完整 TypeScript 类型定义（可合并进 json-schemas.ts）+ validateQuestionContract() 规则逻辑 | 写或校验 JSON 字段、实现 validator |
-| 03 | `impl/03-job-skill-demo-paper-spec.md` | 固定 18+6 示范卷具体题目 ID 清单（从 298 条中选出）+ 素材需求 + rubric 三档锚点 | 固定卷题目确认、素材制作、答案审核 |
-| 04 | `impl/04-question-bank-import-cleaning-spec.md` | 298 条从旧库到新库的完整清洗规则 + dry-run 报告格式 + 导入执行顺序 | 实现导入脚本、数据清洗 |
-| 05 | `impl/05-state-machine-and-events.md` | assessment_session 三阶段状态机（ONLINE/OFFLINE/OBSERVATION）+ 新增事件 payload 定义 | 状态流转、事件写入、reducer |
-| 06 | `impl/06-acceptance-test-plan.md` | 120 条验收用例（按功能域分组，三段式：输入/步骤/预期） | 写测试用例、执行验收 |
-| 07 | `impl/07-implementation-task-book.md` | 12 个任务（T1-T12）的拆解：文件范围、具体步骤、自查方式、依赖关系 | 分配编码任务、任务进度跟踪 |
-
-**阅读顺序：** 启动实施 → 00 总览 → 按任务书 07 的顺序读对应文档（T1 读 02，T2 读 01，T4 读 04，等等）。
 
 ---
 
@@ -130,16 +132,11 @@ doc/
 
 ### 图片资产文档（仍活跃）
 
-- `question-bank-image-plan.md` — 图片资产总方案
-- `question-bank-image-batch-pilot-acceptance.md` — 试跑验收标准
-- `question-bank-image-asset-linking-draft.md` — 图片接入应用草案
-- `question-bank-image-asset-resource-seed-draft.md` — asset_resource seed 模板
 - `question-bank-image-integration-checklist.md` — 编码 agent 执行清单
-- `question-bank-image-continue-here-template.md` — 图片会话交接模板
 - `question-bank-source-csv-template.md` — 题库导入 CSV 模板
 - `question-bank-launch-gate.md` — 上线门禁检查
 
-> JSON/TSV/SQL 工作数据文件已移至 `features/archive/`，不作为 agent 主动阅读入口。
+> 图片资产的方案/试跑/草案/seed 模板/交接模板及 JSON/TSV/SQL 工作数据文件已移至 `features/archive/`，不作为 agent 主动阅读入口。
 
 ---
 
@@ -147,16 +144,15 @@ doc/
 
 agents 不需要主动读，仅在需要核对源数据时查阅：
 
-- `通用基础能力评估题库.xlsx` — Q_BASE_* 题旧版来源
 - `通用基础能力正式测评候选题库_v0.2-软件优先版.xlsx` — 基础能力题库现行候选池（PRD v1.0.7 题库基线，96 条软件优先候选题）
 - `专业岗位能力测评题库2026.7.3_终稿.pdf` — **[!] 文件名含"终稿"但实为 M1-M6 初始题目池（实测 549 题/项），仅作追溯查漏，不是最终口径，不要据此判断题量或答案**
-- `专业岗位能力测评题库-M1-M6-数据库导出-298条.csv` / `.json` — **M1-M6 题库真正的最终口径**（从 `question_bank` 实测导出的 298 条），专业岗位题库改造与 PRD v1.0.8/v1.0.9 均以此为准；已知数据缺陷（答案键存疑、rubric 缺三档锚点、`ability_tags` 非法值等）见 `doc/archive/M1-M6题库软件化审查报告-v2-db298口径-通向v1.0.8.md`
-- `超市素材需求清单更新版.md` — 图片资产需求
-- `chatgpt建议.md` — 题库分层设计输入建议（已被 `specs/题库分层架构说明.md` 吸收）
-- `chatgpt建议 (2).md` / `chatgpt建议 (3).md` — 线下工具包方案外部审阅意见（已被 `offline-toolkit-procurement-spec.md` v2.1 吸收）
+- `专业岗位能力测评题库-M1-M6-数据库导出-298条.json` — **M1-M6 题库真正的最终口径**（从 `question_bank` 实测导出的 298 条），专业岗位题库改造与 PRD v1.0.8/v1.0.9 均以此为准；已知数据缺陷（答案键存疑、rubric 缺三档锚点、`ability_tags` 非法值等）见 `doc/archive/M1-M6题库软件化审查报告-v2-db298口径-通向v1.0.8.md`
+- `chatgpt建议298题作为核心测评母题.md` — 早期"298 题作为核心母题"建议备忘，仅作历史决策追溯
 - `question-bank-viewer.html` — 394题（BASE_ABILITY 96 + JOB_SPECIFIC 298）全量题库可视化浏览器（含选项、评分规则、媒体需求标记）
 - `offline-toolkit-procurement-spec.md` — **线下评测工具包采购规格书 v2.1**：25件商品 + 14件日期属性矩阵 + 6场景包 + 开箱验收清单（模拟工作日：2026-09-10）
-- 其余 PDF — 背景研究文献，不影响编码实现
+- `visual-asset-master-plan.md` — 视觉资产总规划
+- `xuancanlogo.png` — 品牌 logo 素材（未接入应用）
+- `特殊青少年职业教育数字化转型_综合论证报告.pdf` / `社区生活技能评估 (CSA) - 中文本土化电子版.pdf` — 背景研究文献，不影响编码实现
 
 ---
 
@@ -171,7 +167,7 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | 改 JSON 字段 | `specs/xc-career-guide-json-field-schema-v1.0.0.md` |
 | 题库/组卷相关（现有基础能力题库） | `specs/题库分层架构说明.md` |
 | 功能范围判断 | `specs/PRD_v1.0.6.md` |
-| **多设备架构设计（方案 B）** | **`specs/architecture-review-plan-b-multi-device-v1.1.md`** |
+| **多设备架构设计（方案 B）** | **`specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md`**（M1 落地进度见 `features/multi-device-v2.2-migration-prd.md`） |
 | **专业岗位测评实施（v0.1.10 → v0.1.12）** | **§2.4 实施文档（impl/）：00 总览 → 07 任务书 → 按任务顺序读对应文档** |
-| 专业岗位 PRD 理解（要做什么） | §2.2 PRD 链（v1.0.7→v1.0.8→v1.0.9，按顺序整体读完） |
+| 专业岗位 PRD 理解（要做什么） | §2.3 PRD 链（v1.0.7→v1.0.8→v1.0.9，按顺序整体读完） |
 | 298 条题库数据核对 | `doc/reference/` M1-M6 298 条导出 + `doc/archive/` 审查报告 v2 |
