@@ -22,7 +22,6 @@ import type { DBAdapter } from '../../db/interface'
 import { SqliteAdapter } from '../../db/sqlite-adapter'
 import { getDatabase } from '../../db/connection'
 import { assertCaller, assertStudent, assertSessionOwner } from '../../utils/auth-context'
-import { validateContentJson } from '../../utils/validate-content-json'
 import { writeEvent } from '../../domain/event-writer'
 import { haltTrainingSessionSteps } from './training'
 import { applyAssessmentEvent } from '../../domain/assessment-reducer'
@@ -659,13 +658,13 @@ export function submitAnswer(db: DBAdapter, params: SubmitAnswerParams): SubmitA
   const sq = db
     .prepare(
       `SELECT sq.question_phase, sq.question_type AS sq_type, sq.question_order,
-              qb.content_json
+              qb.content_json, qb.scoring_rule_json
          FROM assessment_session_question sq
          JOIN question_bank qb ON qb.question_id = sq.question_id
         WHERE sq.session_id = ? AND sq.question_id = ?`
     )
     .get(params.sessionId, params.questionId) as
-    | { question_phase: string; sq_type: string; question_order: number; content_json: string }
+    | { question_phase: string; sq_type: string; question_order: number; content_json: string; scoring_rule_json: string | null }
     | undefined
   if (!sq || sq.question_phase !== 'ONLINE') {
     return { success: false, errorCode: 'QUESTION_NOT_IN_SESSION' }
@@ -694,10 +693,20 @@ export function submitAnswer(db: DBAdapter, params: SubmitAnswerParams): SubmitA
   } catch {
     return { success: false, errorCode: 'VALIDATION_ERROR' }
   }
-  const contentValidation = validateContentJson(content, { allowMissingBaseFields: true })
-  if (!contentValidation.ok) {
-    return { success: false, errorCode: 'VALIDATION_ERROR' }
-  }
+
+  // scoring_rule_json 存放正确答案（实际导入数据），content.expected_answer 为测试兼容 fallback
+  let scoringRule: Record<string, unknown> | null = null
+  try {
+    scoringRule = JSON.parse(sq.scoring_rule_json ?? '{}')
+  } catch { /* ignore */ }
+
+  // interaction.config 存放选项/拖拽等交互数据（实际导入数据）
+  const answerInteractionConfig =
+    content.interaction != null &&
+    typeof content.interaction === 'object' &&
+    'config' in (content.interaction as Record<string, unknown>)
+      ? ((content.interaction as Record<string, unknown>).config as Record<string, unknown>)
+      : ({} as Record<string, unknown>)
 
   let isCorrect: boolean
   let score: 0 | 2
@@ -706,31 +715,54 @@ export function submitAnswer(db: DBAdapter, params: SubmitAnswerParams): SubmitA
     if (typeof payload.selected !== 'boolean') {
       return { success: false, errorCode: 'VALIDATION_ERROR' }
     }
-    if (typeof content.expected_answer !== 'boolean') {
+    // variants 完整性检查：若存在则每个 variant.expected_answer 必须是 boolean
+    if (Array.isArray(content.variants)) {
+      for (const v of content.variants) {
+        if (v == null || typeof v !== 'object' || typeof (v as Record<string, unknown>).expected_answer !== 'boolean') {
+          return { success: false, errorCode: 'VALIDATION_ERROR' }
+        }
+      }
+    }
+    // correct_answer from scoring_rule_json (production) or content.expected_answer (test compat)
+    const expectedRaw = scoringRule?.correct_answer ?? content.expected_answer
+    const expected = expectedRaw === true || expectedRaw === 'true'
+      ? true
+      : expectedRaw === false || expectedRaw === 'false'
+        ? false
+        : undefined
+    if (expected === undefined) {
       return { success: false, errorCode: 'VALIDATION_ERROR' }
     }
-    isCorrect = payload.selected === content.expected_answer
+    isCorrect = payload.selected === expected
     score = isCorrect ? 2 : 0
   } else if (payload.question_type === 'SINGLE_CHOICE') {
     if (typeof payload.selected !== 'string' || payload.selected.length === 0) {
       return { success: false, errorCode: 'VALIDATION_ERROR' }
     }
+    // options from interaction.config (production) or content.options (test compat)
+    const rawOptions = Array.isArray(answerInteractionConfig.options)
+      ? answerInteractionConfig.options
+      : Array.isArray(content.options)
+        ? content.options
+        : null
     if (
-      !Array.isArray(content.options) ||
-      !content.options.every(
+      !rawOptions ||
+      !rawOptions.every(
         (o) => o !== null && typeof o === 'object' && typeof (o as { key?: unknown }).key === 'string'
       )
     ) {
       return { success: false, errorCode: 'VALIDATION_ERROR' }
     }
-    const validKeys = (content.options as { key: string }[]).map((o) => o.key)
+    const validKeys = (rawOptions as { key: string }[]).map((o) => o.key)
     if (!validKeys.includes(payload.selected)) {
       return { success: false, errorCode: 'VALIDATION_ERROR' }
     }
-    if (typeof content.expected_answer !== 'string') {
+    // correct_answer from scoring_rule_json (production) or content.expected_answer (test compat)
+    const expectedAnswer = scoringRule?.correct_answer ?? content.expected_answer
+    if (typeof expectedAnswer !== 'string') {
       return { success: false, errorCode: 'VALIDATION_ERROR' }
     }
-    isCorrect = payload.selected === content.expected_answer
+    isCorrect = payload.selected === expectedAnswer
     score = isCorrect ? 2 : 0
   } else {
     // DRAG
@@ -747,11 +779,22 @@ export function submitAnswer(db: DBAdapter, params: SubmitAnswerParams): SubmitA
       return { success: false, errorCode: 'VALIDATION_ERROR' }
     }
     const placements = payload.placements
-    if (!Array.isArray(content.drag_items) || !Array.isArray(content.drop_zones)) {
+    // items/zones from interaction.config (production) or content top-level (test compat)
+    const rawDragItems = Array.isArray(answerInteractionConfig.items)
+      ? answerInteractionConfig.items
+      : Array.isArray(content.drag_items)
+        ? content.drag_items
+        : null
+    const rawDropZones = Array.isArray(answerInteractionConfig.zones)
+      ? answerInteractionConfig.zones
+      : Array.isArray(content.drop_zones)
+        ? content.drop_zones
+        : null
+    if (!rawDragItems || !rawDropZones) {
       return { success: false, errorCode: 'VALIDATION_ERROR' }
     }
-    const dragItems = content.drag_items as { item_id?: unknown }[]
-    const dropZones = content.drop_zones as { zone_id?: unknown; accepts?: unknown }[]
+    const dragItems = rawDragItems as { item_id?: unknown }[]
+    const dropZones = rawDropZones as { zone_id?: unknown; accepts?: unknown }[]
     if (
       !dragItems.every((i) => typeof i.item_id === 'string') ||
       !dropZones.every((z) => typeof z.zone_id === 'string' && Array.isArray(z.accepts))
@@ -1728,6 +1771,13 @@ function readCurrentQuestionContent(
     return null
   }
 
+  const interactionConfig =
+    content.interaction != null &&
+    typeof content.interaction === 'object' &&
+    'config' in (content.interaction as Record<string, unknown>)
+      ? ((content.interaction as Record<string, unknown>).config as Record<string, unknown>)
+      : ({} as Record<string, unknown>)
+
   const base = {
     questionId: row.question_id,
     questionOrder: row.question_order,
@@ -1758,8 +1808,12 @@ function readCurrentQuestionContent(
   }
 
   if (base.questionType === 'SINGLE_CHOICE') {
-    const options = Array.isArray(content.options)
-      ? content.options
+    const rawOpts = Array.isArray(interactionConfig.options)
+      ? interactionConfig.options
+      : Array.isArray(content.options)
+        ? content.options
+        : []
+    const options = rawOpts
           .filter((o): o is Record<string, unknown> => o !== null && typeof o === 'object')
           .map((o) => ({
             key: typeof o.key === 'string' ? o.key : '',
@@ -1770,13 +1824,16 @@ function readCurrentQuestionContent(
                 : null
             // [!] 刻意不读 o.is_correct —— 脱敏
           }))
-      : undefined
     return { ...base, options }
   }
 
   if (base.questionType === 'DRAG') {
-    const dragItems = Array.isArray(content.drag_items)
-      ? content.drag_items
+    const rawItems = Array.isArray(interactionConfig.items)
+      ? interactionConfig.items
+      : Array.isArray(content.drag_items)
+        ? content.drag_items
+        : []
+    const dragItems = rawItems
           .filter((d): d is Record<string, unknown> => d !== null && typeof d === 'object')
           .map((d) => ({
             itemId: typeof d.item_id === 'string' ? d.item_id : '',
@@ -1786,15 +1843,17 @@ function readCurrentQuestionContent(
                 ? d.image_asset_id
                 : null
           }))
-      : undefined
-    const dropZones = Array.isArray(content.drop_zones)
-      ? content.drop_zones
+    const rawZones = Array.isArray(interactionConfig.zones)
+      ? interactionConfig.zones
+      : Array.isArray(content.drop_zones)
+        ? content.drop_zones
+        : []
+    const dropZones = rawZones
           .filter((z): z is Record<string, unknown> => z !== null && typeof z === 'object')
           .map((z) => ({
             zoneId: typeof z.zone_id === 'string' ? z.zone_id : '',
             label: typeof z.label === 'string' ? z.label : ''
           }))
-      : undefined
     const scoringMode =
       content.scoring_mode === 'ALL_OR_NOTHING' || content.scoring_mode === 'PARTIAL_CREDIT'
         ? content.scoring_mode

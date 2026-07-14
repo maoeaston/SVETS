@@ -77,6 +77,19 @@
       </p>
     </div>
 
+    <!-- 线上题已完成，等待线下评分 -->
+    <div
+      v-else-if="session.status === 'OFFLINE_PENDING'"
+      class="all-answered-state"
+    >
+      <p class="state-msg">
+        已完成所有线上题目
+      </p>
+      <p class="state-hint">
+        请等待教师安排线下评分
+      </p>
+    </div>
+
     <!-- 学生从未开始 → 显示"开始答题"按钮 -->
     <div
       v-else-if="session.status === 'ACTIVE' && !currentQuestion"
