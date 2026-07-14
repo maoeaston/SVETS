@@ -1,5 +1,175 @@
 # Errors
 
+## [ERR-20260714-012] node-spawnsync-sandbox-eperm-with-zero-status
+
+**Logged**: 2026-07-14T18:36:00+08:00
+**Priority**: low
+**Status**: resolved
+**Area**: infra
+
+### Summary
+受控沙箱中 Node 24 的 `execFileSync('sqlite3', ...)` 在子进程成功时仍抛出伪 EPERM；错误对象同时包含 `status: 0` 和正确 stdout。
+
+### Error
+```
+Error: spawnSync sqlite3 EPERM
+status: 0
+stdout: '1\n'
+```
+
+### Context
+- 最小命令：sqlite3 通过 `.read` 执行 `select 1;`
+- 直接 shell sqlite3 返回 1，Vitest 内执行也通过，仅 Node direct CLI + 沙箱组合产生伪 error 字段。
+
+### Suggested Fix
+SQLite CLI 统一使用 `spawnSync`，以 `status` 为首要判据；`status === 0` 时忽略伴随的沙箱 error 字段，非零退出和 ENOENT 仍正常抛错。
+
+### Metadata
+- Reproducible: yes, sandbox direct CLI
+- Related Files: scripts/lib/sqlite-cli.mjs
+
+### Resolution
+- **Resolved**: 2026-07-14T18:37:00+08:00
+- **Commit/PR**: pending
+- **Notes**: 新增 `runSqliteCommand` 统一包装，并接入 db:sync/db:verify 与一次性 seed 工具。
+
+---
+
+## [ERR-20260714-011] node-execfilesync-sqlite-stdin-not-closed
+
+**Logged**: 2026-07-14T18:33:00+08:00
+**Priority**: high
+**Status**: resolved
+**Area**: database
+
+### Summary
+Node 24 direct CLI/PTY 环境下使用 `execFileSync('sqlite3', { input: sql })` 时 stdin 未关闭，sqlite3 与 Node 互相等待，数据库只留下 0 字节文件和 journal。
+
+### Error
+```
+node: do_epoll_wait
+sqlite3: unix_stream_read_generic
+```
+
+### Context
+- `db:sync` 卡在首次完整 schema 加载。
+- 最小 `select 1` 同样复现；sqlite3 等 stdin EOF，Node 等子进程退出。
+- Vitest 子进程环境未复现，因此仅靠单元测试无法覆盖真实 CLI/PTY 边界。
+
+### Suggested Fix
+不通过 stdin 传大段 SQL；写入临时 `.sql` 文件后调用 sqlite3 `.read`，finally 删除临时目录。扫描并统一替换所有同形数据库运维脚本。
+
+### Metadata
+- Reproducible: yes, direct CLI/PTY
+- Related Files: scripts/lib/sqlite-cli.mjs, scripts/lib/database-content-pack.mjs
+
+### Resolution
+- **Resolved**: 2026-07-14T18:35:00+08:00
+- **Commit/PR**: pending
+- **Notes**: 6 个 sqlite3 stdin 调用已统一迁移到 `executeSqliteScript`；卡住的会话均已终止。
+
+---
+
+## [ERR-20260714-010] vitest-timeout-under-parallel-build-load
+
+**Logged**: 2026-07-14T18:27:00+08:00
+**Priority**: low
+**Status**: resolved
+**Area**: tests
+
+### Summary
+全量 Vitest 与 typecheck、electron-vite build 同时运行时，两个既有 sql.js 用例超过默认 5 秒超时；隔离复跑 39 个相关测试全部通过。
+
+### Error
+```
+Test timed out in 5000ms.
+```
+
+### Context
+- Timed out: `assessment-emotion.test.ts` 1 例、`student-read.test.ts` 1 例
+- 同一轮另有 600 个测试通过，两个失败均无断言差异。
+- 隔离命令复跑后 39/39 通过，文件耗时分别 3.09s / 4.84s。
+
+### Suggested Fix
+资源密集型全量测试不要与 typecheck/build 并行；先并行跑静态检查，再单独跑完整 Vitest 套件。不要通过放宽业务测试超时掩盖验证调度问题。
+
+### Metadata
+- Reproducible: under parallel verification load
+- Related Files: src/main/ipc/handlers/__tests__/assessment-emotion.test.ts, src/main/ipc/handlers/__tests__/student-read.test.ts
+
+### Resolution
+- **Resolved**: 2026-07-14T18:28:00+08:00
+- **Commit/PR**: pending
+- **Notes**: 隔离复跑全部通过；最终门禁改为无并行构建负载的全量测试。
+
+---
+
+## [ERR-20260714-009] sqlite-vacuum-into-cli-parameter-typing
+
+**Logged**: 2026-07-14T18:22:00+08:00
+**Priority**: low
+**Status**: resolved
+**Area**: database
+
+### Summary
+用 sqlite3 CLI 验证 `VACUUM INTO` 绑定参数时，把匿名参数设置成了非文本值，SQLite 拒绝文件名；改用显式文本参数后验证通过。
+
+### Error
+```
+Error: stepping, non-text filename
+```
+
+### Context
+- Command/operation attempted: `.parameter set ? <path>` 后执行 `VACUUM INTO ?`
+- Cause: CLI `.parameter` 自动解释参数值，未将路径保留为 SQL 文本。
+
+### Suggested Fix
+CLI 使用带 SQL 引号的 `?1` 文本参数；应用内对受控备份路径做单引号转义后作为 `VACUUM INTO` 文件名字面量。
+
+### Metadata
+- Reproducible: yes
+- Related Files: src/main/db/connection.ts, scripts/lib/database-content-pack.mjs
+
+### Resolution
+- **Resolved**: 2026-07-14T18:23:00+08:00
+- **Commit/PR**: pending
+- **Notes**: `?1` 文本参数验证成功；生产连接改用转义后的受控路径字面量。
+
+---
+
+## [ERR-20260714-008] sqlite-readonly-runtime-db-sandbox
+
+**Logged**: 2026-07-14T17:32:11+08:00
+**Priority**: low
+**Status**: resolved
+**Area**: infra
+
+### Summary
+在工作区沙箱内只读探测 WSL 用户数据目录中的 SQLite 运行库失败，提升为只读外部访问后成功。
+
+### Error
+```
+Error: in prepare, unable to open database file (14)
+```
+
+### Context
+- Command: `sqlite3 -readonly /home/maoea/.config/xc-career-guide/data/xc-career-guide.db ...`
+- 数据库位于仓库工作区外，普通沙箱命令无法打开；文件本身存在且没有损坏。
+
+### Suggested Fix
+检查仓库外运行库时使用受控的只读权限提升，并保持 `-readonly`，不要为诊断复制或改写数据库。
+
+### Metadata
+- Reproducible: yes
+- Related Files: src/main/db/connection.ts
+
+### Resolution
+- **Resolved**: 2026-07-14T17:32:11+08:00
+- **Commit/PR**: pending
+- **Notes**: 受控只读检查成功；数据库 `PRAGMA integrity_check` 返回 `ok`。
+
+---
+
 ## [ERR-20260714-007] inline-node-shell-backticks
 
 **Logged**: 2026-07-14T00:00:00+08:00

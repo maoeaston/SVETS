@@ -3,7 +3,6 @@
  * 校验 doc/assets/asset-manifest.json，并将其中 approved 资产投影到 asset_resource。
  * planned/generated/reviewing/retired 资产永远不会写成 ACTIVE。
  */
-import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { homedir, tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -14,6 +13,7 @@ import {
   validateVisualAssetManifest
 } from './lib/visual-asset-manifest.mjs'
 import { resolveDefaultDbPath } from './lib/database-path.mjs'
+import { executeSqliteScript } from './lib/sqlite-cli.mjs'
 
 function parseArgs(argv) {
   const args = { dryRun: false, dbPath: null, outPath: null }
@@ -70,5 +70,5 @@ if (!existsSync(dbPath)) {
   process.exit(1)
 }
 
-execFileSync('sqlite3', [dbPath], { input: sql, stdio: ['pipe', 'inherit', 'inherit'] })
+executeSqliteScript(dbPath, sql, { stdio: ['ignore', 'inherit', 'inherit'] })
 console.log(`[asset-seed] projected ${rows.length} approved assets into ${dbPath}`)

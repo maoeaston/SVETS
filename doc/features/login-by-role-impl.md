@@ -341,44 +341,15 @@ async function handleLogin(): Promise<void> {
 ### Step 6：开发种子账号脚本
 
 **改动文件：**
-- `scripts/seed-dev-accounts.ts`（新建）
+- `src/shared/config/dev-accounts.json`（账号合同）
+- `scripts/seed-dev-accounts.mjs`（sqlite3 CLI 投影脚本）
 
 **核心逻辑：**
 
-独立脚本，直接操作 SQLite（绕过 Electron IPC，仅用于开发环境初始化）。
+独立脚本读取共享 JSON 合同并通过 sqlite3 CLI 更新开发账号，避免 Node / Electron 的 `better-sqlite3` ABI 差异。完整数据库初始化统一使用 `npm run db:sync`；单独修复账号时才运行：
 
-```typescript
-// scripts/seed-dev-accounts.ts
-// 用法：npx ts-node --require tsconfig-paths/register scripts/seed-dev-accounts.ts
-import Database from 'better-sqlite3'
-import { join } from 'path'
-import { homedir } from 'os'
-import { v4 as uuidv4 } from 'uuid'
-import { hashPassword } from '../src/main/utils/password'
-
-// 开发环境 userData 路径（Windows）
-const dataDir = join(homedir(), 'AppData', 'Roaming', 'xc-career-guide', 'data')
-const db = new Database(join(dataDir, 'xc-career-guide.db'))
-
-const accounts = [
-  { username: 'admin',   password: 'Admin@123',   role: 'ADMIN',   displayName: '系统管理员' },
-  { username: 'teacher', password: 'Teacher@123', role: 'TEACHER', displayName: '测试教师' },
-  { username: 'student', password: 'Student@123', role: 'STUDENT', displayName: '测试学生' },
-]
-
-const stmt = db.prepare(`
-  INSERT OR IGNORE INTO user_account
-    (user_id, username, password_hash, role, display_name, status)
-  VALUES (?, ?, ?, ?, ?, 'ACTIVE')
-`)
-
-for (const acc of accounts) {
-  stmt.run(uuidv4(), acc.username, hashPassword(acc.password), acc.role, acc.displayName)
-  console.log(`[seed] ${acc.role}: ${acc.username} / ${acc.password}`)
-}
-
-db.close()
-console.log('[seed] Done.')
+```bash
+node scripts/seed-dev-accounts.mjs
 ```
 
 **测试用例：**
@@ -395,7 +366,7 @@ console.log('[seed] Done.')
 - [ ] `npm run build` 通过
 - [ ] `npx vitest run` 通过（password 工具单元测试 + auth store 单元测试）
 - [ ] 手工冒烟：
-  - 运行 `seed-dev-accounts.ts` 初始化开发账号
+  - 运行 `npm run db:sync` 初始化开发账号与题库
   - 启动应用，访问 `/#/teacher` 被重定向到 `/#/login`
   - 用 `teacher / Teacher@123` 登录 → 跳转 `/teacher`
   - 用 `student / Student@123` 登录 → 跳转 `/student`

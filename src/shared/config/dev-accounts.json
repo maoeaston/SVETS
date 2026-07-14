@@ -1,0 +1,23 @@
+[
+  {
+    "userId": "seed-admin-001",
+    "username": "admin",
+    "password": "Admin@123",
+    "role": "ADMIN",
+    "displayName": "系统管理员"
+  },
+  {
+    "userId": "seed-teacher-001",
+    "username": "teacher",
+    "password": "Teacher@123",
+    "role": "TEACHER",
+    "displayName": "测试教师"
+  },
+  {
+    "userId": "seed-student-001",
+    "username": "student",
+    "password": "Student@123",
+    "role": "STUDENT",
+    "displayName": "测试学生"
+  }
+]

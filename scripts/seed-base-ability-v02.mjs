@@ -15,6 +15,7 @@ import * as fs from 'node:fs'
 import { join } from 'node:path'
 import { homedir } from 'node:os'
 import { fileURLToPath } from 'node:url'
+import { executeSqliteScript, runSqliteCommand } from './lib/sqlite-cli.mjs'
 
 // ---- arg parsing ----
 function parseArgs(argv) {
@@ -234,10 +235,9 @@ const preamble = [
   `-- Generated at: ${importedAt}`,
   `-- Replaces old BASE_ABILITY data from 通用基础能力评估题库.xlsx (旧版已废弃)`,
   `-- Step 1: delete stale BASE_ABILITY rows (from old xlsx + old drag seed)`,
-  `DELETE FROM question_bank WHERE bank_domain='BASE_ABILITY';`,
 ]
 
-const sql = [...preamble, 'BEGIN;', ...inserts, 'COMMIT;'].join('\n')
+const sql = [...preamble, 'BEGIN;', `DELETE FROM question_bank WHERE bank_domain='BASE_ABILITY';`, ...inserts, 'COMMIT;'].join('\n')
 
 writeFileSync(outPath, sql + '\n', 'utf-8')
 
@@ -254,9 +254,9 @@ if (!existsSync(dbPath)) {
   process.exit(1)
 }
 
-execFileSync('sqlite3', [dbPath], { input: sql, stdio: ['pipe', 'inherit', 'inherit'] })
+executeSqliteScript(dbPath, sql, { stdio: ['ignore', 'inherit', 'inherit'] })
 console.log(`[base-ability-v02] imported into ${dbPath}`)
 
 const verifySql = `SELECT bank_domain, module_type, count(*) as n FROM question_bank WHERE bank_domain='BASE_ABILITY' GROUP BY module_type ORDER BY module_type;`
-const out = execFileSync('sqlite3', [dbPath, verifySql], { encoding: 'utf-8' })
+const out = runSqliteCommand([dbPath, verifySql], { encoding: 'utf-8' })
 console.log(out.trimEnd())

@@ -2,7 +2,7 @@
 
 > **状态：** M1 已实施并验收通过（2026-07-14）；M2–M7 仍为 DRAFT/登记
 > **上游权威：** `doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md`（AUTHORITATIVE BASELINE）
-> **正式 Schema 基线：** `src/main/db/schema.sql` v0.1.12-job-skill-assessment-mvp-closure
+> **正式 Schema 基线：** `src/main/db/schema.sql` v0.1.13-multi-device-m1-identity
 > **本轮实施范围：** 仅 **M1 Schema Foundation**（身份与拓扑骨架）。M2–M7 只列清单，不实施。
 
 ---
@@ -41,15 +41,15 @@ v2.2 权威基线定义了 19 张新表、14 个增量列、22 条 CREATE TRIGGE
 
 ## 4. 物理落地方式（关键工程决策）
 
-**决策：采用"全量基线重生成 + 版本号递进"，不用增量 ALTER 文件。**
+**当前决策：新库加载全量基线；既有 v0.1.12 库通过结构驱动 runner 增量迁移。**
 
-理由：`connection.ts` 的 `initDatabase()` 对 `schema.sql` 执行 `db.exec()`（`CREATE TABLE IF NOT EXISTS`），无迁移 runner；v0.1.10→v0.1.12 的先例即"基于全量生成、无逐版本 migration"（schema.sql 头注释）。因此：
+M1 初次落地时采用“仅全量重建”是开发期临时决策。2026-07-14 为解决多台开发机结构漂移，已补充 `src/main/db/migrations.ts`，因此现行规则为：
 
-- 五张新表用 `CREATE TABLE IF NOT EXISTS` 追加到 schema.sql 新章节 —— 对新库和现有 dev 库都幂等安全。
-- `student_profile.user_id` **内联**进 `student_profile` 的 `CREATE TABLE` 定义（SQLite 无 `ADD COLUMN IF NOT EXISTS`，内联可避免每次启动重跑 ALTER 失败）。
-- schema 版本号 bump 到 `v0.1.13-multi-device-m1-identity`，新增一条 `schema_migration` seed 行。
-- **现有 dev 数据库须删除重建**（`{userData}/data/xc-career-guide.db`）：本项目 pre-release，只有 seed 用户，无生产数据，与 v0.1.10→v0.1.12 全量重生成一致。此点在实现文档和 commit message 中显式声明。
-- v2.2 §8 的 ALTER 形式是**逻辑迁移合同**（描述"变了什么"）；本代码库因无 runner 且无生产数据，**物理**以全量基线承载。两者不矛盾：逻辑合同用于未来有生产数据的正式迁移，物理落地用于当前 pre-release。
+- 新库在单一事务内执行完整 `schema.sql`；所有 DDL、触发器和 seed 成功后才写当前迁移记录。
+- v0.1.12 库先按关键表/列确认基线，再备份 DB + `action_log.jsonl`，执行 `student_profile.user_id` ALTER 和 M1 五表/索引 DDL。
+- 是否迁移以真实表、列、索引为准，不信任可能提前写入的 `schema_migration` 行。
+- 早于 v0.1.12 或结构残缺的开发库拒绝自动猜测，使用 `npm run db:sync -- --reset` 显式重建。
+- `scripts/config/database-content-pack.json` 管理三台开发机共同的 schema/题库/资产内容包版本；操作见 `local-database-sync-sop.md`。
 
 ## 5. 实现步骤（M1，单 commit）
 
@@ -75,7 +75,7 @@ v2.2 权威基线定义了 19 张新表、14 个增量列、22 条 CREATE TRIGGE
 - 部分唯一索引：同一 device 两条 status='ACTIVE' runtime → 第二条 UNIQUE 失败；一条 ACTIVE + 一条 ENDED → 允许。
 - FK：auth_session.user_id 引用不存在 user → FK 失败（PRAGMA foreign_keys=ON 下）。
 - 回归：现有 `src/main/db/__tests__/schema-scoring-closure.test.ts` 仍通过（schema 可加载、既有约束不变）。
-- 手工验收点：删除 dev DB 后启动，`initDatabase()` 无错误、seed 用户正常写入。
+- 手工验收点：`npm run db:sync -- --reset` 后启动，`initDatabase()` 无错误、共享 seed 用户正常登录。
 
 **commit message 建议：**
 `feat(schema): v0.1.13 M1 多设备身份骨架（organization/node/device/runtime/auth + student_profile.user_id）`
@@ -105,11 +105,11 @@ v2.2 权威基线定义了 19 张新表、14 个增量列、22 条 CREATE TRIGGE
 
 | WARN | 处置 |
 |------|------|
-| §4 重建 dev 库前确认无需保留数据 | schema.sql 头注释 + 本 PRD §4 已声明；手工冒烟项保留为用户验收 |
+| §4 重建 dev 库前确认无需保留数据 | `--reset` 显式触发且先备份 DB + JSONL；普通启动不再要求删库 |
 | §3 补 capabilities_json 非法 JSON 应 THROW | 已在临时库实测：bad JSON → `CHECK constraint failed`；valid JSON 正常插入 |
 | §3 补 ON DELETE SET NULL（删 user_account → student_profile.user_id 置 NULL） | 已实测：删除后 user_id = NULL（未级联删档、未阻断） |
 | §3 FK 失败用例为套件首个依赖 FK 强制者 | 已实测：auth_session FK 到不存在 user → `FOREIGN KEY constraint failed`；sql.js 环境 FK 已开启 |
-| §2 不为 M1 引入 PRAGMA-检测-ALTER runner | 采纳：M1 用"内联 + 重建"，未改 connection.ts；替代方案留给未来有生产数据时 |
+| §2 不为 M1 引入 PRAGMA-检测-ALTER runner | **已被后续多开发机同步需求取代**：现由结构驱动 runner 承担 v0.1.12 → v0.1.13 安全迁移 |
 
 ## 9. 下一步
 

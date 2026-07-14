@@ -23,9 +23,7 @@
 --      idx_auth_session_token, ux_student_profile_user_id.
 --   4. No triggers, no changes to existing business tables/FSM/safety semantics (deferred to M2+).
 --   5. organization NOT seeded here (UUID generated at install; no fixed org_default).
---   Note: existing dev DB must be recreated (CREATE TABLE IF NOT EXISTS will not add the inline
---   student_profile.user_id to a pre-existing table). Pre-release, seed-only data — same policy as
---   the v0.1.10 -> v0.1.12 full-baseline regeneration.
+--   Existing v0.1.12 DBs are upgraded by src/main/db/migrations.ts before this full schema runs.
 -- v0.1.12 patch notes:
 --   1. question_bank: status DEFAULT 'DRAFT'; question_type adds SOFTWARE_TASK;
 --      new columns item_usage, bank_domain, job_module_code; module_type nullable;
@@ -59,28 +57,6 @@ CREATE TABLE IF NOT EXISTS schema_migration (
   description        TEXT,
   applied_at         TEXT NOT NULL DEFAULT (datetime('now'))
 );
-
-INSERT OR IGNORE INTO schema_migration (
-  migration_id, schema_version, description
-) VALUES
-  ('2026-06-30_mvp_schema_v0_1_4_safety_lifecycle', '0.1.4-safety-lifecycle',
-   'MVP schema v0.1.4-safety-lifecycle'),
-  ('2026-06-30_mvp_schema_v0_1_5_integrity_lock', '0.1.5-integrity-lock',
-   'MVP schema v0.1.5-integrity-lock'),
-  ('2026-06-30_mvp_schema_v0_1_6_void_reason', '0.1.6-void-reason',
-   'MVP schema v0.1.6-void-reason'),
-  ('2026-06-30_mvp_schema_v0_1_7_consistency_guard', '0.1.7-consistency-guard',
-   'MVP schema v0.1.7-consistency-guard'),
-  ('2026-07-01_mvp_schema_v0_1_8_base_ability_rebalance', '0.1.8-base-ability-rebalance',
-   'MVP schema v0.1.8-base-ability-rebalance'),
-  ('2026-07-02_mvp_schema_v0_1_9_strategy_composite_pk', '0.1.9-strategy-composite-pk',
-   'MVP schema v0.1.9-strategy-composite-pk'),
-  ('2026-07-03_mvp_schema_v0_1_10_scoring_closure', '0.1.10-scoring-closure',
-   'MVP schema v0.1.10-scoring-closure'),
-  ('2026-07-07_mvp_schema_v0_1_12_job_skill_assessment_mvp_closure', '0.1.12-job-skill-assessment-mvp-closure',
-   'MVP schema v0.1.12: merge PRD v1.0.7 question-contract + v1.0.8 job-bank-governance + v1.0.9 job-skill-assessment-mvp into one full baseline from v0.1.10'),
-  ('2026-07-14_mvp_schema_v0_1_13_multi_device_m1_identity', '0.1.13-multi-device-m1-identity',
-   'M1: identity+topology tables (organization/node/device/device_runtime_session/auth_session) + student_profile.user_id; pure additive, no triggers');
 
 -- ----------------------------------------------------------------------------
 -- 1. Accounts and student profiles
@@ -1905,6 +1881,15 @@ INSERT OR IGNORE INTO strategy_config (
   1, 1, 1, 1, 1
 );
 
+-- Record the baseline only after every table, index, trigger, and seed above succeeded.
+INSERT OR IGNORE INTO schema_migration (
+  migration_id, schema_version, description
+) VALUES (
+  '2026-07-14_mvp_schema_v0_1_13_multi_device_m1_identity',
+  '0.1.13-multi-device-m1-identity',
+  'Full baseline: v0.1.12 MVP closure + M1 identity and topology foundation'
+);
+
 -- ============================================================================
--- End of schema.sql v0.1.12-job-skill-assessment-mvp-closure
+-- End of schema.sql v0.1.13-multi-device-m1-identity
 -- ============================================================================

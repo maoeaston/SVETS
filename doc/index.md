@@ -137,6 +137,11 @@ doc/
 | 实操评分 | `operation-scoring-prd.md` | `operation-scoring-impl.md` |
 | DRAG 拖拽渲染 | `drag-render-prd.md` | `drag-render-impl.md` |
 
+### 数据库运维
+
+- `features/local-database-sync-sop.md` — A/B/C 三台 WSL 开发机轮流开发时的 `db:sync` / `db:verify` / 备份与重建流程
+- `features/multi-device-v2.2-migration-prd.md` — v0.1.13 M1 结构迁移与后续 M2-M7 里程碑
+
 ### 视觉资产文档（仍活跃）
 
 - `reference/visual-asset-master-plan.md` — 唯一视觉风格与范围规划基线
@@ -174,6 +179,7 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | 继续编码会话 | `会话启动.md` → `.continue-here.md` → feature impl |
 | 新功能开发 | `AGENTS.md` → 主 PRD → `/vibe-feature` |
 | 改数据库/状态机 | `src/main/db/schema.sql` |
+| A/B/C 开发机同步本地数据库 | `features/local-database-sync-sop.md` |
 | 改事件写入/回放 | `specs/xc-career-guide-event-payload-schema-v1.0.0.md` |
 | 改 JSON 字段 | `specs/xc-career-guide-json-field-schema-v1.0.0.md` |
 | 题库/组卷相关（现有基础能力题库） | `specs/题库分层架构说明.md` |
@@ -249,6 +255,7 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 
 | 文件 | 标题 |
 |---|---|
+| [features/local-database-sync-sop.md](features/local-database-sync-sop.md) | 本地多开发机数据库同步 SOP |
 | [features/question-bank-image-integration-checklist.md](features/question-bank-image-integration-checklist.md) | 视觉资产合同执行清单 |
 | [features/question-bank-launch-gate.md](features/question-bank-launch-gate.md) | 题库上线门禁脚本 |
 | [features/question-bank-source-csv-template.md](features/question-bank-source-csv-template.md) | 题库源 CSV 模板 |

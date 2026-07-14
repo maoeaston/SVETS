@@ -1,5 +1,6 @@
 # 方案 B 多设备架构 v2.2 — 验证报告
 
+> **快照说明：** 本报告记录 M1 落地前以 schema v0.1.12 为输入的 v2.2 方案验证，不代表当前仓库实现状态。当前 schema 已为 v0.1.13，数据库迁移与三机开发同步见 `doc/features/multi-device-v2.2-migration-prd.md` 和 `doc/features/local-database-sync-sop.md`。
 > **配套文档：** architecture-plan-b-multi-device-v2.2-authoritative-baseline.md + coverage-matrix.md
 > **验证日期：** 2026-07-14
 > **验证工具：** SQLite 3.50.6（临时库真实执行）+ Node.js v24.14.1（hash 算法）

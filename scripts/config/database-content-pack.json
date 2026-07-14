@@ -1,0 +1,18 @@
+{
+  "version": "2026.07.14.1",
+  "schemaVersion": "0.1.13-multi-device-m1-identity",
+  "migrationId": "2026-07-14_mvp_schema_v0_1_13_multi_device_m1_identity",
+  "questionContracts": [
+    {
+      "domain": "BASE_ABILITY",
+      "path": "doc/features/question-bank-import-base-ability-v02.sql",
+      "expectedCount": 96
+    },
+    {
+      "domain": "JOB_SPECIFIC",
+      "path": "doc/features/question-bank-import.sql",
+      "expectedCount": 298
+    }
+  ],
+  "assetManifestPath": "doc/assets/asset-manifest.json"
+}

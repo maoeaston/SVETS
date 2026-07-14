@@ -10,13 +10,13 @@
 // 正式模式生成 SQL 到 doc/features/question-bank-import.sql 并通过 sqlite3 CLI 执行
 //（与 seed-question-bank-source.mjs 同构，AGENTS.md 一次性数据运维约束）。
 
-import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { homedir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { mapImportRow, buildQuestionBankImportSql, buildQuestionImportedEventsSql, buildDryRunReport } from './lib/question-bank-import.mjs'
 import { resolveDefaultDbPath } from './lib/database-path.mjs'
+import { executeSqliteScript } from './lib/sqlite-cli.mjs'
 
 function parseArgs(argv) {
   const args = { dbPath: null, outPath: null, dryRun: false, sourcePath: null }
@@ -122,7 +122,7 @@ if (!existsSync(dbPath)) {
 }
 
 try {
-  execFileSync('sqlite3', [dbPath], { input: sql, stdio: ['pipe', 'inherit', 'inherit'] })
+  executeSqliteScript(dbPath, sql, { stdio: ['ignore', 'inherit', 'inherit'] })
 } catch (err) {
   if (err && err.code === 'ENOENT') {
     console.error('[question-bank-import] sqlite3 CLI not found. Please install sqlite3 first.')

@@ -42,11 +42,17 @@
 
 ## 快速开始
 
-**环境要求：** Node.js 20+，npm 10+
+**环境要求：** Node.js 20+，npm 10+，sqlite3 CLI
 
 ```bash
 # 安装依赖（国内用镜像）
 npm install --registry https://registry.npmmirror.com
+
+# 首次在一台开发机上建立统一开发库（执行前关闭 Electron）
+npm run db:sync -- --reset
+
+# 验证 schema、账号、394 条题库与 approved 资产投影
+npm run db:verify
 
 # 开发模式（主进程热重载 + 渲染进程 HMR）
 npm run dev
@@ -61,30 +67,25 @@ npm run build
 npm test
 ```
 
-### 开发账号与题库初始化
+### 多开发机数据库同步
 
-首次运行或重建数据库后，按以下顺序运行种子脚本：
+SQLite 运行库位于 Electron `userData`，不在 Git 仓库内。A/B/C 三台机器轮流开发时，统一使用以下流程：
 
 ```bash
-# 1. 开发账号（admin / teacher / student）
-node scripts/seed-dev-accounts.mjs
-
-# 2. BASE_ABILITY 96题（来自 v0.2 xlsx，权威来源）
-node scripts/seed-base-ability-v02.mjs
-
-# 3. JOB_SPECIFIC 298题
-sqlite3 ~/.config/xc-career-guide/data/xc-career-guide.db < doc/features/question-bank-import.sql
-
-# 4. 校验视觉资产合同
-npm run asset:validate
-
-# 5. 仅当 Manifest 已有 approved 资产时，投影到 asset_resource
-node scripts/seed-question-bank-image-assets.mjs
+# 每次换机或拉取代码后；执行期间必须关闭 Electron
+git pull
+npm run db:sync
+npm run db:verify
+npm run dev
 ```
 
-> **注：** `doc/reference/通用基础能力评估题库.xlsx`（旧版）和 `doc/features/archive/legacy-data/question-bank-import-base-ability.sql`（旧版产物）已归档，**不要使用**。BASE_ABILITY 唯一权威来源是 `doc/reference/通用基础能力正式测评候选题库_v0.2-软件优先版.xlsx`。
+`db:sync` 幂等同步当前 schema、共享开发账号、BASE_ABILITY 96 题、JOB_SPECIFIC 298 题，以及 Manifest 中已 `approved` 的资产。当前开发库无需保留业务数据时，首次在每台机器执行 `npm run db:sync -- --reset`；命令会先在 `data/backups/pre-reset.*` 中保存 SQLite 一致性快照和现有 `action_log.jsonl`，再重建本地运行数据。
+
+> 不要用 Git、OneDrive 或 Syncthing 同步正在使用的 `.db` / `-wal` / `-shm` 文件。`--reset` 会清除当前运行库和 action log，只能在 Electron 已关闭且确认无需保留本地业务数据时使用。完整 SOP 见 `doc/features/local-database-sync-sop.md`。
+
+> **题库来源：** `doc/reference/通用基础能力评估题库.xlsx`（旧版）和 `doc/features/archive/legacy-data/question-bank-import-base-ability.sql`（旧版产物）已归档，**不要使用**。BASE_ABILITY 唯一权威来源是 `doc/reference/通用基础能力正式测评候选题库_v0.2-软件优先版.xlsx`。
 >
-> 视觉资产以 `doc/reference/visual-asset-master-plan.md` 为风格基线、`doc/assets/asset-manifest.json` 为机器合同。脚本只会把 `lifecycle_status='approved'` 且通过文件、版权和验收门校验的资产写成 `ACTIVE`；当前全量资产仍为 `planned` 时，第 5 步会拒绝修改数据库。
+> 视觉资产以 `doc/reference/visual-asset-master-plan.md` 为风格基线、`doc/assets/asset-manifest.json` 为机器合同。`db:sync` 只会把 `lifecycle_status='approved'` 且通过文件、版权和验收门校验的资产写成 `ACTIVE`；当前 237 条资产均为 `planned`，所以 approved 投影数为 0。
 
 | 用户名 | 密码 | 角色 |
 |---|---|---|

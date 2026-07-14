@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { basename, join } from 'node:path'
 import { homedir } from 'node:os'
@@ -11,6 +10,7 @@ import {
   summarizeQuestionRows
 } from './lib/question-bank-source-seed.mjs'
 import { resolveDefaultDbPath } from './lib/database-path.mjs'
+import { executeSqliteScript } from './lib/sqlite-cli.mjs'
 
 function parseArgs(argv) {
   const args = { csvPath: null, dbPath: null, outPath: null, dryRun: false, importedBy: 'codex' }
@@ -111,10 +111,7 @@ if (!existsSync(dbPath)) {
 }
 
 try {
-  execFileSync('sqlite3', [dbPath], {
-    input: sql,
-    stdio: ['pipe', 'inherit', 'inherit']
-  })
+  executeSqliteScript(dbPath, sql, { stdio: ['ignore', 'inherit', 'inherit'] })
 } catch (err) {
   if (err && err.code === 'ENOENT') {
     console.error('[question-bank-source-seed] sqlite3 CLI not found. Please install sqlite3 first.')
