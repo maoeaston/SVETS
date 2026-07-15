@@ -1,9 +1,9 @@
 # 多设备架构 v2.2 迁移：Mini-PRD（分里程碑实施）
 
-> **状态：** M1 已实施并验收通过（2026-07-14）；M2 Business Session Foundation 已提交为 v0.1.14（2026-07-15）；M3 Grant/Assignment 进入 PRD 起草；M4-M7 仍为 DRAFT/登记
+> **状态：** M1 已实施并验收通过（2026-07-14）；M2 Business Session Foundation 已提交为 v0.1.14（2026-07-15）；M3 Grant/Assignment 已实现，待最终验收；M4-M7 仍为 DRAFT/登记
 > **上游权威：** `doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md`（AUTHORITATIVE BASELINE）
-> **正式 Schema 基线：** `src/main/db/schema.sql` v0.1.14-multi-device-m2-session-foundation
-> **本轮文档范围：** M2 Business Session Foundation PRD 与实施记录；M3 Grant/Assignment PRD 起草；M4-M7 不在本轮交付。
+> **正式 Schema 基线：** `src/main/db/schema.sql` v0.1.15-multi-device-m3-grant-assignment
+> **本轮文档范围：** M2 Business Session Foundation PRD 与实施记录；M3 Grant/Assignment 实施记录；M4-M7 不在本轮交付。
 
 ---
 
@@ -27,7 +27,7 @@ v2.2 权威基线定义了 19 张新表、13 个增量列、22 条 CREATE TRIGGE
 |--------|------|------|------|------|
 | **M1 Schema Foundation** | organization, node, device, device_runtime_session, auth_session（T1-T5）+ student_profile.user_id（B1）+ 相关索引 | 无（纯新增 + 1 nullable 列） | 低 | **已完成** |
 | **M2 Business Session 骨架** | business_session（T6）+ assessment/training.business_session_id（B3/B4）+ assessment.delivery_phase/event_sequence_version/observation_template_id（B2）+ D2-D6、D8 + 回填 + handler/reducer 兼容 | M1 | 中（改现有表 INSERT/UPDATE 行为） | **已提交 v0.1.14** |
-| M3 Grant/Assignment | delegated_access_grant（T7）、business_session_assignment（T8）+ 完整前向状态机 D1 + D9-D11 + rebind 事务 | M2 | 中 | **PRD 起草中** |
+| M3 Grant/Assignment | delegated_access_grant（T7）、business_session_assignment（T8）+ 完整前向状态机 D1 + D9-D11 + rebind 事务 | M2 | 中 | **已实现，待验收** |
 | M4 Safety Re-key | 替换 4 个安全触发器 + 2 个开放会话唯一索引 + job_code 查询索引（§13） | M2 | **高**（改熔断语义） | 登记 |
 | M5 Event-Sourcing Infra | command_log, applied_event_batch, processed_event, projector_cursor（T11-T14）+ 三段式协议代码 | M1 | 高 | 登记 |
 | M6 Learning | learning_session, learning_progress（T9/T10）+ D7 + 学习 handler/view | M2 | 中 | 登记 |
@@ -371,7 +371,7 @@ M2 的共享类型、preload 白名单和 renderer 调用保持向后兼容：�
 
 M2 PRD 至此具备实现输入。`/vibe-impl` 已生成 `doc/features/multi-device-v2.2-migration-impl.md` 并通过 Reviewer 二审；实现已提交为 `e3751cb feat(m2): ship business session foundation`。
 
-## 11. M3 Grant/Assignment（PRD DRAFT）
+## 11. M3 Grant/Assignment（已实现，待验收）
 
 ### 11.1 目标与非目标
 

@@ -21,6 +21,18 @@ export interface LocalRuntimeContextFixture {
   teacherAuthSessionId: string
 }
 
+export interface M3GrantAssignmentFixture {
+  businessSessionId: string
+  sessionId: string
+  teacherId: string
+  studentId: string
+  deviceId: string
+  deviceRuntimeSessionId: string
+  teacherAuthSessionId: string
+  grantId: string
+  assignmentId: string
+}
+
 export type AssessmentFixtureStatus =
   | 'INIT'
   | 'ACTIVE'
@@ -413,6 +425,96 @@ export function seedAssessmentSessionFixture(
     setAssessmentSessionStateFixture(db, sessionId, status, params.deliveryPhase)
   }
   return sessionId
+}
+
+export function seedM3GrantAssignmentFixture(
+  db: DBAdapter,
+  params: {
+    teacherId: string
+    studentId: string
+    sessionId?: string
+    strategyId?: string
+    strategyType?: string
+    jobCode?: string
+    taskCode?: string
+    createdBy?: string
+    runtime?: LocalRuntimeContextFixture
+    grantId?: string
+    assignmentId?: string
+    assignmentStatus?: 'PENDING_CONFIRM' | 'ACTIVE' | 'RELEASED'
+    grantStatus?: 'ACTIVE' | 'RELEASED' | 'EXPIRED' | 'REVOKED'
+    assignedBy?: string
+  }
+): M3GrantAssignmentFixture {
+  const sessionId = params.sessionId ?? uuidv4()
+  const runtime =
+    params.runtime ?? seedLocalRuntimeContextFixture(db, { teacherUserId: params.teacherId })
+  const grantId = params.grantId ?? uuidv4()
+  const assignmentId = params.assignmentId ?? uuidv4()
+  const assignmentStatus = params.assignmentStatus ?? 'PENDING_CONFIRM'
+  const grantStatus = params.grantStatus ?? 'ACTIVE'
+  const session = db
+    .prepare('SELECT session_id FROM assessment_session WHERE session_id = ?')
+    .get(sessionId) as { session_id: string } | undefined
+
+  if (!session) {
+    seedAssessmentSessionFixture(db, {
+      sessionId,
+      studentId: params.studentId,
+      strategyId: params.strategyId ?? 'strategy_baseline_shelver_v1',
+      strategyType: params.strategyType,
+      jobCode: params.jobCode,
+      taskCode: params.taskCode,
+      status: 'INIT',
+      createdBy: params.createdBy ?? params.teacherId
+    })
+  }
+
+  db.prepare(
+    `INSERT INTO delegated_access_grant
+       (grant_id, business_session_id, teacher_auth_session_id, teacher_user_id,
+        student_id, device_id, device_runtime_session_id, capabilities_json,
+        identity_confirmation_method, status, granted_at, expires_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'TEACHER_ATTESTATION', ?, datetime('now'), datetime('now', '+1 day'))`
+  ).run(
+    grantId,
+    sessionId,
+    runtime.teacherAuthSessionId,
+    params.teacherId,
+    params.studentId,
+    runtime.deviceId,
+    runtime.deviceRuntimeSessionId,
+    JSON.stringify(['ASSESSMENT_START']),
+    grantStatus
+  )
+
+  db.prepare(
+    `INSERT INTO business_session_assignment
+       (assignment_id, business_session_id, student_id, device_id, grant_id, assigned_by,
+        status, student_confirmed_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+  ).run(
+    assignmentId,
+    sessionId,
+    params.studentId,
+    runtime.deviceId,
+    grantId,
+    params.assignedBy ?? params.teacherId,
+    assignmentStatus,
+    assignmentStatus === 'ACTIVE' ? new Date().toISOString() : null
+  )
+
+  return {
+    businessSessionId: sessionId,
+    sessionId,
+    teacherId: params.teacherId,
+    studentId: params.studentId,
+    deviceId: runtime.deviceId,
+    deviceRuntimeSessionId: runtime.deviceRuntimeSessionId,
+    teacherAuthSessionId: runtime.teacherAuthSessionId,
+    grantId,
+    assignmentId
+  }
 }
 
 /**

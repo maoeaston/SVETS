@@ -164,12 +164,13 @@ function seedFirstQuestion(session: string): void {
   )
 }
 
-function seedPreparedSession(): void {
+function seedPreparedSession(over: { taskCode?: string } = {}): void {
   sessionId = uuidv4()
   seedAssessmentSessionFixture(db, {
     sessionId,
     studentId,
     strategyId,
+    taskCode: over.taskCode,
     status: 'INIT',
     deliveryPhase: 'PREPARED',
     onlineQuestionCount: 1,
@@ -375,6 +376,60 @@ describe('assignment IPC handler', () => {
         assignmentId: created.assignmentId
       })
     ).toEqual({ success: false, errorCode: 'FORBIDDEN' })
+  })
+
+  it('release 后不能再次 start，grant 过期时也拒绝 start', () => {
+    const releasedFlow = createAssignment(db, baseCreateParams())
+    expect(releasedFlow.success).toBe(true)
+    if (!releasedFlow.success) return
+    expect(
+      confirmStudentAssignment(db, {
+        callerUserId: teacherId,
+        callerRole: 'TEACHER',
+        assignmentId: releasedFlow.assignmentId,
+        confirmationMethod: 'TEACHER_ATTESTATION',
+        confirmationEvidence: { attestedBy: teacherId }
+      }).success
+    ).toBe(true)
+    expect(
+      releaseAssignment(db, {
+        callerUserId: teacherId,
+        callerRole: 'TEACHER',
+        assignmentId: releasedFlow.assignmentId,
+        releaseReason: 'TEACHER_RELEASED'
+      }).success
+    ).toBe(true)
+    expect(
+      startAssignedAssessment(db, {
+        callerUserId: studentId,
+        callerRole: 'STUDENT',
+        assignmentId: releasedFlow.assignmentId
+      })
+    ).toEqual({ success: false, errorCode: 'ASSIGNMENT_NOT_ACTIVE' })
+
+    seedPreparedSession({ taskCode: `expired-grant-${uuidv4().slice(0, 8)}` })
+    const expiredGrantFlow = createAssignment(db, baseCreateParams())
+    expect(expiredGrantFlow.success).toBe(true)
+    if (!expiredGrantFlow.success) return
+    expect(
+      confirmStudentAssignment(db, {
+        callerUserId: teacherId,
+        callerRole: 'TEACHER',
+        assignmentId: expiredGrantFlow.assignmentId,
+        confirmationMethod: 'TEACHER_ATTESTATION',
+        confirmationEvidence: { attestedBy: teacherId }
+      }).success
+    ).toBe(true)
+    db.prepare("UPDATE delegated_access_grant SET status = 'EXPIRED' WHERE grant_id = ?").run(
+      expiredGrantFlow.grantId
+    )
+    expect(
+      startAssignedAssessment(db, {
+        callerUserId: studentId,
+        callerRole: 'STUDENT',
+        assignmentId: expiredGrantFlow.assignmentId
+      })
+    ).toEqual({ success: false, errorCode: 'ASSIGNMENT_NOT_ACTIVE' })
   })
 
   it('rebind 无需重确认时替换 grant、version+1，并保留 ACTIVE', async () => {

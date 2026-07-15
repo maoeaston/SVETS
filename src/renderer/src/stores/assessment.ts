@@ -56,6 +56,8 @@ export const useAssessmentStore = defineStore('assessment', () => {
       ASSESSMENT_SYSTEM_ERROR: '系统异常，请重试',
       ASSESSMENT_FSM_VIOLATION: '状态机异常',
       QUESTION_BANK_INSUFFICIENT: '题库不足，请联系运营',
+      ASSIGNMENT_REQUIRED: '需要教师分配后才能开始测评',
+      STUDENT_CONFIRMATION_REQUIRED: '需要完成学生确认后才能开始测评',
       ANSWER_PERSIST_FAILED: '答题保存失败',
       EMOTION_TRANSITION_FAILED: '情绪状态切换失败',
       REDLINE_TRIGGER_SYSTEM_ERROR: '红线触发异常'

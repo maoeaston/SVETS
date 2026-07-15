@@ -2,7 +2,7 @@
 
 产品合同版本：PRD v1.0.9-job-skill-assessment-mvp-closure
 文档形态：Consolidated Authoritative Baseline（单一权威正文）
-当前工程基线：`schema.sql v0.1.14-multi-device-m2-session-foundation`
+当前工程基线：`schema.sql v0.1.15-multi-device-m3-grant-assignment`
 MVP 功能基线：`schema.sql v0.1.12-job-skill-assessment-mvp-closure`
 产品阶段：MVP
 目标平台：本地化桌面端
@@ -3289,7 +3289,7 @@ MVP 采用轻量事件溯源 + SQLite 查询投影：
 
 ### 11.2 当前 schema 基线
 
-当前基线为 `schema.sql v0.1.14-multi-device-m2-session-foundation`。v0.1.12 已物化题库合同、岗位题库治理和专业岗位测评运行时；v0.1.13 在其上增量增加组织、节点、设备与认证拓扑；v0.1.14 增加 business_session 父记录、assessment delivery_phase / event_sequence_version / observation_template_id、assessment/training business_session_id 与 D2-D6/D8 约束。
+当前基线为 `schema.sql v0.1.15-multi-device-m3-grant-assignment`。v0.1.12 已物化题库合同、岗位题库治理和专业岗位测评运行时；v0.1.13 在其上增量增加组织、节点、设备与认证拓扑；v0.1.14 增加 business_session 父记录、assessment delivery_phase / event_sequence_version / observation_template_id、assessment/training business_session_id 与 D2-D6/D8 约束；v0.1.15 增加 delegated_access_grant、business_session_assignment、M3 assignment IPC/事件投影、D1 与 D9-D11 约束，并收窄 assessment:startSession。
 
 核心业务表包括：
 
@@ -3357,7 +3357,7 @@ MVP 采用轻量事件溯源 + SQLite 查询投影：
 
 ### 11.7 多设备 M1 边界
 
-v0.1.14 提供 M1 身份拓扑与 M2 Business Session Foundation。Grant/Assignment、learning_session、离线草稿、发布同步、跨设备安全聚合和自动 JSONL 冷启动重放属于后续里程碑；在相应合同落地前，不得推断当前 MVP 已具备完整多设备运行能力。
+v0.1.15 提供 M1 身份拓扑、M2 Business Session Foundation 与 M3 本地 Grant/Assignment 最小闭环。learning_session、离线草稿、发布同步、跨设备安全聚合、M5 command_log/REST/SSE 和自动 JSONL 冷启动重放属于后续里程碑；在相应合同落地前，不得推断当前 MVP 已具备完整跨设备同步运行能力。
 
 ### 11.8 初始化与迁移政策
 
@@ -4446,7 +4446,7 @@ MVP 不要求保存每个 pointer move。
 - `REDLINE_HALTED` 的 `assessment_session.redline_incident_id` 必须指向同一 `student_id + task_code` 的 `safety_incident`。
 - `REDLINE_HALTED` 的 `training_session.redline_incident_id` 必须指向同一 `student_id + task_code` 的 `safety_incident`。
 - `training_step_record.status` 不得出现 `ACTIVE` 或 `VOID`。
-- 当前全量初始化基线为 v0.1.14；已有真实数据升级必须提供独立 migration。
+- 当前全量初始化基线为 v0.1.15；已有真实数据升级必须提供独立 migration。
 - 基础能力 CSV 题库导入不得直接发布为正式题库，必须先入 `DRAFT`，审核后再转 `ACTIVE`。
 - 完整试卷系统不属于当前 MVP，不得在现有固定策略上临时拼接实现。
 - 基础能力代码不得硬编码或假设「17+3 / 满分 40 / 阈值 70/40」等 v1.0.4 旧默认值；所有题量、满分、阈值必须从 `strategy_config` 读取。

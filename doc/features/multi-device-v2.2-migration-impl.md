@@ -1,6 +1,6 @@
 # 多设备架构 v2.2 迁移：实现文档
 
-> **状态：** M2 已实施；M3 待实施
+> **状态：** M2 已实施；M3 已实现，待最终验收
 > **对应 Mini-PRD：** `doc/features/multi-device-v2.2-migration-prd.md` §10.1-§10.6、§11
 > **上游权威：** `doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md`
 > **当前起点：** schema v0.1.14-multi-device-m2-session-foundation
@@ -724,7 +724,7 @@ read handler -> 共享 IPC 输出类型 -> renderer
 
 ## M3 Grant/Assignment：实现文档
 
-> **状态：** 待实施
+> **状态：** 已实现，待最终验收
 > **对应 Mini-PRD：** `doc/features/multi-device-v2.2-migration-prd.md` §11
 > **当前起点：** schema v0.1.14-multi-device-m2-session-foundation
 > **目标版本：** schema v0.1.15-multi-device-m3-grant-assignment
@@ -1166,25 +1166,25 @@ STUDENT assignment:startAssessment
 
 ## M3 项目约束自检
 
-- [ ] 事件写入顺序仍为 JSONL append -> domain_event_projection -> reducer。
-- [ ] 新 EventType 与 AggregateType 已加入 `src/shared/types/event-payloads.ts`。
-- [ ] 新 IPC 通道已在 `src/preload/index.ts` 白名单声明。
-- [ ] 未新增 ORM、CSV、Markdown renderer 或新运行时依赖。
-- [ ] `src/main/` 本地模块仍使用静态 import。
-- [ ] FSM 状态迁移路径与 D1/D2-D4 一致。
-- [ ] D7、M4 safety re-key、M5 command_log/SSE、M6 learning、M7 支撑表未提前落地。
-- [ ] JSON 字段 `capabilities_json` / `confirmation_evidence` 写入前有运行时验证。
-- [ ] 本地 runtime 引导不创建固定 `org_default` 或跨安装共享 ID。
-- [ ] `assessment:startSession` 不再允许新 M3 会话绕过 assignment。
+- [x] 事件写入顺序仍为 JSONL append -> domain_event_projection -> reducer。
+- [x] 新 EventType 与 AggregateType 已加入 `src/shared/types/event-payloads.ts`。
+- [x] 新 IPC 通道已在 `src/preload/index.ts` 白名单声明。
+- [x] 未新增 ORM、CSV、Markdown renderer 或新运行时依赖。
+- [x] `src/main/` 本地模块仍使用静态 import。
+- [x] FSM 状态迁移路径与 D1/D2-D4 一致。
+- [x] D7、M4 safety re-key、M5 command_log/SSE、M6 learning、M7 支撑表未提前落地。
+- [x] JSON 字段 `capabilities_json` / `confirmation_evidence` 写入前有运行时验证。
+- [x] 本地 runtime 引导不创建固定 `org_default` 或跨安装共享 ID。
+- [x] `assessment:startSession` 不再允许新 M3 会话绕过 assignment。
 
 ## M3 回归验收清单
 
-- [ ] `npm run docs:index:check` 通过。
-- [ ] `npm run typecheck` 通过。
-- [ ] `npm run lint` 通过或仅剩既有 warning 且无新增 error。
-- [ ] `npm test` 全量通过。
-- [ ] `npm run build` 通过。
-- [ ] `git diff --check` 通过。
+- [x] `npm run docs:index:check` 通过。
+- [x] `npm run typecheck` 通过。
+- [x] `npm run lint` 通过或仅剩既有 warning 且无新增 error。
+- [x] `npm test` 全量通过。
+- [x] `npm run build` 通过。
+- [x] `git diff --check` 通过。
 - [ ] 手工冒烟：教师创建 assessment -> assignment:create -> confirmStudent -> assignment:startAssessment -> 学生答第一题。
 - [ ] 手工冒烟：`assessment:startSession` 对 PREPARED/ASSIGNED 返回明确错误，不写事件、不改 phase。
 - [ ] 手工冒烟：rebind 无需重确认与需重确认两条路径均保持事务一致。

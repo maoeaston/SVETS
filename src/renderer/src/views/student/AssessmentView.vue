@@ -90,6 +90,19 @@
       </p>
     </div>
 
+    <!-- M3 assignment gate：未分配或未确认时不得进入答题态 -->
+    <div
+      v-else-if="assignmentBlocked"
+      class="assignment-blocked-state"
+    >
+      <p class="state-msg state-paused">
+        {{ assignmentBlockedMessage }}
+      </p>
+      <p class="state-hint">
+        请等待教师完成分配与确认
+      </p>
+    </div>
+
     <!-- 学生从未开始 → 显示"开始答题"按钮 -->
     <div
       v-else-if="session.status === 'ACTIVE' && !currentQuestion"
@@ -259,6 +272,17 @@ const dragMap = ref<Record<string, string>>({})
 
 const session = computed(() => store.currentSession)
 const currentQuestion = computed(() => store.currentQuestion)
+
+const assignmentBlocked = computed(() => {
+  const phase = session.value?.deliveryPhase
+  return phase === 'PREPARED' || phase === 'ASSIGNED' || phase === 'STUDENT_CONFIRMED'
+})
+
+const assignmentBlockedMessage = computed(() => {
+  const phase = session.value?.deliveryPhase
+  if (phase === 'PREPARED') return '需要教师分配后才能开始测评'
+  return '需要完成学生确认后才能开始测评'
+})
 
 const progressPercent = computed(() => {
   if (!session.value || session.value.onlineQuestionCount === 0) return 0
