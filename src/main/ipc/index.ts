@@ -8,6 +8,7 @@ import { registerTrainingHandlers } from './handlers/training'
 import { registerOperationScoringHandlers } from './handlers/operation-scoring'
 import { registerJobSkillScoringHandlers } from './handlers/job-skill-scoring'
 import { registerObservationHandlers } from './handlers/observation'
+import { registerAssignmentHandlers } from './handlers/assignment'
 
 registerAuthHandlers()
 registerStudentHandlers()
@@ -17,5 +18,6 @@ registerTrainingHandlers()
 registerOperationScoringHandlers()
 registerJobSkillScoringHandlers()
 registerObservationHandlers()
+registerAssignmentHandlers()
 
 export {}
