@@ -2,7 +2,7 @@
 // 覆盖 impl.md Step 9a 读路径测试用例。
 //
 // [!] getSession / listSessions 是纯读，不写事件，但 setupSession 调 createSession
-// 会写事件，故仍 vi.mock event-writer（与 assessment-answer.test.ts 同模式，MAX+1 sequence）。
+// + startSession 会写事件，故仍 vi.mock event-writer（与 assessment-answer.test.ts 同模式，MAX+1 sequence）。
 //
 // [!] 脱敏验证：currentQuestion 必须不含 expected_answer / is_correct / variants[*].expected_answer。
 // 这是 Step 9a 的安全契约，专测用 expect(...).toBeUndefined() 断言"字段不存在"。
@@ -71,7 +71,7 @@ vi.mock('../../../domain/event-writer', () => ({
   )
 }))
 
-import { createSession, getSession, listSessions, seedAssessmentErrorCodes } from '../assessment'
+import { createSession, startSession, getSession, listSessions, seedAssessmentErrorCodes } from '../assessment'
 import {
   createTestDb,
   seedCaller,
@@ -168,6 +168,14 @@ function setupSession(
   if (!result.success) {
     throw new Error(`setupSession createSession failed: ${JSON.stringify(result)}`)
   }
+  const started = startSession(db, {
+    callerUserId: student,
+    callerRole: 'STUDENT',
+    sessionId: result.sessionId
+  })
+  if (!started.success) {
+    throw new Error(`setupSession startSession failed: ${JSON.stringify(started)}`)
+  }
   return { sessionId: result.sessionId, questions: result.questions }
 }
 
@@ -182,8 +190,7 @@ function pickQuestion(
 
 /**
  * UPDATE assessment_session.current_question_id。
- * reducer 的 applySessionStarted 不设此字段（保持 NULL，仅 applyAnswerSubmitted 推进），
- * 故 getSession 测试需显式 SET 以验证 currentQuestion 解析路径。
+ * 部分 getSession 测试需要指定题型，故显式 SET 以验证 currentQuestion 解析路径。
  */
 function setCurrentQuestion(sessionId: string, questionId: string | null): void {
   db.prepare('UPDATE assessment_session SET current_question_id = ? WHERE session_id = ?').run(

@@ -50,7 +50,7 @@ vi.mock('../../../domain/event-writer', () => ({
   )
 }))
 
-import { createSession, seedAssessmentErrorCodes } from '../assessment'
+import { createSession, startSession, seedAssessmentErrorCodes } from '../assessment'
 import { createTestDb, seedCaller, seedStudent } from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
 import type { CreateSessionParams } from '../../../../shared/types/assessment'
@@ -170,6 +170,17 @@ function baseParams(over: Partial<CreateSessionParams> = {}): CreateSessionParam
   }
 }
 
+function startJobSkillSession(sessionId: string): void {
+  const result = startSession(db, {
+    callerUserId: studentId,
+    callerRole: 'STUDENT',
+    sessionId
+  })
+  if (!result.success) {
+    throw new Error(`startJobSkillSession failed: ${JSON.stringify(result)}`)
+  }
+}
+
 beforeAll(async () => {
   db = await createTestDb()
   db.exec('DROP TRIGGER IF EXISTS trg_assessment_session_no_delete')
@@ -217,6 +228,7 @@ describe('TC-N: JOB_SKILL_ASSESSMENT session 固定组卷', () => {
     const result = createSession(db, baseParams())
     expect(result.success).toBe(true)
     if (!result.success) return
+    startJobSkillSession(result.sessionId)
     const sess = db
       .prepare('SELECT strategy_type, online_question_count, offline_question_count, status FROM assessment_session WHERE session_id = ?')
       .get(result.sessionId) as { strategy_type: string; online_question_count: number; offline_question_count: number; status: string } | undefined
@@ -273,6 +285,7 @@ describe('TC-N: JOB_SKILL_ASSESSMENT session 固定组卷', () => {
     expect(result.success).toBe(true)
     if (!result.success) return
     const sid = result.sessionId
+    startJobSkillSession(sid)
 
     const intResult = emotionInterrupt(db, {
       callerUserId: studentId,
@@ -346,6 +359,7 @@ describe('TC-N: JOB_SKILL_ASSESSMENT session 固定组卷', () => {
     const result = createSession(db, baseParams())
     expect(result.success).toBe(true)
     if (!result.success) return
+    startJobSkillSession(result.sessionId)
     const redResult = triggerRedline(db, {
       callerUserId: callerId,
       callerRole: 'TEACHER',

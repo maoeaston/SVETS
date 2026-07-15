@@ -74,6 +74,7 @@ vi.mock('../../../domain/event-writer', () => ({
 
 import {
   createSession,
+  startSession,
   submitAnswer,
   triggerRedline,
   calculateResult,
@@ -85,7 +86,8 @@ import {
   seedCaller,
   seedStudent,
   seedQuestionBankDraft,
-  baseStrategyInput
+  baseStrategyInput,
+  setAssessmentSessionStateFixture
 } from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
 import type { StrategyInput } from '../../../../shared/types/strategy'
@@ -173,6 +175,14 @@ function setupSession(opts: {
   })
   if (!result.success) {
     throw new Error(`setupSession createSession failed: ${JSON.stringify(result)}`)
+  }
+  const started = startSession(db, {
+    callerUserId: opts.student ?? studentId,
+    callerRole: 'STUDENT',
+    sessionId: result.sessionId
+  })
+  if (!started.success) {
+    throw new Error(`setupSession startSession failed: ${JSON.stringify(started)}`)
   }
   return { sessionId: result.sessionId, questions: result.questions }
 }
@@ -667,10 +677,7 @@ describe('assessment:triggerRedline 批量熔断', () => {
 
   it('EMOTION_INTERRUPTED 态 session 也被熔断（schema trigger WHERE 含此状态）', () => {
     const { sessionId } = setupSession()
-    db.prepare('UPDATE assessment_session SET status = ? WHERE session_id = ?').run(
-      'EMOTION_INTERRUPTED',
-      sessionId
-    )
+    setAssessmentSessionStateFixture(db, sessionId, 'EMOTION_INTERRUPTED')
 
     const result = triggerRedline(db, redlineParams(sessionId))
     expect(result.success).toBe(true)
@@ -679,10 +686,7 @@ describe('assessment:triggerRedline 批量熔断', () => {
 
   it('OFFLINE_PENDING 态 session 也被熔断（schema trigger WHERE 含此状态）', () => {
     const { sessionId } = setupSession()
-    db.prepare('UPDATE assessment_session SET status = ? WHERE session_id = ?').run(
-      'OFFLINE_PENDING',
-      sessionId
-    )
+    setAssessmentSessionStateFixture(db, sessionId, 'OFFLINE_PENDING', 'OFFLINE_SCORING')
 
     const result = triggerRedline(db, redlineParams(sessionId))
     expect(result.success).toBe(true)
@@ -691,10 +695,7 @@ describe('assessment:triggerRedline 批量熔断', () => {
 
   it('COMPLETED 态 session 触发红线 → SESSION_NOT_ACTIVE（前置 status 校验，不进事务）', () => {
     const { sessionId } = setupSession()
-    db.prepare('UPDATE assessment_session SET status = ? WHERE session_id = ?').run(
-      'COMPLETED',
-      sessionId
-    )
+    setAssessmentSessionStateFixture(db, sessionId, 'COMPLETED')
 
     const result = triggerRedline(db, redlineParams(sessionId))
     expect(result).toEqual({ success: false, errorCode: 'SESSION_NOT_ACTIVE' })

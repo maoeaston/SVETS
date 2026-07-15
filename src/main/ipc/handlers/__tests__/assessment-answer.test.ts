@@ -72,13 +72,14 @@ vi.mock('../../../domain/event-writer', () => ({
   )
 }))
 
-import { createSession, submitAnswer, seedAssessmentErrorCodes } from '../assessment'
+import { createSession, submitAnswer, startSession, seedAssessmentErrorCodes } from '../assessment'
 import {
   createTestDb,
   seedCaller,
   seedStudent,
   seedQuestionBankDraft,
-  baseStrategyInput
+  baseStrategyInput,
+  setAssessmentSessionStateFixture
 } from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
 import type { StrategyInput } from '../../../../shared/types/strategy'
@@ -177,6 +178,14 @@ function setupSession(options: {
   })
   if (!result.success) {
     throw new Error(`setupSession createSession failed: ${JSON.stringify(result)}`)
+  }
+  const started = startSession(db, {
+    callerUserId: options.student ?? studentId,
+    callerRole: 'STUDENT',
+    sessionId: result.sessionId
+  })
+  if (!started.success) {
+    throw new Error(`setupSession startSession failed: ${JSON.stringify(started)}`)
   }
   return { sessionId: result.sessionId, questions: result.questions }
 }
@@ -335,7 +344,8 @@ describe('assessment:submitAnswer 正常路径', () => {
       selected: true
     })
 
-    // ANSWER_SUBMITTED 事件落 domain_event_projection，event_sequence 递增（SESSION_STARTED=1 → ANSWER=2）
+    // ANSWER_SUBMITTED 事件落 domain_event_projection，event_sequence 递增
+    // （SESSION_STARTED=1 → FIRST_QUESTION_ACTIVATED=2 → ANSWER=3）
     const evt = db
       .prepare(
         `SELECT event_sequence FROM domain_event_projection
@@ -343,7 +353,7 @@ describe('assessment:submitAnswer 正常路径', () => {
       )
       .get(sessionId) as { event_sequence: number } | undefined
     expect(evt).toBeDefined()
-    expect(evt!.event_sequence).toBe(2)
+    expect(evt!.event_sequence).toBe(3)
 
     // session 计数前移（reducer applyAnswerSubmitted）
     const sess = db
@@ -561,7 +571,7 @@ describe('assessment:submitAnswer 状态校验', () => {
   it('COMPLETED → SESSION_NOT_ACTIVE', () => {
     const { sessionId, questions } = setupSession({ contentByType: { TRUE_FALSE: TF_CONTENT } })
     const q = questions[0]
-    db.prepare('UPDATE assessment_session SET status = ? WHERE session_id = ?').run('COMPLETED', sessionId)
+    setAssessmentSessionStateFixture(db, sessionId, 'COMPLETED')
 
     const result = submitAnswer(
       db,

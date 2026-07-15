@@ -72,6 +72,7 @@ vi.mock('../../../domain/event-writer', () => ({
 
 import {
   createSession,
+  startSession,
   emotionInterrupt,
   emotionResume,
   abortSession,
@@ -83,7 +84,8 @@ import {
   seedCaller,
   seedStudent,
   seedQuestionBankDraft,
-  baseStrategyInput
+  baseStrategyInput,
+  setAssessmentSessionStateFixture
 } from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
 import type { StrategyInput } from '../../../../shared/types/strategy'
@@ -173,6 +175,14 @@ function setupSession(
   })
   if (!result.success) {
     throw new Error(`setupSession createSession failed: ${JSON.stringify(result)}`)
+  }
+  const started = startSession(db, {
+    callerUserId: student,
+    callerRole: 'STUDENT',
+    sessionId: result.sessionId
+  })
+  if (!started.success) {
+    throw new Error(`setupSession startSession failed: ${JSON.stringify(started)}`)
   }
   return { sessionId: result.sessionId, questions: result.questions }
 }
@@ -300,7 +310,7 @@ describe('assessment:emotionInterrupt 拒绝路径', () => {
 
   it('COMPLETED → SESSION_NOT_ACTIVE', () => {
     const { sessionId } = setupSession()
-    db.prepare('UPDATE assessment_session SET status = ? WHERE session_id = ?').run('COMPLETED', sessionId)
+    setAssessmentSessionStateFixture(db, sessionId, 'COMPLETED')
     const result = emotionInterrupt(db, interruptParams(sessionId))
     expect(result).toEqual({ success: false, errorCode: 'SESSION_NOT_ACTIVE' })
   })
@@ -487,7 +497,7 @@ describe('assessment:abortSession 拒绝路径', () => {
 
   it('COMPLETED → SESSION_NOT_ACTIVE', () => {
     const { sessionId } = setupSession()
-    db.prepare('UPDATE assessment_session SET status = ? WHERE session_id = ?').run('COMPLETED', sessionId)
+    setAssessmentSessionStateFixture(db, sessionId, 'COMPLETED')
     const result = abortSession(db, abortParamsSession(sessionId))
     expect(result).toEqual({ success: false, errorCode: 'SESSION_NOT_ACTIVE' })
   })
