@@ -1,9 +1,9 @@
 # 多设备架构 v2.2 迁移：Mini-PRD（分里程碑实施）
 
-> **状态：** M1 已实施并验收通过（2026-07-14）；M2 Business Session Foundation 已实施，自动验收进行中；M3-M7 仍为 DRAFT/登记
+> **状态：** M1 已实施并验收通过（2026-07-14）；M2 Business Session Foundation 已提交为 v0.1.14（2026-07-15）；M3 Grant/Assignment 进入 PRD 起草；M4-M7 仍为 DRAFT/登记
 > **上游权威：** `doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md`（AUTHORITATIVE BASELINE）
 > **正式 Schema 基线：** `src/main/db/schema.sql` v0.1.14-multi-device-m2-session-foundation
-> **本轮文档范围：** M2 Business Session Foundation PRD 与实施记录；M3-M7 不在本轮交付。
+> **本轮文档范围：** M2 Business Session Foundation PRD 与实施记录；M3 Grant/Assignment PRD 起草；M4-M7 不在本轮交付。
 
 ---
 
@@ -26,8 +26,8 @@ v2.2 权威基线定义了 19 张新表、13 个增量列、22 条 CREATE TRIGGE
 | 里程碑 | 范围 | 依赖 | 风险 | 状态 |
 |--------|------|------|------|------|
 | **M1 Schema Foundation** | organization, node, device, device_runtime_session, auth_session（T1-T5）+ student_profile.user_id（B1）+ 相关索引 | 无（纯新增 + 1 nullable 列） | 低 | **已完成** |
-| **M2 Business Session 骨架** | business_session（T6）+ assessment/training.business_session_id（B3/B4）+ assessment.delivery_phase/event_sequence_version/observation_template_id（B2）+ D2-D6、D8 + 回填 + handler/reducer 兼容 | M1 | 中（改现有表 INSERT/UPDATE 行为） | **已实施，待最终验收** |
-| M3 Grant/Assignment | delegated_access_grant（T7）、business_session_assignment（T8）+ 完整前向状态机 D1 + D9-D11 + rebind 事务 | M2 | 中 | 登记 |
+| **M2 Business Session 骨架** | business_session（T6）+ assessment/training.business_session_id（B3/B4）+ assessment.delivery_phase/event_sequence_version/observation_template_id（B2）+ D2-D6、D8 + 回填 + handler/reducer 兼容 | M1 | 中（改现有表 INSERT/UPDATE 行为） | **已提交 v0.1.14** |
+| M3 Grant/Assignment | delegated_access_grant（T7）、business_session_assignment（T8）+ 完整前向状态机 D1 + D9-D11 + rebind 事务 | M2 | 中 | **PRD 起草中** |
 | M4 Safety Re-key | 替换 4 个安全触发器 + 2 个开放会话唯一索引 + job_code 查询索引（§13） | M2 | **高**（改熔断语义） | 登记 |
 | M5 Event-Sourcing Infra | command_log, applied_event_batch, processed_event, projector_cursor（T11-T14）+ 三段式协议代码 | M1 | 高 | 登记 |
 | M6 Learning | learning_session, learning_progress（T9/T10）+ D7 + 学习 handler/view | M2 | 中 | 登记 |
@@ -369,4 +369,163 @@ M2 的共享类型、preload 白名单和 renderer 调用保持向后兼容：�
 | M2-BIZ-11 | 构造空父 ID、错误 session_type/student/job/task 或修改父关键键 | D5、D6、D8 拒绝写入，应用返回模块系统错误而非 trigger 原文 | 真实 SQLite 负向测试 |
 | M2-BIZ-12 | 全量现有 assessment/training 测试 | 既有鉴权、错误码、答题、情绪、红线、训练 step 和报告行为无回归 | typecheck + lint + 全量 vitest |
 
-M2 PRD 至此具备实现输入。`/vibe-impl` 已生成 `doc/features/multi-device-v2.2-migration-impl.md` 并通过 Reviewer 二审；用户确认后，从该文档 Step 1 开始逐步实施。
+M2 PRD 至此具备实现输入。`/vibe-impl` 已生成 `doc/features/multi-device-v2.2-migration-impl.md` 并通过 Reviewer 二审；实现已提交为 `e3751cb feat(m2): ship business session foundation`。
+
+## 11. M3 Grant/Assignment（PRD DRAFT）
+
+### 11.1 目标与非目标
+
+M3 在 v0.1.14 的 `business_session` 基础上落地教师代理授权和设备分配的最小闭环，使 assessment 的多设备入口从 M2 临时直跳改为权威状态机：
+
+```text
+PREPARED -> ASSIGNED -> STUDENT_CONFIRMED -> ONLINE_IN_PROGRESS
+```
+
+M3 交付以下内容：
+
+- `delegated_access_grant` 与 `business_session_assignment` 两张表、索引、迁移和结构断言。
+- D1 delivery_phase 前向状态机触发器。
+- D9-D11 Grant/Assignment 一致性触发器。
+- 教师创建 assignment、学生确认 assignment、设备 runtime rebind 的本地 IPC/领域事件合同。
+- assessment `startSession` 与 assignment 确认路径对齐：M3 后新会话不得从 `PREPARED` 直接进入 `ONLINE_IN_PROGRESS`。
+
+M3 明确不交付：
+
+- M4 安全事件聚合键 re-key 和跨 assessment/training 新熔断语义。
+- M5 command_log、applied_event_batch、SSE、REST/HTTPS、租约和跨设备同步协议。
+- M6 learning_session / learning_progress 与 D7。
+- M7 offline_score_draft、invalidation、correction、backup_manifest、pairing_challenge。
+- 真实设备发现、证书、网络配对或生产级推送；M3 只做本地 Electron/SQLite 内的授权投影和状态约束。
+
+### 11.2 Schema 与 migration 合同
+
+M3 目标版本固定为：
+
+- schema version：`0.1.15-multi-device-m3-grant-assignment`
+- migration id：`2026-07-15_mvp_schema_v0_1_15_multi_device_m3_grant_assignment`
+- 前置结构：M2 的 `business_session`、assessment/training 父子约束和 D2-D6/D8 必须完整。
+
+M3 migration 只做新增对象与触发器，不回写已有 M2 assessment 的 assignment 历史：
+
+1. 新增 `delegated_access_grant` 表与索引：
+   - `ux_grant_one_active_per_business_session`
+   - `idx_grant_student_device_status`
+2. 新增 `business_session_assignment` 表与索引：
+   - `ux_assignment_one_active_per_grant`
+   - `ux_assignment_one_active_per_session`
+   - `ux_assignment_one_active_per_device`
+3. 新增 D9-D11 六个触发器：
+   - `trg_grant_self_consistency_insert/update`
+   - `trg_assignment_grant_consistency_insert/update`
+   - `trg_assignment_active_requires_active_grant_insert/update`
+4. 新增 D1 `trg_assessment_delivery_phase_forward_only`。
+5. 写入 M3 migration 记录前必须通过 `PRAGMA foreign_key_check` 和 `PRAGMA integrity_check`。
+
+`isM3StructurallyApplied()` 至少断言：
+
+- 两张表、五个索引、七个触发器全部存在且同名对象语义匹配。
+- D1 已存在；D7 仍不存在。
+- M2 结构断言仍通过。
+- 没有提前创建 M4/M5/M6/M7 表或安全 re-key 触发器。
+
+旧 M2 会话兼容规则：
+
+- 已经处于 `ONLINE_IN_PROGRESS` 或更后阶段的 assessment 不回退、不补造 Assignment。
+- `PREPARED` 的存量 assessment 可在 M3 后被新 assignment 流程接管。
+- 迁移只加约束；若旧库存在非法 phase 跳转记录，M3 不改历史状态，但 D1 生效后禁止继续非法推进。
+
+### 11.3 输入、输出与领域事件合同
+
+M3 不改变 assessment/training create IPC 的输入。新能力应独立成 assignment/grant IPC，避免把设备授权参数塞进 `assessment:createSession`：
+
+| IPC | 调用者 | 输入核心 | 成功输出 |
+|-----|--------|----------|----------|
+| `assignment:create` | TEACHER / ADMIN | `businessSessionId`、`deviceRuntimeSessionId`、`capabilities`、确认方式 | `grantId`、`assignmentId`、`deliveryPhase='ASSIGNED'` |
+| `assignment:confirmStudent` | STUDENT / TEACHER | `assignmentId`、确认材料（PIN/教师确认/NONE_REQUIRED） | `assignmentId`、`deliveryPhase='STUDENT_CONFIRMED'` |
+| `assignment:startAssessment` | STUDENT | `assignmentId` | 原 `startSession` 成功结构，且进入 `ONLINE_IN_PROGRESS` |
+| `assignment:rebind` | TEACHER / ADMIN / 设备恢复入口 | `assignmentId`、新 `deviceRuntimeSessionId`、是否需重确认 | 新 `grantId`、`assignment.version+1`、assignment 当前状态 |
+| `assignment:release` | TEACHER / ADMIN / 完成流程 | `assignmentId`、`releaseReason` | assignment 终态、grant 终态 |
+
+事件合同：
+
+| 事件 | aggregate | 投影职责 |
+|------|-----------|----------|
+| `ASSIGNMENT_CREATED` | `BUSINESS_SESSION` | 创建 ACTIVE grant、PENDING_CONFIRM assignment；assessment phase `PREPARED -> ASSIGNED` |
+| `ASSIGNMENT_STUDENT_CONFIRMED` | `BUSINESS_SESSION` | assignment `PENDING_CONFIRM -> ACTIVE`；记录确认字段；assessment phase `ASSIGNED -> STUDENT_CONFIRMED` |
+| `ASSIGNMENT_ASSESSMENT_STARTED` | `ASSESSMENT_SESSION` | 复用现有首题激活语义；assessment phase `STUDENT_CONFIRMED -> ONLINE_IN_PROGRESS` |
+| `GRANT_REBOUND` | `BUSINESS_SESSION` | 旧 grant EXPIRED；新 grant ACTIVE；assignment 改指新 grant、version+1 |
+| `ASSIGNMENT_RELEASED` | `BUSINESS_SESSION` | assignment RELEASED；grant RELEASED/EXPIRED/REVOKED |
+
+[!] M3 尚未落地 M5 的 command_log 和跨设备事件协议，因此这些事件仍由当前本地 `writeEvent` / reducer 路径写入 JSONL 与 SQLite 投影。不得在 M3 文档或验收中宣称已支持多端同步、租约、SSE 或离线冲突合并。
+
+### 11.4 状态推进规则
+
+M3 后，新 assessment 的前半段推进必须满足：
+
+| 当前事实 | assessment_session 变化 |
+|----------|-------------------------|
+| `assessment:createSession` | `INIT + PREPARED`，不分配设备 |
+| `assignment:create` 成功 | `delivery_phase='ASSIGNED'`，`status` 保持 `INIT` |
+| `assignment:confirmStudent` 成功 | `delivery_phase='STUDENT_CONFIRMED'`，`status` 保持 `INIT` |
+| `assignment:startAssessment` 成功 | `status='ACTIVE'`、`delivery_phase='ONLINE_IN_PROGRESS'`、首题指针就位 |
+
+现有 `assessment:startSession` 需要收窄：
+
+- 若目标 session 已有 ACTIVE assignment 且 phase 为 `STUDENT_CONFIRMED`，可由 `assignment:startAssessment` 或内部复用逻辑启动。
+- 若 phase 仍是 `PREPARED` 或 `ASSIGNED`，直接调用原 `assessment:startSession` 必须返回明确错误码，不得绕过 D1。
+- 若是 M2 存量会话且已经在 `ONLINE_IN_PROGRESS` 或之后，保持旧读/答题兼容，不要求 assignment。
+
+新增错误码：
+
+- `ASSIGNMENT_REQUIRED`：session 未分配，不能直接开始。
+- `STUDENT_CONFIRMATION_REQUIRED`：已分配但学生未确认。
+- `ASSIGNMENT_NOT_ACTIVE`：assignment 不是 ACTIVE 或 PENDING_CONFIRM 的合法状态。
+- `DEVICE_RUNTIME_NOT_ACTIVE`：设备运行会话不存在或非 ACTIVE。
+- `GRANT_AUTH_INVALID`：教师 auth_session 不存在、非 ACTIVE 或已过期。
+
+### 11.5 Rebind 合同
+
+M3 的 rebind 只承诺本地事务一致性，不承诺网络自动恢复：
+
+1. 读取非终态 assignment 和当前 grant。
+2. 校验新 `device_runtime_session` 与原 `device_id` 关系；若换设备，必须由 TEACHER/ADMIN 明确授权。
+3. 单事务内执行：
+   - 旧 grant `ACTIVE -> EXPIRED`。
+   - 插入新 ACTIVE grant，`replaces_grant_id=old_grant`。
+   - assignment 改指新 grant，`version=version+1`。
+   - 需要重确认时，assignment 变为 `PENDING_CONFIRM` 并清空 `student_confirmed_at`；否则保持 `ACTIVE`。
+4. D11 只在写入 assignment 时要求目标 grant ACTIVE；不增加“grant 失活前必须无活动 assignment”的对称触发器，避免与唯一索引形成 rebind 死锁。
+
+### 11.6 验收标准
+
+| # | 输入 | 预期输出 | 验证方式 |
+|---|------|----------|----------|
+| M3-MIG-01 | 全新空库 | v0.1.15 schema 创建 M1/M2/M3 记录；两张表、五个索引、D1/D9-D11 存在 | schema 加载测试 |
+| M3-MIG-02 | v0.1.14 M2 旧库 | 原 assessment/training 数据不变；M3 对象新增；M2 断言仍通过 | migration 单测 |
+| M3-MIG-03 | 同名错误 D1/D9-D11 触发器或索引 | runner fail closed，不信任对象名 | drift 单测 |
+| M3-GRANT-01 | TEACHER 为 PREPARED assessment 创建 assignment | grant ACTIVE、assignment PENDING_CONFIRM；phase 变 ASSIGNED | handler 集成测试 |
+| M3-GRANT-02 | grant 的 student 与 business_session.student 不一致 | D9 拒绝写入 | 真实 SQLite 负向测试 |
+| M3-GRANT-03 | grant 的 runtime.device 与 grant.device 不一致 | D9 拒绝写入 | 真实 SQLite 负向测试 |
+| M3-GRANT-04 | grant 的 teacher_auth_session 已过期或非 ACTIVE | D9 拒绝写入 | handler + trigger 测试 |
+| M3-ASSIGN-01 | assignment student/device/business_session 与 grant 不一致 | D10 拒绝写入 | trigger 测试 |
+| M3-ASSIGN-02 | assigned_by 既不是 grant teacher 也不是 ACTIVE ADMIN | D10 拒绝写入 | trigger 测试 |
+| M3-ASSIGN-03 | assignment 指向非 ACTIVE grant 且状态为 PENDING_CONFIRM/ACTIVE | D11 拒绝写入 | trigger 测试 |
+| M3-PHASE-01 | PREPARED 直接启动 assessment | 返回 `ASSIGNMENT_REQUIRED`，phase 不变 | startSession 回归测试 |
+| M3-PHASE-02 | ASSIGNED 直接启动 assessment | 返回 `STUDENT_CONFIRMATION_REQUIRED`，phase 不变 | startSession 回归测试 |
+| M3-PHASE-03 | PENDING_CONFIRM assignment 学生确认 | assignment ACTIVE；phase `ASSIGNED -> STUDENT_CONFIRMED` | handler 集成测试 |
+| M3-PHASE-04 | ACTIVE assignment 启动 assessment | phase `STUDENT_CONFIRMED -> ONLINE_IN_PROGRESS`，首题激活 | handler 集成测试 |
+| M3-PHASE-05 | 构造非法 phase 跳转或回退 | D1 拒绝，FINALIZED 仍终态不可变 | SQLite trigger 测试 |
+| M3-REBIND-01 | crash restart 且无需重确认 | 旧 grant EXPIRED，新 grant ACTIVE，assignment 指向新 grant、version+1、状态保持 ACTIVE | rebind 集成测试 |
+| M3-REBIND-02 | graceful/replacement 需重确认 | assignment 改 PENDING_CONFIRM，清空 `student_confirmed_at` | rebind 集成测试 |
+| M3-REG-01 | M2 存量 ONLINE_IN_PROGRESS 或之后会话 | 不要求补 assignment，既有答题、评分、报告测试无回归 | 全量 vitest + focused tests |
+
+### 11.7 M3 首版产品口径
+
+M3 首版固定以下口径，避免实现阶段临时扩 scope：
+
+1. 学生确认方式只实现 `NONE_REQUIRED` 和 `TEACHER_ATTESTATION`。`PIN`、`PHOTO_MATCH` 需要 PIN 发放、摄像头或照片比对能力，全部推迟到后续授权体验里程碑。
+2. 设备 runtime 只实现本地最小引导：在开发/单机 Electron 环境中确保存在可用于 FK 的 node、device、device_runtime_session 和教师 auth_session；不实现网络心跳、设备发现、证书或真实跨机 reconnect。
+3. `assignment:create` 默认使用 `TEACHER_ATTESTATION`；若调用方显式传 `NONE_REQUIRED`，只能用于同机开发或无需学生二次确认的演示流程。
+4. `assignment:rebind` 只验证同一 SQLite 库中的 runtime 切换事务；跨设备断网恢复、租约、SSE 通知和 command_log 幂等归 M5。
+
+进入 `/vibe-impl` 前，Reviewer 需要重点检查本地 runtime 引导是否会污染生产数据：它必须可重复、可审计，并且不得创建固定 `org_default` 之类跨安装共享 ID。
