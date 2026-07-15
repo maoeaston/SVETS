@@ -72,7 +72,6 @@ vi.mock('../../../domain/event-writer', () => ({
 
 import {
   createSession,
-  startSession,
   emotionInterrupt,
   emotionResume,
   abortSession,
@@ -149,6 +148,16 @@ interface SetupResult {
 
 type OnlineQuestionType = 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG'
 
+function forceOnlineInProgress(sessionId: string, firstQuestionId: string): void {
+  setAssessmentSessionStateFixture(db, sessionId, 'ACTIVE', 'ONLINE_IN_PROGRESS')
+  db.prepare(
+    `UPDATE assessment_session
+       SET current_question_id = ?,
+           started_at = COALESCE(started_at, '2026-07-01T00:00:00.000Z')
+     WHERE session_id = ?`
+  ).run(firstQuestionId, sessionId)
+}
+
 function seedContentJsonByType(questionType: OnlineQuestionType, content: Record<string, unknown>): void {
   db.prepare('UPDATE question_bank SET content_json = ? WHERE question_type = ?').run(
     JSON.stringify(content),
@@ -176,14 +185,7 @@ function setupSession(
   if (!result.success) {
     throw new Error(`setupSession createSession failed: ${JSON.stringify(result)}`)
   }
-  const started = startSession(db, {
-    callerUserId: student,
-    callerRole: 'STUDENT',
-    sessionId: result.sessionId
-  })
-  if (!started.success) {
-    throw new Error(`setupSession startSession failed: ${JSON.stringify(started)}`)
-  }
+  forceOnlineInProgress(result.sessionId, result.questions[0].questionId)
   return { sessionId: result.sessionId, questions: result.questions }
 }
 

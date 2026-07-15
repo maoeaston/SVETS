@@ -50,7 +50,7 @@ vi.mock('../../../domain/event-writer', () => ({
   )
 }))
 
-import { createSession, seedAssessmentErrorCodes, startSession, submitAnswer } from '../assessment'
+import { createSession, seedAssessmentErrorCodes, submitAnswer } from '../assessment'
 import { submitJobSkillOfflineScores, getJobSkillOfflineScores } from '../job-skill-scoring'
 import {
   createTestDb,
@@ -276,12 +276,6 @@ describe('TC-O: JOB_SKILL 线下评分录入', () => {
     expect(result.success).toBe(true)
     if (!result.success) return
     const sessionId = result.sessionId
-    const started = startSession(db, {
-      callerUserId: studentId,
-      callerRole: 'STUDENT',
-      sessionId
-    })
-    expect(started.success).toBe(true)
 
     const onlineQuestion = db
       .prepare(
@@ -290,6 +284,13 @@ describe('TC-O: JOB_SKILL 线下评分录入', () => {
           LIMIT 1`
       )
       .get(sessionId) as { question_id: string; question_type: string }
+    setAssessmentSessionStateFixture(db, sessionId, 'ACTIVE', 'ONLINE_IN_PROGRESS')
+    db.prepare(
+      `UPDATE assessment_session
+         SET current_question_id = ?,
+             started_at = COALESCE(started_at, '2026-07-01T00:00:00.000Z')
+       WHERE session_id = ?`
+    ).run(onlineQuestion.question_id, sessionId)
 
     const ans = submitAnswer(db, {
       callerUserId: studentId,

@@ -72,7 +72,7 @@ vi.mock('../../../domain/event-writer', () => ({
   )
 }))
 
-import { createSession, submitAnswer, startSession, seedAssessmentErrorCodes } from '../assessment'
+import { createSession, submitAnswer, seedAssessmentErrorCodes } from '../assessment'
 import {
   createTestDb,
   seedCaller,
@@ -152,6 +152,16 @@ interface SetupResult {
 
 type OnlineType = 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG'
 
+function forceOnlineInProgress(sessionId: string, firstQuestionId: string): void {
+  setAssessmentSessionStateFixture(db, sessionId, 'ACTIVE', 'ONLINE_IN_PROGRESS')
+  db.prepare(
+    `UPDATE assessment_session
+       SET current_question_id = ?,
+           started_at = COALESCE(started_at, '2026-07-01T00:00:00.000Z')
+     WHERE session_id = ?`
+  ).run(firstQuestionId, sessionId)
+}
+
 /** 跑一次 createSession 拿到可答 session + ONLINE 题列表（已含 42 ONLINE + 8 OFFLINE）。 */
 function setupSession(options: {
   student?: string
@@ -179,14 +189,7 @@ function setupSession(options: {
   if (!result.success) {
     throw new Error(`setupSession createSession failed: ${JSON.stringify(result)}`)
   }
-  const started = startSession(db, {
-    callerUserId: options.student ?? studentId,
-    callerRole: 'STUDENT',
-    sessionId: result.sessionId
-  })
-  if (!started.success) {
-    throw new Error(`setupSession startSession failed: ${JSON.stringify(started)}`)
-  }
+  forceOnlineInProgress(result.sessionId, result.questions[0].questionId)
   return { sessionId: result.sessionId, questions: result.questions }
 }
 
@@ -354,7 +357,7 @@ describe('assessment:submitAnswer 正常路径', () => {
       )
       .get(sessionId) as { event_sequence: number } | undefined
     expect(evt).toBeDefined()
-    expect(evt!.event_sequence).toBe(3)
+    expect(evt!.event_sequence).toBe(2)
 
     // session 计数前移（reducer applyAnswerSubmitted）
     const sess = db

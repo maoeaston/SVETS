@@ -74,7 +74,6 @@ vi.mock('../../../domain/event-writer', () => ({
 
 import {
   createSession,
-  startSession,
   submitAnswer,
   triggerRedline,
   calculateResult,
@@ -148,6 +147,16 @@ interface SetupResult {
   questions: SessionQuestionView[]
 }
 
+function forceOnlineInProgress(sessionId: string, firstQuestionId: string): void {
+  setAssessmentSessionStateFixture(db, sessionId, 'ACTIVE', 'ONLINE_IN_PROGRESS')
+  db.prepare(
+    `UPDATE assessment_session
+       SET current_question_id = ?,
+           started_at = COALESCE(started_at, '2026-07-01T00:00:00.000Z')
+     WHERE session_id = ?`
+  ).run(firstQuestionId, sessionId)
+}
+
 function setupSession(opts: {
   student?: string
   strategyIdOverride?: string
@@ -176,14 +185,7 @@ function setupSession(opts: {
   if (!result.success) {
     throw new Error(`setupSession createSession failed: ${JSON.stringify(result)}`)
   }
-  const started = startSession(db, {
-    callerUserId: opts.student ?? studentId,
-    callerRole: 'STUDENT',
-    sessionId: result.sessionId
-  })
-  if (!started.success) {
-    throw new Error(`setupSession startSession failed: ${JSON.stringify(started)}`)
-  }
+  forceOnlineInProgress(result.sessionId, result.questions[0].questionId)
   return { sessionId: result.sessionId, questions: result.questions }
 }
 
@@ -681,7 +683,7 @@ describe('assessment:triggerRedline 批量熔断', () => {
 
   it('EMOTION_INTERRUPTED 态 session 也被熔断（schema trigger WHERE 含此状态）', () => {
     const { sessionId } = setupSession()
-    setAssessmentSessionStateFixture(db, sessionId, 'EMOTION_INTERRUPTED')
+    db.prepare("UPDATE assessment_session SET status = 'EMOTION_INTERRUPTED' WHERE session_id = ?").run(sessionId)
 
     const result = triggerRedline(db, redlineParams(sessionId))
     expect(result.success).toBe(true)

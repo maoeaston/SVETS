@@ -50,8 +50,13 @@ vi.mock('../../../domain/event-writer', () => ({
   )
 }))
 
-import { createSession, startSession, seedAssessmentErrorCodes } from '../assessment'
-import { createTestDb, seedCaller, seedStudent } from '../../../db/test-helpers'
+import { createSession, seedAssessmentErrorCodes } from '../assessment'
+import {
+  createTestDb,
+  seedCaller,
+  seedStudent,
+  setAssessmentSessionStateFixture
+} from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
 import type { CreateSessionParams } from '../../../../shared/types/assessment'
 
@@ -171,14 +176,21 @@ function baseParams(over: Partial<CreateSessionParams> = {}): CreateSessionParam
 }
 
 function startJobSkillSession(sessionId: string): void {
-  const result = startSession(db, {
-    callerUserId: studentId,
-    callerRole: 'STUDENT',
-    sessionId
-  })
-  if (!result.success) {
-    throw new Error(`startJobSkillSession failed: ${JSON.stringify(result)}`)
-  }
+  const first = db
+    .prepare(
+      `SELECT question_id FROM assessment_session_question
+        WHERE session_id = ? AND question_phase = 'ONLINE'
+        ORDER BY question_order LIMIT 1`
+    )
+    .get(sessionId) as { question_id: string } | undefined
+  if (!first) throw new Error('startJobSkillSession failed: no ONLINE question')
+  setAssessmentSessionStateFixture(db, sessionId, 'ACTIVE', 'ONLINE_IN_PROGRESS')
+  db.prepare(
+    `UPDATE assessment_session
+       SET current_question_id = ?,
+           started_at = COALESCE(started_at, '2026-07-01T00:00:00.000Z')
+     WHERE session_id = ?`
+  ).run(first.question_id, sessionId)
 }
 
 beforeAll(async () => {

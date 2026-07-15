@@ -24,6 +24,8 @@ export type AssessmentStrategyType = 'BASELINE_ASSESSMENT' | 'MOCK_EXAM' | 'JOB_
 
 export type DeliveryPhase =
   | 'PREPARED'
+  | 'ASSIGNED'
+  | 'STUDENT_CONFIRMED'
   | 'ONLINE_IN_PROGRESS'
   | 'ONLINE_COMPLETED'
   | 'OFFLINE_SCORING'
@@ -43,6 +45,8 @@ export type AssessmentErrorCode =
   | 'SESSION_NOT_ACTIVE'
   | 'SESSION_PAUSED'
   | 'SESSION_HALTED'
+  | 'ASSIGNMENT_REQUIRED'
+  | 'STUDENT_CONFIRMATION_REQUIRED'
   | 'QUESTION_NOT_IN_SESSION'
   | 'ALREADY_ANSWERED'
   | 'BLOCKED_BY_SAFETY_INCIDENT'
@@ -223,10 +227,10 @@ export interface SubmitAnswerSuccess {
 }
 
 // --- startSession（STUDENT）---
-// 学生首次进入 session（current_question_id=null）点"开始答题"。
-// 写 SESSION_FIRST_QUESTION_ACTIVATED 事件 + reducer 推进 current_question_id。
+// M3 后旧入口只允许存量 ONLINE_IN_PROGRESS 会话幂等继续。
+// PREPARED / ASSIGNED / STUDENT_CONFIRMED 必须走 assignment:* 流程。
 // 幂等：current_question_id 已非 NULL → 直接返回现有指针，不写事件。
-// status 必须 ACTIVE；其他态映射错误码（SESSION_PAUSED / SESSION_HALTED / SESSION_NOT_ACTIVE）。
+// status 必须 INIT/ACTIVE；其他态映射错误码（SESSION_PAUSED / SESSION_HALTED / SESSION_NOT_ACTIVE）。
 export interface StartSessionParams {
   callerUserId: string
   callerRole: string

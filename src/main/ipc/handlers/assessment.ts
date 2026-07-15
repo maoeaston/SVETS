@@ -2062,18 +2062,24 @@ export function startSession(db: DBAdapter, params: StartSessionParams): StartSe
     return { success: false, errorCode: owner.errorCode }
   }
 
-  // 3. status 必须是 INIT（首次启动）或 ACTIVE（旧数据/幂等继续）。
+  // 3. status 必须是 INIT（phase gate 返回 M3 阻断）或 ACTIVE（旧数据/幂等继续）。
   const statusErr = statusToStartSessionErrorCode(owner.sessionRow.status)
   if (statusErr) {
     return { success: false, errorCode: statusErr }
   }
 
-  // 4. 读 current_question_id（SessionRow 类型只含 session_id/student_id/status，
-  //    不带 current_question_id；单独 SELECT）。
+  // 4. 读 delivery_phase/current_question_id（SessionRow 类型只含 session_id/student_id/status）。
   //    assertSessionOwner (step 2) 已确保 session 存在 → pointer 必非 undefined。
   const pointer = db
-    .prepare('SELECT current_question_id FROM assessment_session WHERE session_id = ?')
-    .get(params.sessionId) as { current_question_id: string | null }
+    .prepare('SELECT current_question_id, delivery_phase FROM assessment_session WHERE session_id = ?')
+    .get(params.sessionId) as { current_question_id: string | null; delivery_phase: DeliveryPhase | null }
+
+  if (pointer.delivery_phase === 'PREPARED') {
+    return { success: false, errorCode: 'ASSIGNMENT_REQUIRED' }
+  }
+  if (pointer.delivery_phase === 'ASSIGNED' || pointer.delivery_phase === 'STUDENT_CONFIRMED') {
+    return { success: false, errorCode: 'STUDENT_CONFIRMATION_REQUIRED' }
+  }
 
   // 5. 幂等：current_question_id 已非 NULL → 直接返回，不写事件
   if (pointer.current_question_id) {

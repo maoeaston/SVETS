@@ -82,7 +82,8 @@ import {
   seedCaller,
   seedStudent,
   seedQuestionBankDraft,
-  baseStrategyInput
+  baseStrategyInput,
+  setAssessmentSessionStateFixture
 } from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
 import type { StrategyInput } from '../../../../shared/types/strategy'
@@ -198,12 +199,28 @@ function baseListMyParams(over: Partial<ListMySessionsParams> = {}): ListMySessi
 /** 直接 UPDATE assessment_session.status，用于测 startSession 的 status 映射。 */
 function forceSessionStatus(sessionId: string, status: string): void {
   if (status === 'COMPLETED') {
-    db.prepare(
-      "UPDATE assessment_session SET status = 'COMPLETED', delivery_phase = 'FINALIZED' WHERE session_id = ?"
-    ).run(sessionId)
+    setAssessmentSessionStateFixture(db, sessionId, 'COMPLETED', 'FINALIZED')
     return
   }
   db.prepare('UPDATE assessment_session SET status = ? WHERE session_id = ?').run(status, sessionId)
+}
+
+function forceLegacyOnlineInProgress(sessionId: string, questionId?: string): string {
+  const firstQuestionId = questionId ?? (db
+    .prepare(
+      `SELECT question_id FROM assessment_session_question
+        WHERE session_id = ? AND question_phase = 'ONLINE'
+        ORDER BY question_order LIMIT 1`
+    )
+    .get(sessionId) as { question_id: string }).question_id
+  setAssessmentSessionStateFixture(db, sessionId, 'ACTIVE', 'ONLINE_IN_PROGRESS')
+  db.prepare(
+    `UPDATE assessment_session
+       SET current_question_id = ?,
+           started_at = COALESCE(started_at, '2026-07-01T00:00:00.000Z')
+     WHERE session_id = ?`
+  ).run(firstQuestionId, sessionId)
+  return firstQuestionId
 }
 
 /** INSERT safety_incident(PENDING_DETAIL) 触发 schema trigger 批量熔断 → session 进 REDLINE_HALTED。
@@ -261,62 +278,70 @@ beforeEach(() => {
 
 // ---------- startSession 正常路径 ----------
 
-describe('assessment:startSession 正常路径', () => {
-  it('首次调用 → 写 SESSION_FIRST_QUESTION_ACTIVATED + reducer UPDATE current_question_id + 返回 firstQuestionId/Order', () => {
+describe('assessment:startSession M3 phase gate', () => {
+  it('PREPARED 会话调用旧 startSession → ASSIGNMENT_REQUIRED，且不写事件、不改 phase', () => {
     const { sessionId } = setupSession()
 
-    // 前置断言：刚创建的 session current_question_id IS NULL
     const before = db
-      .prepare('SELECT current_question_id FROM assessment_session WHERE session_id = ?')
-      .get(sessionId) as { current_question_id: string | null }
+      .prepare('SELECT current_question_id, delivery_phase FROM assessment_session WHERE session_id = ?')
+      .get(sessionId) as { current_question_id: string | null; delivery_phase: string }
     expect(before.current_question_id).toBeNull()
+    expect(before.delivery_phase).toBe('PREPARED')
 
     const result = startSession(db, baseStartParams(sessionId))
 
-    expect(result.success).toBe(true)
-    if (!result.success) return
-    expect(result.firstQuestionId).toBeTruthy()
-    expect(typeof result.firstQuestionOrder).toBe('number')
-    expect(result.firstQuestionOrder).toBeGreaterThanOrEqual(1)
+    expect(result.success).toBe(false)
+    if (result.success) return
+    expect(result.errorCode).toBe('ASSIGNMENT_REQUIRED')
 
-    // reducer UPDATE 落库
     const after = db
-      .prepare('SELECT current_question_id FROM assessment_session WHERE session_id = ?')
-      .get(sessionId) as { current_question_id: string | null }
-    expect(after.current_question_id).toBe(result.firstQuestionId)
+      .prepare('SELECT current_question_id, delivery_phase FROM assessment_session WHERE session_id = ?')
+      .get(sessionId) as { current_question_id: string | null; delivery_phase: string }
+    expect(after.current_question_id).toBeNull()
+    expect(after.delivery_phase).toBe('PREPARED')
 
-    // 事件写入 domain_event_projection
-    const ev = db
+    const eventCount = db
       .prepare(
-        `SELECT event_type, payload_json FROM domain_event_projection
+        `SELECT COUNT(*) AS n FROM domain_event_projection
           WHERE aggregate_id = ? AND event_type = 'SESSION_FIRST_QUESTION_ACTIVATED'`
       )
-      .get(sessionId) as { event_type: string; payload_json: string } | undefined
-    expect(ev).toBeDefined()
-    expect(ev!.event_type).toBe('SESSION_FIRST_QUESTION_ACTIVATED')
-    const payload = JSON.parse(ev!.payload_json) as Record<string, unknown>
-    expect(payload.first_question_id).toBe(result.firstQuestionId)
-    expect(payload.first_question_order).toBe(result.firstQuestionOrder)
+      .get(sessionId) as { n: number }
+    expect(eventCount.n).toBe(0)
+  })
 
-    // first_question_id 应是 MIN(question_order) 的 ONLINE 题
-    const minRow = db
+  it.each([
+    ['ASSIGNED', 'STUDENT_CONFIRMATION_REQUIRED'],
+    ['STUDENT_CONFIRMED', 'STUDENT_CONFIRMATION_REQUIRED']
+  ] as const)('%s 会话调用旧 startSession → %s，且不写事件', (phase, errorCode) => {
+    const { sessionId } = setupSession()
+    setAssessmentSessionStateFixture(db, sessionId, 'INIT', phase)
+
+    const result = startSession(db, baseStartParams(sessionId))
+
+    expect(result.success).toBe(false)
+    if (result.success) return
+    expect(result.errorCode).toBe(errorCode)
+    const after = db
+      .prepare('SELECT current_question_id, delivery_phase FROM assessment_session WHERE session_id = ?')
+      .get(sessionId) as { current_question_id: string | null; delivery_phase: string }
+    expect(after.current_question_id).toBeNull()
+    expect(after.delivery_phase).toBe(phase)
+    const eventCount = db
       .prepare(
-        `SELECT question_id FROM assessment_session_question
-          WHERE session_id = ? AND question_phase = 'ONLINE'
-          ORDER BY question_order LIMIT 1`
+        `SELECT COUNT(*) AS n FROM domain_event_projection
+          WHERE aggregate_id = ? AND event_type = 'SESSION_FIRST_QUESTION_ACTIVATED'`
       )
-      .get(sessionId) as { question_id: string }
-    expect(result.firstQuestionId).toBe(minRow.question_id)
+      .get(sessionId) as { n: number }
+    expect(eventCount.n).toBe(0)
   })
 })
 
 // ---------- startSession 幂等 ----------
 
 describe('assessment:startSession 幂等', () => {
-  it('二次调用 → 不写新事件，直接返回现有指针', () => {
+  it('存量 ONLINE_IN_PROGRESS 会话重复调用 → 不写新事件，直接返回现有指针', () => {
     const { sessionId } = setupSession()
-    const first = startSession(db, baseStartParams(sessionId))
-    expect(first.success).toBe(true)
+    const firstQuestionId = forceLegacyOnlineInProgress(sessionId)
 
     const eventCountBefore = db
       .prepare(
@@ -324,13 +349,13 @@ describe('assessment:startSession 幂等', () => {
           WHERE aggregate_id = ? AND event_type = 'SESSION_FIRST_QUESTION_ACTIVATED'`
       )
       .get(sessionId) as { n: number }
-    expect(eventCountBefore.n).toBe(1)
+    expect(eventCountBefore.n).toBe(0)
 
-    const second = startSession(db, baseStartParams(sessionId))
-    expect(second.success).toBe(true)
-    if (!second.success || !first.success) return
-    expect(second.firstQuestionId).toBe(first.firstQuestionId)
-    expect(second.firstQuestionOrder).toBe(first.firstQuestionOrder)
+    const result = startSession(db, baseStartParams(sessionId))
+    expect(result.success).toBe(true)
+    if (!result.success) return
+    expect(result.firstQuestionId).toBe(firstQuestionId)
+    expect(result.firstQuestionOrder).toBe(1)
 
     const eventCountAfter = db
       .prepare(
@@ -338,7 +363,7 @@ describe('assessment:startSession 幂等', () => {
           WHERE aggregate_id = ? AND event_type = 'SESSION_FIRST_QUESTION_ACTIVATED'`
       )
       .get(sessionId) as { n: number }
-    expect(eventCountAfter.n).toBe(1) // 没写新事件
+    expect(eventCountAfter.n).toBe(0) // 没写新事件
   })
 
   it('ANSWER_SUBMITTED 已推进 current_question_id 后 startSession → 不覆盖，返回当前指针', () => {
@@ -346,12 +371,10 @@ describe('assessment:startSession 幂等', () => {
       TRUE_FALSE: { question_type: 'TRUE_FALSE', expected_answer: true }
     })
 
-    // 1. startSession 推进到第一题
-    const started = startSession(db, baseStartParams(sessionId))
-    expect(started.success).toBe(true)
+    // 1. 模拟 M2 存量进行中会话：已有首题指针
+    const firstQuestionId = forceLegacyOnlineInProgress(sessionId)
 
     // 2. 第一题为 TRUE_FALSE + 提交答案 → reducer applyAnswerSubmitted 推进到第二题
-    const firstQuestionId = (started as { firstQuestionId: string }).firstQuestionId
     const answerResult = submitAnswer(db, {
       callerUserId: studentId,
       callerRole: 'STUDENT',

@@ -318,7 +318,15 @@ function advanceAssessmentDeliveryPhaseFixture(
     throw new Error(`unknown assessment delivery_phase fixture target: ${targetPhase}`)
   }
 
-  for (let i = 1; i < targetIndex; i++) {
+  const current = db
+    .prepare('SELECT delivery_phase FROM assessment_session WHERE session_id = ?')
+    .get(sessionId) as { delivery_phase: AssessmentFixtureDeliveryPhase | null } | undefined
+  const currentIndex = current?.delivery_phase
+    ? ASSESSMENT_PHASE_ADVANCE_ORDER.indexOf(current.delivery_phase)
+    : 0
+  const startIndex = currentIndex >= 0 ? currentIndex + 1 : 1
+
+  for (let i = startIndex; i < targetIndex; i++) {
     db.prepare('UPDATE assessment_session SET delivery_phase = ? WHERE session_id = ?').run(
       ASSESSMENT_PHASE_ADVANCE_ORDER[i],
       sessionId
