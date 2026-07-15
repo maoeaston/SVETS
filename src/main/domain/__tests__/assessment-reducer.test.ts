@@ -16,10 +16,12 @@ import type {
   AnswerSubmittedPayload,
   EmotionInterruptedPayload,
   EmotionResumedPayload,
+  OfflineScoreSubmittedPayload,
   SessionCompletedPayload,
   SessionAbortedPayload,
   RedlineTriggeredPayload,
-  ResultCalculatedPayload
+  ResultCalculatedPayload,
+  TeacherObservationRecordedPayload
 } from '@shared/types/event-payloads'
 
 let db: MemoryAdapter
@@ -158,6 +160,146 @@ function makeSessionStartedEvent(sessionId: string): ActionLogEntry {
   return makeEvent('SESSION_STARTED', sessionId, payload as unknown as Record<string, unknown>, { actor_id: teacherId, actor_role: 'TEACHER' })
 }
 
+function seedJobSkillMiniBank(observationCount: 0 | 1 | 2 = 0): {
+  onlineIds: string[]
+  offlineIds: string[]
+  observationIds: string[]
+} {
+  const onlineIds = [`JS_ON_${uuidv4().slice(0, 8)}`]
+  const offlineIds = [`JS_OFF_${uuidv4().slice(0, 8)}`, `JS_OFF_${uuidv4().slice(0, 8)}`]
+  const observationIds = Array.from({ length: observationCount }, () => `JS_OB_${uuidv4().slice(0, 8)}`)
+
+  const onlineStmt = db.prepare(
+    `INSERT INTO question_bank
+       (question_id, job_code, bank_domain, job_module_code, question_type, item_usage,
+        content_json, scoring_rule_json, status)
+     VALUES (?, ?, 'JOB_SPECIFIC', ?, 'TRUE_FALSE', 'SCORED_ITEM',
+             '{"question_type":"TRUE_FALSE","expected_answer":true}', '{"seed":true}', 'ACTIVE')`
+  )
+  const offlineStmt = db.prepare(
+    `INSERT INTO question_bank
+       (question_id, job_code, bank_domain, job_module_code, question_type, item_usage,
+        content_json, scoring_rule_json, status)
+     VALUES (?, ?, 'JOB_SPECIFIC', ?, 'OFFLINE_OPERATION', 'SCORED_ITEM',
+             '{"seed":true}', '{"scoring_type":"OFFLINE_RUBRIC","max_score":2}', 'ACTIVE')`
+  )
+  const observationStmt = db.prepare(
+    `INSERT INTO question_bank
+       (question_id, job_code, bank_domain, job_module_code, question_type, item_usage,
+        content_json, scoring_rule_json, status)
+     VALUES (?, ?, 'JOB_SPECIFIC', ?, 'TRUE_FALSE', 'OBSERVATION_ONLY',
+             '{"seed":true}', '{"seed":true}', 'ACTIVE')`
+  )
+
+  onlineStmt.run(onlineIds[0], jobCode, 'M1')
+  offlineStmt.run(offlineIds[0], jobCode, 'M1')
+  offlineStmt.run(offlineIds[1], jobCode, 'M2')
+  observationIds.forEach((questionId, index) => {
+    observationStmt.run(questionId, jobCode, index === 0 ? 'M1' : 'M2')
+  })
+
+  return { onlineIds, offlineIds, observationIds }
+}
+
+function seedJobSkillStrategyConfig(): string {
+  const jobSkillStrategyId = `job-skill-${uuidv4().slice(0, 8)}`
+  seedStrategyConfig(db, {
+    strategyId: jobSkillStrategyId,
+    strategyType: 'JOB_SKILL_ASSESSMENT',
+    jobCode,
+    strategyName: 'JOB_SKILL reducer 测试策略',
+    onlineQuestionCount: 1,
+    offlineQuestionCount: 2,
+    maxScore: 6
+  })
+  return jobSkillStrategyId
+}
+
+function makeJobSkillSessionStartedEvent(
+  sessionId: string,
+  params: {
+    strategyId: string
+    onlineIds: string[]
+    offlineIds: string[]
+    observationIds: string[]
+  }
+): ActionLogEntry {
+  const payload: SessionStartedPayload = {
+    session_id: sessionId,
+    student_id: studentId,
+    strategy_id: params.strategyId,
+    strategy_type: 'JOB_SKILL_ASSESSMENT',
+    strategy_version: strategyVersion,
+    job_code: jobCode,
+    task_code: taskCode,
+    online_question_count: params.onlineIds.length,
+    offline_question_count: params.offlineIds.length,
+    question_ids: [...params.onlineIds, ...params.offlineIds, ...params.observationIds],
+    initial_delivery_phase: 'PREPARED'
+  }
+  return makeEvent('SESSION_STARTED', sessionId, payload as unknown as Record<string, unknown>, {
+    actor_id: teacherId,
+    actor_role: 'TEACHER'
+  })
+}
+
+function makeJobSkillOfflineScoreEvent(
+  sessionId: string,
+  questionId: string,
+  eventSequence: number,
+  scoreScope: OfflineScoreSubmittedPayload['score_scope'] = 'JOB_SKILL'
+): ActionLogEntry {
+  const payload: OfflineScoreSubmittedPayload = {
+    session_id: sessionId,
+    offline_score_id: uuidv4(),
+    question_id: scoreScope === 'TASK_OPERATION' ? null : questionId,
+    score_scope: scoreScope,
+    task_operation_code: scoreScope === 'TASK_OPERATION' ? 'SHELVE_OPERATION' : null,
+    criterion_scores: [{ criterion_id: 'criterion-1', score: 2 }],
+    total_score: 2,
+    scored_by: teacherId,
+    scored_at: '2026-07-01T01:10:00.000Z',
+    scoring_rubric_json: '{"seed":true}',
+    observation_note: null,
+    tool_checklist_confirmed: true
+  }
+  return makeEvent('OFFLINE_SCORE_SUBMITTED', sessionId, payload as unknown as Record<string, unknown>, {
+    actor_id: teacherId,
+    actor_role: 'TEACHER',
+    event_sequence: eventSequence
+  })
+}
+
+function makeTeacherObservationEvent(
+  sessionId: string,
+  questionId: string,
+  eventSequence: number
+): ActionLogEntry {
+  const payload: TeacherObservationRecordedPayload = {
+    session_id: sessionId,
+    offline_score_id: uuidv4(),
+    question_id: questionId,
+    observation_payload: {
+      schema_version: 'teacher-observation-v1.0',
+      observation_code: 'OBS_SAFETY',
+      observed: true,
+      behavior_codes: ['SAFETY_AWARENESS'],
+      prompt_level: null,
+      accommodations_used: [],
+      observation_note: null,
+      recorded_by: teacherId,
+      recorded_at: '2026-07-01T01:20:00.000Z'
+    },
+    recorded_by: teacherId,
+    recorded_at: '2026-07-01T01:20:00.000Z'
+  }
+  return makeEvent('TEACHER_OBSERVATION_RECORDED', sessionId, payload as unknown as Record<string, unknown>, {
+    actor_id: teacherId,
+    actor_role: 'TEACHER',
+    event_sequence: eventSequence
+  })
+}
+
 function makeAnswerEvent(sessionId: string, answerId: string, questionId: string, order: number): ActionLogEntry {
   // v0.1.12: trg_answer_record_session_question_validation 要求 question_type 与 assessment_session_question 一致
   const qb = db.prepare('SELECT question_type FROM question_bank WHERE question_id = ?').get(questionId) as
@@ -200,6 +342,7 @@ beforeEach(() => {
   // FK 依赖顺序：子先父后。注意 assessment_session.redline_incident_id → safety_incident，
   // 故 session 必须在 safety_incident 之前删（session 是 FK 子方）。
   db.exec('DELETE FROM answer_record')
+  db.exec('DELETE FROM offline_score_record')
   db.exec('DELETE FROM assessment_session_question')
   db.exec('DELETE FROM result_record')
   db.exec('DELETE FROM safety_incident_binding')
@@ -688,6 +831,161 @@ describe('applyAssessmentEvent — RESULT_CALCULATED', () => {
     expect(rr.level_result).toBe('LEVEL_COMPETENT')
     expect(rr.safety_overridden).toBe(0)
     expect(rr.redline_incident_id).toBeNull()
+  })
+})
+
+// ---------- OFFLINE_SCORE_SUBMITTED / TEACHER_OBSERVATION_RECORDED phase ----------
+
+describe('applyAssessmentEvent — Step 7 JOB_SKILL delivery_phase 推进', () => {
+  it('无观察项：JOB_SKILL 评分从 OFFLINE_SCORING 推进到 READY_TO_FINALIZE', () => {
+    const sessionId = uuidv4()
+    const jobSkillStrategyId = seedJobSkillStrategyConfig()
+    const bankIds = seedJobSkillMiniBank(0)
+    const startEvent = makeJobSkillSessionStartedEvent(sessionId, {
+      strategyId: jobSkillStrategyId,
+      onlineIds: bankIds.onlineIds,
+      offlineIds: bankIds.offlineIds,
+      observationIds: bankIds.observationIds
+    })
+    seedEvent(db, startEvent)
+    applyAssessmentEvent(db, startEvent)
+
+    const firstScore = makeJobSkillOfflineScoreEvent(sessionId, bankIds.offlineIds[0], 2)
+    seedEvent(db, firstScore)
+    applyAssessmentEvent(db, firstScore)
+
+    const afterFirst = db
+      .prepare('SELECT delivery_phase, event_sequence_version FROM assessment_session WHERE session_id = ?')
+      .get(sessionId) as { delivery_phase: string; event_sequence_version: number }
+    expect(afterFirst.delivery_phase).toBe('OFFLINE_SCORING')
+    expect(afterFirst.event_sequence_version).toBe(2)
+
+    const secondScore = makeJobSkillOfflineScoreEvent(sessionId, bankIds.offlineIds[1], 3)
+    seedEvent(db, secondScore)
+    applyAssessmentEvent(db, secondScore)
+
+    const afterSecond = db
+      .prepare('SELECT delivery_phase, event_sequence_version FROM assessment_session WHERE session_id = ?')
+      .get(sessionId) as { delivery_phase: string; event_sequence_version: number }
+    expect(afterSecond.delivery_phase).toBe('READY_TO_FINALIZE')
+    expect(afterSecond.event_sequence_version).toBe(3)
+  })
+
+  it('有观察项：JOB_SKILL 评分完成后进 OBSERVATION，观察全部完成后进 READY_TO_FINALIZE', () => {
+    const sessionId = uuidv4()
+    const jobSkillStrategyId = seedJobSkillStrategyConfig()
+    const bankIds = seedJobSkillMiniBank(2)
+    const startEvent = makeJobSkillSessionStartedEvent(sessionId, {
+      strategyId: jobSkillStrategyId,
+      onlineIds: bankIds.onlineIds,
+      offlineIds: bankIds.offlineIds,
+      observationIds: bankIds.observationIds
+    })
+    seedEvent(db, startEvent)
+    applyAssessmentEvent(db, startEvent)
+
+    const firstScore = makeJobSkillOfflineScoreEvent(sessionId, bankIds.offlineIds[0], 2)
+    const secondScore = makeJobSkillOfflineScoreEvent(sessionId, bankIds.offlineIds[1], 3)
+    seedEvent(db, firstScore)
+    seedEvent(db, secondScore)
+    applyAssessmentEvent(db, firstScore)
+    applyAssessmentEvent(db, secondScore)
+
+    const afterScores = db
+      .prepare('SELECT delivery_phase FROM assessment_session WHERE session_id = ?')
+      .get(sessionId) as { delivery_phase: string }
+    expect(afterScores.delivery_phase).toBe('OBSERVATION')
+
+    const firstObservation = makeTeacherObservationEvent(sessionId, bankIds.observationIds[0], 4)
+    seedEvent(db, firstObservation)
+    applyAssessmentEvent(db, firstObservation)
+
+    const afterFirstObservation = db
+      .prepare('SELECT delivery_phase FROM assessment_session WHERE session_id = ?')
+      .get(sessionId) as { delivery_phase: string }
+    expect(afterFirstObservation.delivery_phase).toBe('OBSERVATION')
+
+    const secondObservation = makeTeacherObservationEvent(sessionId, bankIds.observationIds[1], 5)
+    seedEvent(db, secondObservation)
+    applyAssessmentEvent(db, secondObservation)
+
+    const afterSecondObservation = db
+      .prepare('SELECT delivery_phase, event_sequence_version FROM assessment_session WHERE session_id = ?')
+      .get(sessionId) as { delivery_phase: string; event_sequence_version: number }
+    expect(afterSecondObservation.delivery_phase).toBe('READY_TO_FINALIZE')
+    expect(afterSecondObservation.event_sequence_version).toBe(5)
+  })
+
+  it('TASK_OPERATION 只进入 OFFLINE_SCORING，不补造 READY_TO_FINALIZE', () => {
+    const sessionId = uuidv4()
+    const jobSkillStrategyId = seedJobSkillStrategyConfig()
+    const bankIds = seedJobSkillMiniBank(0)
+    const startEvent = makeJobSkillSessionStartedEvent(sessionId, {
+      strategyId: jobSkillStrategyId,
+      onlineIds: bankIds.onlineIds,
+      offlineIds: bankIds.offlineIds,
+      observationIds: bankIds.observationIds
+    })
+    seedEvent(db, startEvent)
+    applyAssessmentEvent(db, startEvent)
+
+    const operationScore = makeJobSkillOfflineScoreEvent(sessionId, bankIds.offlineIds[0], 2, 'TASK_OPERATION')
+    seedEvent(db, operationScore)
+    applyAssessmentEvent(db, operationScore)
+
+    const sess = db
+      .prepare('SELECT delivery_phase FROM assessment_session WHERE session_id = ?')
+      .get(sessionId) as { delivery_phase: string }
+    expect(sess.delivery_phase).toBe('OFFLINE_SCORING')
+  })
+
+  it('ABORTED / REDLINE_HALTED 后应用评分事件只标记事件，不推进 delivery_phase', () => {
+    const abortedSessionId = uuidv4()
+    const redlineSessionId = uuidv4()
+    const jobSkillStrategyId = seedJobSkillStrategyConfig()
+    const abortedBankIds = seedJobSkillMiniBank(0)
+    const redlineBankIds = seedJobSkillMiniBank(0)
+    const abortedStart = makeJobSkillSessionStartedEvent(abortedSessionId, {
+      strategyId: jobSkillStrategyId,
+      onlineIds: abortedBankIds.onlineIds,
+      offlineIds: abortedBankIds.offlineIds,
+      observationIds: abortedBankIds.observationIds
+    })
+    const redlineStart = makeJobSkillSessionStartedEvent(redlineSessionId, {
+      strategyId: jobSkillStrategyId,
+      onlineIds: redlineBankIds.onlineIds,
+      offlineIds: redlineBankIds.offlineIds,
+      observationIds: redlineBankIds.observationIds
+    })
+    seedEvent(db, abortedStart)
+    applyAssessmentEvent(db, abortedStart)
+    db.prepare("UPDATE assessment_session SET status = 'ABORTED', delivery_phase = 'ONLINE_IN_PROGRESS' WHERE session_id = ?").run(abortedSessionId)
+
+    seedEvent(db, redlineStart)
+    applyAssessmentEvent(db, redlineStart)
+    db.prepare("UPDATE assessment_session SET delivery_phase = 'OFFLINE_SCORING' WHERE session_id = ?").run(redlineSessionId)
+    seedSafetyIncident(db, uuidv4(), studentId)
+
+    const abortedScore = makeJobSkillOfflineScoreEvent(abortedSessionId, abortedBankIds.offlineIds[0], 2)
+    const redlineScore = makeJobSkillOfflineScoreEvent(redlineSessionId, redlineBankIds.offlineIds[0], 2)
+    seedEvent(db, abortedScore)
+    seedEvent(db, redlineScore)
+    applyAssessmentEvent(db, abortedScore)
+    applyAssessmentEvent(db, redlineScore)
+
+    const aborted = db
+      .prepare('SELECT status, delivery_phase, event_sequence_version FROM assessment_session WHERE session_id = ?')
+      .get(abortedSessionId) as { status: string; delivery_phase: string; event_sequence_version: number }
+    expect(aborted.status).toBe('ABORTED')
+    expect(aborted.delivery_phase).toBe('ONLINE_IN_PROGRESS')
+    expect(aborted.event_sequence_version).toBe(2)
+
+    const redline = db
+      .prepare('SELECT status, delivery_phase, event_sequence_version FROM assessment_session WHERE session_id = ?')
+      .get(redlineSessionId) as { status: string; delivery_phase: string; event_sequence_version: number }
+    expect(redline.status).toBe('REDLINE_HALTED')
+    expect(redline.delivery_phase).toBe('OFFLINE_SCORING')
+    expect(redline.event_sequence_version).toBe(2)
   })
 })
 

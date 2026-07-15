@@ -41,6 +41,25 @@ import type {
 } from '@shared/types/event-payloads'
 
 type BusinessSessionType = 'ASSESSMENT' | 'TRAINING' | 'LEARNING'
+type AssessmentDeliveryPhase =
+  | 'PREPARED'
+  | 'ONLINE_IN_PROGRESS'
+  | 'ONLINE_COMPLETED'
+  | 'OFFLINE_SCORING'
+  | 'OBSERVATION'
+  | 'READY_TO_FINALIZE'
+  | 'FINALIZED'
+
+const TERMINAL_ASSESSMENT_STATUSES = new Set(['COMPLETED', 'ABORTED', 'REDLINE_HALTED'])
+const DELIVERY_PHASE_ORDER: Record<AssessmentDeliveryPhase, number> = {
+  PREPARED: 0,
+  ONLINE_IN_PROGRESS: 1,
+  ONLINE_COMPLETED: 2,
+  OFFLINE_SCORING: 3,
+  OBSERVATION: 4,
+  READY_TO_FINALIZE: 5,
+  FINALIZED: 6
+}
 
 function ensureBusinessSession(
   db: DBAdapter,
@@ -101,6 +120,107 @@ function markAssessmentEventApplied(db: DBAdapter, sessionId: string, event: Act
            last_applied_event_id = ?
      WHERE session_id = ?`
   ).run(event.event_sequence, event.event_sequence, event.event_id, sessionId)
+}
+
+function maxDeliveryPhase(
+  currentPhase: AssessmentDeliveryPhase | null | undefined,
+  nextPhase: AssessmentDeliveryPhase
+): AssessmentDeliveryPhase {
+  if (!currentPhase) return nextPhase
+  return DELIVERY_PHASE_ORDER[nextPhase] > DELIVERY_PHASE_ORDER[currentPhase] ? nextPhase : currentPhase
+}
+
+function countJobSkillOfflineScoring(db: DBAdapter, sessionId: string): { total: number; done: number } {
+  return db
+    .prepare(
+      `SELECT
+         (SELECT COUNT(*) FROM assessment_session_question
+           WHERE session_id = ? AND question_phase = 'OFFLINE' AND item_usage = 'SCORED_ITEM') AS total,
+         (SELECT COUNT(*) FROM offline_score_record
+           WHERE session_id = ? AND score_scope = 'JOB_SKILL' AND status = 'VALID') AS done`
+    )
+    .get(sessionId, sessionId) as { total: number; done: number }
+}
+
+function countTeacherObservations(db: DBAdapter, sessionId: string): { total: number; done: number } {
+  return db
+    .prepare(
+      `SELECT
+         (SELECT COUNT(*) FROM assessment_session_question
+           WHERE session_id = ? AND question_phase = 'OBSERVATION') AS total,
+         (SELECT COUNT(*) FROM offline_score_record
+           WHERE session_id = ? AND score_scope = 'TEACHER_OBSERVATION' AND status = 'VALID') AS done`
+    )
+    .get(sessionId, sessionId) as { total: number; done: number }
+}
+
+function applyAssessmentPhaseAndMark(
+  db: DBAdapter,
+  params: {
+    sessionId: string
+    event: ActionLogEntry
+    deliveryPhase?: AssessmentDeliveryPhase
+  }
+): void {
+  if (params.deliveryPhase) {
+    db.prepare(
+      `UPDATE assessment_session
+         SET delivery_phase = ?,
+             event_sequence_version = CASE
+               WHEN event_sequence_version > ? THEN event_sequence_version
+               ELSE ?
+             END,
+             last_applied_event_id = ?
+       WHERE session_id = ?`
+    ).run(
+      params.deliveryPhase,
+      params.event.event_sequence,
+      params.event.event_sequence,
+      params.event.event_id,
+      params.sessionId
+    )
+    return
+  }
+
+  markAssessmentEventApplied(db, params.sessionId, params.event)
+}
+
+function resolveJobSkillPhaseAfterOfflineScore(
+  db: DBAdapter,
+  params: {
+    sessionId: string
+    scoreScope: OfflineScoreSubmittedPayload['score_scope']
+    currentPhase: AssessmentDeliveryPhase | null
+  }
+): AssessmentDeliveryPhase {
+  let target = maxDeliveryPhase(params.currentPhase, 'OFFLINE_SCORING')
+  if (params.scoreScope !== 'JOB_SKILL') return target
+
+  const offlineCounts = countJobSkillOfflineScoring(db, params.sessionId)
+  if (offlineCounts.total === 0 || offlineCounts.done < offlineCounts.total) return target
+
+  const observationCounts = countTeacherObservations(db, params.sessionId)
+  target =
+    observationCounts.total > observationCounts.done
+      ? maxDeliveryPhase(target, 'OBSERVATION')
+      : maxDeliveryPhase(target, 'READY_TO_FINALIZE')
+  return target
+}
+
+function resolveJobSkillPhaseAfterTeacherObservation(
+  db: DBAdapter,
+  params: {
+    sessionId: string
+    currentPhase: AssessmentDeliveryPhase | null
+  }
+): AssessmentDeliveryPhase | undefined {
+  const offlineCounts = countJobSkillOfflineScoring(db, params.sessionId)
+  if (offlineCounts.total === 0 || offlineCounts.done < offlineCounts.total) return undefined
+
+  const observationCounts = countTeacherObservations(db, params.sessionId)
+  if (observationCounts.total === 0 || observationCounts.done < observationCounts.total) return undefined
+
+  return maxDeliveryPhase(params.currentPhase, 'READY_TO_FINALIZE')
 }
 
 /**
@@ -562,8 +682,10 @@ function applyOfflineScoreSubmitted(db: DBAdapter, event: ActionLogEntry): void 
     .get(p.offline_score_id)
   if (existing) return
   const session = db
-    .prepare('SELECT event_sequence_version FROM assessment_session WHERE session_id = ?')
-    .get(p.session_id) as { event_sequence_version: number } | undefined
+    .prepare('SELECT status, delivery_phase, event_sequence_version FROM assessment_session WHERE session_id = ?')
+    .get(p.session_id) as
+    | { status: string; delivery_phase: AssessmentDeliveryPhase | null; event_sequence_version: number }
+    | undefined
   if (!session) return
   if (isStaleAssessmentEvent(session, event)) return
 
@@ -591,7 +713,19 @@ function applyOfflineScoreSubmitted(db: DBAdapter, event: ActionLogEntry): void 
     p.scored_at,
     p.tool_checklist_confirmed ? 1 : 0
   )
-  markAssessmentEventApplied(db, p.session_id, event)
+
+  const nextPhase = TERMINAL_ASSESSMENT_STATUSES.has(session.status)
+    ? undefined
+    : resolveJobSkillPhaseAfterOfflineScore(db, {
+      sessionId: p.session_id,
+      scoreScope: p.score_scope,
+      currentPhase: session.delivery_phase
+    })
+  applyAssessmentPhaseAndMark(db, {
+    sessionId: p.session_id,
+    event,
+    deliveryPhase: nextPhase
+  })
 }
 // 幂等：result_record.result_id 存在则 skip。
 // safety_overridden / redline_incident_id：level_result=LEVEL_FAIL_BY_SAFETY 时从 session
@@ -659,8 +793,10 @@ function applyTeacherObservationRecorded(db: DBAdapter, event: ActionLogEntry): 
     .get(p.offline_score_id)
   if (existing) return
   const session = db
-    .prepare('SELECT event_sequence_version FROM assessment_session WHERE session_id = ?')
-    .get(p.session_id) as { event_sequence_version: number } | undefined
+    .prepare('SELECT status, delivery_phase, event_sequence_version FROM assessment_session WHERE session_id = ?')
+    .get(p.session_id) as
+    | { status: string; delivery_phase: AssessmentDeliveryPhase | null; event_sequence_version: number }
+    | undefined
   if (!session) return
   if (isStaleAssessmentEvent(session, event)) return
 
@@ -683,5 +819,16 @@ function applyTeacherObservationRecorded(db: DBAdapter, event: ActionLogEntry): 
     event.event_id,
     p.recorded_at
   )
-  markAssessmentEventApplied(db, p.session_id, event)
+
+  const nextPhase = TERMINAL_ASSESSMENT_STATUSES.has(session.status)
+    ? undefined
+    : resolveJobSkillPhaseAfterTeacherObservation(db, {
+      sessionId: p.session_id,
+      currentPhase: session.delivery_phase
+    })
+  applyAssessmentPhaseAndMark(db, {
+    sessionId: p.session_id,
+    event,
+    deliveryPhase: nextPhase
+  })
 }
