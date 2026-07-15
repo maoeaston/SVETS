@@ -32,33 +32,34 @@ type JobModuleCodeLocal = (typeof JOB_MODULE_CODES)[number]
  *
  * 幂等：result_type='JOB_SKILL_SCORE' 已存在则直接返回。
  * 非 JOB_SKILL_ASSESSMENT / 终态 session 直接返回（不抛错）。
- * 调用方 try-catch 捕获异常，避免影响已提交的评分/观察录入的成功响应。
+ * 本函数不开事务：调用方必须把它放在已有提交事务内，或改用 maybeGenerateJobSkillResult wrapper。
  */
-export function maybeGenerateJobSkillResult(
+export function finalizeJobSkillResultCore(
   db: DBAdapter,
   sessionId: string,
   callerUserId: string
-): void {
+): boolean {
   // 1. 读 session
   const session = db
     .prepare(
-      `SELECT session_id, status, strategy_type, student_id, job_code,
+      `SELECT session_id, status, delivery_phase, strategy_type, student_id, job_code,
               task_code, strategy_id, strategy_version
          FROM assessment_session WHERE session_id = ?`
     )
     .get(sessionId) as
     | {
-        session_id: string; status: string; strategy_type: string
+        session_id: string; status: string; delivery_phase: string | null; strategy_type: string
         student_id: string; job_code: string; task_code: string
         strategy_id: string; strategy_version: number
       }
     | undefined
 
-  if (!session) return
-  if (session.strategy_type !== 'JOB_SKILL_ASSESSMENT') return
+  if (!session) return false
+  if (session.strategy_type !== 'JOB_SKILL_ASSESSMENT') return false
 
   // 2. 终态 → 返回（REDLINE_HALTED 由 persistRedlineResult 处理）
-  if (['COMPLETED', 'ABORTED', 'REDLINE_HALTED'].includes(session.status)) return
+  if (['COMPLETED', 'ABORTED', 'REDLINE_HALTED'].includes(session.status)) return false
+  if (session.delivery_phase !== 'READY_TO_FINALIZE') return false
 
   // 3. 幂等：JOB_SKILL_SCORE 已存在
   const existing = db
@@ -67,7 +68,7 @@ export function maybeGenerateJobSkillResult(
         WHERE source_aggregate_id = ? AND result_type = 'JOB_SKILL_SCORE' AND is_current = 1`
     )
     .get(sessionId)
-  if (existing) return
+  if (existing) return false
 
   // 4. 完成度检查：线下计分题
   const offlineCounts = db
@@ -80,7 +81,7 @@ export function maybeGenerateJobSkillResult(
     )
     .get(sessionId, sessionId) as { total: number; done: number }
 
-  if (offlineCounts.done < offlineCounts.total) return
+  if (offlineCounts.done < offlineCounts.total) return false
 
   // 完成度检查：观察项
   const obsCounts = db
@@ -93,7 +94,7 @@ export function maybeGenerateJobSkillResult(
     )
     .get(sessionId, sessionId) as { total: number; done: number }
 
-  if (obsCounts.done < obsCounts.total) return
+  if (obsCounts.done < obsCounts.total) return false
 
   // 5. 读 strategy_config（阈值 + training_focus_threshold）
   const strategy = db
@@ -280,60 +281,62 @@ export function maybeGenerateJobSkillResult(
     recommended_training_focus: recommendedTrainingFocus
   }
 
-  // 12. 事务：RESULT_CALCULATED + SESSION_COMPLETED
+  // 12. RESULT_CALCULATED + SESSION_COMPLETED
   const resultId = uuidv4()
   const calculatedAt = new Date().toISOString()
 
-  const txn = db.transaction(() => {
-    const resultEventPayload: ResultCalculatedPayload = {
-      result_id: resultId,
-      result_type: 'JOB_SKILL_SCORE',
-      source_type: 'ASSESSMENT_SESSION',
-      source_id: sessionId,
-      student_id: session.student_id,
-      job_code: session.job_code,
-      task_code: session.task_code,
-      raw_score: rawScore,
-      max_score: maxScore,
-      normalized_score: normalizedScore,
-      level_result: levelResult,
-      calculated_at: calculatedAt,
-      calculated_by: callerUserId,
-      completion_ratio: actualCompletionRatio,
-      breakdown: resultPayload
-    }
-    const resultEvent = writeEvent({
-      aggregateType: 'ASSESSMENT_SESSION',
-      aggregateId: sessionId,
-      eventType: 'RESULT_CALCULATED',
-      payload: resultEventPayload as unknown as Record<string, unknown>,
-      actorId: callerUserId,
-      actorRole: 'TEACHER'
-    })
-    applyAssessmentEvent(db, resultEvent)
-
-    // SESSION_COMPLETED：OFFLINE_PENDING → COMPLETED
-    const completedPayload: SessionCompletedPayload = {
-      session_id: sessionId,
-      completed_at: calculatedAt,
-      total_online_answered: answeredOnline.n,
-      total_offline_scored: offlineCounts.done,
-      has_pending_offline: false
-    }
-    const completedEvent = writeEvent({
-      aggregateType: 'ASSESSMENT_SESSION',
-      aggregateId: sessionId,
-      eventType: 'SESSION_COMPLETED',
-      payload: completedPayload as unknown as Record<string, unknown>,
-      actorId: callerUserId,
-      actorRole: 'TEACHER'
-    })
-    applyAssessmentEvent(db, completedEvent)
+  const resultEventPayload: ResultCalculatedPayload = {
+    result_id: resultId,
+    result_type: 'JOB_SKILL_SCORE',
+    source_type: 'ASSESSMENT_SESSION',
+    source_id: sessionId,
+    student_id: session.student_id,
+    job_code: session.job_code,
+    task_code: session.task_code,
+    raw_score: rawScore,
+    max_score: maxScore,
+    normalized_score: normalizedScore,
+    level_result: levelResult,
+    calculated_at: calculatedAt,
+    calculated_by: callerUserId,
+    completion_ratio: actualCompletionRatio,
+    breakdown: resultPayload
+  }
+  const resultEvent = writeEvent({
+    aggregateType: 'ASSESSMENT_SESSION',
+    aggregateId: sessionId,
+    eventType: 'RESULT_CALCULATED',
+    payload: resultEventPayload as unknown as Record<string, unknown>,
+    actorId: callerUserId,
+    actorRole: 'TEACHER'
   })
+  applyAssessmentEvent(db, resultEvent)
 
-  txn()
+  const completedPayload: SessionCompletedPayload = {
+    session_id: sessionId,
+    completed_at: calculatedAt,
+    total_online_answered: answeredOnline.n,
+    total_offline_scored: offlineCounts.done,
+    has_pending_offline: false
+  }
+  const completedEvent = writeEvent({
+    aggregateType: 'ASSESSMENT_SESSION',
+    aggregateId: sessionId,
+    eventType: 'SESSION_COMPLETED',
+    payload: completedPayload as unknown as Record<string, unknown>,
+    actorId: callerUserId,
+    actorRole: 'TEACHER'
+  })
+  applyAssessmentEvent(db, completedEvent)
 
-  // T10: 自动触发报告生成（session 已进入 COMPLETED 状态）
+  return true
+}
+
+export function maybeGenerateJobSkillReportAfterResult(
+  db: DBAdapter,
+  sessionId: string,
+  callerUserId: string
+): void {
   try {
     maybeGenerateJobSkillReport(db, sessionId, callerUserId)
   } catch (reportErr) {
@@ -341,3 +344,21 @@ export function maybeGenerateJobSkillResult(
   }
 }
 
+/**
+ * 独立重试 wrapper：用于恢复旧 READY_TO_FINALIZE 卡点，或外部显式重试。
+ * 评分/观察 handler 的正常路径应在自身事务内调用 finalizeJobSkillResultCore。
+ */
+export function maybeGenerateJobSkillResult(
+  db: DBAdapter,
+  sessionId: string,
+  callerUserId: string
+): void {
+  let generated = false
+  const txn = db.transaction(() => {
+    generated = finalizeJobSkillResultCore(db, sessionId, callerUserId)
+  })
+  txn()
+  if (generated) {
+    maybeGenerateJobSkillReportAfterResult(db, sessionId, callerUserId)
+  }
+}

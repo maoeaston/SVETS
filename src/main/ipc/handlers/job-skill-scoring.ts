@@ -26,7 +26,10 @@ import type {
   SessionScoringQuestion
 } from '../../../shared/types/job-skill-scoring'
 import type { OfflineScoreSubmittedPayload } from '@shared/types/event-payloads'
-import { maybeGenerateJobSkillResult } from './job-skill-result'
+import {
+  finalizeJobSkillResultCore,
+  maybeGenerateJobSkillReportAfterResult
+} from './job-skill-result'
 
 // ---------------------------------------------------------------------------
 // submitJobSkillOfflineScores — 核心纯函数
@@ -133,9 +136,10 @@ export function submitJobSkillOfflineScores(
     return { success: false, errorCode: 'ALREADY_SCORED' }
   }
 
-  // 8. 事务：N × OFFLINE_SCORE_SUBMITTED
+  // 8. 事务：N × OFFLINE_SCORE_SUBMITTED + 可选 JOB_SKILL finalization
   try {
     let itemsScored = 0
+    let finalized = false
 
     const txn = db.transaction(() => {
       const scoredAt = new Date().toISOString()
@@ -175,15 +179,15 @@ export function submitJobSkillOfflineScores(
         applyAssessmentEvent(db, event)
         itemsScored += 1
       }
+
+      finalized = finalizeJobSkillResultCore(db, params.sessionId, params.callerUserId)
     })
 
     txn()
 
-    // T9: 自动触发结果生成（若所有线下+观察项均已完成）
-    try {
-      maybeGenerateJobSkillResult(db, params.sessionId, params.callerUserId)
-    } catch (genErr) {
-      console.error('[submitJobSkillOfflineScores] result generation error:', genErr)
+    // T10: 报告生成在评分/finalize 事务提交后执行，避免嵌套事务。
+    if (finalized) {
+      maybeGenerateJobSkillReportAfterResult(db, params.sessionId, params.callerUserId)
     }
 
     return { success: true, itemsScored }

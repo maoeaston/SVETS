@@ -188,6 +188,100 @@ function completeSession(sessionId: string, offlineScore: 0 | 1 | 2 = 2) {
   }
 }
 
+function countSessionEvents(sessionId: string, eventType: string): number {
+  const row = db
+    .prepare(
+      `SELECT COUNT(*) AS n FROM domain_event_projection
+        WHERE aggregate_type = 'ASSESSMENT_SESSION'
+          AND aggregate_id = ?
+          AND event_type = ?`
+    )
+    .get(sessionId, eventType) as { n: number }
+  return row.n
+}
+
+function nextSessionEventSequence(sessionId: string): number {
+  const row = db
+    .prepare(
+      `SELECT MAX(event_sequence) AS max_seq
+         FROM domain_event_projection
+        WHERE aggregate_type = 'ASSESSMENT_SESSION'
+          AND aggregate_id = ?`
+    )
+    .get(sessionId) as { max_seq: number | null }
+  return (row.max_seq ?? 0) + 1
+}
+
+function insertLegacyObservationEventAndRecord(sessionId: string, questionId: string): string {
+  const eventId = uuidv4()
+  const offlineScoreId = uuidv4()
+  const recordedAt = new Date().toISOString()
+  const payload = {
+    session_id: sessionId,
+    offline_score_id: offlineScoreId,
+    question_id: questionId,
+    observation_payload: {
+      schema_version: 'teacher-observation-v1.0',
+      observation_code: 'OB_TEST',
+      observed: true,
+      behavior_codes: [],
+      prompt_level: null,
+      accommodations_used: [],
+      observation_note: null,
+      recorded_by: callerId,
+      recorded_at: recordedAt
+    },
+    recorded_by: callerId,
+    recorded_at: recordedAt
+  }
+  db.prepare(
+    `INSERT INTO domain_event_projection
+       (event_id, aggregate_type, aggregate_id, event_type, event_sequence,
+        payload_json, checksum, source_log_path, schema_version, created_at)
+     VALUES (?, 'ASSESSMENT_SESSION', ?, 'TEACHER_OBSERVATION_RECORDED', ?,
+        ?, 'legacy-test-checksum', 'legacy-test.jsonl', 1, ?)`
+  ).run(eventId, sessionId, nextSessionEventSequence(sessionId), JSON.stringify(payload), recordedAt)
+  db.prepare(
+    `INSERT INTO offline_score_record
+       (offline_score_id, session_id, question_id, score_scope, score,
+        observation_payload_json, scored_by, scored_event_id, scored_at,
+        tool_checklist_confirmed, revision_no, status)
+     VALUES (?, ?, ?, 'TEACHER_OBSERVATION', NULL, ?, ?, ?, ?, 0, 1, 'VALID')`
+  ).run(
+    offlineScoreId,
+    sessionId,
+    questionId,
+    JSON.stringify(payload.observation_payload),
+    callerId,
+    eventId,
+    recordedAt
+  )
+  return eventId
+}
+
+function seedLegacyReadyToFinalizeCardpoint(sessionId: string) {
+  const submitResult = submitJobSkillOfflineScores(db, {
+    callerUserId: callerId,
+    callerRole: 'TEACHER',
+    sessionId,
+    scores: bankIds.offlineIds.map((questionId) => ({ questionId, score: 2 }))
+  })
+  expect(submitResult.success).toBe(true)
+
+  let lastEventId = ''
+  for (const questionId of bankIds.obsIds) {
+    lastEventId = insertLegacyObservationEventAndRecord(sessionId, questionId)
+  }
+  const maxSeq = nextSessionEventSequence(sessionId) - 1
+  db.prepare(
+    `UPDATE assessment_session
+        SET delivery_phase = 'READY_TO_FINALIZE',
+            event_sequence_version = ?,
+            last_applied_event_id = ?
+      WHERE session_id = ?`
+  ).run(maxSeq, lastEventId, sessionId)
+}
+
 describe('TC-O: JOB_SKILL_SCORE 自动生成', () => {
   it('TC-O07 完整流程生成 JOB_SKILL_SCORE，无 ABILITY_SCORE 行', () => {
     const sessionId = createOfflinePendingSession()
@@ -308,17 +402,49 @@ describe('TC-O: JOB_SKILL_SCORE 自动生成', () => {
     expect(count.n).toBe(0) // 线下评分未录入，不触发
   })
 
-  it('幂等：多次 completeSession 不创建重复 result_record', () => {
+  it('幂等：wrapper 重复调用不创建重复 result_record 或完成事件', () => {
     const sessionId = createOfflinePendingSession()
     completeSession(sessionId) // 触发自动生成
 
     // 再次调用 maybeGenerateJobSkillResult 应无副作用
+    expect(() => maybeGenerateJobSkillResult(db, sessionId, callerId)).not.toThrow()
     expect(() => maybeGenerateJobSkillResult(db, sessionId, callerId)).not.toThrow()
 
     const count = db
       .prepare("SELECT COUNT(*) AS n FROM result_record WHERE source_aggregate_id = ? AND result_type = 'JOB_SKILL_SCORE'")
       .get(sessionId) as { n: number }
     expect(count.n).toBe(1)
+    expect(countSessionEvents(sessionId, 'RESULT_CALCULATED')).toBe(1)
+    expect(countSessionEvents(sessionId, 'SESSION_COMPLETED')).toBe(1)
+  })
+
+  it('wrapper 可恢复旧 READY_TO_FINALIZE 卡点并完成 FINALIZED', () => {
+    const sessionId = createOfflinePendingSession()
+    seedLegacyReadyToFinalizeCardpoint(sessionId)
+
+    const before = db
+      .prepare('SELECT status, delivery_phase FROM assessment_session WHERE session_id = ?')
+      .get(sessionId) as { status: string; delivery_phase: string }
+    expect(before.status).toBe('OFFLINE_PENDING')
+    expect(before.delivery_phase).toBe('READY_TO_FINALIZE')
+    expect(countSessionEvents(sessionId, 'RESULT_CALCULATED')).toBe(0)
+
+    expect(() => maybeGenerateJobSkillResult(db, sessionId, callerId)).not.toThrow()
+    expect(() => maybeGenerateJobSkillResult(db, sessionId, callerId)).not.toThrow()
+
+    const after = db
+      .prepare('SELECT status, delivery_phase, completed_at FROM assessment_session WHERE session_id = ?')
+      .get(sessionId) as { status: string; delivery_phase: string; completed_at: string | null }
+    expect(after.status).toBe('COMPLETED')
+    expect(after.delivery_phase).toBe('FINALIZED')
+    expect(after.completed_at).not.toBeNull()
+
+    const count = db
+      .prepare("SELECT COUNT(*) AS n FROM result_record WHERE source_aggregate_id = ? AND result_type = 'JOB_SKILL_SCORE'")
+      .get(sessionId) as { n: number }
+    expect(count.n).toBe(1)
+    expect(countSessionEvents(sessionId, 'RESULT_CALCULATED')).toBe(1)
+    expect(countSessionEvents(sessionId, 'SESSION_COMPLETED')).toBe(1)
   })
 
   it('低分时 level_result=LEVEL_NOT_COMPETENT（normalized_score < 60）', () => {

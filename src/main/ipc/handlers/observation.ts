@@ -21,7 +21,10 @@ import type {
   TeacherObservationRecord
 } from '@shared/types/teacher-observation'
 import type { TeacherObservationRecordedPayload } from '@shared/types/event-payloads'
-import { maybeGenerateJobSkillResult } from './job-skill-result'
+import {
+  finalizeJobSkillResultCore,
+  maybeGenerateJobSkillReportAfterResult
+} from './job-skill-result'
 
 // ---------------------------------------------------------------------------
 // recordTeacherObservation — 核心纯函数
@@ -123,10 +126,11 @@ export function recordTeacherObservation(
     return { success: false, errorCode: 'ALREADY_RECORDED' }
   }
 
-  // 9. 事务：TEACHER_OBSERVATION_RECORDED 事件 → applyAssessmentEvent
+  // 9. 事务：TEACHER_OBSERVATION_RECORDED 事件 → applyAssessmentEvent + 可选 JOB_SKILL finalization
   try {
     const offlineScoreId = uuidv4()
     const recordedAt = new Date().toISOString()
+    let finalized = false
 
     const txn = db.transaction(() => {
       const payload: TeacherObservationRecordedPayload = {
@@ -146,15 +150,14 @@ export function recordTeacherObservation(
         actorRole: 'TEACHER'
       })
       applyAssessmentEvent(db, event)
+      finalized = finalizeJobSkillResultCore(db, params.sessionId, params.callerUserId)
     })
 
     txn()
 
-    // T9: 自动触发结果生成（若所有线下+观察项均已完成）
-    try {
-      maybeGenerateJobSkillResult(db, params.sessionId, params.callerUserId)
-    } catch (genErr) {
-      console.error('[recordTeacherObservation] result generation error:', genErr)
+    // T10: 报告生成在观察/finalize 事务提交后执行，避免嵌套事务。
+    if (finalized) {
+      maybeGenerateJobSkillReportAfterResult(db, params.sessionId, params.callerUserId)
     }
 
     return { success: true, offlineScoreId }
