@@ -39,7 +39,12 @@ import { createSession, seedAssessmentErrorCodes } from '../assessment'
 import { submitJobSkillOfflineScores } from '../job-skill-scoring'
 import { recordTeacherObservation } from '../observation'
 import { maybeGenerateJobSkillReport } from '../job-skill-report'
-import { createTestDb, seedCaller, seedStudent } from '../../../db/test-helpers'
+import {
+  createTestDb,
+  seedCaller,
+  seedStudent,
+  setAssessmentSessionStateFixture
+} from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
 import type { CreateSessionParams } from '../../../../shared/types/assessment'
 import type { ReportContentJobSkill } from '../../../../shared/types/json-schemas'
@@ -108,7 +113,7 @@ function baseParams(over: Partial<CreateSessionParams> = {}): CreateSessionParam
 function createOfflinePendingSession(): string {
   const result = createSession(db, baseParams())
   if (!result.success) throw new Error('createSession failed')
-  db.prepare("UPDATE assessment_session SET status = 'OFFLINE_PENDING' WHERE session_id = ?").run(result.sessionId)
+  setAssessmentSessionStateFixture(db, result.sessionId, 'OFFLINE_PENDING')
   return result.sessionId
 }
 
@@ -350,4 +355,3 @@ describe('TC-P: JOB_SKILL 专业岗位报告', () => {
     expect(event?.aggregate_type).toBe('TASK_REPORT')
   })
 })
-

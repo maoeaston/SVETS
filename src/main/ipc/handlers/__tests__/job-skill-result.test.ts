@@ -39,7 +39,12 @@ import { createSession, seedAssessmentErrorCodes } from '../assessment'
 import { submitJobSkillOfflineScores } from '../job-skill-scoring'
 import { recordTeacherObservation } from '../observation'
 import { maybeGenerateJobSkillResult } from '../job-skill-result'
-import { createTestDb, seedCaller, seedStudent } from '../../../db/test-helpers'
+import {
+  createTestDb,
+  seedCaller,
+  seedStudent,
+  setAssessmentSessionStateFixture
+} from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
 import type { CreateSessionParams } from '../../../../shared/types/assessment'
 
@@ -107,7 +112,7 @@ function baseParams(over: Partial<CreateSessionParams> = {}): CreateSessionParam
 function createOfflinePendingSession(): string {
   const result = createSession(db, baseParams())
   if (!result.success) throw new Error('createSession failed')
-  db.prepare("UPDATE assessment_session SET status = 'OFFLINE_PENDING' WHERE session_id = ?").run(result.sessionId)
+  setAssessmentSessionStateFixture(db, result.sessionId, 'OFFLINE_PENDING')
   return result.sessionId
 }
 
@@ -337,5 +342,4 @@ describe('TC-O: JOB_SKILL_SCORE 自动生成', () => {
     expect(row?.level_result).toBeDefined()
   })
 })
-
 

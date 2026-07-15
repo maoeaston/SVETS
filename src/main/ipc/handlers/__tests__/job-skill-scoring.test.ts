@@ -52,7 +52,12 @@ vi.mock('../../../domain/event-writer', () => ({
 
 import { createSession, seedAssessmentErrorCodes, submitAnswer } from '../assessment'
 import { submitJobSkillOfflineScores, getJobSkillOfflineScores } from '../job-skill-scoring'
-import { createTestDb, seedCaller, seedStudent } from '../../../db/test-helpers'
+import {
+  createTestDb,
+  seedCaller,
+  seedStudent,
+  setAssessmentSessionStateFixture
+} from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
 import type { CreateSessionParams } from '../../../../shared/types/assessment'
 import type { JobSkillOfflineScoreItem } from '../../../../shared/types/job-skill-scoring'
@@ -185,9 +190,7 @@ function baseParams(over: Partial<CreateSessionParams> = {}): CreateSessionParam
 function createOfflinePendingSession(): string {
   const result = createSession(db, baseParams())
   if (!result.success) throw new Error('createSession failed in test setup')
-  db.prepare("UPDATE assessment_session SET status = 'OFFLINE_PENDING' WHERE session_id = ?").run(
-    result.sessionId
-  )
+  setAssessmentSessionStateFixture(db, result.sessionId, 'OFFLINE_PENDING')
   return result.sessionId
 }
 
