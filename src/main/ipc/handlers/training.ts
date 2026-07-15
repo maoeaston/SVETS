@@ -133,8 +133,10 @@ export function createTrainingSession(
 
   // 7. 写事件 + reducer（事务内）
   const trainingSessionId = uuidv4()
+  const businessSessionId = trainingSessionId
   const payload: TrainingStartedPayload = {
     training_session_id: trainingSessionId,
+    business_session_id: businessSessionId,
     student_id: params.studentId,
     strategy_id: params.strategyId,
     strategy_type: 'TRAINING_PRACTICE',
@@ -142,7 +144,8 @@ export function createTrainingSession(
     job_code: strategy.job_code,
     task_code: params.taskCode,
     total_steps: 4,
-    step_order: ['WATCH', 'LEARN', 'PRACTICE', 'DO']
+    step_order: ['WATCH', 'LEARN', 'PRACTICE', 'DO'],
+    module_type: params.moduleType
   }
 
   try {
@@ -163,13 +166,7 @@ export function createTrainingSession(
     return { success: false, errorCode: 'TRAINING_SYSTEM_ERROR' }
   }
 
-  // 8. 更新 module_type（reducer INSERT 后补填，不含于事件 payload 以保简洁）
-  db.prepare(
-    `UPDATE training_session SET module_type = ?, updated_at = datetime('now')
-      WHERE training_session_id = ?`
-  ).run(params.moduleType, trainingSessionId)
-
-  return { success: true, trainingSessionId, status: 'INIT' }
+  return { success: true, trainingSessionId, businessSessionId, status: 'INIT' }
 }
 
 // ---------------------------------------------------------------------------

@@ -11,6 +11,50 @@ import type {
   TrainingCompletedPayload
 } from '@shared/types/event-payloads'
 
+type BusinessSessionType = 'ASSESSMENT' | 'TRAINING' | 'LEARNING'
+
+function ensureBusinessSession(
+  db: DBAdapter,
+  params: {
+    businessSessionId: string
+    sessionType: BusinessSessionType
+    studentId: string
+    jobCode: string
+    taskCode: string
+    createdBy: string
+  }
+): void {
+  const existing = db
+    .prepare('SELECT session_type, student_id, job_code, task_code FROM business_session WHERE business_session_id = ?')
+    .get(params.businessSessionId) as
+    | { session_type: string; student_id: string; job_code: string; task_code: string }
+    | undefined
+  if (existing) {
+    if (
+      existing.session_type !== params.sessionType ||
+      existing.student_id !== params.studentId ||
+      existing.job_code !== params.jobCode ||
+      existing.task_code !== params.taskCode
+    ) {
+      throw new Error(`business_session ${params.businessSessionId} conflicts with training session facts`)
+    }
+    return
+  }
+
+  db.prepare(
+    `INSERT INTO business_session
+       (business_session_id, session_type, student_id, job_code, task_code, created_by)
+     VALUES (?, ?, ?, ?, ?, ?)`
+  ).run(
+    params.businessSessionId,
+    params.sessionType,
+    params.studentId,
+    params.jobCode,
+    params.taskCode,
+    params.createdBy
+  )
+}
+
 export function applyTrainingEvent(db: DBAdapter, entry: ActionLogEntry): void {
   switch (entry.event_type) {
     case 'TRAINING_STARTED':
@@ -42,8 +86,18 @@ const TRAINING_STEPS = [
 
 function applyTrainingStarted(db: DBAdapter, entry: ActionLogEntry): void {
   const p = entry.payload as unknown as TrainingStartedPayload
+  const businessSessionId = p.business_session_id ?? p.training_session_id
 
-  // 幂等：已存在则跳过
+  ensureBusinessSession(db, {
+    businessSessionId,
+    sessionType: 'TRAINING',
+    studentId: p.student_id,
+    jobCode: p.job_code,
+    taskCode: p.task_code,
+    createdBy: entry.actor_id
+  })
+
+  // 幂等：已存在则跳过；父记录已先修复/校验。
   const exists = db
     .prepare('SELECT 1 FROM training_session WHERE training_session_id = ?')
     .get(p.training_session_id)
@@ -51,18 +105,20 @@ function applyTrainingStarted(db: DBAdapter, entry: ActionLogEntry): void {
 
   db.prepare(
     `INSERT INTO training_session (
-       training_session_id, student_id, job_code, task_code,
+       training_session_id, business_session_id, student_id, job_code, task_code,
        strategy_id, strategy_type, strategy_version,
-       status, total_step_count, completed_step_count,
+       status, module_type, total_step_count, completed_step_count,
        created_by, updated_at, created_event_id, last_applied_event_id, last_status_event_id
-     ) VALUES (?, ?, ?, ?, ?, 'TRAINING_PRACTICE', ?, 'INIT', 4, 0, ?, datetime('now'), ?, ?, ?)`
+     ) VALUES (?, ?, ?, ?, ?, ?, 'TRAINING_PRACTICE', ?, 'INIT', ?, 4, 0, ?, datetime('now'), ?, ?, ?)`
   ).run(
     p.training_session_id,
+    businessSessionId,
     p.student_id,
     p.job_code,
     p.task_code,
     p.strategy_id,
     p.strategy_version,
+    p.module_type ?? null,
     entry.actor_id,
     entry.event_id,
     entry.event_id,

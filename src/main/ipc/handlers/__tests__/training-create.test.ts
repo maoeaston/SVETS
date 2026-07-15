@@ -103,13 +103,27 @@ describe('createTrainingSession', () => {
     expect(result.success).toBe(true)
     if (!result.success) return
     expect(result.status).toBe('INIT')
+    expect(result.businessSessionId).toBe(result.trainingSessionId)
 
     const session = getSession(result.trainingSessionId)
     expect(session).toBeDefined()
+    expect(session!.business_session_id).toBe(result.trainingSessionId)
     expect(session!.status).toBe('INIT')
     expect(session!.total_step_count).toBe(4)
     expect(session!.completed_step_count).toBe(0)
     expect(session!.module_type).toBe('FINE_MOTOR')
+
+    const parent = db
+      .prepare('SELECT session_type, student_id, job_code, task_code FROM business_session WHERE business_session_id = ?')
+      .get(result.trainingSessionId) as
+      | { session_type: string; student_id: string; job_code: string; task_code: string }
+      | undefined
+    expect(parent).toEqual({
+      session_type: 'TRAINING',
+      student_id: studentId,
+      job_code: 'SUPERMARKET_SHELVER',
+      task_code: taskCode
+    })
 
     const steps = getSteps(result.trainingSessionId)
     expect(steps).toHaveLength(4)
@@ -142,6 +156,12 @@ describe('createTrainingSession', () => {
       .get(result.trainingSessionId) as Record<string, unknown> | undefined
     expect(evt).toBeDefined()
     expect(evt!.checksum).toBe('test-checksum')
+    const payload = JSON.parse(evt!.payload_json as string) as {
+      business_session_id: string
+      module_type: string
+    }
+    expect(payload.business_session_id).toBe(result.trainingSessionId)
+    expect(payload.module_type).toBe('COGNITION')
   })
 
   it('VALIDATION_ERROR：strategy_type 非 TRAINING_PRACTICE', () => {
