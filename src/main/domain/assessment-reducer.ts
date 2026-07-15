@@ -28,6 +28,7 @@ import type {
   ActionLogEntry,
   SessionStartedPayload,
   SessionFirstQuestionActivatedPayload,
+  AssignmentAssessmentStartedPayload,
   AnswerSubmittedPayload,
   EmotionInterruptedPayload,
   EmotionResumedPayload,
@@ -43,6 +44,8 @@ import type {
 type BusinessSessionType = 'ASSESSMENT' | 'TRAINING' | 'LEARNING'
 type AssessmentDeliveryPhase =
   | 'PREPARED'
+  | 'ASSIGNED'
+  | 'STUDENT_CONFIRMED'
   | 'ONLINE_IN_PROGRESS'
   | 'ONLINE_COMPLETED'
   | 'OFFLINE_SCORING'
@@ -53,12 +56,14 @@ type AssessmentDeliveryPhase =
 const TERMINAL_ASSESSMENT_STATUSES = new Set(['COMPLETED', 'ABORTED', 'REDLINE_HALTED'])
 const DELIVERY_PHASE_ORDER: Record<AssessmentDeliveryPhase, number> = {
   PREPARED: 0,
-  ONLINE_IN_PROGRESS: 1,
-  ONLINE_COMPLETED: 2,
-  OFFLINE_SCORING: 3,
-  OBSERVATION: 4,
-  READY_TO_FINALIZE: 5,
-  FINALIZED: 6
+  ASSIGNED: 1,
+  STUDENT_CONFIRMED: 2,
+  ONLINE_IN_PROGRESS: 3,
+  ONLINE_COMPLETED: 4,
+  OFFLINE_SCORING: 5,
+  OBSERVATION: 6,
+  READY_TO_FINALIZE: 7,
+  FINALIZED: 8
 }
 
 function ensureBusinessSession(
@@ -235,6 +240,9 @@ export function applyAssessmentEvent(db: DBAdapter, event: ActionLogEntry): void
     case 'SESSION_FIRST_QUESTION_ACTIVATED':
       applySessionFirstQuestionActivated(db, event)
       break
+    case 'ASSIGNMENT_ASSESSMENT_STARTED':
+      applyAssignmentAssessmentStarted(db, event)
+      break
     case 'ANSWER_SUBMITTED':
       applyAnswerSubmitted(db, event)
       break
@@ -269,6 +277,48 @@ export function applyAssessmentEvent(db: DBAdapter, event: ActionLogEntry): void
       // 未知 event_type：no-op，向前兼容
       break
   }
+}
+
+// ASSIGNMENT_ASSESSMENT_STARTED → 初始化 current_question_id 指针。
+// M3 合法路径只允许 STUDENT_CONFIRMED -> ONLINE_IN_PROGRESS。
+function applyAssignmentAssessmentStarted(db: DBAdapter, event: ActionLogEntry): void {
+  const p = event.payload as unknown as AssignmentAssessmentStartedPayload
+  const row = db
+    .prepare('SELECT current_question_id, delivery_phase, event_sequence_version FROM assessment_session WHERE session_id = ?')
+    .get(p.session_id) as
+    | { current_question_id: string | null; delivery_phase: AssessmentDeliveryPhase | null; event_sequence_version: number }
+    | undefined
+  if (!row) return
+  if (isStaleAssessmentEvent(row, event)) return
+  if (row.current_question_id !== null) return
+  if (row.delivery_phase !== p.delivery_phase_before) return
+
+  db.prepare(
+    `UPDATE assessment_session
+       SET status = 'ACTIVE',
+           delivery_phase = ?,
+           current_question_id = ?,
+           started_at = ?,
+           last_status_event_id = ?,
+           last_applied_event_id = ?,
+           event_sequence_version = CASE
+             WHEN event_sequence_version > ? THEN event_sequence_version
+             ELSE ?
+           END
+     WHERE session_id = ?
+       AND current_question_id IS NULL
+       AND delivery_phase = ?`
+  ).run(
+    p.delivery_phase_after,
+    p.first_question_id,
+    p.started_at,
+    event.event_id,
+    event.event_id,
+    event.event_sequence,
+    event.event_sequence,
+    p.session_id,
+    p.delivery_phase_before
+  )
 }
 
 function applyEmotionCollapseThresholdReached(db: DBAdapter, event: ActionLogEntry): void {

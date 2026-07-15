@@ -4,7 +4,14 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest'
 import { v4 as uuidv4 } from 'uuid'
 import { applyAssessmentEvent } from '../assessment-reducer'
-import { createTestDb, seedStudent, seedCaller, seedQuestionBank, baseStrategyInput } from '../../db/test-helpers'
+import {
+  createTestDb,
+  seedStudent,
+  seedCaller,
+  seedQuestionBank,
+  baseStrategyInput,
+  setAssessmentSessionStateFixture
+} from '../../db/test-helpers'
 import type { MemoryAdapter } from '../../db/memory-adapter'
 import type { DBAdapter } from '../../db/interface'
 import type { StrategyInput } from '../../../shared/types/strategy'
@@ -501,6 +508,7 @@ describe('applyAssessmentEvent — ANSWER_SUBMITTED', () => {
     const startEvent = makeSessionStartedEvent(sessionId)
     seedEvent(db, startEvent)
     applyAssessmentEvent(db, startEvent)
+    setAssessmentSessionStateFixture(db, sessionId, 'ACTIVE', 'ONLINE_IN_PROGRESS')
 
     const answeredQid = questionIds[0]
     const event = makeAnswerEvent(sessionId, uuidv4(), answeredQid, 1)
@@ -527,6 +535,7 @@ describe('applyAssessmentEvent — ANSWER_SUBMITTED', () => {
     const startEvent = makeSessionStartedEvent(sessionId)
     seedEvent(db, startEvent)
     applyAssessmentEvent(db, startEvent)
+    setAssessmentSessionStateFixture(db, sessionId, 'ACTIVE', 'ONLINE_IN_PROGRESS')
 
     // 只答 1 道（order=1），然后伪造 session 已答 42 道、current 指向第 42 题，再答第 42 题
     // 直接构造：答第 42 道（question_order=42 → questionIds[41]）
@@ -616,6 +625,7 @@ describe('applyAssessmentEvent — SESSION_COMPLETED / ABORTED', () => {
     const startEvent = makeSessionStartedEvent(sessionId)
     seedEvent(db, startEvent)
     applyAssessmentEvent(db, startEvent)
+    setAssessmentSessionStateFixture(db, sessionId, 'ACTIVE', 'READY_TO_FINALIZE')
 
     const payload: SessionCompletedPayload = {
       session_id: sessionId,
@@ -849,6 +859,7 @@ describe('applyAssessmentEvent — Step 7 JOB_SKILL delivery_phase 推进', () =
     })
     seedEvent(db, startEvent)
     applyAssessmentEvent(db, startEvent)
+    setAssessmentSessionStateFixture(db, sessionId, 'ACTIVE', 'ONLINE_COMPLETED')
 
     const firstScore = makeJobSkillOfflineScoreEvent(sessionId, bankIds.offlineIds[0], 2)
     seedEvent(db, firstScore)
@@ -883,6 +894,7 @@ describe('applyAssessmentEvent — Step 7 JOB_SKILL delivery_phase 推进', () =
     })
     seedEvent(db, startEvent)
     applyAssessmentEvent(db, startEvent)
+    setAssessmentSessionStateFixture(db, sessionId, 'ACTIVE', 'ONLINE_COMPLETED')
 
     const firstScore = makeJobSkillOfflineScoreEvent(sessionId, bankIds.offlineIds[0], 2)
     const secondScore = makeJobSkillOfflineScoreEvent(sessionId, bankIds.offlineIds[1], 3)
@@ -928,6 +940,7 @@ describe('applyAssessmentEvent — Step 7 JOB_SKILL delivery_phase 推进', () =
     })
     seedEvent(db, startEvent)
     applyAssessmentEvent(db, startEvent)
+    setAssessmentSessionStateFixture(db, sessionId, 'ACTIVE', 'ONLINE_COMPLETED')
 
     const operationScore = makeJobSkillOfflineScoreEvent(sessionId, bankIds.offlineIds[0], 2, 'TASK_OPERATION')
     seedEvent(db, operationScore)
@@ -959,11 +972,12 @@ describe('applyAssessmentEvent — Step 7 JOB_SKILL delivery_phase 推进', () =
     })
     seedEvent(db, abortedStart)
     applyAssessmentEvent(db, abortedStart)
-    db.prepare("UPDATE assessment_session SET status = 'ABORTED', delivery_phase = 'ONLINE_IN_PROGRESS' WHERE session_id = ?").run(abortedSessionId)
+    setAssessmentSessionStateFixture(db, abortedSessionId, 'ACTIVE', 'ONLINE_IN_PROGRESS')
+    db.prepare("UPDATE assessment_session SET status = 'ABORTED' WHERE session_id = ?").run(abortedSessionId)
 
     seedEvent(db, redlineStart)
     applyAssessmentEvent(db, redlineStart)
-    db.prepare("UPDATE assessment_session SET delivery_phase = 'OFFLINE_SCORING' WHERE session_id = ?").run(redlineSessionId)
+    setAssessmentSessionStateFixture(db, redlineSessionId, 'ACTIVE', 'OFFLINE_SCORING')
     seedSafetyIncident(db, uuidv4(), studentId)
 
     const abortedScore = makeJobSkillOfflineScoreEvent(abortedSessionId, abortedBankIds.offlineIds[0], 2)
@@ -1107,6 +1121,7 @@ describe('applyAssessmentEvent — 幂等性', () => {
     const startEvent = makeSessionStartedEvent(sessionId)
     seedEvent(db, startEvent)
     applyAssessmentEvent(db, startEvent)
+    setAssessmentSessionStateFixture(db, sessionId, 'ACTIVE', 'READY_TO_FINALIZE')
 
     const event = makeEvent(
       'SESSION_COMPLETED',
@@ -1205,6 +1220,7 @@ describe('applyAssessmentEvent — 幂等性', () => {
     const startEvent = makeSessionStartedEvent(sessionId)
     seedEvent(db, startEvent)
     applyAssessmentEvent(db, startEvent)
+    setAssessmentSessionStateFixture(db, sessionId, 'INIT', 'STUDENT_CONFIRMED')
 
     // 前置：SESSION_STARTED 后 current_question_id 应为 NULL（reducer applySessionStarted 不设）
     const before = db
@@ -1249,6 +1265,7 @@ describe('applyAssessmentEvent — 幂等性', () => {
     const startEvent = makeSessionStartedEvent(sessionId)
     seedEvent(db, startEvent)
     applyAssessmentEvent(db, startEvent)
+    setAssessmentSessionStateFixture(db, sessionId, 'INIT', 'STUDENT_CONFIRMED')
 
     const firstQid = questionIds[0]
     const secondQid = questionIds[1]
