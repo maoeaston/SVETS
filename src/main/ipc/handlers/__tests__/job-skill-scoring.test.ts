@@ -50,7 +50,7 @@ vi.mock('../../../domain/event-writer', () => ({
   )
 }))
 
-import { createSession, seedAssessmentErrorCodes, submitAnswer } from '../assessment'
+import { createSession, seedAssessmentErrorCodes, startSession, submitAnswer } from '../assessment'
 import { submitJobSkillOfflineScores, getJobSkillOfflineScores } from '../job-skill-scoring'
 import {
   createTestDb,
@@ -214,6 +214,7 @@ beforeEach(() => {
   db.exec('DELETE FROM result_record')
   db.exec('DELETE FROM safety_incident_binding')
   db.exec('DELETE FROM assessment_session')
+  db.exec('DELETE FROM business_session')
   db.exec('DELETE FROM safety_incident')
   db.exec('DELETE FROM error_event_log')
   db.exec('DELETE FROM domain_event_projection')
@@ -275,6 +276,12 @@ describe('TC-O: JOB_SKILL 线下评分录入', () => {
     expect(result.success).toBe(true)
     if (!result.success) return
     const sessionId = result.sessionId
+    const started = startSession(db, {
+      callerUserId: studentId,
+      callerRole: 'STUDENT',
+      sessionId
+    })
+    expect(started.success).toBe(true)
 
     const onlineQuestion = db
       .prepare(

@@ -151,6 +151,7 @@ beforeEach(() => {
   db.exec('DELETE FROM result_record')
   db.exec('DELETE FROM safety_incident_binding')
   db.exec('DELETE FROM assessment_session')
+  db.exec('DELETE FROM business_session')
   db.exec('DELETE FROM safety_incident')
   db.exec('DELETE FROM error_event_log')
   db.exec('DELETE FROM domain_event_projection')
@@ -342,4 +343,3 @@ describe('TC-O: JOB_SKILL_SCORE 自动生成', () => {
     expect(row?.level_result).toBeDefined()
   })
 })
-

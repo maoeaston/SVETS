@@ -204,6 +204,7 @@ beforeEach(() => {
   db.exec('DELETE FROM result_record')
   db.exec('DELETE FROM safety_incident_binding')
   db.exec('DELETE FROM assessment_session')
+  db.exec('DELETE FROM business_session')
   db.exec('DELETE FROM safety_incident')
   db.exec('DELETE FROM domain_event_projection')
   db.exec('DELETE FROM question_bank')
@@ -234,7 +235,7 @@ beforeEach(() => {
 // ---------- SESSION_STARTED ----------
 
 describe('applyAssessmentEvent — SESSION_STARTED', () => {
-  it('apply 后 assessment_session 行存在 + status=ACTIVE + 50 行 assessment_session_question', () => {
+  it('apply 后父子 session 行存在 + status=INIT + delivery_phase=PREPARED + 50 行题目快照', () => {
     const sessionId = uuidv4()
     const event = makeSessionStartedEvent(sessionId)
     seedEvent(db, event)
@@ -242,16 +243,72 @@ describe('applyAssessmentEvent — SESSION_STARTED', () => {
     applyAssessmentEvent(db, event)
 
     const sess = db
-      .prepare('SELECT status, online_question_count, offline_question_count, created_by, started_at FROM assessment_session WHERE session_id = ?')
-      .get(sessionId) as { status: string; online_question_count: number; offline_question_count: number; created_by: string; started_at: string }
-    expect(sess.status).toBe('ACTIVE')
+      .prepare(
+        `SELECT business_session_id, status, delivery_phase, event_sequence_version,
+                online_question_count, offline_question_count, created_by, started_at
+           FROM assessment_session WHERE session_id = ?`
+      )
+      .get(sessionId) as {
+      business_session_id: string
+      status: string
+      delivery_phase: string
+      event_sequence_version: number
+      online_question_count: number
+      offline_question_count: number
+      created_by: string
+      started_at: string | null
+    }
+    expect(sess.business_session_id).toBe(sessionId)
+    expect(sess.status).toBe('INIT')
+    expect(sess.delivery_phase).toBe('PREPARED')
+    expect(sess.event_sequence_version).toBe(1)
     expect(sess.online_question_count).toBe(42)
     expect(sess.offline_question_count).toBe(8)
     expect(sess.created_by).toBe(teacherId)
-    expect(sess.started_at).toBe(event.created_at)
+    expect(sess.started_at).toBeNull()
+
+    const parent = db
+      .prepare('SELECT session_type, student_id, job_code, task_code FROM business_session WHERE business_session_id = ?')
+      .get(sessionId) as {
+      session_type: string
+      student_id: string
+      job_code: string
+      task_code: string
+    }
+    expect(parent).toEqual({
+      session_type: 'ASSESSMENT',
+      student_id: studentId,
+      job_code: jobCode,
+      task_code: taskCode
+    })
 
     const qCount = db.prepare('SELECT COUNT(*) AS c FROM assessment_session_question WHERE session_id = ?').get(sessionId) as { c: number }
     expect(qCount.c).toBe(50)
+  })
+
+  it('business_session_id 可独立于 session_id，作为稳定父会话写入父子表', () => {
+    const sessionId = uuidv4()
+    const businessSessionId = uuidv4()
+    const event = makeSessionStartedEvent(sessionId)
+    ;(event.payload as unknown as SessionStartedPayload).business_session_id = businessSessionId
+    seedEvent(db, event)
+
+    applyAssessmentEvent(db, event)
+
+    const sess = db
+      .prepare('SELECT business_session_id FROM assessment_session WHERE session_id = ?')
+      .get(sessionId) as { business_session_id: string }
+    expect(sess.business_session_id).toBe(businessSessionId)
+
+    const parent = db
+      .prepare('SELECT session_type, student_id, job_code, task_code FROM business_session WHERE business_session_id = ?')
+      .get(businessSessionId) as { session_type: string; student_id: string; job_code: string; task_code: string }
+    expect(parent).toEqual({
+      session_type: 'ASSESSMENT',
+      student_id: studentId,
+      job_code: jobCode,
+      task_code: taskCode
+    })
   })
 
   it('question_phase：前 42 ONLINE + 后 8 OFFLINE，question_order 连续 1..50', () => {
@@ -490,7 +547,7 @@ describe('applyAssessmentEvent — REDLINE_TRIGGERED', () => {
   })
 
   it('冷启动重放分支：session 非 REDLINE_HALTED 时 reducer 完整熔断 + 幂等', async () => {
-    // 独立 DB：drop batch-halt trigger 模拟冷启动（trigger 未跑，session 保持 ACTIVE），
+    // 独立 DB：drop batch-halt trigger 模拟冷启动（trigger 未跑，session 保持 INIT），
     // 使 reducer 走 applyRedlineTriggered 的 else 分支（完整 UPDATE，line 330-341）。
     // 共享 db 实例不受影响。
     const coldDb = await createTestDb()
@@ -535,13 +592,13 @@ describe('applyAssessmentEvent — REDLINE_TRIGGERED', () => {
       seedEvent(coldDb, startEvent)
       applyAssessmentEvent(coldDb, startEvent)
 
-      // seedSafetyIncident：batch-halt trigger 已 drop，session 应保持 ACTIVE
+      // seedSafetyIncident：batch-halt trigger 已 drop，session 应保持 INIT
       const incidentId = uuidv4()
       seedSafetyIncident(coldDb, incidentId, cStudent, cTeacher)
       const beforeStatus = coldDb
         .prepare('SELECT status FROM assessment_session WHERE session_id = ?')
         .get(sessionId) as { status: string }
-      expect(beforeStatus.status).toBe('ACTIVE')
+      expect(beforeStatus.status).toBe('INIT')
 
       const redlinePayload: RedlineTriggeredPayload = {
         session_id: sessionId,
@@ -1014,6 +1071,28 @@ describe('applyAssessmentEvent — 冷启动重放', () => {
 // ---------- 孤儿事件幂等 ----------
 
 describe('applyAssessmentEvent — 孤儿事件恢复', () => {
+  it('event_sequence_version 已领先时，旧 ANSWER_SUBMITTED 不再投影', () => {
+    const sessionId = uuidv4()
+    const startEvent = makeSessionStartedEvent(sessionId)
+    seedEvent(db, startEvent)
+    applyAssessmentEvent(db, startEvent)
+
+    db.prepare('UPDATE assessment_session SET event_sequence_version = 10 WHERE session_id = ?').run(sessionId)
+    const staleAnswer = makeAnswerEvent(sessionId, uuidv4(), questionIds[0], 1)
+    staleAnswer.event_sequence = 2
+    seedEvent(db, staleAnswer)
+
+    applyAssessmentEvent(db, staleAnswer)
+
+    const arCount = db.prepare('SELECT COUNT(*) AS c FROM answer_record WHERE session_id = ?').get(sessionId) as { c: number }
+    const sess = db
+      .prepare('SELECT online_completed_count, event_sequence_version FROM assessment_session WHERE session_id = ?')
+      .get(sessionId) as { online_completed_count: number; event_sequence_version: number }
+    expect(arCount.c).toBe(0)
+    expect(sess.online_completed_count).toBe(0)
+    expect(sess.event_sequence_version).toBe(10)
+  })
+
   it('投影回滚后重放同一事件 → 正确恢复，不重复', () => {
     const sessionId = uuidv4()
     const startEvent = makeSessionStartedEvent(sessionId)
@@ -1026,7 +1105,9 @@ describe('applyAssessmentEvent — 孤儿事件恢复', () => {
 
     // 模拟投影回滚：删 answer_record + 重置 online_completed_count（jsonl/domain_event_projection 保留）
     db.prepare('DELETE FROM answer_record WHERE answer_id = ?').run(answerEvent.payload.answer_id as string)
-    db.prepare('UPDATE assessment_session SET online_completed_count = 0 WHERE session_id = ?').run(sessionId)
+    db.prepare(
+      'UPDATE assessment_session SET online_completed_count = 0, event_sequence_version = ? WHERE session_id = ?'
+    ).run(startEvent.event_sequence, sessionId)
 
     // 重放该孤儿事件
     applyAssessmentEvent(db, answerEvent)

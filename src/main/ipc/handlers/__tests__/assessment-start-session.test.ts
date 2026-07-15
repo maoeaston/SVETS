@@ -153,7 +153,7 @@ function seedContentJsonByType(questionType: OnlineQuestionType, content: Record
   )
 }
 
-/** 跑一次 createSession 拿到 ACTIVE + current_question_id=NULL 的 session。 */
+/** 跑一次 createSession 拿到 INIT + PREPARED + current_question_id=NULL 的 session。 */
 function setupSession(
   student: string = studentId,
   task: string = taskCode,
@@ -236,6 +236,7 @@ beforeEach(() => {
   db.exec('DELETE FROM safety_incident_binding')
   db.exec('DELETE FROM result_record')
   db.exec('DELETE FROM assessment_session')
+  db.exec('DELETE FROM business_session')
   db.exec('DELETE FROM safety_incident')
   db.exec('DELETE FROM error_event_log')
   db.exec('DELETE FROM domain_event_projection')

@@ -145,6 +145,20 @@ function statusToAnswerErrorCode(status: string): AssessmentErrorCode | null {
   }
 }
 
+function statusToStartSessionErrorCode(status: string): AssessmentErrorCode | null {
+  switch (status) {
+    case 'INIT':
+    case 'ACTIVE':
+      return null
+    case 'EMOTION_INTERRUPTED':
+      return 'SESSION_PAUSED'
+    case 'REDLINE_HALTED':
+      return 'SESSION_HALTED'
+    default:
+      return 'SESSION_NOT_ACTIVE'
+  }
+}
+
 /**
  * STUDENT 情绪中断路径的 status 映射。
  * ACTIVE / EMOTION_INTERRUPTED → 允许（后者代表中断中再次崩溃，collapse 累加）；
@@ -387,6 +401,8 @@ export function createSession(db: DBAdapter, params: CreateSessionParams): Creat
 
   // 8-9. 解析 question_policy_json，按策略类型选题
   const sessionId = uuidv4()
+  const businessSessionId = sessionId
+  let observationTemplateId: string | null = null
   let questionIds: string[]
   let onlineQuestionsToReturn: SessionQuestionView[]
 
@@ -407,6 +423,7 @@ export function createSession(db: DBAdapter, params: CreateSessionParams): Creat
 
     const scoredIds = fixedPolicy.fixed_scored_question_ids ?? []
     const obsIds = fixedPolicy.embedded_observation_question_ids ?? []
+    observationTemplateId = obsIds.length > 0 ? `${params.strategyId}@${params.strategyVersion}` : null
 
     if (scoredIds.length === 0) {
       logAssessmentEvent(db, 'QUESTION_BANK_INSUFFICIENT', 'ERROR', 'unknown', caller.row.user_id, {
@@ -549,6 +566,7 @@ export function createSession(db: DBAdapter, params: CreateSessionParams): Creat
   //     + assessment_session_question 行（ONLINE/OFFLINE/OBSERVATION phase 由 reducer 判定）
   const payload: SessionStartedPayload = {
     session_id: sessionId,
+    business_session_id: businessSessionId,
     student_id: params.studentId,
     strategy_id: params.strategyId,
     strategy_type: strategyType,
@@ -557,7 +575,9 @@ export function createSession(db: DBAdapter, params: CreateSessionParams): Creat
     task_code: params.taskCode,
     online_question_count: strategy.online_question_count,
     offline_question_count: strategy.offline_question_count,
-    question_ids: questionIds
+    question_ids: questionIds,
+    initial_delivery_phase: 'PREPARED',
+    observation_template_id: observationTemplateId
   }
 
   try {
@@ -596,6 +616,7 @@ export function createSession(db: DBAdapter, params: CreateSessionParams): Creat
   const result: CreateSessionSuccess = {
     success: true,
     sessionId,
+    businessSessionId,
     questions: onlineQuestionsToReturn
   }
   return result
@@ -2022,9 +2043,8 @@ export function startSession(db: DBAdapter, params: StartSessionParams): StartSe
     return { success: false, errorCode: owner.errorCode }
   }
 
-  // 3. status 必须 ACTIVE（与 submitAnswer 同映射：EMOTION_INTERRUPTED→PAUSED、
-  //    REDLINE_HALTED→HALTED、其余→NOT_ACTIVE）
-  const statusErr = statusToAnswerErrorCode(owner.sessionRow.status)
+  // 3. status 必须是 INIT（首次启动）或 ACTIVE（旧数据/幂等继续）。
+  const statusErr = statusToStartSessionErrorCode(owner.sessionRow.status)
   if (statusErr) {
     return { success: false, errorCode: statusErr }
   }

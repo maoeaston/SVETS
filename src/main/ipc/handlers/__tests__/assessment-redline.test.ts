@@ -359,6 +359,7 @@ beforeEach(() => {
   db.exec('DELETE FROM safety_incident_binding')
   db.exec('DELETE FROM result_record')
   db.exec('DELETE FROM assessment_session')
+  db.exec('DELETE FROM business_session')
   db.exec('DELETE FROM safety_incident')
   db.exec('DELETE FROM error_event_log')
   db.exec('DELETE FROM domain_event_projection')
@@ -621,6 +622,9 @@ describe('assessment:triggerRedline result_payload_json 落盘 + 重放幂等', 
 
     // 模拟重放：擦除 result_record，重新 apply
     db.prepare('DELETE FROM result_record WHERE source_aggregate_id = ?').run(sessionId)
+    db.prepare(
+      'UPDATE assessment_session SET event_sequence_version = ? WHERE session_id = ?'
+    ).run(evt.event_sequence - 1, sessionId)
 
     applyAssessmentEvent(db, {
       event_id: evt.event_id,

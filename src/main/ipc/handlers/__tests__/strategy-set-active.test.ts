@@ -30,6 +30,7 @@ afterAll(() => {
 beforeEach(() => {
   db.exec('DELETE FROM assessment_session')
   db.exec('DELETE FROM training_session')
+  db.exec('DELETE FROM business_session')
   db.exec('DELETE FROM error_event_log')
   db.exec('DELETE FROM strategy_config')
   db.exec('DELETE FROM student_profile')

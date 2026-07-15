@@ -196,6 +196,7 @@ beforeEach(() => {
   db.exec('DELETE FROM result_record')          // result_record.redline_incident_id → safety_incident
   db.exec('DELETE FROM safety_incident_binding')
   db.exec('DELETE FROM assessment_session')     // assessment_session.redline_incident_id → safety_incident
+  db.exec('DELETE FROM business_session')
   db.exec('DELETE FROM safety_incident')
   db.exec('DELETE FROM error_event_log')
   db.exec('DELETE FROM domain_event_projection')

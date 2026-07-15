@@ -170,6 +170,7 @@ beforeEach(() => {
   // FK-safe 清表顺序：业务表 → events → 配置/档案 → 账号
   db.exec('DELETE FROM assessment_session_question')
   db.exec('DELETE FROM assessment_session')
+  db.exec('DELETE FROM business_session')
   db.exec('DELETE FROM safety_incident_binding')
   db.exec('DELETE FROM safety_incident')
   db.exec('DELETE FROM answer_record')
@@ -208,30 +209,50 @@ describe('assessment:createSession 正常路径', () => {
     expect(orders[0]).toBe(1)
     expect(orders[orders.length - 1]).toBe(42)
 
-    // assessment_session 行：status=ACTIVE（reducer SESSION_STARTED 直达，不经 INIT）
+    expect(result.businessSessionId).toBe(sessionId)
+
+    // assessment_session 行：status=INIT + PREPARED（startSession 再推进 ACTIVE）
     const sess = db
       .prepare('SELECT * FROM assessment_session WHERE session_id = ?')
       .get(sessionId) as
       | {
+          business_session_id: string
           status: string
+          delivery_phase: string
+          event_sequence_version: number
           online_question_count: number
           offline_question_count: number
           strategy_type: string
           job_code: string
           task_code: string
           created_event_id: string
-          started_at: string
+          started_at: string | null
         }
       | undefined
     expect(sess).toBeDefined()
-    expect(sess!.status).toBe('ACTIVE')
+    expect(sess!.business_session_id).toBe(sessionId)
+    expect(sess!.status).toBe('INIT')
+    expect(sess!.delivery_phase).toBe('PREPARED')
+    expect(sess!.event_sequence_version).toBe(1)
     expect(sess!.online_question_count).toBe(42)
     expect(sess!.offline_question_count).toBe(8)
     expect(sess!.strategy_type).toBe('BASELINE_ASSESSMENT')
     expect(sess!.job_code).toBe('SUPERMARKET_SHELVER')
     expect(sess!.task_code).toBe(taskCode)
     expect(sess!.created_event_id).not.toBeNull()
-    expect(sess!.started_at).not.toBeNull()
+    expect(sess!.started_at).toBeNull()
+
+    const parent = db
+      .prepare('SELECT session_type, student_id, job_code, task_code FROM business_session WHERE business_session_id = ?')
+      .get(sessionId) as
+      | { session_type: string; student_id: string; job_code: string; task_code: string }
+      | undefined
+    expect(parent).toEqual({
+      session_type: 'ASSESSMENT',
+      student_id: studentId,
+      job_code: 'SUPERMARKET_SHELVER',
+      task_code: taskCode
+    })
 
     // 50 行 assessment_session_question（42 ONLINE + 8 OFFLINE）
     const sqCount = db
