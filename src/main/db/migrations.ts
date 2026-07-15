@@ -2,8 +2,10 @@ import type { DBAdapter } from './interface'
 
 export const M1_SCHEMA_VERSION = '0.1.13-multi-device-m1-identity'
 export const M1_MIGRATION_ID = '2026-07-14_mvp_schema_v0_1_13_multi_device_m1_identity'
-export const CURRENT_SCHEMA_VERSION = '0.1.14-multi-device-m2-session-foundation'
-export const CURRENT_MIGRATION_ID = '2026-07-15_mvp_schema_v0_1_14_multi_device_m2_session_foundation'
+export const M2_SCHEMA_VERSION = '0.1.14-multi-device-m2-session-foundation'
+export const M2_MIGRATION_ID = '2026-07-15_mvp_schema_v0_1_14_multi_device_m2_session_foundation'
+export const CURRENT_SCHEMA_VERSION = '0.1.15-multi-device-m3-grant-assignment'
+export const CURRENT_MIGRATION_ID = '2026-07-15_mvp_schema_v0_1_15_multi_device_m3_grant_assignment'
 
 type MigrationOptions = {
   beforeMigrate?: (migrationIds: string[]) => void
@@ -16,6 +18,7 @@ type Migration = {
   description: string
   isStructurallyApplied: (database: DBAdapter) => boolean
   up: (database: DBAdapter) => void
+  rebuildsReferencedTables?: boolean
 }
 
 const REQUIRED_V012_COLUMNS: Record<string, string[]> = {
@@ -175,6 +178,18 @@ function normalizeSql(sql: string | null | undefined): string {
     .toLowerCase()
 }
 
+function triggerSqlByName(sql: string): Map<string, string> {
+  const matches = Array.from(
+    sql.matchAll(/CREATE\s+TRIGGER\s+(?:IF\s+NOT\s+EXISTS\s+)?([a-z_]+)\b/gi)
+  )
+  return new Map(
+    matches.map((match, index) => {
+      const next = matches[index + 1]
+      return [match[1], sql.slice(match.index, next?.index ?? sql.length).trim()] as const
+    })
+  )
+}
+
 function columnNames(database: DBAdapter, tableName: string): Set<string> {
   if (!/^[a-z_]+$/.test(tableName)) throw new Error(`[DB] Invalid table identifier: ${tableName}`)
   const rows = database.prepare(`PRAGMA table_info(${tableName})`).all() as Array<{ name: string }>
@@ -299,18 +314,21 @@ const M2_TRIGGERS = [
   'trg_business_session_key_immutable'
 ]
 
-const M2_TRIGGER_SQL_BY_NAME = new Map(
-  Array.from(
-    M2_TRIGGER_SQL.matchAll(
-      /CREATE\s+TRIGGER\s+(?:IF\s+NOT\s+EXISTS\s+)?([a-z_]+)\b[\s\S]*?END;/gi
-    )
-  ).map((match) => [match[1], match[0]] as const)
-)
+const M2_TRIGGER_SQL_BY_NAME = triggerSqlByName(M2_TRIGGER_SQL)
 
 function triggerMatches(database: DBAdapter, triggerName: string): boolean {
   const expected = M2_TRIGGER_SQL_BY_NAME.get(triggerName)
   if (!expected) return false
   return normalizeSql(sqliteObjectSql(database, 'trigger', triggerName)) === normalizeSql(expected)
+}
+
+function sqlMatches(
+  database: DBAdapter,
+  type: 'index' | 'table' | 'trigger',
+  name: string,
+  expectedSql: string
+): boolean {
+  return normalizeSql(sqliteObjectSql(database, type, name)) === normalizeSql(expectedSql)
 }
 
 function indexMatches(
@@ -388,8 +406,240 @@ function isM2StructurallyApplied(database: DBAdapter): boolean {
     indexMatches(database, 'training_session', 'ux_training_business_session', ['business_session_id'], true) &&
     indexMatches(database, 'assessment_session', 'idx_assessment_session_delivery_phase', ['delivery_phase'], false) &&
     M2_TRIGGERS.every((triggerName) => triggerMatches(database, triggerName)) &&
-    !triggerExists(database, 'trg_assessment_delivery_phase_forward_only') &&
     !triggerExists(database, 'trg_learning_business_session_consistency_insert')
+  )
+}
+
+const M3_DELIVERY_PHASE_COLUMN_SQL = `delivery_phase TEXT CHECK (delivery_phase IS NULL OR delivery_phase IN (
+  'PREPARED',
+  'ASSIGNED',
+  'STUDENT_CONFIRMED',
+  'ONLINE_IN_PROGRESS',
+  'ONLINE_COMPLETED',
+  'OFFLINE_SCORING',
+  'OBSERVATION',
+  'READY_TO_FINALIZE',
+  'FINALIZED'
+))`
+
+const M3_TABLE_SQL = `
+CREATE TABLE IF NOT EXISTS delegated_access_grant (
+  grant_id                  TEXT PRIMARY KEY,
+  business_session_id       TEXT NOT NULL REFERENCES business_session(business_session_id),
+  teacher_auth_session_id   TEXT NOT NULL REFERENCES auth_session(auth_session_id),
+  teacher_user_id           TEXT NOT NULL REFERENCES user_account(user_id),
+  student_id                TEXT NOT NULL REFERENCES student_profile(student_id),
+  device_id                 TEXT NOT NULL REFERENCES device(device_id),
+  device_runtime_session_id TEXT NOT NULL REFERENCES device_runtime_session(device_runtime_session_id),
+  capabilities_json         TEXT NOT NULL CHECK (json_valid(capabilities_json)),
+  identity_confirmation_method TEXT CHECK (identity_confirmation_method IS NULL OR
+                               identity_confirmation_method IN ('PIN','TEACHER_ATTESTATION','PHOTO_MATCH','NONE_REQUIRED')),
+  confirmed_by              TEXT REFERENCES user_account(user_id),
+  confirmation_evidence     TEXT CHECK (confirmation_evidence IS NULL OR json_valid(confirmation_evidence)),
+  student_pin_verified      INTEGER NOT NULL DEFAULT 0 CHECK (student_pin_verified IN (0, 1)),
+  teacher_attested          INTEGER NOT NULL DEFAULT 0 CHECK (teacher_attested IN (0, 1)),
+  confirmed_at              TEXT,
+  status                    TEXT NOT NULL DEFAULT 'ACTIVE'
+                             CHECK (status IN ('ACTIVE','RELEASED','EXPIRED','REVOKED')),
+  replaces_grant_id         TEXT REFERENCES delegated_access_grant(grant_id),
+  granted_at                TEXT NOT NULL DEFAULT (datetime('now')),
+  released_at               TEXT,
+  release_reason            TEXT,
+  expires_at                TEXT NOT NULL,
+  created_at                TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at                TEXT NOT NULL DEFAULT (datetime('now')),
+  CHECK (replaces_grant_id IS NULL OR replaces_grant_id <> grant_id)
+);
+
+CREATE TABLE IF NOT EXISTS business_session_assignment (
+  assignment_id             TEXT PRIMARY KEY,
+  business_session_id       TEXT NOT NULL REFERENCES business_session(business_session_id),
+  student_id                TEXT NOT NULL REFERENCES student_profile(student_id),
+  device_id                 TEXT NOT NULL REFERENCES device(device_id),
+  grant_id                  TEXT NOT NULL REFERENCES delegated_access_grant(grant_id),
+  assigned_by               TEXT NOT NULL REFERENCES user_account(user_id),
+  assigned_at               TEXT NOT NULL DEFAULT (datetime('now')),
+  student_confirmed_at      TEXT,
+  released_at               TEXT,
+  release_reason            TEXT CHECK (release_reason IS NULL OR release_reason IN (
+                               'COMPLETED','TEACHER_RELEASED','DEVICE_OFFLINE','REPLACED','ADMIN_REVOKED')),
+  replaces_assignment_id    TEXT REFERENCES business_session_assignment(assignment_id),
+  version                   INTEGER NOT NULL DEFAULT 1 CHECK (version >= 1),
+  status                    TEXT NOT NULL DEFAULT 'PENDING_CONFIRM'
+                             CHECK (status IN ('PENDING_CONFIRM','ACTIVE','RELEASED','VOID')),
+  created_at                TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at                TEXT NOT NULL DEFAULT (datetime('now'))
+);
+`
+
+const M3_INDEX_SQL = [
+  `CREATE UNIQUE INDEX IF NOT EXISTS ux_grant_one_active_per_business_session
+  ON delegated_access_grant(business_session_id) WHERE status = 'ACTIVE';`,
+  `CREATE INDEX IF NOT EXISTS idx_grant_student_device_status
+  ON delegated_access_grant(student_id, device_id, status);`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS ux_assignment_one_active_per_grant
+  ON business_session_assignment(grant_id) WHERE status IN ('PENDING_CONFIRM','ACTIVE');`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS ux_assignment_one_active_per_session
+  ON business_session_assignment(business_session_id) WHERE status IN ('PENDING_CONFIRM','ACTIVE');`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS ux_assignment_one_active_per_device
+  ON business_session_assignment(device_id) WHERE status IN ('PENDING_CONFIRM','ACTIVE');`
+]
+
+const M3_INDEX_SQL_BY_NAME = new Map(
+  M3_INDEX_SQL.map((sql) => {
+    const match = sql.match(/CREATE\s+(?:UNIQUE\s+)?INDEX\s+(?:IF\s+NOT\s+EXISTS\s+)?([a-z_]+)\b/i)
+    if (!match) throw new Error('[DB] Invalid M3 index SQL')
+    return [match[1], sql] as const
+  })
+)
+
+const M3_TRIGGER_SQL = `
+CREATE TRIGGER IF NOT EXISTS trg_assessment_delivery_phase_forward_only
+BEFORE UPDATE OF delivery_phase ON assessment_session
+FOR EACH ROW
+WHEN OLD.delivery_phase IS NOT NULL AND NEW.delivery_phase IS NOT NULL
+  AND OLD.delivery_phase <> NEW.delivery_phase
+BEGIN
+  SELECT CASE
+    WHEN OLD.delivery_phase = 'FINALIZED' THEN
+      RAISE(ABORT, 'delivery_phase FINALIZED is terminal')
+    WHEN OLD.delivery_phase = 'READY_TO_FINALIZE' AND NEW.delivery_phase <> 'FINALIZED' THEN
+      RAISE(ABORT, 'READY_TO_FINALIZE can only advance to FINALIZED')
+    WHEN OLD.delivery_phase = 'OBSERVATION' AND NEW.delivery_phase <> 'READY_TO_FINALIZE' THEN
+      RAISE(ABORT, 'OBSERVATION can only advance to READY_TO_FINALIZE')
+    WHEN OLD.delivery_phase = 'OFFLINE_SCORING'
+      AND NEW.delivery_phase NOT IN ('OBSERVATION','READY_TO_FINALIZE') THEN
+      RAISE(ABORT, 'OFFLINE_SCORING can only advance to OBSERVATION or READY_TO_FINALIZE')
+    WHEN OLD.delivery_phase = 'ONLINE_COMPLETED' AND NEW.delivery_phase <> 'OFFLINE_SCORING' THEN
+      RAISE(ABORT, 'ONLINE_COMPLETED can only advance to OFFLINE_SCORING')
+    WHEN OLD.delivery_phase = 'ONLINE_IN_PROGRESS' AND NEW.delivery_phase <> 'ONLINE_COMPLETED' THEN
+      RAISE(ABORT, 'ONLINE_IN_PROGRESS can only advance to ONLINE_COMPLETED')
+    WHEN OLD.delivery_phase = 'STUDENT_CONFIRMED' AND NEW.delivery_phase <> 'ONLINE_IN_PROGRESS' THEN
+      RAISE(ABORT, 'STUDENT_CONFIRMED can only advance to ONLINE_IN_PROGRESS')
+    WHEN OLD.delivery_phase = 'ASSIGNED' AND NEW.delivery_phase <> 'STUDENT_CONFIRMED' THEN
+      RAISE(ABORT, 'ASSIGNED can only advance to STUDENT_CONFIRMED')
+    WHEN OLD.delivery_phase = 'PREPARED' AND NEW.delivery_phase <> 'ASSIGNED' THEN
+      RAISE(ABORT, 'PREPARED can only advance to ASSIGNED')
+  END;
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_grant_self_consistency_insert
+BEFORE INSERT ON delegated_access_grant
+FOR EACH ROW
+WHEN NOT EXISTS (SELECT 1 FROM business_session bs WHERE bs.business_session_id=NEW.business_session_id AND bs.student_id=NEW.student_id)
+  OR NOT EXISTS (SELECT 1 FROM device_runtime_session drs WHERE drs.device_runtime_session_id=NEW.device_runtime_session_id AND drs.device_id=NEW.device_id)
+  OR NOT EXISTS (SELECT 1 FROM auth_session au WHERE au.auth_session_id=NEW.teacher_auth_session_id AND au.user_id=NEW.teacher_user_id AND au.status='ACTIVE' AND au.expires_at > datetime('now'))
+BEGIN SELECT RAISE(ABORT, 'grant self-consistency: student/business_session, device/runtime, teacher/auth must match and auth ACTIVE unexpired'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_grant_self_consistency_update
+BEFORE UPDATE OF business_session_id, student_id, device_id, device_runtime_session_id, teacher_auth_session_id, teacher_user_id ON delegated_access_grant
+FOR EACH ROW
+WHEN NOT EXISTS (SELECT 1 FROM business_session bs WHERE bs.business_session_id=NEW.business_session_id AND bs.student_id=NEW.student_id)
+  OR NOT EXISTS (SELECT 1 FROM device_runtime_session drs WHERE drs.device_runtime_session_id=NEW.device_runtime_session_id AND drs.device_id=NEW.device_id)
+  OR NOT EXISTS (SELECT 1 FROM auth_session au WHERE au.auth_session_id=NEW.teacher_auth_session_id AND au.user_id=NEW.teacher_user_id AND au.status='ACTIVE' AND au.expires_at > datetime('now'))
+BEGIN SELECT RAISE(ABORT, 'grant self-consistency violation on update'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_assignment_grant_consistency_insert
+BEFORE INSERT ON business_session_assignment
+FOR EACH ROW
+WHEN NOT EXISTS (SELECT 1 FROM delegated_access_grant g WHERE g.grant_id=NEW.grant_id
+    AND g.student_id=NEW.student_id AND g.device_id=NEW.device_id AND g.business_session_id=NEW.business_session_id)
+  OR NOT (NEW.assigned_by=(SELECT teacher_user_id FROM delegated_access_grant WHERE grant_id=NEW.grant_id)
+    OR EXISTS (SELECT 1 FROM user_account u WHERE u.user_id=NEW.assigned_by AND u.role='ADMIN' AND u.status='ACTIVE'))
+BEGIN SELECT RAISE(ABORT, 'assignment must match grant (student/device/business_session) and assigned_by must be grant teacher or ACTIVE ADMIN'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_assignment_grant_consistency_update
+BEFORE UPDATE OF grant_id, student_id, device_id, business_session_id, assigned_by ON business_session_assignment
+FOR EACH ROW
+WHEN NOT EXISTS (SELECT 1 FROM delegated_access_grant g WHERE g.grant_id=NEW.grant_id
+    AND g.student_id=NEW.student_id AND g.device_id=NEW.device_id AND g.business_session_id=NEW.business_session_id)
+  OR NOT (NEW.assigned_by=(SELECT teacher_user_id FROM delegated_access_grant WHERE grant_id=NEW.grant_id)
+    OR EXISTS (SELECT 1 FROM user_account u WHERE u.user_id=NEW.assigned_by AND u.role='ADMIN' AND u.status='ACTIVE'))
+BEGIN SELECT RAISE(ABORT, 'assignment-grant consistency violation on update'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_assignment_active_requires_active_grant_insert
+BEFORE INSERT ON business_session_assignment
+FOR EACH ROW
+WHEN NEW.status IN ('PENDING_CONFIRM','ACTIVE')
+  AND NOT EXISTS (SELECT 1 FROM delegated_access_grant g WHERE g.grant_id=NEW.grant_id AND g.status='ACTIVE')
+BEGIN SELECT RAISE(ABORT, 'active assignment must reference an ACTIVE grant'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_assignment_active_requires_active_grant_update
+BEFORE UPDATE OF status, grant_id ON business_session_assignment
+FOR EACH ROW
+WHEN NEW.status IN ('PENDING_CONFIRM','ACTIVE')
+  AND NOT EXISTS (SELECT 1 FROM delegated_access_grant g WHERE g.grant_id=NEW.grant_id AND g.status='ACTIVE')
+BEGIN SELECT RAISE(ABORT, 'active assignment must reference an ACTIVE grant'); END;
+`
+
+const M3_TRIGGERS = [
+  'trg_assessment_delivery_phase_forward_only',
+  'trg_grant_self_consistency_insert',
+  'trg_grant_self_consistency_update',
+  'trg_assignment_grant_consistency_insert',
+  'trg_assignment_grant_consistency_update',
+  'trg_assignment_active_requires_active_grant_insert',
+  'trg_assignment_active_requires_active_grant_update'
+]
+
+const M3_TRIGGER_SQL_BY_NAME = triggerSqlByName(M3_TRIGGER_SQL)
+
+const FUTURE_MULTI_DEVICE_TABLES = [
+  'learning_session',
+  'learning_progress',
+  'command_log',
+  'applied_event_batch',
+  'processed_event',
+  'projector_cursor',
+  'backup_manifest',
+  'session_invalidation_record',
+  'correction_record',
+  'offline_score_draft',
+  'pairing_challenge'
+]
+
+function m3TriggerMatches(database: DBAdapter, triggerName: string): boolean {
+  const expected = M3_TRIGGER_SQL_BY_NAME.get(triggerName)
+  return Boolean(expected) && sqlMatches(database, 'trigger', triggerName, expected!)
+}
+
+function assessmentDeliveryPhaseAllowsM3(database: DBAdapter): boolean {
+  const tableSql = normalizeSql(sqliteObjectSql(database, 'table', 'assessment_session'))
+  return [
+    'prepared',
+    'assigned',
+    'student_confirmed',
+    'online_in_progress',
+    'online_completed',
+    'offline_scoring',
+    'observation',
+    'ready_to_finalize',
+    'finalized'
+  ].every((phase) => tableSql.includes(`'${phase}'`))
+}
+
+function domainEventProjectionAllowsBusinessSession(database: DBAdapter): boolean {
+  const tableSql = normalizeSql(sqliteObjectSql(database, 'table', 'domain_event_projection'))
+  return tableSql.includes('business_session') || !/\bcheck\s*\(/i.test(tableSql)
+}
+
+function isM3StructurallyApplied(database: DBAdapter): boolean {
+  if (!isM2StructurallyApplied(database)) return false
+  return (
+    assessmentDeliveryPhaseAllowsM3(database) &&
+    domainEventProjectionAllowsBusinessSession(database) &&
+    tableExists(database, 'delegated_access_grant') &&
+    tableExists(database, 'business_session_assignment') &&
+    foreignKeyMatches(database, 'delegated_access_grant', 'business_session_id', 'business_session', 'business_session_id') &&
+    foreignKeyMatches(database, 'delegated_access_grant', 'teacher_auth_session_id', 'auth_session', 'auth_session_id') &&
+    foreignKeyMatches(database, 'delegated_access_grant', 'device_runtime_session_id', 'device_runtime_session', 'device_runtime_session_id') &&
+    foreignKeyMatches(database, 'business_session_assignment', 'business_session_id', 'business_session', 'business_session_id') &&
+    foreignKeyMatches(database, 'business_session_assignment', 'grant_id', 'delegated_access_grant', 'grant_id') &&
+    Array.from(M3_INDEX_SQL_BY_NAME.entries()).every(([indexName, sql]) =>
+      sqlMatches(database, 'index', indexName, sql)
+    ) &&
+    M3_TRIGGERS.every((triggerName) => m3TriggerMatches(database, triggerName)) &&
+    FUTURE_MULTI_DEVICE_TABLES.every((tableName) => !tableExists(database, tableName))
   )
 }
 
@@ -534,6 +784,236 @@ CREATE INDEX IF NOT EXISTS idx_assessment_session_delivery_phase
   database.exec(M2_TRIGGER_SQL)
 }
 
+function assertNoM3DriftBeforeApply(database: DBAdapter): void {
+  for (const triggerName of M3_TRIGGERS) {
+    if (triggerExists(database, triggerName) && !m3TriggerMatches(database, triggerName)) {
+      throw new Error(`[DB] Existing M3 trigger drift: ${triggerName}`)
+    }
+  }
+
+  for (const [indexName, sql] of M3_INDEX_SQL_BY_NAME.entries()) {
+    if (indexExists(database, indexName) && !sqlMatches(database, 'index', indexName, sql)) {
+      throw new Error(`[DB] Existing M3 index drift: ${indexName}`)
+    }
+  }
+
+  if (
+    (tableExists(database, 'delegated_access_grant') ||
+      tableExists(database, 'business_session_assignment')) &&
+    !isM3StructurallyApplied(database)
+  ) {
+    throw new Error('[DB] Existing partial M3 grant/assignment structure is not trusted')
+  }
+}
+
+function existingAssessmentIndexSql(database: DBAdapter): string[] {
+  const rows = database
+    .prepare(`
+      SELECT sql
+        FROM sqlite_master
+       WHERE type = 'index'
+         AND tbl_name = 'assessment_session'
+         AND sql IS NOT NULL
+       ORDER BY name
+    `)
+    .all() as Array<{ sql: string }>
+  return rows.map((row) => row.sql)
+}
+
+function assertNoUnknownAssessmentTriggers(database: DBAdapter): void {
+  const allowed = new Set(M2_TRIGGERS.filter((triggerName) => triggerName.includes('assessment_')))
+  const rows = database
+    .prepare(`
+      SELECT name
+        FROM sqlite_master
+       WHERE type = 'trigger'
+         AND tbl_name = 'assessment_session'
+       ORDER BY name
+    `)
+    .all() as Array<{ name: string }>
+  const unknown = rows.map((row) => row.name).filter((name) => !allowed.has(name))
+  if (unknown.length > 0) {
+    throw new Error(`[DB] Unexpected assessment_session triggers before M3 rebuild: ${unknown.join(', ')}`)
+  }
+}
+
+function selectSnapshotRows(database: DBAdapter, tableName: string, preferredColumns: string[]): unknown[] {
+  const columns = columnNames(database, tableName)
+  const selected = preferredColumns.filter((column) => columns.has(column))
+  const orderBy = selected.includes('session_id')
+    ? 'session_id'
+    : selected.includes('event_id')
+      ? 'event_id'
+      : selected[0]
+  return database
+    .prepare(`SELECT ${selected.join(', ')} FROM ${tableName} ORDER BY ${orderBy}`)
+    .all()
+}
+
+function replaceCreateTableName(sql: string, fromName: string, toName: string): string {
+  return sql.replace(
+    new RegExp(`CREATE\\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?${fromName}\\b`, 'i'),
+    `CREATE TABLE ${toName}`
+  )
+}
+
+function rebuildAssessmentSessionForM3(database: DBAdapter): void {
+  assertNoUnknownAssessmentTriggers(database)
+  const originalSql = sqliteObjectSql(database, 'table', 'assessment_session')
+  if (!originalSql) throw new Error('[DB] assessment_session table is missing before M3 rebuild')
+
+  const nextSql = originalSql.replace(
+    /delivery_phase\s+TEXT\s+CHECK\s*\(\s*delivery_phase\s+IS\s+NULL\s+OR\s+delivery_phase\s+IN\s*\([\s\S]*?\)\s*\)/i,
+    M3_DELIVERY_PHASE_COLUMN_SQL
+  )
+  if (nextSql === originalSql || !normalizeSql(nextSql).includes("'student_confirmed'")) {
+    throw new Error('[DB] Unable to expand assessment_session.delivery_phase CHECK for M3')
+  }
+
+  const beforeCount = database
+    .prepare('SELECT COUNT(*) AS count FROM assessment_session')
+    .get() as { count: number }
+  const beforeRows = selectSnapshotRows(database, 'assessment_session', [
+    'session_id',
+    'business_session_id',
+    'student_id',
+    'strategy_type',
+    'job_code',
+    'task_code',
+    'status',
+    'delivery_phase',
+    'current_question_id',
+    'event_sequence_version'
+  ])
+  const indexes = existingAssessmentIndexSql(database)
+  const columns = Array.from(columnNames(database, 'assessment_session'))
+  const columnList = columns.join(', ')
+  const createNewSql = replaceCreateTableName(nextSql, 'assessment_session', 'assessment_session__m3_new')
+
+  database.exec(`
+DROP TRIGGER trg_assessment_delivery_phase_insert_prepared;
+DROP TRIGGER trg_assessment_delivery_phase_frozen_on_abnormal;
+DROP TRIGGER trg_assessment_finalized_completed_consistency_insert;
+DROP TRIGGER trg_assessment_finalized_completed_consistency_update;
+DROP TRIGGER trg_assessment_business_session_consistency_insert;
+DROP TRIGGER trg_assessment_business_session_consistency_update;
+ALTER TABLE assessment_session RENAME TO assessment_session__m3_old;
+${createNewSql};
+INSERT INTO assessment_session__m3_new (${columnList})
+SELECT ${columnList} FROM assessment_session__m3_old;
+DROP TABLE assessment_session__m3_old;
+ALTER TABLE assessment_session__m3_new RENAME TO assessment_session;
+`)
+
+  for (const indexSql of indexes) database.exec(indexSql)
+  for (const triggerName of M2_TRIGGERS.filter((name) => name.includes('assessment_'))) {
+    const triggerSql = M2_TRIGGER_SQL_BY_NAME.get(triggerName)
+    if (!triggerSql) throw new Error(`[DB] Missing M2 trigger SQL for ${triggerName}`)
+    database.exec(triggerSql)
+  }
+
+  const afterCount = database
+    .prepare('SELECT COUNT(*) AS count FROM assessment_session')
+    .get() as { count: number }
+  const afterRows = selectSnapshotRows(database, 'assessment_session', [
+    'session_id',
+    'business_session_id',
+    'student_id',
+    'strategy_type',
+    'job_code',
+    'task_code',
+    'status',
+    'delivery_phase',
+    'current_question_id',
+    'event_sequence_version'
+  ])
+  if (afterCount.count !== beforeCount.count || JSON.stringify(afterRows) !== JSON.stringify(beforeRows)) {
+    throw new Error('[DB] M3 assessment_session rebuild changed row identity or key fields')
+  }
+}
+
+function rebuildDomainEventProjectionForM3(database: DBAdapter): void {
+  const originalSql = sqliteObjectSql(database, 'table', 'domain_event_projection')
+  if (!originalSql || domainEventProjectionAllowsBusinessSession(database)) return
+
+  const nextSql = originalSql.replace(
+    /aggregate_type\s+TEXT\s+NOT\s+NULL\s+CHECK\s*\(\s*aggregate_type\s+IN\s*\([\s\S]*?\)\s*\)/i,
+    `aggregate_type TEXT NOT NULL CHECK (aggregate_type IN (
+      'ASSESSMENT_SESSION',
+      'TRAINING_SESSION',
+      'STUDENT_PROFILE',
+      'STRATEGY_CONFIG',
+      'QUESTION_BANK',
+      'BUSINESS_SESSION',
+      'TASK_REPORT',
+      'SAFETY_INCIDENT',
+      'ASSET_RESOURCE',
+      'SYSTEM'
+    ))`
+  )
+  if (nextSql === originalSql || !normalizeSql(nextSql).includes("'business_session'")) {
+    throw new Error('[DB] Unable to expand domain_event_projection.aggregate_type CHECK for M3')
+  }
+
+  const indexes = database
+    .prepare(`
+      SELECT sql
+        FROM sqlite_master
+       WHERE type = 'index'
+         AND tbl_name = 'domain_event_projection'
+         AND sql IS NOT NULL
+       ORDER BY name
+    `)
+    .all() as Array<{ sql: string }>
+  const beforeRows = selectSnapshotRows(database, 'domain_event_projection', [
+    'event_id',
+    'aggregate_type',
+    'aggregate_id',
+    'event_type',
+    'event_sequence'
+  ])
+  const columns = Array.from(columnNames(database, 'domain_event_projection'))
+  const columnList = columns.join(', ')
+  const createNewSql = replaceCreateTableName(
+    nextSql,
+    'domain_event_projection',
+    'domain_event_projection__m3_new'
+  )
+
+  database.exec(`
+ALTER TABLE domain_event_projection RENAME TO domain_event_projection__m3_old;
+${createNewSql};
+INSERT INTO domain_event_projection__m3_new (${columnList})
+SELECT ${columnList} FROM domain_event_projection__m3_old;
+DROP TABLE domain_event_projection__m3_old;
+ALTER TABLE domain_event_projection__m3_new RENAME TO domain_event_projection;
+`)
+  for (const row of indexes) database.exec(row.sql)
+
+  const afterRows = selectSnapshotRows(database, 'domain_event_projection', [
+    'event_id',
+    'aggregate_type',
+    'aggregate_id',
+    'event_type',
+    'event_sequence'
+  ])
+  if (JSON.stringify(afterRows) !== JSON.stringify(beforeRows)) {
+    throw new Error('[DB] M3 domain_event_projection rebuild changed event identity or sequence fields')
+  }
+}
+
+function applyM3Migration(database: DBAdapter): void {
+  if (!isM2StructurallyApplied(database)) {
+    throw new Error('[DB] M3 migration requires a complete M2 schema')
+  }
+  assertNoM3DriftBeforeApply(database)
+  if (!assessmentDeliveryPhaseAllowsM3(database)) rebuildAssessmentSessionForM3(database)
+  rebuildDomainEventProjectionForM3(database)
+  database.exec(M3_TABLE_SQL)
+  for (const indexSql of M3_INDEX_SQL) database.exec(indexSql)
+  database.exec(M3_TRIGGER_SQL)
+}
+
 const migrations: Migration[] = [
   {
     id: M1_MIGRATION_ID,
@@ -551,12 +1031,21 @@ const migrations: Migration[] = [
     }
   },
   {
-    id: CURRENT_MIGRATION_ID,
-    version: CURRENT_SCHEMA_VERSION,
+    id: M2_MIGRATION_ID,
+    version: M2_SCHEMA_VERSION,
     description:
       'M2: business_session foundation, assessment delivery phase, parent-child consistency triggers',
     isStructurallyApplied: isM2StructurallyApplied,
     up: applyM2Migration
+  },
+  {
+    id: CURRENT_MIGRATION_ID,
+    version: CURRENT_SCHEMA_VERSION,
+    description:
+      'M3: grant assignment tables and delivery phase forward-only guards',
+    isStructurallyApplied: isM3StructurallyApplied,
+    up: applyM3Migration,
+    rebuildsReferencedTables: true
   }
 ]
 
@@ -625,15 +1114,39 @@ export function runDatabaseMigrations(
       continue
     }
 
-    database.transaction(() => {
-      ensureMigrationTable(database)
-      migration.up(database)
-      if (!migration.isStructurallyApplied(database)) {
-        throw new Error(`[DB] Migration ${migration.id} did not produce the required structure`)
+    if (migration.rebuildsReferencedTables) {
+      database.exec('PRAGMA foreign_keys = OFF;')
+      try {
+        database.exec('BEGIN;')
+        ensureMigrationTable(database)
+        migration.up(database)
+        if (!migration.isStructurallyApplied(database)) {
+          throw new Error(`[DB] Migration ${migration.id} did not produce the required structure`)
+        }
+        assertDatabaseIntegrity(database, migration.id)
+        recordMigration(database, migration)
+        database.exec('COMMIT;')
+      } catch (error) {
+        try {
+          database.exec('ROLLBACK;')
+        } catch {
+          // Preserve the original migration failure.
+        }
+        throw error
+      } finally {
+        database.exec('PRAGMA foreign_keys = ON;')
       }
-      assertDatabaseIntegrity(database, migration.id)
-      recordMigration(database, migration)
-    })()
+    } else {
+      database.transaction(() => {
+        ensureMigrationTable(database)
+        migration.up(database)
+        if (!migration.isStructurallyApplied(database)) {
+          throw new Error(`[DB] Migration ${migration.id} did not produce the required structure`)
+        }
+        assertDatabaseIntegrity(database, migration.id)
+        recordMigration(database, migration)
+      })()
+    }
     applied.push(migration.id)
   }
   return applied
@@ -644,6 +1157,7 @@ export function currentSchemaIssues(database: DBAdapter): string[] {
   const issues = missingV012BaselineParts(database)
   if (!isM1StructurallyApplied(database)) issues.push('migration:multi-device-m1-identity')
   if (!isM2StructurallyApplied(database)) issues.push('migration:multi-device-m2-session-foundation')
+  if (!isM3StructurallyApplied(database)) issues.push('migration:multi-device-m3-grant-assignment')
   if (!tableExists(database, 'schema_migration')) {
     issues.push('table:schema_migration')
   } else {
@@ -651,6 +1165,10 @@ export function currentSchemaIssues(database: DBAdapter): string[] {
       .prepare('SELECT 1 AS present FROM schema_migration WHERE migration_id = ?')
       .get(M1_MIGRATION_ID) as { present: number } | undefined
     if (!m1Row) issues.push(`migration-record:${M1_MIGRATION_ID}`)
+    const m2Row = database
+      .prepare('SELECT 1 AS present FROM schema_migration WHERE migration_id = ?')
+      .get(M2_MIGRATION_ID) as { present: number } | undefined
+    if (!m2Row) issues.push(`migration-record:${M2_MIGRATION_ID}`)
     const row = database
       .prepare('SELECT 1 AS present FROM schema_migration WHERE migration_id = ?')
       .get(CURRENT_MIGRATION_ID) as { present: number } | undefined

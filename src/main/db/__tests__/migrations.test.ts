@@ -7,6 +7,8 @@ import {
   CURRENT_SCHEMA_VERSION,
   M1_MIGRATION_ID,
   M1_SCHEMA_VERSION,
+  M2_MIGRATION_ID,
+  M2_SCHEMA_VERSION,
   assertCurrentDatabaseSchema,
   runDatabaseMigrations
 } from '../migrations'
@@ -164,6 +166,24 @@ CREATE TABLE training_session (
 );
 `
 
+async function createMigratedM2Database(): Promise<MemoryAdapter> {
+  const db = await MemoryAdapter.create()
+  db.exec(V012_M2_COMPAT_SCHEMA)
+  db.exec(`
+    INSERT INTO user_account VALUES ('u1', 'teacher', 'hash', 'TEACHER', '教师', 'ACTIVE');
+    INSERT INTO student_profile VALUES ('s1', '学生', 'ACTIVE');
+    INSERT INTO assessment_session
+      (session_id, student_id, strategy_id, strategy_type, job_code, task_code, strategy_version, status, current_question_id, created_by)
+    VALUES ('a-m2', 's1', 'strategy-base', 'BASELINE_ASSESSMENT', 'SUPERMARKET_STOCKER', 'UNBOX_AND_SHELF', 1, 'INIT', NULL, 'u1');
+    INSERT INTO training_session
+      (training_session_id, student_id, job_code, task_code, strategy_version, status, created_by)
+    VALUES ('t-m2', 's1', 'SUPERMARKET_STOCKER', 'UNBOX_AND_SHELF', 1, 'ACTIVE', 'u1');
+  `)
+  expect(runDatabaseMigrations(db, { throughMigrationId: M2_MIGRATION_ID }))
+    .toEqual([M1_MIGRATION_ID, M2_MIGRATION_ID])
+  return db
+}
+
 describe('database migrations', () => {
   it('repairs a falsely recorded M1 migration and preserves v0.1.12 rows', async () => {
     const db = await MemoryAdapter.create()
@@ -195,7 +215,7 @@ describe('database migrations', () => {
     db.close()
   })
 
-  it('migrates v0.1.12-shaped data through M1 and M2 with backfill, triggers, and integrity gates', async () => {
+  it('migrates v0.1.12-shaped data through M1, M2, and M3 with backfill, triggers, and integrity gates', async () => {
     const db = await MemoryAdapter.create()
     db.exec(V012_M2_COMPAT_SCHEMA)
     db.exec(`
@@ -229,8 +249,8 @@ describe('database migrations', () => {
       beforeMigrate: (migrationIds) => backupBatches.push(migrationIds)
     })
 
-    expect(applied).toEqual([M1_MIGRATION_ID, CURRENT_MIGRATION_ID])
-    expect(backupBatches).toEqual([[M1_MIGRATION_ID, CURRENT_MIGRATION_ID]])
+    expect(applied).toEqual([M1_MIGRATION_ID, M2_MIGRATION_ID, CURRENT_MIGRATION_ID])
+    expect(backupBatches).toEqual([[M1_MIGRATION_ID, M2_MIGRATION_ID, CURRENT_MIGRATION_ID]])
     expect(db.prepare('SELECT COUNT(*) AS count FROM assessment_session').get()).toMatchObject({ count: 5 })
     expect(db.prepare('SELECT COUNT(*) AS count FROM training_session').get()).toMatchObject({ count: 1 })
     expect(db.prepare('SELECT COUNT(*) AS count FROM business_session').get()).toMatchObject({ count: 6 })
@@ -281,11 +301,99 @@ describe('database migrations', () => {
       .toThrow('business_session key fields')
     expect(
       db.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type='trigger' AND name IN ('trg_assessment_delivery_phase_forward_only', 'trg_learning_business_session_consistency_insert')").get()
+    ).toMatchObject({ count: 1 })
+    expect(() => db.prepare("UPDATE assessment_session SET delivery_phase = 'ONLINE_IN_PROGRESS' WHERE session_id = 'a-init'").run())
+      .toThrow('PREPARED can only advance to ASSIGNED')
+    expect(
+      db.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type='table' AND name IN ('delegated_access_grant', 'business_session_assignment')").get()
+    ).toMatchObject({ count: 2 })
+    expect(
+      db.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type='table' AND name IN ('learning_session', 'command_log', 'offline_score_draft')").get()
     ).toMatchObject({ count: 0 })
     expectDatabaseIntegrity(db)
     assertCurrentDatabaseSchema(db)
     expect(runDatabaseMigrations(db)).toEqual([])
     db.close()
+  })
+
+  it('upgrades a complete v0.1.14 M2 database to M3 without changing existing session identity fields', async () => {
+    const db = await createMigratedM2Database()
+    const beforeAssessment = db
+      .prepare(`
+        SELECT session_id, business_session_id, student_id, job_code, task_code, status, delivery_phase
+          FROM assessment_session
+         ORDER BY session_id
+      `)
+      .all()
+    const beforeTraining = db
+      .prepare(`
+        SELECT training_session_id, business_session_id, student_id, job_code, task_code, status
+          FROM training_session
+         ORDER BY training_session_id
+      `)
+      .all()
+    const backupBatches: string[][] = []
+
+    expect(runDatabaseMigrations(db, {
+      beforeMigrate: (migrationIds) => backupBatches.push(migrationIds)
+    })).toEqual([CURRENT_MIGRATION_ID])
+
+    expect(backupBatches).toEqual([[CURRENT_MIGRATION_ID]])
+    expect(db.prepare(`
+      SELECT session_id, business_session_id, student_id, job_code, task_code, status, delivery_phase
+        FROM assessment_session
+       ORDER BY session_id
+    `).all()).toEqual(beforeAssessment)
+    expect(db.prepare(`
+      SELECT training_session_id, business_session_id, student_id, job_code, task_code, status
+        FROM training_session
+       ORDER BY training_session_id
+    `).all()).toEqual(beforeTraining)
+    expect(db.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type='table' AND name IN ('delegated_access_grant', 'business_session_assignment')").get())
+      .toMatchObject({ count: 2 })
+    expect(() => db.prepare("UPDATE assessment_session SET delivery_phase = 'ONLINE_IN_PROGRESS' WHERE session_id = 'a-m2'").run())
+      .toThrow('PREPARED can only advance to ASSIGNED')
+    expectDatabaseIntegrity(db)
+    assertCurrentDatabaseSchema(db)
+    db.close()
+  })
+
+  it('records a missing M3 ledger row only when the full M3 structure is already present and valid', async () => {
+    const db = await MemoryAdapter.create()
+    const schema = readFileSync(resolve(process.cwd(), 'src/main/db/schema.sql'), 'utf8')
+    db.exec(schema)
+    db.prepare('DELETE FROM schema_migration WHERE migration_id = ?').run(CURRENT_MIGRATION_ID)
+
+    expect(runDatabaseMigrations(db)).toEqual([])
+    expect(
+      db.prepare('SELECT schema_version FROM schema_migration WHERE migration_id = ?').get(CURRENT_MIGRATION_ID)
+    ).toMatchObject({ schema_version: CURRENT_SCHEMA_VERSION })
+    db.close()
+  })
+
+  it('rejects partial or drifted M3 objects without recording the M3 migration', async () => {
+    const db = await createMigratedM2Database()
+    db.exec(`
+      CREATE TRIGGER trg_assessment_delivery_phase_forward_only
+      BEFORE UPDATE OF delivery_phase ON assessment_session
+      BEGIN SELECT 1; END;
+    `)
+
+    expect(() => runDatabaseMigrations(db)).toThrow('Existing M3 trigger drift')
+    expect(
+      db.prepare('SELECT COUNT(*) AS count FROM schema_migration WHERE migration_id = ?').get(CURRENT_MIGRATION_ID)
+    ).toMatchObject({ count: 0 })
+    expect(() => db.prepare("UPDATE assessment_session SET delivery_phase = 'ONLINE_IN_PROGRESS' WHERE session_id = 'a-m2'").run())
+      .not.toThrow()
+    db.close()
+
+    const partialDb = await createMigratedM2Database()
+    partialDb.exec('CREATE TABLE delegated_access_grant (grant_id TEXT PRIMARY KEY);')
+    expect(() => runDatabaseMigrations(partialDb)).toThrow('partial M3')
+    expect(
+      partialDb.prepare('SELECT COUNT(*) AS count FROM schema_migration WHERE migration_id = ?').get(CURRENT_MIGRATION_ID)
+    ).toMatchObject({ count: 0 })
+    partialDb.close()
   })
 
   it('rejects same-name M2 trigger or index drift instead of trusting object names', async () => {
@@ -360,6 +468,9 @@ describe('database migrations', () => {
     expect(
       db.prepare('SELECT schema_version FROM schema_migration WHERE migration_id = ?').get(M1_MIGRATION_ID)
     ).toMatchObject({ schema_version: M1_SCHEMA_VERSION })
+    expect(
+      db.prepare('SELECT schema_version FROM schema_migration WHERE migration_id = ?').get(M2_MIGRATION_ID)
+    ).toMatchObject({ schema_version: M2_SCHEMA_VERSION })
     expectDatabaseIntegrity(db)
     assertCurrentDatabaseSchema(db)
     db.close()
