@@ -1,7 +1,13 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import { v4 as uuidv4 } from 'uuid'
 import { assertCaller, assertStudent, assertSessionOwner } from '../auth-context'
-import { createTestDb, seedCaller, seedDisabledCaller, seedStudent } from '../../db/test-helpers'
+import {
+  createTestDb,
+  seedCaller,
+  seedDisabledCaller,
+  seedStudent,
+  seedAssessmentSessionFixture
+} from '../../db/test-helpers'
 import type { MemoryAdapter } from '../../db/memory-adapter'
 
 let db: MemoryAdapter
@@ -90,15 +96,16 @@ function seedSessionForOwnerTest(db: MemoryAdapter, studentId: string): string {
      VALUES (?, 'BASELINE_ASSESSMENT', ?, 'owner test',
              42, 8, 100, '{"seed":true}', '{"seed":true}')`
   ).run(strategyId, jobCode)
-  const sessionId = uuidv4()
-  db.prepare(
-    `INSERT INTO assessment_session
-       (session_id, student_id, strategy_id, strategy_type, job_code, task_code,
-        strategy_version, status, online_question_count, offline_question_count, created_by)
-     VALUES (?, ?, ?, 'BASELINE_ASSESSMENT', ?, 'test-task',
-        1, 'ACTIVE', 42, 8, ?)`
-  ).run(sessionId, studentId, strategyId, jobCode, studentId)
-  return sessionId
+  return seedAssessmentSessionFixture(db, {
+    studentId,
+    strategyId,
+    strategyType: 'BASELINE_ASSESSMENT',
+    jobCode,
+    taskCode: 'test-task',
+    strategyVersion: 1,
+    status: 'ACTIVE',
+    createdBy: studentId
+  })
 }
 
 describe('assertStudent', () => {

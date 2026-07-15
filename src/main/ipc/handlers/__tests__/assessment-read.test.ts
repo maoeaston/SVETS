@@ -77,7 +77,9 @@ import {
   seedCaller,
   seedStudent,
   seedQuestionBankDraft,
-  baseStrategyInput
+  baseStrategyInput,
+  seedAssessmentSessionFixture,
+  type AssessmentFixtureStatus
 } from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
 import type { StrategyInput } from '../../../../shared/types/strategy'
@@ -197,39 +199,27 @@ function setCurrentQuestion(sessionId: string, questionId: string | null): void 
  */
 function seedSessionDirect(over: {
   studentId?: string
-  status?: string
+  status?: AssessmentFixtureStatus
   currentQuestionId?: string | null
   onlineQuestionCount?: number
   offlineQuestionCount?: number
   strategyType?: string
 }): string {
-  const sid = uuidv4()
   const stud = over.studentId ?? studentId
   const strategyType = over.strategyType ?? 'BASELINE_ASSESSMENT'
-  db.prepare(
-    `INSERT INTO assessment_session
-       (session_id, student_id, strategy_id, strategy_type, job_code, task_code,
-        strategy_version, status, online_question_count, offline_question_count, created_by)
-     VALUES (?, ?, ?, ?, 'SUPERMARKET_SHELVER', ?, ?, ?, ?, ?, ?)`
-  ).run(
-    sid,
-    stud,
+  return seedAssessmentSessionFixture(db, {
+    studentId: stud,
     strategyId,
     strategyType,
+    jobCode: 'SUPERMARKET_SHELVER',
     taskCode,
     strategyVersion,
-    over.status ?? 'COMPLETED',
-    over.onlineQuestionCount ?? 42,
-    over.offlineQuestionCount ?? 8,
-    callerId
-  )
-  if (over.currentQuestionId !== undefined) {
-    db.prepare('UPDATE assessment_session SET current_question_id = ? WHERE session_id = ?').run(
-      over.currentQuestionId,
-      sid
-    )
-  }
-  return sid
+    status: over.status ?? 'COMPLETED',
+    onlineQuestionCount: over.onlineQuestionCount,
+    offlineQuestionCount: over.offlineQuestionCount,
+    currentQuestionId: over.currentQuestionId,
+    createdBy: callerId
+  })
 }
 
 /**

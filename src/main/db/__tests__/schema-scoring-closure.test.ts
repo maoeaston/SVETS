@@ -1,5 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { createTestDb, seedCaller, seedStudent, seedQuestionBank } from '../test-helpers'
+import {
+  createTestDb,
+  seedCaller,
+  seedStudent,
+  seedQuestionBank,
+  seedAssessmentSessionFixture,
+  seedStrategyReference
+} from '../test-helpers'
 import type { MemoryAdapter } from '../memory-adapter'
 
 let db: MemoryAdapter
@@ -25,13 +32,13 @@ describe('schema v0.1.10 scoring closure constraints', () => {
     const q = db
       .prepare("SELECT question_id FROM question_bank WHERE question_type = 'OFFLINE_OPERATION' LIMIT 1")
       .get() as { question_id: string }
-    db.prepare(
-      `INSERT INTO assessment_session
-         (session_id, student_id, strategy_id, strategy_type, job_code, task_code, strategy_version,
-          status, online_question_count, offline_question_count, created_by)
-       VALUES ('s1', ?, 'strategy_baseline_shelver_v1', 'BASELINE_ASSESSMENT', 'SUPERMARKET_SHELVER',
-               'SHELVE_TASK', 1, 'OFFLINE_PENDING', 42, 8, ?)`
-    ).run(studentId, teacherId)
+    seedAssessmentSessionFixture(db, {
+      sessionId: 's1',
+      studentId,
+      strategyId: 'strategy_baseline_shelver_v1',
+      status: 'OFFLINE_PENDING',
+      createdBy: teacherId
+    })
     seedSystemEvent('ev1')
     seedSystemEvent('ev2')
 
@@ -70,13 +77,13 @@ describe('schema v0.1.10 scoring closure constraints', () => {
     const q = db
       .prepare("SELECT question_id FROM question_bank WHERE question_type <> 'OFFLINE_OPERATION' ORDER BY question_id LIMIT 1")
       .get() as { question_id: string }
-    db.prepare(
-      `INSERT INTO assessment_session
-         (session_id, student_id, strategy_id, strategy_type, job_code, task_code, strategy_version,
-          status, online_question_count, offline_question_count, created_by)
-       VALUES ('s1', ?, 'strategy_baseline_shelver_v1', 'BASELINE_ASSESSMENT', 'SUPERMARKET_SHELVER',
-               'SHELVE_TASK', 1, 'ACTIVE', 42, 8, ?)`
-    ).run(studentId, teacherId)
+    seedAssessmentSessionFixture(db, {
+      sessionId: 's1',
+      studentId,
+      strategyId: 'strategy_baseline_shelver_v1',
+      status: 'ACTIVE',
+      createdBy: teacherId
+    })
     db.prepare(
       `INSERT INTO assessment_session_question
          (session_question_id, session_id, question_id, question_order, question_phase,
@@ -111,13 +118,13 @@ describe('schema v0.1.10 scoring closure constraints', () => {
     const q = db
       .prepare("SELECT question_id, question_type FROM question_bank WHERE question_type <> 'OFFLINE_OPERATION' LIMIT 1")
       .get() as { question_id: string; question_type: string }
-    db.prepare(
-      `INSERT INTO assessment_session
-         (session_id, student_id, strategy_id, strategy_type, job_code, task_code, strategy_version,
-          status, online_question_count, offline_question_count, created_by)
-       VALUES ('s_binary', ?, 'strategy_baseline_shelver_v1', 'BASELINE_ASSESSMENT', 'SUPERMARKET_SHELVER',
-               'SHELVE_TASK', 1, 'ACTIVE', 42, 8, ?)`
-    ).run(studentId, teacherId)
+    seedAssessmentSessionFixture(db, {
+      sessionId: 's_binary',
+      studentId,
+      strategyId: 'strategy_baseline_shelver_v1',
+      status: 'ACTIVE',
+      createdBy: teacherId
+    })
     seedSystemEvent('ev_answer_binary')
 
     // v0.1.12: answer_record 需要先在 assessment_session_question 中存在（trg_answer_record_session_question_validation）
@@ -178,5 +185,68 @@ describe('schema v0.1.10 scoring closure constraints', () => {
         "UPDATE task_report SET placement_review_by = ?, placement_review_at = datetime('now'), status = 'EXPORTED' WHERE report_id = 'rep1'"
       ).run(teacherId)
     }).not.toThrow()
+  })
+
+  it('m2-aware session fixtures create parent rows and delivery phases when m2 columns exist', () => {
+    db.exec(`
+      CREATE TABLE business_session (
+        business_session_id TEXT PRIMARY KEY,
+        session_type TEXT NOT NULL,
+        student_id TEXT NOT NULL,
+        job_code TEXT NOT NULL,
+        task_code TEXT NOT NULL,
+        created_by TEXT
+      );
+      ALTER TABLE assessment_session ADD COLUMN business_session_id TEXT;
+      ALTER TABLE assessment_session ADD COLUMN delivery_phase TEXT;
+      ALTER TABLE assessment_session ADD COLUMN event_sequence_version INTEGER;
+      ALTER TABLE assessment_session ADD COLUMN observation_template_id TEXT;
+      ALTER TABLE training_session ADD COLUMN business_session_id TEXT;
+    `)
+
+    const teacherId = seedCaller(db, 'TEACHER')
+    const studentId = seedStudent(db)
+    const completedId = seedAssessmentSessionFixture(db, {
+      studentId,
+      strategyId: 'strategy_baseline_shelver_v1',
+      status: 'COMPLETED',
+      createdBy: teacherId
+    })
+    const abortedId = seedAssessmentSessionFixture(db, {
+      studentId,
+      strategyId: 'strategy_baseline_shelver_v1',
+      status: 'ABORTED',
+      deliveryPhase: 'ONLINE_IN_PROGRESS',
+      createdBy: teacherId
+    })
+
+    seedStrategyReference(db, 'strategy_training_shelver_v1', 1, 'training')
+
+    const assessmentRows = db
+      .prepare(
+        `SELECT a.session_id, a.business_session_id, a.status, a.delivery_phase, b.session_type
+           FROM assessment_session a
+           JOIN business_session b ON b.business_session_id = a.business_session_id
+          WHERE a.session_id IN (?, ?)
+          ORDER BY a.status`
+      )
+      .all(completedId, abortedId) as Array<{
+      session_id: string
+      business_session_id: string
+      status: string
+      delivery_phase: string
+      session_type: string
+    }>
+
+    expect(assessmentRows).toHaveLength(2)
+    expect(assessmentRows.every((row) => row.session_id === row.business_session_id)).toBe(true)
+    expect(assessmentRows.every((row) => row.session_type === 'ASSESSMENT')).toBe(true)
+    expect(assessmentRows.find((row) => row.status === 'COMPLETED')!.delivery_phase).toBe('FINALIZED')
+    expect(assessmentRows.find((row) => row.status === 'ABORTED')!.delivery_phase).toBe('ONLINE_IN_PROGRESS')
+
+    const trainingParent = db
+      .prepare("SELECT COUNT(*) AS count FROM business_session WHERE session_type = 'TRAINING'")
+      .get() as { count: number }
+    expect(trainingParent.count).toBe(1)
   })
 })

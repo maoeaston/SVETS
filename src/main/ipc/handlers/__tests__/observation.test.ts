@@ -52,7 +52,13 @@ vi.mock('../../../domain/event-writer', () => ({
 
 import { createSession, seedAssessmentErrorCodes } from '../assessment'
 import { recordTeacherObservation, getTeacherObservations } from '../observation'
-import { createTestDb, seedCaller, seedStudent } from '../../../db/test-helpers'
+import {
+  createTestDb,
+  seedCaller,
+  seedStudent,
+  seedAssessmentSessionFixture,
+  setAssessmentSessionStateFixture
+} from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
 import type { CreateSessionParams } from '../../../../shared/types/assessment'
 import type { TeacherObservationPayload } from '../../../../shared/types/json-schemas'
@@ -332,13 +338,18 @@ describe('TC-I: TEACHER_OBSERVATION 录入', () => {
                0, 1, 0, 1, 1)`
     ).run(baselineStrategyId)
 
-    const fakeSessionId = uuidv4()
-    db.prepare(
-      `INSERT INTO assessment_session
-         (session_id, student_id, strategy_id, strategy_version, strategy_type,
-          job_code, task_code, status, online_question_count, offline_question_count, created_by)
-       VALUES (?, ?, ?, 1, 'BASELINE_ASSESSMENT', 'SUPERMARKET_SHELVER', 'SHELVE_TASK', 'ACTIVE', 0, 0, ?)`
-    ).run(fakeSessionId, studentId, baselineStrategyId, callerId)
+    const fakeSessionId = seedAssessmentSessionFixture(db, {
+      studentId,
+      strategyId: baselineStrategyId,
+      strategyType: 'BASELINE_ASSESSMENT',
+      jobCode: 'SUPERMARKET_SHELVER',
+      taskCode: 'SHELVE_TASK',
+      strategyVersion: 1,
+      status: 'ACTIVE',
+      onlineQuestionCount: 0,
+      offlineQuestionCount: 0,
+      createdBy: callerId
+    })
 
     const result = recordTeacherObservation(db, {
       callerUserId: callerId,
@@ -354,7 +365,7 @@ describe('TC-I: TEACHER_OBSERVATION 录入', () => {
 
   it('终态 session 返回 SESSION_TERMINATED', () => {
     const sessionId = createActiveSession()
-    db.prepare(`UPDATE assessment_session SET status = 'COMPLETED' WHERE session_id = ?`).run(sessionId)
+    setAssessmentSessionStateFixture(db, sessionId, 'COMPLETED')
 
     const result = recordTeacherObservation(db, {
       callerUserId: callerId,

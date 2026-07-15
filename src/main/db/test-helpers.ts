@@ -11,6 +11,27 @@ import type { DBAdapter } from './interface'
 import type { StrategyInput } from '../../shared/types/strategy'
 import type { AbilityTag } from '../../shared/types/json-schemas'
 
+type BusinessSessionType = 'ASSESSMENT' | 'TRAINING'
+
+export type AssessmentFixtureStatus =
+  | 'INIT'
+  | 'ACTIVE'
+  | 'EMOTION_INTERRUPTED'
+  | 'SUSPENDED_REVIEW_REQUIRED'
+  | 'OFFLINE_PENDING'
+  | 'COMPLETED'
+  | 'REDLINE_HALTED'
+  | 'ABORTED'
+
+export type AssessmentFixtureDeliveryPhase =
+  | 'PREPARED'
+  | 'ONLINE_IN_PROGRESS'
+  | 'ONLINE_COMPLETED'
+  | 'OFFLINE_SCORING'
+  | 'OBSERVATION'
+  | 'READY_TO_FINALIZE'
+  | 'FINALIZED'
+
 // 指向生产 schema 的单一源（src/main/db/schema.sql），与 connection.ts 同源。
 // [!] 历史教训：曾指向 doc/ 镜像副本，v0.1.8 迁移时漏改导致测试 schema 滞后于
 // 生产（pass_threshold vs competent_threshold）。统一指向 src/main/db/schema.sql
@@ -98,6 +119,251 @@ export function baseStrategyInput(over: Partial<StrategyInput> = {}): StrategyIn
   }
 }
 
+function tableExists(db: DBAdapter, tableName: string): boolean {
+  const row = db
+    .prepare("SELECT 1 AS present FROM sqlite_master WHERE type = 'table' AND name = ?")
+    .get(tableName) as { present: number } | undefined
+  return Boolean(row)
+}
+
+function tableColumns(db: DBAdapter, tableName: string): Set<string> {
+  const rows = db.prepare(`PRAGMA table_info(${tableName})`).all() as Array<{ name: string }>
+  return new Set(rows.map((row) => row.name))
+}
+
+function columnExists(db: DBAdapter, tableName: string, columnName: string): boolean {
+  return tableColumns(db, tableName).has(columnName)
+}
+
+function insertRow(db: DBAdapter, tableName: string, values: Record<string, unknown>): void {
+  const columns = Object.keys(values)
+  const placeholders = columns.map(() => '?').join(', ')
+  db.prepare(
+    `INSERT INTO ${tableName} (${columns.join(', ')}) VALUES (${placeholders})`
+  ).run(...columns.map((column) => values[column]))
+}
+
+function assertBusinessSessionMatch(
+  row: Record<string, unknown>,
+  expected: {
+    businessSessionId: string
+    sessionType: BusinessSessionType
+    studentId: string
+    jobCode: string
+    taskCode: string
+  }
+): void {
+  const mismatches = [
+    row.session_type === expected.sessionType,
+    row.student_id === expected.studentId,
+    row.job_code === expected.jobCode,
+    row.task_code === expected.taskCode
+  ]
+  if (mismatches.every(Boolean)) return
+  throw new Error(
+    `seedBusinessSessionFixture: existing parent ${expected.businessSessionId} conflicts with child fixture`
+  )
+}
+
+/**
+ * M2 前向兼容父会话夹具。当前 v0.1.13 没有 business_session 时为 no-op；
+ * 后续测试 schema 存在父表时，先插入四键匹配的父记录。
+ */
+export function seedBusinessSessionFixture(
+  db: DBAdapter,
+  params: {
+    businessSessionId: string
+    sessionType: BusinessSessionType
+    studentId: string
+    jobCode: string
+    taskCode: string
+    createdBy?: string
+  }
+): void {
+  if (!tableExists(db, 'business_session')) return
+
+  const existing = db
+    .prepare('SELECT * FROM business_session WHERE business_session_id = ?')
+    .get(params.businessSessionId) as Record<string, unknown> | undefined
+  if (existing) {
+    assertBusinessSessionMatch(existing, params)
+    return
+  }
+
+  const columns = tableColumns(db, 'business_session')
+  const values: Record<string, unknown> = {}
+  const candidateValues: Record<string, unknown> = {
+    business_session_id: params.businessSessionId,
+    session_type: params.sessionType,
+    student_id: params.studentId,
+    job_code: params.jobCode,
+    task_code: params.taskCode,
+    created_by: params.createdBy ?? params.studentId
+  }
+  for (const [column, value] of Object.entries(candidateValues)) {
+    if (columns.has(column)) values[column] = value
+  }
+  insertRow(db, 'business_session', values)
+}
+
+function resolveAssessmentDeliveryPhase(
+  status: AssessmentFixtureStatus,
+  requested?: AssessmentFixtureDeliveryPhase | null
+): AssessmentFixtureDeliveryPhase | null {
+  if (status === 'COMPLETED') return 'FINALIZED'
+  if (requested !== undefined) return requested
+  if (status === 'ACTIVE') return 'ONLINE_IN_PROGRESS'
+  if (status === 'OFFLINE_PENDING') return 'OFFLINE_SCORING'
+  return 'PREPARED'
+}
+
+/**
+ * 直接插入 assessment_session 的测试夹具。M2 列存在时自动写：
+ * business_session_id=session_id、event_sequence_version=0，以及合理 delivery_phase。
+ */
+export function seedAssessmentSessionFixture(
+  db: DBAdapter,
+  params: {
+    sessionId?: string
+    studentId: string
+    strategyId: string
+    strategyType?: string
+    jobCode?: string
+    taskCode?: string
+    strategyVersion?: number
+    status?: AssessmentFixtureStatus
+    onlineQuestionCount?: number
+    offlineQuestionCount?: number
+    createdBy: string
+    currentQuestionId?: string | null
+    deliveryPhase?: AssessmentFixtureDeliveryPhase | null
+    observationTemplateId?: string | null
+  }
+): string {
+  const sessionId = params.sessionId ?? uuidv4()
+  const strategyType = params.strategyType ?? 'BASELINE_ASSESSMENT'
+  const jobCode = params.jobCode ?? 'SUPERMARKET_SHELVER'
+  const taskCode = params.taskCode ?? 'SHELVE_TASK'
+  const status = params.status ?? 'ACTIVE'
+  const strategyVersion = params.strategyVersion ?? 1
+
+  seedBusinessSessionFixture(db, {
+    businessSessionId: sessionId,
+    sessionType: 'ASSESSMENT',
+    studentId: params.studentId,
+    jobCode,
+    taskCode,
+    createdBy: params.createdBy
+  })
+
+  const columns = tableColumns(db, 'assessment_session')
+  const values: Record<string, unknown> = {
+    session_id: sessionId,
+    student_id: params.studentId,
+    strategy_id: params.strategyId,
+    strategy_type: strategyType,
+    job_code: jobCode,
+    task_code: taskCode,
+    strategy_version: strategyVersion,
+    status,
+    online_question_count: params.onlineQuestionCount ?? 42,
+    offline_question_count: params.offlineQuestionCount ?? 8,
+    created_by: params.createdBy
+  }
+  if (params.currentQuestionId !== undefined) {
+    values.current_question_id = params.currentQuestionId
+  }
+  if (columns.has('business_session_id')) {
+    values.business_session_id = sessionId
+  }
+  if (columns.has('delivery_phase')) {
+    values.delivery_phase = resolveAssessmentDeliveryPhase(status, params.deliveryPhase)
+  }
+  if (columns.has('event_sequence_version')) {
+    values.event_sequence_version = 0
+  }
+  if (columns.has('observation_template_id')) {
+    values.observation_template_id = params.observationTemplateId ?? null
+  }
+
+  insertRow(db, 'assessment_session', values)
+  return sessionId
+}
+
+/**
+ * 测试中把 assessment_session 改成终态时使用。M2 下 COMPLETED 必须同条 UPDATE
+ * 写 FINALIZED；ABORTED/REDLINE_HALTED 等异常终态不伪造 FINALIZED。
+ */
+export function setAssessmentSessionStateFixture(
+  db: DBAdapter,
+  sessionId: string,
+  status: AssessmentFixtureStatus,
+  deliveryPhase?: AssessmentFixtureDeliveryPhase | null
+): void {
+  if (columnExists(db, 'assessment_session', 'delivery_phase')) {
+    const phase = resolveAssessmentDeliveryPhase(status, deliveryPhase)
+    if (status === 'COMPLETED' || deliveryPhase !== undefined) {
+      db.prepare(
+        'UPDATE assessment_session SET status = ?, delivery_phase = ? WHERE session_id = ?'
+      ).run(status, phase, sessionId)
+      return
+    }
+  }
+  db.prepare('UPDATE assessment_session SET status = ? WHERE session_id = ?').run(status, sessionId)
+}
+
+function seedTrainingSessionFixture(
+  db: DBAdapter,
+  params: {
+    trainingSessionId?: string
+    studentId: string
+    jobCode: string
+    taskCode?: string
+    strategyId: string
+    strategyType: string
+    strategyVersion: number
+    status?: string
+    moduleType?: string
+    totalStepCount?: number
+    completedStepCount?: number
+    createdBy: string
+  }
+): string {
+  const trainingSessionId = params.trainingSessionId ?? uuidv4()
+  const taskCode = params.taskCode ?? 'test-task'
+
+  seedBusinessSessionFixture(db, {
+    businessSessionId: trainingSessionId,
+    sessionType: 'TRAINING',
+    studentId: params.studentId,
+    jobCode: params.jobCode,
+    taskCode,
+    createdBy: params.createdBy
+  })
+
+  const columns = tableColumns(db, 'training_session')
+  const values: Record<string, unknown> = {
+    training_session_id: trainingSessionId,
+    student_id: params.studentId,
+    job_code: params.jobCode,
+    task_code: taskCode,
+    strategy_id: params.strategyId,
+    strategy_type: params.strategyType,
+    strategy_version: params.strategyVersion,
+    status: params.status ?? 'COMPLETED',
+    module_type: params.moduleType ?? 'FINE_MOTOR',
+    total_step_count: params.totalStepCount ?? 1,
+    completed_step_count: params.completedStepCount ?? 0,
+    created_by: params.createdBy
+  }
+  if (columns.has('business_session_id')) {
+    values.business_session_id = trainingSessionId
+  }
+
+  insertRow(db, 'training_session', values)
+  return trainingSessionId
+}
+
 /**
  * 在测试 DB 中制造一条对 (strategyId, version) 的引用，用于 REFERENCED_IMMUTABLE /
  * 已引用版本 setActive 测试。自动前置插好 student_profile + user_account(STUDENT)。
@@ -154,30 +420,27 @@ export function seedStrategyReference(
   ).run(studentId, '引用测试学生')
 
   if (via === 'assessment') {
-    db.prepare(
-      `INSERT INTO assessment_session
-         (session_id, student_id, strategy_id, strategy_type, job_code, task_code,
-          strategy_version, status, online_question_count, offline_question_count, created_by)
-       VALUES (?, ?, ?, ?, ?, 'test-task',
-          ?, 'COMPLETED', ?, ?, ?)`
-    ).run(
-      uuidv4(),
+    seedAssessmentSessionFixture(db, {
       studentId,
       strategyId,
-      sc.strategy_type,
-      sc.job_code,
-      version,
-      sc.online_question_count,
-      sc.offline_question_count,
-      studentId
-    )
+      strategyType: sc.strategy_type,
+      jobCode: sc.job_code,
+      taskCode: 'test-task',
+      strategyVersion: version,
+      status: 'COMPLETED',
+      onlineQuestionCount: sc.online_question_count,
+      offlineQuestionCount: sc.offline_question_count,
+      createdBy: studentId
+    })
   } else {
-    db.prepare(
-      `INSERT INTO training_session
-         (training_session_id, student_id, job_code, task_code, strategy_id, strategy_type,
-          strategy_version, status, module_type, total_step_count, completed_step_count, created_by)
-       VALUES (?, ?, ?, 'test-task', ?, ?, ?, 'COMPLETED', 'FINE_MOTOR', 1, 0, ?)`
-    ).run(uuidv4(), studentId, sc.job_code, strategyId, sc.strategy_type, version, studentId)
+    seedTrainingSessionFixture(db, {
+      studentId,
+      jobCode: sc.job_code,
+      strategyId,
+      strategyType: sc.strategy_type,
+      strategyVersion: version,
+      createdBy: studentId
+    })
   }
 }
 
