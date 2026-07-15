@@ -405,25 +405,30 @@ M3 目标版本固定为：
 - migration id：`2026-07-15_mvp_schema_v0_1_15_multi_device_m3_grant_assignment`
 - 前置结构：M2 的 `business_session`、assessment/training 父子约束和 D2-D6/D8 必须完整。
 
-M3 migration 只做新增对象与触发器，不回写已有 M2 assessment 的 assignment 历史：
+M3 migration 只做必要结构升级、新增对象与触发器，不回写已有 M2 assessment 的 assignment 历史：
 
-1. 新增 `delegated_access_grant` 表与索引：
+1. 升级 `assessment_session.delivery_phase` 的 CHECK 枚举，补入 `ASSIGNED` 与 `STUDENT_CONFIRMED`：
+   - 新库完整 `schema.sql` 直接包含完整枚举。
+   - 既有 v0.1.14 SQLite 库通过重建 `assessment_session` 表完成 CHECK 约束升级；重建必须保留所有现有列、索引、外键语义、M2 触发器和数据行，不得改写业务状态。
+   - 重建前后必须核对 assessment 行数、主键集合、`business_session_id`、`status`、`delivery_phase`、`event_sequence_version`、`observation_template_id` 不变。
+2. 新增 `delegated_access_grant` 表与索引：
    - `ux_grant_one_active_per_business_session`
    - `idx_grant_student_device_status`
-2. 新增 `business_session_assignment` 表与索引：
+3. 新增 `business_session_assignment` 表与索引：
    - `ux_assignment_one_active_per_grant`
    - `ux_assignment_one_active_per_session`
    - `ux_assignment_one_active_per_device`
-3. 新增 D9-D11 六个触发器：
+4. 新增 D9-D11 六个触发器：
    - `trg_grant_self_consistency_insert/update`
    - `trg_assignment_grant_consistency_insert/update`
    - `trg_assignment_active_requires_active_grant_insert/update`
-4. 新增 D1 `trg_assessment_delivery_phase_forward_only`。
-5. 写入 M3 migration 记录前必须通过 `PRAGMA foreign_key_check` 和 `PRAGMA integrity_check`。
+5. 新增 D1 `trg_assessment_delivery_phase_forward_only`。
+6. 写入 M3 migration 记录前必须通过 `PRAGMA foreign_key_check` 和 `PRAGMA integrity_check`。
 
 `isM3StructurallyApplied()` 至少断言：
 
 - 两张表、五个索引、七个触发器全部存在且同名对象语义匹配。
+- `assessment_session.delivery_phase` 允许 `ASSIGNED` 与 `STUDENT_CONFIRMED`，且 M2 已有阶段值仍受原 CHECK 约束保护。
 - D1 已存在；D7 仍不存在。
 - M2 结构断言仍通过。
 - 没有提前创建 M4/M5/M6/M7 表或安全 re-key 触发器。
@@ -441,7 +446,7 @@ M3 不改变 assessment/training create IPC 的输入。新能力应独立成 as
 | IPC | 调用者 | 输入核心 | 成功输出 |
 |-----|--------|----------|----------|
 | `assignment:create` | TEACHER / ADMIN | `businessSessionId`、`deviceRuntimeSessionId`、`capabilities`、确认方式 | `grantId`、`assignmentId`、`deliveryPhase='ASSIGNED'` |
-| `assignment:confirmStudent` | STUDENT / TEACHER | `assignmentId`、确认材料（PIN/教师确认/NONE_REQUIRED） | `assignmentId`、`deliveryPhase='STUDENT_CONFIRMED'` |
+| `assignment:confirmStudent` | STUDENT / TEACHER | `assignmentId`、确认材料（首版仅 `NONE_REQUIRED` / `TEACHER_ATTESTATION`） | `assignmentId`、`deliveryPhase='STUDENT_CONFIRMED'` |
 | `assignment:startAssessment` | STUDENT | `assignmentId` | 原 `startSession` 成功结构，且进入 `ONLINE_IN_PROGRESS` |
 | `assignment:rebind` | TEACHER / ADMIN / 设备恢复入口 | `assignmentId`、新 `deviceRuntimeSessionId`、是否需重确认 | 新 `grantId`、`assignment.version+1`、assignment 当前状态 |
 | `assignment:release` | TEACHER / ADMIN / 完成流程 | `assignmentId`、`releaseReason` | assignment 终态、grant 终态 |
@@ -482,6 +487,7 @@ M3 后，新 assessment 的前半段推进必须满足：
 - `ASSIGNMENT_NOT_ACTIVE`：assignment 不是 ACTIVE 或 PENDING_CONFIRM 的合法状态。
 - `DEVICE_RUNTIME_NOT_ACTIVE`：设备运行会话不存在或非 ACTIVE。
 - `GRANT_AUTH_INVALID`：教师 auth_session 不存在、非 ACTIVE 或已过期。
+- `UNSUPPORTED_CONFIRMATION_METHOD`：首版收到 `PIN` / `PHOTO_MATCH` 或未知确认方式。
 
 ### 11.5 Rebind 合同
 

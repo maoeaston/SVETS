@@ -1,14 +1,16 @@
-# 多设备架构 v2.2 M2 Business Session Foundation：实现文档
+# 多设备架构 v2.2 迁移：实现文档
 
-> **状态：** 已实施，自动验收进行中
-> **对应 Mini-PRD：** `doc/features/multi-device-v2.2-migration-prd.md` §10.1-§10.6
+> **状态：** M2 已实施；M3 待实施
+> **对应 Mini-PRD：** `doc/features/multi-device-v2.2-migration-prd.md` §10.1-§10.6、§11
 > **上游权威：** `doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md`
-> **当前起点：** schema v0.1.13-multi-device-m1-identity
-> **目标版本：** schema v0.1.14-multi-device-m2-session-foundation
-> **目标 migration id：** `2026-07-15_mvp_schema_v0_1_14_multi_device_m2_session_foundation`
+> **当前起点：** schema v0.1.14-multi-device-m2-session-foundation
+> **下一目标版本：** schema v0.1.15-multi-device-m3-grant-assignment
+> **下一目标 migration id：** `2026-07-15_mvp_schema_v0_1_15_multi_device_m3_grant_assignment`
 > **分支：** `feat/multi-device-m2-prd`
 
 ---
+
+## M2 Business Session Foundation（已实施记录）
 
 ## 实现目标（一句话）
 
@@ -717,3 +719,481 @@ read handler -> 共享 IPC 输出类型 -> renderer
 2. M2-MIG-01 至 M2-MIG-08、M2-BIZ-01 至 M2-BIZ-12 均有通过证据。
 3. 当前基线文档已更新为 v0.1.14，历史版本说明未被误改。
 4. 功能分支通过最终 `/check`，再按仓库规则 squash merge 到 `main`。
+
+---
+
+## M3 Grant/Assignment：实现文档
+
+> **状态：** 待实施
+> **对应 Mini-PRD：** `doc/features/multi-device-v2.2-migration-prd.md` §11
+> **当前起点：** schema v0.1.14-multi-device-m2-session-foundation
+> **目标版本：** schema v0.1.15-multi-device-m3-grant-assignment
+> **目标 migration id：** `2026-07-15_mvp_schema_v0_1_15_multi_device_m3_grant_assignment`
+
+## M3 实现目标（一句话）
+
+在 M2 `business_session` 父会话之上落地本地 Grant/Assignment 最小闭环，让新 assessment 从 `PREPARED` 经 `ASSIGNED`、`STUDENT_CONFIRMED` 后才能进入 `ONLINE_IN_PROGRESS`，同时保持 v0.1.14 存量进行中会话可继续答题。
+
+## M3 范围与非范围
+
+### 本轮交付
+
+- `delegated_access_grant`、`business_session_assignment` 两张表、五个索引、D9-D11 六个触发器。
+- D1 `trg_assessment_delivery_phase_forward_only`。
+- `assessment_session.delivery_phase` CHECK 枚举升级，补入 `ASSIGNED`、`STUDENT_CONFIRMED`。
+- M3 migration、结构断言、漂移拒绝、完整性校验。
+- Assignment 共享类型、IPC 白名单、主进程 handler 和本地领域投影。
+- `ASSIGNMENT_CREATED`、`ASSIGNMENT_STUDENT_CONFIRMED`、`ASSIGNMENT_ASSESSMENT_STARTED`、`GRANT_REBOUND`、`ASSIGNMENT_RELEASED` 事件。
+- `assignment:create`、`assignment:confirmStudent`、`assignment:startAssessment`、`assignment:rebind`、`assignment:release`。
+- `assessment:startSession` 收窄为 M3 状态机兼容入口。
+- 本地最小 node/device/runtime/auth_session 引导，生成每库唯一 ID，不写固定 `org_default`。
+
+### 明确不交付
+
+- M4 安全事件聚合键 re-key。
+- M5 command_log、SSE、REST/HTTPS、租约、跨设备同步和离线冲突合并。
+- M6 learning_session / learning_progress 与 D7。
+- M7 offline_score_draft、invalidation、correction、backup_manifest、pairing_challenge。
+- PIN、PHOTO_MATCH、摄像头、照片比对、真实设备发现、证书、网络配对或生产级推送。
+- renderer 新页面。M3 只暴露 IPC 与本地数据闭环，前端接入可另立小步。
+
+## M3 前置条件
+
+- M2 migration runner 已能按静态列表顺序执行、备份、事务提交、结构断言和 ledger 修复。
+- M2 新库/旧库均已有 `business_session`、assessment/training 父子约束、D2-D6、D8，且 D1/D7 不存在。
+- `assessment:createSession` 已创建 `INIT + PREPARED` 的 assessment，`business_session_id` 已稳定存在。
+- `assessment:startSession` 当前仍允许 M2 直跳 `ONLINE_IN_PROGRESS`，M3 必须按 phase/assignment 条件收窄。
+- 当前仓库没有 JSONL 冷启动自动重放协调器；M3 事件只承诺通过当前 `writeEvent` + reducer 路径更新 SQLite 投影。
+
+[!] M3 的第一处 PRD/Schema 冲突已经在 PRD §11.2 修正：v0.1.14 的 `assessment_session.delivery_phase` CHECK 不含 `ASSIGNED` / `STUDENT_CONFIRMED`。实现时若只新增 D1 和 Assignment 表，会在 `assignment:create` 第一次更新阶段时失败。M3 migration 必须先升级 CHECK 枚举，再启用 D1。
+
+## M3 关键实现决策
+
+1. **M3 仍是单版本发布单元。** Schema、migration、事件类型、IPC、handler、reducer 和 startSession 收窄必须随 v0.1.15 一起交付；中间 commit 只在功能分支审查。
+2. **用表重建升级 SQLite CHECK。** SQLite 不能原地修改列 CHECK；M3 通过事务内重建 `assessment_session` 保留所有列、数据、索引和 M2 触发器，再创建 D1。重建前后用行数、主键集合和关键字段快照验证。
+3. **Assignment 事件聚合到 `BUSINESS_SESSION`。** 新增 `AggregateType='BUSINESS_SESSION'`，Grant/Assignment 投影负责更新 grant、assignment 与 assessment phase；真正启动答题仍写 `ASSESSMENT_SESSION` 聚合事件，复用首题激活语义。
+4. **首版确认方式只做两种。** `TEACHER_ATTESTATION` 由教师/管理员确认；`NONE_REQUIRED` 只允许同机开发或演示路径，确认 evidence 可为空但仍显式写确认事件。PIN/PHOTO_MATCH 类型可保留在 schema 枚举中，不暴露为成功业务路径。
+5. **本地 runtime 引导生成每库唯一数据。** 若缺 node/device/runtime/auth_session，则用 UUID 创建可审计本地记录并复用已有 ACTIVE runtime；不得创建固定 `org_default`、固定 device_id、固定 token_hash 或跨安装共享 ID。
+6. **M2 存量进行中会话不追溯 assignment。** `ONLINE_IN_PROGRESS` 或之后阶段保持旧路径兼容；`PREPARED` 存量会话可被新 assignment 流程接管。
+
+最脆弱的前提是：重建 `assessment_session` 时能完整保留当前 schema 中所有列和索引。若 implementation 发现表结构已经发生未记录漂移，M3 migration 必须 fail closed，不能用 `CREATE TABLE AS SELECT` 丢约束或猜测恢复。
+
+## M3 数据流
+
+```text
+TEACHER/ADMIN assignment:create
+  -> ensureLocalRuntimeContext
+  -> writeEvent(BUSINESS_SESSION, ASSIGNMENT_CREATED)
+  -> applyAssignmentEvent: grant ACTIVE + assignment PENDING_CONFIRM + phase ASSIGNED
+
+STUDENT/TEACHER assignment:confirmStudent
+  -> writeEvent(BUSINESS_SESSION, ASSIGNMENT_STUDENT_CONFIRMED)
+  -> applyAssignmentEvent: assignment ACTIVE + phase STUDENT_CONFIRMED
+
+STUDENT assignment:startAssessment
+  -> writeEvent(ASSESSMENT_SESSION, ASSIGNMENT_ASSESSMENT_STARTED)
+  -> reducer: status ACTIVE + phase ONLINE_IN_PROGRESS + first question pointer
+```
+
+## M3 实现步骤（每步对应一个 commit）
+
+### Step M3-1：Schema 全量基线升级到 v0.1.15
+
+**改动文件：**
+
+- `src/main/db/schema.sql`
+- `src/main/db/__tests__/schema-scoring-closure.test.ts`
+- `doc/features/multi-device-v2.2-migration-prd.md`
+
+**核心逻辑：**
+
+- 头注释与 `schema_migration` seed 增加 v0.1.15/M3 记录。
+- `assessment_session.delivery_phase` CHECK 增加 `ASSIGNED`、`STUDENT_CONFIRMED`。
+- 按权威基线 T7/T8 增加 `delegated_access_grant`、`business_session_assignment`、五个索引。
+- 按权威基线 §9.4、§7.5 增加 D1、D9-D11 七个触发器。
+- 保留 D7 缺席，M4-M7 表与安全 re-key 触发器不进入 schema。
+
+**测试用例：**
+
+- 新库完整加载后 `foreign_key_check` 空、`integrity_check=ok`。
+- `delivery_phase='ASSIGNED'`、`'STUDENT_CONFIRMED'` 可插入/更新；非法 phase 仍被 CHECK 拒绝。
+- D1 阻止 `PREPARED -> ONLINE_IN_PROGRESS`、`ASSIGNED -> ONLINE_IN_PROGRESS`、`FINALIZED -> OBSERVATION`。
+- D9-D11 基础负向：grant student 不匹配、assignment 指向非 ACTIVE grant、assigned_by 非教师非 ACTIVE ADMIN。
+
+**验证命令：**
+
+- `npm test -- src/main/db/__tests__/schema-scoring-closure.test.ts`
+
+**commit message 建议：**
+
+`feat(schema): add m3 grant assignment baseline`
+
+---
+
+### Step M3-2：M3 migration runner 与 CHECK 表重建
+
+**改动文件：**
+
+- `src/main/db/migrations.ts`
+- `src/main/db/__tests__/migrations.test.ts`
+- `src/main/db/__tests__/connection-migration.test.ts`
+
+**核心逻辑：**
+
+- 新增 `M2_SCHEMA_VERSION` / `M2_MIGRATION_ID` 常量，并把 `CURRENT_SCHEMA_VERSION` / `CURRENT_MIGRATION_ID` 切到 M3。
+- 新增 `isM3StructurallyApplied()`：断言 M2 仍通过、T7/T8、五索引、D1/D9-D11 语义匹配、`delivery_phase` 完整枚举、D7 和 M4-M7 对象不存在。
+- `applyM3Migration()` 顺序：
+  1. 校验 M2 完整。
+  2. 快照 assessment 行数、主键集合和关键字段。
+  3. 重建 `assessment_session`，只扩 CHECK，不改业务值。
+  4. 重新创建 assessment 相关索引与 M2 assessment 触发器。
+  5. 创建 T7/T8、索引、D9-D11、D1。
+  6. 快照回查、`foreign_key_check`、`integrity_check` 通过后写 M3 ledger。
+- 同名错误对象必须 fail closed；不得 `DROP TRIGGER IF EXISTS` 覆盖语义不符对象。
+
+**测试用例：**
+
+- v0.1.14 旧库升级后原 assessment/training 行数、主键和关键字段不变。
+- M2 结构完整但 M3 ledger 缺失时补 ledger；M3 结构残缺时拒绝。
+- 注入错误 D1/D9-D11 或错误索引，runner 失败且不写 M3 记录。
+- 重建过程中故障注入时事务回滚，旧库仍是完整 M2。
+
+**验证命令：**
+
+- `npm test -- src/main/db/__tests__/migrations.test.ts src/main/db/__tests__/connection-migration.test.ts`
+
+**commit message 建议：**
+
+`feat(db): migrate v0.1.15 grant assignment schema`
+
+---
+
+### Step M3-3：本地 runtime/auth 引导服务
+
+**改动文件：**
+
+- `src/main/domain/local-runtime-context.ts`
+- `src/main/domain/__tests__/local-runtime-context.test.ts`
+- `src/main/db/test-helpers.ts`
+
+**核心逻辑：**
+
+- 新增 `ensureLocalRuntimeContext(db, teacherUserId)`，返回 `organizationId`、`nodeId`、`deviceId`、`deviceRuntimeSessionId`、`teacherAuthSessionId`。
+- 若库中已有 ACTIVE 本地 runtime，则复用；否则用 UUID 新建 organization/node/device/runtime，名称可读但 ID 不固定。
+- 若教师已有 ACTIVE 且未过期的 auth_session 可复用；否则插入新的 `auth_session`，`auth_method='DEVICE_KEY'`，`token_hash` / `refresh_token_hash` 使用 UUID 派生哈希，不写明文 token。
+- 只在 assignment handler 调用，不在 `initDatabase()` 自动污染每个库。
+
+**测试用例：**
+
+- 空 M1/M2/M3 拓扑下首次调用创建完整 FK 链。
+- 重复调用复用同一 ACTIVE runtime，不触发 `ux_device_one_active_runtime`。
+- 不生成固定 `org_default`、固定 device_id、固定 token_hash。
+- teacher 非 ACTIVE 或非 TEACHER/ADMIN 时拒绝。
+
+**验证命令：**
+
+- `npm test -- src/main/domain/__tests__/local-runtime-context.test.ts`
+
+**commit message 建议：**
+
+`feat(m3): add local runtime context bootstrap`
+
+---
+
+### Step M3-4：Assignment 共享类型、事件合同与 IPC 白名单
+
+**改动文件：**
+
+- `src/shared/types/assignment.ts`
+- `src/shared/types/event-payloads.ts`
+- `src/shared/types/ipc-api.ts`
+- `src/preload/index.ts`
+
+**核心逻辑：**
+
+- 新增 assignment IPC 参数/结果类型和错误码联合：`ASSIGNMENT_REQUIRED`、`STUDENT_CONFIRMATION_REQUIRED`、`ASSIGNMENT_NOT_ACTIVE`、`DEVICE_RUNTIME_NOT_ACTIVE`、`GRANT_AUTH_INVALID`、`UNSUPPORTED_CONFIRMATION_METHOD`。
+- `AggregateType` 增加 `BUSINESS_SESSION`；`EventType` 增加 M3 五个事件。
+- 新增五个事件 payload interface，payload 包含可重建 grant/assignment/phase 的完整字段，不依赖 handler 后置 UPDATE。
+- `IpcApi` 与 preload 增加 `assignment.create`、`confirmStudent`、`startAssessment`、`rebind`、`release` 白名单。
+
+**测试用例：**
+
+- `npm run typecheck` 覆盖共享类型。
+- 新事件 payload 字段足以重建 grant、assignment、phase，不引用未落地 M5 command_log 字段。
+
+**验证命令：**
+
+- `npm run typecheck`
+
+**commit message 建议：**
+
+`feat(types): define m3 assignment ipc and events`
+
+---
+
+### Step M3-5：Assignment reducer 与 DB 投影
+
+**改动文件：**
+
+- `src/main/domain/assignment-reducer.ts`
+- `src/main/domain/__tests__/assignment-reducer.test.ts`
+- `src/main/domain/assessment-reducer.ts`
+
+**核心逻辑：**
+
+- 新增 `applyAssignmentEvent(db, event)` 处理 BUSINESS_SESSION 聚合事件：
+  - `ASSIGNMENT_CREATED`：插入 ACTIVE grant、PENDING_CONFIRM assignment，更新 assessment `PREPARED -> ASSIGNED`。
+  - `ASSIGNMENT_STUDENT_CONFIRMED`：assignment `PENDING_CONFIRM -> ACTIVE`，写确认字段，assessment `ASSIGNED -> STUDENT_CONFIRMED`。
+  - `GRANT_REBOUND`：旧 grant EXPIRED，新 grant ACTIVE，assignment 改指新 grant、version+1，按需清空确认。
+  - `ASSIGNMENT_RELEASED`：assignment 终态、grant 终态。
+- `assessment-reducer` 增加 `ASSIGNMENT_ASSESSMENT_STARTED`，复用 `SESSION_FIRST_QUESTION_ACTIVATED` 指针语义，但要求 phase 已是 `STUDENT_CONFIRMED`。
+- reducer 幂等：已存在 grant/assignment 或 event_sequence 已旧时不重复推进；冲突字段不覆盖。
+
+**测试用例：**
+
+- 创建、确认、启动三步按 D1 合法推进。
+- 重复 apply 不重复插入、不重复 version+1。
+- 乱序确认或启动在缺少前置状态时不写出非法 phase。
+- D9-D11 由真实 SQLite 触发器兜底，reducer 冲突时抛错并回滚。
+
+**验证命令：**
+
+- `npm test -- src/main/domain/__tests__/assignment-reducer.test.ts src/main/domain/__tests__/assessment-reducer.test.ts`
+
+**commit message 建议：**
+
+`feat(m3): project assignment events`
+
+---
+
+### Step M3-6：Assignment IPC handler
+
+**改动文件：**
+
+- `src/main/ipc/handlers/assignment.ts`
+- `src/main/ipc/handlers/__tests__/assignment.test.ts`
+- `src/main/ipc/index.ts`
+
+**核心逻辑：**
+
+- 新增纯函数并由 IPC 薄包装注册：
+  - `createAssignment`
+  - `confirmStudentAssignment`
+  - `startAssignedAssessment`
+  - `rebindAssignment`
+  - `releaseAssignment`
+- 每个写路径遵守 JSONL append -> `domain_event_projection` -> reducer。
+- `assignment:create` 校验 TEACHER/ADMIN、business_session 类型为 ASSESSMENT、assessment phase 为 PREPARED、runtime ACTIVE、teacher auth ACTIVE 未过期；默认 `TEACHER_ATTESTATION`。
+- `assignment:confirmStudent` 首版只接受 `NONE_REQUIRED` / `TEACHER_ATTESTATION`；PIN/PHOTO_MATCH 返回 `UNSUPPORTED_CONFIRMATION_METHOD`，不进入成功路径。
+- `assignment:startAssessment` 校验 STUDENT、assignment ACTIVE、session owner、phase STUDENT_CONFIRMED 后写启动事件。
+- `assignment:rebind` 按 expire-old -> create-new -> repoint-assignment 顺序单事务完成。
+
+**测试用例：**
+
+- M3-GRANT-01、M3-PHASE-03、M3-PHASE-04 正向集成。
+- 非教师创建、学生不匹配、runtime 非 ACTIVE、auth 过期返回明确错误。
+- PIN/PHOTO_MATCH 不被首版接受。
+- rebind 无需重确认与需重确认两条路径均 version+1。
+
+**验证命令：**
+
+- `npm test -- src/main/ipc/handlers/__tests__/assignment.test.ts`
+
+**commit message 建议：**
+
+`feat(ipc): add assignment grant handlers`
+
+---
+
+### Step M3-7：收窄 assessment:startSession 并兼容存量会话
+
+**改动文件：**
+
+- `src/main/ipc/handlers/assessment.ts`
+- `src/main/ipc/handlers/__tests__/assessment-start-session.test.ts`
+- `src/shared/types/assessment.ts`
+
+**核心逻辑：**
+
+- 原 `assessment:startSession`：
+  - phase `PREPARED` 返回 `ASSIGNMENT_REQUIRED`。
+  - phase `ASSIGNED` 返回 `STUDENT_CONFIRMATION_REQUIRED`。
+  - phase `STUDENT_CONFIRMED` 返回 `STUDENT_CONFIRMATION_REQUIRED`，提示使用 `assignment:startAssessment`，避免绕过 assignment 校验。
+  - phase `ONLINE_IN_PROGRESS` 或之后且已有 current_question_id 的 M2 存量会话继续幂等成功。
+- `assignment:startAssessment` 可复用内部 helper 激活第一题，但外部旧 IPC 不得直跳 D1。
+- 更新错误码 seed，保证 `error_event_log.error_code` FK 可写。
+
+**测试用例：**
+
+- M3-PHASE-01、M3-PHASE-02。
+- M2 存量 `ONLINE_IN_PROGRESS` 会话重复 start 仍成功，不要求 assignment。
+- 新 M3 `STUDENT_CONFIRMED` 会话直接调用旧 startSession 不写事件、不改 phase。
+
+**验证命令：**
+
+- `npm test -- src/main/ipc/handlers/__tests__/assessment-start-session.test.ts`
+
+**commit message 建议：**
+
+`feat(assessment): require assignment before start`
+
+---
+
+### Step M3-8：M3 schema/handler 负向约束测试补齐
+
+**改动文件：**
+
+- `src/main/db/__tests__/schema-m3-grant-assignment.test.ts`
+- `src/main/ipc/handlers/__tests__/assignment.test.ts`
+- `src/main/db/test-helpers.ts`
+
+**核心逻辑：**
+
+- 增加真实 SQLite/MemoryAdapter 负向测试覆盖 D9-D11 和 D1。
+- test helper 增加最小 business_session + runtime + auth + assignment 夹具，但只供测试使用。
+- 覆盖 `ASSIGNMENT_REQUIRED`、`STUDENT_CONFIRMATION_REQUIRED`、`ASSIGNMENT_NOT_ACTIVE`、`DEVICE_RUNTIME_NOT_ACTIVE`、`GRANT_AUTH_INVALID`、`UNSUPPORTED_CONFIRMATION_METHOD`。
+
+**测试用例：**
+
+- M3-GRANT-02 至 M3-GRANT-04。
+- M3-ASSIGN-01 至 M3-ASSIGN-03。
+- M3-PHASE-05。
+- assignment release 后不能再次 start；grant EXPIRED 时活动 assignment 写入被 D11 拒绝。
+
+**验证命令：**
+
+- `npm test -- src/main/db/__tests__/schema-m3-grant-assignment.test.ts src/main/ipc/handlers/__tests__/assignment.test.ts`
+
+**commit message 建议：**
+
+`test(m3): cover grant assignment constraints`
+
+---
+
+### Step M3-9：读路径与最小人工验证入口
+
+**改动文件：**
+
+- `src/shared/types/assignment.ts`
+- `src/main/ipc/handlers/assignment.ts`
+- `src/renderer/src/stores/assessment.ts`
+- `src/renderer/src/views/student/AssessmentView.vue`
+
+**核心逻辑：**
+
+- 当前学生答题 UI 仍直接调用 `assessment.startSession`；M3 最小改为收到 `ASSIGNMENT_REQUIRED` / `STUDENT_CONFIRMATION_REQUIRED` 时停止进入答题态，并复用现有错误展示入口显示阻断原因。
+- 本轮不新增 `assignment:getActiveForSession` 或完整教师分配页面；教师创建/确认 assignment 的验收通过 handler 集成测试和主进程 IPC 调用完成。
+- UI 不自动伪造 assignment、不调用 `assignment:confirmStudent`，避免把首版本地授权流程伪装成完整跨设备体验。
+
+**测试用例：**
+
+- renderer typecheck 通过。
+- 学生误点未分配 assessment 不会进入答题页，也不会写 `ONLINE_IN_PROGRESS`。
+
+**验证命令：**
+
+- `npm run typecheck`
+- `npm test -- src/main/ipc/handlers/__tests__/assignment.test.ts`
+
+**commit message 建议：**
+
+`feat(m3): expose minimal assignment start path`
+
+---
+
+### Step M3-10：文档、版本传播与最终闸门
+
+**改动文件：**
+
+- `AGENTS.md`
+- `README.md`
+- `doc/features/multi-device-v2.2-migration-prd.md`
+- `doc/features/multi-device-v2.2-migration-impl.md`
+- `doc/index.md`
+
+**核心逻辑：**
+
+- 当前工程基线更新为 `0.1.15-multi-device-m3-grant-assignment`。
+- PRD §2 / §11 状态从 PRD DRAFT 更新为实现中或待验收，不改写 M1/M2 历史记录。
+- 实现文档自检项按实际完成勾选；未执行的手工冒烟保持未勾。
+- 运行文档索引更新与检查。
+
+**测试用例：**
+
+- `rg` 扫描 `0.1.14-multi-device-m2-session-foundation`，只保留历史引用，当前基线类引用均指向 v0.1.15。
+- docs index 自动清单由脚本更新，无手工编辑自动区块。
+
+**验证命令：**
+
+- `npm run docs:index:update`
+- `npm run docs:index:check`
+- `rg -n "0\\.1\\.14-multi-device-m2-session-foundation" AGENTS.md README.md src doc`
+
+**commit message 建议：**
+
+`docs(m3): update baseline to v0.1.15`
+
+## M3 验收矩阵映射
+
+| 合同编号 | 主实现步骤 | 自动验证 |
+|----------|------------|----------|
+| M3-MIG-01 | Step M3-1、M3-2 | schema 加载 + migration test |
+| M3-MIG-02 | Step M3-2 | v0.1.14 旧库迁移测试 |
+| M3-MIG-03 | Step M3-2、M3-8 | drift 单测 |
+| M3-GRANT-01 | Step M3-5、M3-6 | handler 集成测试 |
+| M3-GRANT-02 | Step M3-8 | SQLite 负向测试 |
+| M3-GRANT-03 | Step M3-8 | SQLite 负向测试 |
+| M3-GRANT-04 | Step M3-6、M3-8 | handler + trigger 测试 |
+| M3-ASSIGN-01 | Step M3-8 | trigger 测试 |
+| M3-ASSIGN-02 | Step M3-8 | trigger 测试 |
+| M3-ASSIGN-03 | Step M3-8 | trigger 测试 |
+| M3-PHASE-01 | Step M3-7 | startSession 回归测试 |
+| M3-PHASE-02 | Step M3-7 | startSession 回归测试 |
+| M3-PHASE-03 | Step M3-5、M3-6 | handler 集成测试 |
+| M3-PHASE-04 | Step M3-5、M3-6 | handler 集成测试 |
+| M3-PHASE-05 | Step M3-1、M3-8 | SQLite trigger 测试 |
+| M3-REBIND-01 | Step M3-5、M3-6 | rebind 集成测试 |
+| M3-REBIND-02 | Step M3-5、M3-6 | rebind 集成测试 |
+| M3-REG-01 | Step M3-7、M3-10 | 全量 vitest + focused tests |
+
+## M3 回滚与失败处理
+
+- M3 migration 未提交时，由单个 SQLite 事务回滚到完整 M2。
+- `assessment_session` 重建失败不得留下 `_new` / `_old` 临时表；测试必须覆盖故障注入后的对象清理或事务回滚。
+- M3 已提交但应用启动后续失败时不自动 down。修复当前版本后重试；必须降级时恢复迁移前 DB 与 `action_log.jsonl` 备份。
+- rebind 事务中任何一步失败都回滚到旧 grant/assignment 状态，不允许旧 grant EXPIRED 而 assignment 仍指向旧 grant 的提交态。
+- JSONL append 成功但 SQLite reducer 失败时，保持现有事件溯源风险边界；M3 不宣称已实现 M5 command_log 幂等恢复。
+
+## M3 项目约束自检
+
+- [ ] 事件写入顺序仍为 JSONL append -> domain_event_projection -> reducer。
+- [ ] 新 EventType 与 AggregateType 已加入 `src/shared/types/event-payloads.ts`。
+- [ ] 新 IPC 通道已在 `src/preload/index.ts` 白名单声明。
+- [ ] 未新增 ORM、CSV、Markdown renderer 或新运行时依赖。
+- [ ] `src/main/` 本地模块仍使用静态 import。
+- [ ] FSM 状态迁移路径与 D1/D2-D4 一致。
+- [ ] D7、M4 safety re-key、M5 command_log/SSE、M6 learning、M7 支撑表未提前落地。
+- [ ] JSON 字段 `capabilities_json` / `confirmation_evidence` 写入前有运行时验证。
+- [ ] 本地 runtime 引导不创建固定 `org_default` 或跨安装共享 ID。
+- [ ] `assessment:startSession` 不再允许新 M3 会话绕过 assignment。
+
+## M3 回归验收清单
+
+- [ ] `npm run docs:index:check` 通过。
+- [ ] `npm run typecheck` 通过。
+- [ ] `npm run lint` 通过或仅剩既有 warning 且无新增 error。
+- [ ] `npm test` 全量通过。
+- [ ] `npm run build` 通过。
+- [ ] `git diff --check` 通过。
+- [ ] 手工冒烟：教师创建 assessment -> assignment:create -> confirmStudent -> assignment:startAssessment -> 学生答第一题。
+- [ ] 手工冒烟：`assessment:startSession` 对 PREPARED/ASSIGNED 返回明确错误，不写事件、不改 phase。
+- [ ] 手工冒烟：rebind 无需重确认与需重确认两条路径均保持事务一致。
+
+## M3 实施完成定义
+
+只有以下条件同时满足，M3 才能从“待实施/实现中”改为“已验收”：
+
+1. Step M3-1 至 Step M3-10 全部完成，并经过逐步 `/vibe-accept`。
+2. M3-MIG-01 至 M3-MIG-03、M3-GRANT-01 至 M3-GRANT-04、M3-ASSIGN-01 至 M3-ASSIGN-03、M3-PHASE-01 至 M3-PHASE-05、M3-REBIND-01 至 M3-REBIND-02、M3-REG-01 均有通过证据。
+3. 当前基线文档已更新为 v0.1.15，历史版本说明未被误改。
+4. 功能分支通过最终 `/check`，再按仓库规则合并。
