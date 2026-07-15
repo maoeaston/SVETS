@@ -13,6 +13,14 @@ import type { AbilityTag } from '../../shared/types/json-schemas'
 
 type BusinessSessionType = 'ASSESSMENT' | 'TRAINING'
 
+export interface LocalRuntimeContextFixture {
+  organizationId: string
+  nodeId: string
+  deviceId: string
+  deviceRuntimeSessionId: string
+  teacherAuthSessionId: string
+}
+
 export type AssessmentFixtureStatus =
   | 'INIT'
   | 'ACTIVE'
@@ -72,6 +80,67 @@ export function seedDisabledCaller(db: DBAdapter, role: 'TEACHER' | 'ADMIN' = 'T
      VALUES (?, ?, ?, ?, ?, 'DISABLED')`
   ).run(userId, `disabled_${role.toLowerCase()}_${userId.slice(0, 8)}`, hashPassword('x'), role, '停用调用者')
   return userId
+}
+
+export function seedLocalRuntimeContextFixture(
+  db: DBAdapter,
+  params: {
+    teacherUserId: string
+    organizationId?: string
+    nodeId?: string
+    deviceId?: string
+    deviceRuntimeSessionId?: string
+    teacherAuthSessionId?: string
+    authStatus?: 'ACTIVE' | 'EXPIRED' | 'REVOKED'
+    authExpiresAt?: 'future' | 'past'
+  }
+): LocalRuntimeContextFixture {
+  const organizationId = params.organizationId ?? uuidv4()
+  const nodeId = params.nodeId ?? uuidv4()
+  const deviceId = params.deviceId ?? uuidv4()
+  const deviceRuntimeSessionId = params.deviceRuntimeSessionId ?? uuidv4()
+  const teacherAuthSessionId = params.teacherAuthSessionId ?? uuidv4()
+  const authStatus = params.authStatus ?? 'ACTIVE'
+  const expiresAtSql =
+    params.authExpiresAt === 'past' ? "datetime('now', '-1 minute')" : "datetime('now', '+1 day')"
+
+  db.prepare('INSERT INTO organization (organization_id, name) VALUES (?, ?)').run(
+    organizationId,
+    `Fixture Organization ${organizationId.slice(0, 8)}`
+  )
+  db.prepare(
+    `INSERT INTO node (node_id, organization_id, node_name)
+     VALUES (?, ?, ?)`
+  ).run(nodeId, organizationId, `Fixture Node ${nodeId.slice(0, 8)}`)
+  db.prepare(
+    `INSERT INTO device (device_id, node_id, device_name, device_role, trust_state)
+     VALUES (?, ?, ?, 'HYBRID', 'TRUSTED')`
+  ).run(deviceId, nodeId, `Fixture Device ${deviceId.slice(0, 8)}`)
+  db.prepare(
+    `INSERT INTO device_runtime_session (device_runtime_session_id, device_id)
+     VALUES (?, ?)`
+  ).run(deviceRuntimeSessionId, deviceId)
+  db.prepare(
+    `INSERT INTO auth_session
+       (auth_session_id, user_id, device_runtime_session_id, auth_method,
+        capabilities_json, token_hash, refresh_token_hash, expires_at, status)
+     VALUES (?, ?, ?, 'DEVICE_KEY', '[]', ?, ?, ${expiresAtSql}, ?)`
+  ).run(
+    teacherAuthSessionId,
+    params.teacherUserId,
+    deviceRuntimeSessionId,
+    `fixture-token-${uuidv4()}`,
+    `fixture-refresh-${uuidv4()}`,
+    authStatus
+  )
+
+  return {
+    organizationId,
+    nodeId,
+    deviceId,
+    deviceRuntimeSessionId,
+    teacherAuthSessionId
+  }
 }
 
 /**
