@@ -17,7 +17,8 @@
 当前工程事实：
 
 - 产品合同：PRD v1.0.9 consolidated authoritative baseline
-- schema：v0.1.13-multi-device-m1-identity
+- schema：v0.1.14-multi-device-m2-session-foundation
+- 多设备 M2 已落地 business_session 父记录、assessment delivery_phase / event_sequence_version / observation_template_id、assessment/training business_session_id 和 D2-D6/D8 约束；Grant/Assignment、learning_session、自动 JSONL 冷启动重放仍未落地
 - v0.1.12 的 JOB_SKILL_ASSESSMENT、bank_domain、TEACHER_OBSERVATION、JOB_SKILL_SCORE 已落地
 - 历史 PRD 差异版和 `doc/specs/impl/` 中的“待实现”描述只用于追溯，不代表当前代码状态
 

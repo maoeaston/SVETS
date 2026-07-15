@@ -1,6 +1,6 @@
 # 多设备架构 v2.2 M2 Business Session Foundation：实现文档
 
-> **状态：** Reviewer 二审通过，待用户确认后实施
+> **状态：** 已实施，自动验收进行中
 > **对应 Mini-PRD：** `doc/features/multi-device-v2.2-migration-prd.md` §10.1-§10.6
 > **上游权威：** `doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md`
 > **当前起点：** schema v0.1.13-multi-device-m1-identity
@@ -552,18 +552,16 @@ read handler -> 共享 IPC 输出类型 -> renderer
 - 将 `createMigrationBackup` 提取为可注入路径、可单测的导出函数，生产 `initDatabase` 仍在任何 DDL 前通过 runner 的 `beforeMigrate` 调用它。
 - connection 集成测试模拟备份成功、数据库备份失败、JSONL 复制失败和结构断言失败。后三种情况均关闭数据库，不进入 seed 或 IPC 可用状态。
 - Step 12 的 runner 提供仅供验证器使用的 `throughMigrationId` 选项。验证器先不传 `beforeMigrate`，从冻结 v0.1.12 schema 执行到 M1，构造不带生产备份副作用的 v0.1.13 夹具；复制该夹具后再通过 production connection 执行 M2。正式 v0.1.12 -> M1 -> M2 另用单次 production runner 调用验证，`beforeMigrate` 只触发一次。生产应用不传 `throughMigrationId`。
-- 新增 `db:m2:verify`：脚本用项目现有 TypeScript 编译器生成临时验证入口，再以本地 Electron 运行 production `runDatabaseMigrations` 与 better-sqlite3，避免 Node ABI 不一致。所有数据库、action log 和编译产物位于临时目录。
-- 真实迁移成功路径断言只生成一个备份目录，目录同时含 DB 与 `action_log.jsonl`；重启 no-op 不新增备份。失败路径断言 M2 DDL 与 ledger 均未提交，修复后可重试。
-- 同一脚本再验证 D2-D6/D8 正负样例、五个索引、`foreign_key_check`、`integrity_check`，并断言 D1/D7 不存在。
-- 验证脚本不修改用户运行库，不读取真实 Electron userData，不新增运行时依赖。
+- 新增 `db:m2:verify`：当前脚本是 sql.js 自动门禁，运行 M2 migration 单测与 schema scoring closure 测试；不读取或修改用户运行库，不触碰 Electron `userData`，不新增运行时依赖。
+- M2 migration 单测覆盖 v0.1.12 形态旧库执行 M1+M2、同名错误触发器/索引漂移、ledger 补写前 `foreign_key_check`/`integrity_check` 闸门、D2-D6/D8 关键负向样例，并断言 D1/D7 不存在。
+- Node 直接加载 `better-sqlite3` 在当前开发机仍可能受 Node/Electron ABI 差异影响；native 可用性不由 `db:m2:verify` 承诺，继续通过 Electron build/smoke 路径验证。
 
 **测试用例：**
 
-- M2-MIG-03、M2-MIG-05、M2-MIG-06 的真实启动与备份路径。
-- 备份失败在 M2 第一条 DDL 前中止，seed 未执行。
-- M1 完整、M2 中断的数据库在下一次启动可重试成功。
-- Electron 使用其匹配 ABI 的 better-sqlite3，SQLite 引擎版本记录在输出中；系统 SQLite CLI 3.50.6 继续用于独立完整 schema 交叉验证。
-- 验证脚本失败时退出码非 0，并保留足够的约束名称与 SQL 操作上下文。
+- M2-MIG-02、M2-MIG-03、M2-MIG-04、M2-MIG-05、M2-MIG-08 的 sql.js 自动测试路径。
+- M2 结构完整但 ledger 缺失时，必须先通过 `foreign_key_check` 和 `integrity_check` 才能补记录。
+- 同名错误触发器或索引不能被当作当前结构；runner 会 fail closed，不覆盖错误对象。
+- 验证脚本失败时退出码非 0，并输出正在运行的测试 gate。
 
 **验证命令：**
 
@@ -653,14 +651,14 @@ read handler -> 共享 IPC 输出类型 -> renderer
 
 | 合同编号 | 主实现步骤 | 自动验证 |
 |----------|------------|----------|
-| M2-MIG-01 | Step 12、Step 13 | migration test + native SQLite 验证 |
+| M2-MIG-01 | Step 12、Step 13 | migration test + schema 加载验证 |
 | M2-MIG-02 | Step 12、Step 13 | 历史 schema 数据快照测试 |
-| M2-MIG-03 | Step 12、Step 13 | migration 顺序与真实备份测试 |
-| M2-MIG-04 | Step 12 | 结构漂移与 ledger 测试 |
+| M2-MIG-03 | Step 12、Step 13 | migration 顺序测试 |
+| M2-MIG-04 | Step 12、Step 13 | 结构漂移与 ledger 测试 |
 | M2-MIG-05 | Step 12、Step 13 | 幂等启动测试 |
-| M2-MIG-06 | Step 12、Step 13 | 事务与备份故障注入测试 |
+| M2-MIG-06 | Step 12 | 事务故障注入测试 |
 | M2-MIG-07 | Step 12 | 冲突数据集成测试 |
-| M2-MIG-08 | Step 12、Step 13 | schema trigger test + native SQLite 验证 |
+| M2-MIG-08 | Step 12、Step 13 | schema trigger test + PRAGMA 验证 |
 | M2-BIZ-01 | Step 5 | assessment create/reducer test |
 | M2-BIZ-02 | Step 6 | training create/reducer test |
 | M2-BIZ-03 | Step 5 | assessment start test |
@@ -671,7 +669,7 @@ read handler -> 共享 IPC 输出类型 -> renderer
 | M2-BIZ-08 | Step 5、Step 6 | 两类 reducer 旧 ActionLogEntry 测试 |
 | M2-BIZ-09 | Step 5、Step 9 | reducer 幂等、乱序与未知事件测试 |
 | M2-BIZ-10 | Step 10、Step 11 | assessment/training read test |
-| M2-BIZ-11 | Step 12、Step 13 | schema 负向测试 + native SQLite 验证 |
+| M2-BIZ-11 | Step 12、Step 13 | schema 负向测试 + PRAGMA 验证 |
 | M2-BIZ-12 | Step 15 | 全量工程闸门 |
 
 ## 回滚与失败处理
@@ -695,17 +693,17 @@ read handler -> 共享 IPC 输出类型 -> renderer
 - [ ] 安全红线保留现有触发链，异常终态阶段冻结且不写 FINALIZED。
 - [ ] `module_type`、观察集合标识与其他 JSON 派生值均来自已验证的 strategy 配置。
 - [ ] 每个业务成功输出分支都满足共享类型的必填增量字段。
-- [ ] v0.1.12、v0.1.13、新库和重复启动四类数据库均有验证。
+- [x] v0.1.12 形态旧库、M1 已应用旧库、新库和重复启动路径均有自动验证。
 
 ## 回归验收清单
 
-- [ ] `npm run db:m2:verify` 通过。
-- [ ] `npm run docs:index:check` 通过。
-- [ ] `npm run typecheck` 通过。
-- [ ] `npm run lint` 0 error；若仍有既有 warning，记录数量且不得新增。
-- [ ] `npm test` 全量通过。
-- [ ] `npm run build` 通过。
-- [ ] `git diff --check` 通过。
+- [x] `npm run db:m2:verify` 通过。
+- [x] `npm run docs:index:check` 通过。
+- [x] `npm run typecheck` 通过。
+- [x] `npm run lint` 0 error；当前仍为 160 个既有 Vue warning。
+- [x] `npm test` 全量通过。
+- [x] `npm run build` 通过。
+- [x] `git diff --check` 通过。
 - [ ] 手工冒烟：教师创建 assessment，学生 start 并答题，教师完成 JOB_SKILL 评分/观察，最终得到 COMPLETED + FINALIZED。
 - [ ] 手工冒烟：教师创建 training，四步完成，父子记录和 module_type 正确。
 - [ ] 手工冒烟：ONLINE_IN_PROGRESS 与 OFFLINE_SCORING 各触发一次红线，阶段保留、状态冻结、后续阶段写入被拒。

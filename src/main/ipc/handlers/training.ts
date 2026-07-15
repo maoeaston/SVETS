@@ -234,6 +234,7 @@ function finalizeTrainingSession(db: DBAdapter, trainingSessionId: string): void
 
 interface TrainingSessionListRow {
   training_session_id: string
+  business_session_id: string
   student_id: string
   module_type: string | null
   status: string
@@ -257,7 +258,7 @@ export function listTrainingSessions(
 
   const rows = db
     .prepare(
-      `SELECT ts.training_session_id, ts.student_id, ts.module_type, ts.status,
+      `SELECT ts.training_session_id, ts.business_session_id, ts.student_id, ts.module_type, ts.status,
               ts.total_step_count, ts.completed_step_count, ts.completion_rate,
               ts.created_by, ts.started_at, ts.completed_at
          FROM training_session ts
@@ -289,6 +290,7 @@ export function listTrainingSessions(
 
   const sessions: TrainingSessionListItem[] = rows.map((r) => ({
     trainingSessionId: r.training_session_id,
+    businessSessionId: r.business_session_id,
     studentId: r.student_id,
     moduleType: r.module_type,
     status: r.status as TrainingSessionStatus,
@@ -344,7 +346,7 @@ export function getTrainingSession(
   const session = db
     .prepare(
       `SELECT training_session_id, student_id, strategy_id, strategy_version,
-              module_type, status, total_step_count, completed_step_count,
+              business_session_id, module_type, status, total_step_count, completed_step_count,
               completion_rate, created_by, started_at, completed_at
          FROM training_session WHERE training_session_id = ?`
     )
@@ -383,6 +385,7 @@ export function getTrainingSession(
 
   const detail: TrainingSessionDetail = {
     trainingSessionId: session.training_session_id,
+    businessSessionId: session.business_session_id,
     studentId: session.student_id,
     strategyId: session.strategy_id,
     strategyVersion: session.strategy_version,

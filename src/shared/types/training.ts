@@ -55,7 +55,7 @@ export interface CreateTrainingSessionParams {
 export interface CreateTrainingSessionSuccess {
   success: true
   trainingSessionId: string
-  businessSessionId?: string
+  businessSessionId: string
   status: TrainingSessionStatus
 }
 
@@ -75,7 +75,7 @@ export interface ListTrainingSessionsParams {
 
 export interface TrainingSessionListItem {
   trainingSessionId: string
-  businessSessionId?: string
+  businessSessionId: string
   studentId: string
   moduleType: string | null
   status: TrainingSessionStatus
@@ -118,7 +118,7 @@ export interface TrainingStepView {
 
 export interface TrainingSessionDetail {
   trainingSessionId: string
-  businessSessionId?: string
+  businessSessionId: string
   studentId: string
   strategyId: string
   strategyVersion: number

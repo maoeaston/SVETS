@@ -11,7 +11,7 @@
 | 阶段 | 状态 |
 |---|---|
 | PRD v1.0.9 consolidated authoritative baseline | ✅ 当前唯一产品合同 |
-| Schema v0.1.13-multi-device-m1-identity | ✅ 当前工程基线（MVP 功能合同由 v0.1.12 承载） |
+| Schema v0.1.14-multi-device-m2-session-foundation | ✅ 当前工程基线（MVP 功能合同由 v0.1.12 承载） |
 | JSON 字段规范 | ✅ 已完成 |
 | 事件载荷规范 | ✅ 已完成 |
 | Electron 脚手架 | ✅ 已就绪（typecheck + build 通过）|

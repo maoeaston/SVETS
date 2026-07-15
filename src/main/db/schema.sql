@@ -1,5 +1,5 @@
 -- ============================================================================
--- 炫灿-职途向导系统 MVP schema.sql v0.1.13-multi-device-m1-identity
+-- 炫灿-职途向导系统 MVP schema.sql v0.1.14-multi-device-m2-session-foundation
 -- Architecture baseline:
 --   1. Lightweight event sourcing + SQLite projection.
 --   2. action_log.jsonl is the source of truth; SQLite is a query snapshot.
@@ -15,6 +15,13 @@
 --  12. JOB_SKILL_ASSESSMENT strategy supports fixed demo paper with M1-M6 modules.
 -- ----------------------------------------------------------------------------
 -- Merged from v0.1.10-scoring-closure + PRD v1.0.7 + v1.0.8 + v1.0.9.
+-- v0.1.14 patch notes (multi-device M2 — business session foundation):
+--   Ref: doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md §7.5 D2-D6/D8
+--   1. business_session parent table is now enforced for assessment/training child sessions.
+--   2. assessment_session carries delivery_phase, event_sequence_version, observation_template_id.
+--   3. D2-D6/D8 triggers enforce prepared inserts, abnormal phase freeze,
+--      COMPLETED/FINALIZED consistency, parent-child four-key matching, and parent key immutability.
+--   4. D1 and D7 are intentionally deferred to M3/M6.
 -- v0.1.13 patch notes (multi-device M1 — identity & topology foundation):
 --   Ref: doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md §7.2 T1-T5, §7.3 B1, §7.4
 --   1. New tables (pure additive): organization, node, device, device_runtime_session, auth_session.
@@ -200,9 +207,7 @@ CREATE INDEX IF NOT EXISTS idx_auth_session_token
   ON auth_session(token_hash);
 
 -- ----------------------------------------------------------------------------
--- 1c. Business session foundation (M2 staged)
---     Step 4 adds the parent table, nullable child links, and indexes only.
---     D2-D6/D8 trigger enforcement and migration versioning are enabled later.
+-- 1c. Business session foundation (M2)
 -- ----------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS business_session (
@@ -775,6 +780,75 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_training_one_open_session_per_student_task
 
 CREATE UNIQUE INDEX IF NOT EXISTS ux_training_business_session
   ON training_session(business_session_id);
+
+-- ----------------------------------------------------------------------------
+-- 9b. M2 business session and delivery phase guards (D2-D6, D8)
+-- ----------------------------------------------------------------------------
+
+CREATE TRIGGER IF NOT EXISTS trg_assessment_delivery_phase_insert_prepared
+BEFORE INSERT ON assessment_session
+FOR EACH ROW WHEN NEW.delivery_phase IS NOT NULL AND NEW.delivery_phase <> 'PREPARED'
+BEGIN SELECT RAISE(ABORT, 'new assessment_session delivery_phase must start at PREPARED'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_assessment_delivery_phase_frozen_on_abnormal
+BEFORE UPDATE OF delivery_phase ON assessment_session
+FOR EACH ROW
+WHEN OLD.status IN ('REDLINE_HALTED','ABORTED')
+  AND ((OLD.delivery_phase IS NULL) <> (NEW.delivery_phase IS NULL) OR OLD.delivery_phase <> NEW.delivery_phase)
+BEGIN SELECT RAISE(ABORT, 'delivery_phase of REDLINE_HALTED/ABORTED session is frozen'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_assessment_finalized_completed_consistency_insert
+BEFORE INSERT ON assessment_session
+FOR EACH ROW
+WHEN (NEW.delivery_phase='FINALIZED' AND NEW.status<>'COMPLETED')
+  OR (NEW.status='COMPLETED' AND (NEW.delivery_phase IS NULL OR NEW.delivery_phase<>'FINALIZED'))
+BEGIN SELECT RAISE(ABORT, 'FINALIZED must correspond to COMPLETED and vice versa'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_assessment_finalized_completed_consistency_update
+BEFORE UPDATE OF delivery_phase, status ON assessment_session
+FOR EACH ROW
+WHEN (NEW.delivery_phase='FINALIZED' AND NEW.status<>'COMPLETED')
+  OR (NEW.status='COMPLETED' AND (NEW.delivery_phase IS NULL OR NEW.delivery_phase<>'FINALIZED'))
+BEGIN SELECT RAISE(ABORT, 'FINALIZED must correspond to COMPLETED and vice versa'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_assessment_business_session_consistency_insert
+BEFORE INSERT ON assessment_session
+FOR EACH ROW
+WHEN NEW.business_session_id IS NULL
+  OR NOT EXISTS (SELECT 1 FROM business_session bs WHERE bs.business_session_id=NEW.business_session_id
+    AND bs.session_type='ASSESSMENT' AND bs.student_id=NEW.student_id AND bs.job_code=NEW.job_code AND bs.task_code=NEW.task_code)
+BEGIN SELECT RAISE(ABORT, 'assessment_session requires business_session_id matching ASSESSMENT type, student_id, job_code, task_code'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_assessment_business_session_consistency_update
+BEFORE UPDATE OF business_session_id, student_id, job_code, task_code ON assessment_session
+FOR EACH ROW
+WHEN NEW.business_session_id IS NULL
+  OR NOT EXISTS (SELECT 1 FROM business_session bs WHERE bs.business_session_id=NEW.business_session_id
+    AND bs.session_type='ASSESSMENT' AND bs.student_id=NEW.student_id AND bs.job_code=NEW.job_code AND bs.task_code=NEW.task_code)
+BEGIN SELECT RAISE(ABORT, 'assessment_session requires business_session_id matching ASSESSMENT type, student_id, job_code, task_code'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_training_business_session_consistency_insert
+BEFORE INSERT ON training_session
+FOR EACH ROW
+WHEN NEW.business_session_id IS NULL
+  OR NOT EXISTS (SELECT 1 FROM business_session bs WHERE bs.business_session_id=NEW.business_session_id
+    AND bs.session_type='TRAINING' AND bs.student_id=NEW.student_id AND bs.job_code=NEW.job_code AND bs.task_code=NEW.task_code)
+BEGIN SELECT RAISE(ABORT, 'training_session requires business_session_id matching TRAINING type, student_id, job_code, task_code'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_training_business_session_consistency_update
+BEFORE UPDATE OF business_session_id, student_id, job_code, task_code ON training_session
+FOR EACH ROW
+WHEN NEW.business_session_id IS NULL
+  OR NOT EXISTS (SELECT 1 FROM business_session bs WHERE bs.business_session_id=NEW.business_session_id
+    AND bs.session_type='TRAINING' AND bs.student_id=NEW.student_id AND bs.job_code=NEW.job_code AND bs.task_code=NEW.task_code)
+BEGIN SELECT RAISE(ABORT, 'training_session requires business_session_id matching TRAINING type, student_id, job_code, task_code'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_business_session_key_immutable
+BEFORE UPDATE OF session_type, student_id, job_code, task_code ON business_session
+FOR EACH ROW
+WHEN OLD.session_type<>NEW.session_type OR OLD.student_id<>NEW.student_id
+  OR OLD.job_code<>NEW.job_code OR OLD.task_code<>NEW.task_code
+BEGIN SELECT RAISE(ABORT, 'business_session key fields (session_type/student_id/job_code/task_code) are immutable'); END;
 
 CREATE TABLE IF NOT EXISTS training_step_record (
   training_step_record_id      TEXT PRIMARY KEY,
@@ -1929,12 +2003,18 @@ INSERT OR IGNORE INTO strategy_config (
 -- Record the baseline only after every table, index, trigger, and seed above succeeded.
 INSERT OR IGNORE INTO schema_migration (
   migration_id, schema_version, description
-) VALUES (
+) VALUES
+(
   '2026-07-14_mvp_schema_v0_1_13_multi_device_m1_identity',
   '0.1.13-multi-device-m1-identity',
-  'Full baseline: v0.1.12 MVP closure + M1 identity and topology foundation'
+  'M1: identity+topology tables and student_profile.user_id'
+),
+(
+  '2026-07-15_mvp_schema_v0_1_14_multi_device_m2_session_foundation',
+  '0.1.14-multi-device-m2-session-foundation',
+  'Full baseline: v0.1.12 MVP closure + M1 identity/topology + M2 business session foundation'
 );
 
 -- ============================================================================
--- End of schema.sql v0.1.13-multi-device-m1-identity
+-- End of schema.sql v0.1.14-multi-device-m2-session-foundation
 -- ============================================================================

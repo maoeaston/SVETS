@@ -30,7 +30,7 @@ doc/
 
 ### 2.1 当前已实现基线
 
-当前工程基线以 **AGENTS.md + `src/main/db/schema.sql`** 为准（现为 `schema.sql v0.1.13-multi-device-m1-identity`，MVP 功能基线 `PRD v1.0.9` / `schema v0.1.12`）。以下文件是跨版本稳定的规范类文档：
+当前工程基线以 **AGENTS.md + `src/main/db/schema.sql`** 为准（现为 `schema.sql v0.1.14-multi-device-m2-session-foundation`，MVP 功能基线 `PRD v1.0.9` / `schema v0.1.12`）。以下文件是跨版本稳定的规范类文档：
 
 | 文件 | 用途 | 何时读 |
 |------|------|--------|
@@ -43,14 +43,14 @@ doc/
 **数据库 schema 基线在代码库中：**
 - `src/main/db/schema.sql` — 当前权威 schema，改表结构、触发器、状态机时必读
 
-### 2.2 方案 B 多设备架构（v2.2 唯一权威基线，M1 已落地）
+### 2.2 方案 B 多设备架构（v2.2 唯一权威基线，M1/M2 已落地）
 
 | 文件 | 用途 | 何时读 |
 |------|------|--------|
 | `specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md` | **v2.2 唯一权威实施基线**：完整 DDL、delivery_phase 状态机、命令熔断、安全聚合键、发布模型、离线评分草稿、资产授权、回滚 | 多设备架构实施、认证/设备/授权设计、JSONL 一致性、状态机与触发器 |
 | `specs/architecture-plan-b-multi-device-v2.2-coverage-matrix.md` | 36 设计域覆盖矩阵 + 机械提取的 DDL 清单 + 13 问题 / 10 硬化项收口状态 | 核对某设计域是否收口、DDL 差异清单 |
 | `specs/architecture-plan-b-multi-device-v2.2-validation-report.md` | 真实 SQLite 执行验证记录（迁移、触发器行为、哈希、DDL diff、禁用/必需词检查） | 复核验证口径、重跑验证 |
-| `features/multi-device-v2.2-migration-prd.md` | v2.2 拆分为 M1-M7 里程碑的迁移 PRD（**M1 身份拓扑已实施并验收**，M2+ 待推进） | 推进多设备实施、确认里程碑边界 |
+| `features/multi-device-v2.2-migration-prd.md` | v2.2 拆分为 M1-M7 里程碑的迁移 PRD（**M1 身份拓扑与 M2 Business Session Foundation 已实施**，M3+ 待推进） | 推进多设备实施、确认里程碑边界 |
 
 > v1.1 / v1.2 / v2.0 / v2.0.1 / v2.1 已全部标记 SUPERSEDED，仅作历史决策追溯，不再作为实施依据。
 
@@ -66,7 +66,7 @@ doc/
 | `archive/prd-history/MVP_PRD_v1.0.8-job-bank-governance-closure.md` | SUPERSEDED | 专业岗位题库治理历史来源 |
 | `archive/prd-history/MVP_PRD_v1.0.9-job-skill-assessment-mvp-closure.md` | SUPERSEDED | 专业岗位运行时差异来源 |
 
-> schema v0.1.12 已实现 v1.0.7～v1.0.9 的合同，当前 schema v0.1.13 在其上增加多设备 M1 身份拓扑。历史差异版中的“待实现”“目标基线”只代表当时状态。
+> schema v0.1.12 已实现 v1.0.7～v1.0.9 的合同，当前 schema v0.1.14 在其上增加多设备 M1 身份拓扑与 M2 Business Session Foundation。历史差异版中的“待实现”“目标基线”只代表当时状态。
 
 ### 2.4 专业岗位技术实施记录（doc/specs/impl/）
 
@@ -140,7 +140,7 @@ doc/
 ### 数据库运维
 
 - `features/local-database-sync-sop.md` — A/B/C 三台 WSL 开发机轮流开发时的 `db:sync` / `db:verify` / 备份与重建流程
-- `features/multi-device-v2.2-migration-prd.md` — v0.1.13 M1 结构迁移与后续 M2-M7 里程碑
+- `features/multi-device-v2.2-migration-prd.md` — v0.1.13 M1、v0.1.14 M2 结构迁移与后续 M3-M7 里程碑
 
 ### 视觉资产文档（仍活跃）
 

@@ -70,7 +70,7 @@ export interface SessionQuestionView {
 // assessment_session 的投影视图（getSession 返回）
 export interface SessionDetail {
   sessionId: string
-  businessSessionId?: string
+  businessSessionId: string
   studentId: string
   strategyId: string
   strategyType: AssessmentStrategyType
@@ -78,9 +78,9 @@ export interface SessionDetail {
   jobCode: string
   taskCode: string
   status: SessionStatus
-  deliveryPhase?: DeliveryPhase | null
-  eventSequenceVersion?: number
-  observationTemplateId?: string | null
+  deliveryPhase: DeliveryPhase | null
+  eventSequenceVersion: number
+  observationTemplateId: string | null
   onlineQuestionCount: number
   offlineQuestionCount: number
   onlineCompletedCount: number
@@ -111,7 +111,7 @@ export interface CreateSessionParams {
 export interface CreateSessionSuccess {
   success: true
   sessionId: string
-  businessSessionId?: string
+  businessSessionId: string
   // 仅返回 ONLINE 题（学生立即可答）；OFFLINE 题由线下评分流程处理
   questions: SessionQuestionView[]
 }
@@ -163,7 +163,7 @@ export interface ListSessionsParams {
 
 export interface SessionListItem {
   sessionId: string
-  businessSessionId?: string
+  businessSessionId: string
   studentId: string
   studentName: string
   strategyId: string
@@ -172,9 +172,9 @@ export interface SessionListItem {
   jobCode: string
   taskCode: string
   status: SessionStatus
-  deliveryPhase?: DeliveryPhase | null
-  eventSequenceVersion?: number
-  observationTemplateId?: string | null
+  deliveryPhase: DeliveryPhase | null
+  eventSequenceVersion: number
+  observationTemplateId: string | null
   onlineQuestionCount: number
   onlineCompletedCount: number
   currentQuestionId: string | null

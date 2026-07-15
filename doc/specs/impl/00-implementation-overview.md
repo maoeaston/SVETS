@@ -1,6 +1,6 @@
 # 实现总览：从 schema v0.1.10 到 v0.1.12
 
-> **IMPLEMENTED / 历史实施记录**：本文说明 v0.1.12 当时如何实现。当前产品合同以 `doc/specs/MVP_PRD_v1.0.9-authoritative.md` 为准，当前数据库以 `src/main/db/schema.sql`（v0.1.13）为准。
+> **IMPLEMENTED / 历史实施记录**：本文说明 v0.1.12 当时如何实现。当前产品合同以 `doc/specs/MVP_PRD_v1.0.9-authoritative.md` 为准，当前数据库以 `src/main/db/schema.sql`（v0.1.14）为准。
 
 版本：impl-overview v1.0  
 日期：2026-07-07  

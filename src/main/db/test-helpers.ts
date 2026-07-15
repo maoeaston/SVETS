@@ -166,8 +166,8 @@ function assertBusinessSessionMatch(
 }
 
 /**
- * M2 前向兼容父会话夹具。当前 v0.1.13 没有 business_session 时为 no-op；
- * 后续测试 schema 存在父表时，先插入四键匹配的父记录。
+ * M2 父会话夹具。旧测试 schema 没有 business_session 时为 no-op；
+ * 当前测试 schema 存在父表时，先插入四键匹配的父记录。
  */
 export function seedBusinessSessionFixture(
   db: DBAdapter,
@@ -245,6 +245,7 @@ export function seedAssessmentSessionFixture(
   const jobCode = params.jobCode ?? 'SUPERMARKET_SHELVER'
   const taskCode = params.taskCode ?? 'SHELVE_TASK'
   const status = params.status ?? 'ACTIVE'
+  const insertStatus = status === 'INIT' ? status : 'INIT'
   const strategyVersion = params.strategyVersion ?? 1
 
   seedBusinessSessionFixture(db, {
@@ -265,7 +266,7 @@ export function seedAssessmentSessionFixture(
     job_code: jobCode,
     task_code: taskCode,
     strategy_version: strategyVersion,
-    status,
+    status: insertStatus,
     online_question_count: params.onlineQuestionCount ?? 42,
     offline_question_count: params.offlineQuestionCount ?? 8,
     created_by: params.createdBy
@@ -277,7 +278,7 @@ export function seedAssessmentSessionFixture(
     values.business_session_id = sessionId
   }
   if (columns.has('delivery_phase')) {
-    values.delivery_phase = resolveAssessmentDeliveryPhase(status, params.deliveryPhase)
+    values.delivery_phase = 'PREPARED'
   }
   if (columns.has('event_sequence_version')) {
     values.event_sequence_version = 0
@@ -287,6 +288,9 @@ export function seedAssessmentSessionFixture(
   }
 
   insertRow(db, 'assessment_session', values)
+  if (status !== insertStatus || params.deliveryPhase !== undefined) {
+    setAssessmentSessionStateFixture(db, sessionId, status, params.deliveryPhase)
+  }
   return sessionId
 }
 
@@ -302,12 +306,10 @@ export function setAssessmentSessionStateFixture(
 ): void {
   if (columnExists(db, 'assessment_session', 'delivery_phase')) {
     const phase = resolveAssessmentDeliveryPhase(status, deliveryPhase)
-    if (status === 'COMPLETED' || deliveryPhase !== undefined) {
-      db.prepare(
-        'UPDATE assessment_session SET status = ?, delivery_phase = ? WHERE session_id = ?'
-      ).run(status, phase, sessionId)
-      return
-    }
+    db.prepare(
+      'UPDATE assessment_session SET status = ?, delivery_phase = ? WHERE session_id = ?'
+    ).run(status, phase, sessionId)
+    return
   }
   db.prepare('UPDATE assessment_session SET status = ? WHERE session_id = ?').run(status, sessionId)
 }

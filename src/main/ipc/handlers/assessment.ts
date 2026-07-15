@@ -58,6 +58,7 @@ import type {
   SessionQuestionView,
   SessionDetail,
   SessionStatus,
+  DeliveryPhase,
   SessionQuestionContent,
   GetSessionParams,
   GetSessionResult,
@@ -1713,6 +1714,7 @@ export function calculateResult(db: DBAdapter, params: CalculateResultParams): C
 
 interface SessionFullRow {
   session_id: string
+  business_session_id: string
   student_id: string
   strategy_id: string
   strategy_type: string
@@ -1720,6 +1722,9 @@ interface SessionFullRow {
   job_code: string
   task_code: string
   status: string
+  delivery_phase: string | null
+  event_sequence_version: number
+  observation_template_id: string | null
   online_question_count: number
   offline_question_count: number
   online_completed_count: number
@@ -1746,6 +1751,7 @@ interface SessionQuestionJoinRow {
 
 interface SessionListJoinRow {
   session_id: string
+  business_session_id: string
   student_id: string
   student_name: string
   strategy_id: string
@@ -1754,6 +1760,9 @@ interface SessionListJoinRow {
   job_code: string
   task_code: string
   status: string
+  delivery_phase: string | null
+  event_sequence_version: number
+  observation_template_id: string | null
   online_question_count: number
   online_completed_count: number
   current_question_id: string | null
@@ -1909,7 +1918,8 @@ export function getSession(db: DBAdapter, params: GetSessionParams): GetSessionR
       // [!] schema assessment_session 无 created_at 列（v0.1.9 遗漏）；用 updated_at
       // 替代。updated_at 默认 datetime('now') 且无 trigger 自动刷新，等同创建时间。
       `SELECT session_id, student_id, strategy_id, strategy_type, strategy_version,
-              job_code, task_code, status,
+              business_session_id, job_code, task_code, status, delivery_phase,
+              event_sequence_version, observation_template_id,
               online_question_count, offline_question_count, online_completed_count,
               current_question_id, pause_count, pause_started_at,
               last_interruption_reason, redline_incident_id, level_result,
@@ -1922,6 +1932,7 @@ export function getSession(db: DBAdapter, params: GetSessionParams): GetSessionR
 
   const session: SessionDetail = {
     sessionId: row.session_id,
+    businessSessionId: row.business_session_id,
     studentId: row.student_id,
     strategyId: row.strategy_id,
     strategyType: row.strategy_type as AssessmentStrategyType,
@@ -1929,6 +1940,9 @@ export function getSession(db: DBAdapter, params: GetSessionParams): GetSessionR
     jobCode: row.job_code,
     taskCode: row.task_code,
     status: row.status as SessionStatus,
+    deliveryPhase: row.delivery_phase as DeliveryPhase | null,
+    eventSequenceVersion: row.event_sequence_version,
+    observationTemplateId: row.observation_template_id,
     onlineQuestionCount: row.online_question_count,
     offlineQuestionCount: row.offline_question_count,
     onlineCompletedCount: row.online_completed_count,
@@ -1965,7 +1979,8 @@ export function listSessions(db: DBAdapter, params: ListSessionsParams): ListSes
   const statusWhere = `s.status IN (${placeholders})`
   const selectClause = `SELECT s.session_id, s.student_id, sp.student_name,
               s.strategy_id, s.strategy_type, s.strategy_version,
-              s.job_code, s.task_code, s.status,
+              s.business_session_id, s.job_code, s.task_code, s.status,
+              s.delivery_phase, s.event_sequence_version, s.observation_template_id,
               s.online_question_count, s.online_completed_count,
               s.current_question_id, s.pause_count,
               s.redline_incident_id, s.last_interruption_reason,
@@ -1984,6 +1999,7 @@ export function listSessions(db: DBAdapter, params: ListSessionsParams): ListSes
 
   const items: SessionListItem[] = rows.map((r) => ({
     sessionId: r.session_id,
+    businessSessionId: r.business_session_id,
     studentId: r.student_id,
     studentName: r.student_name,
     strategyId: r.strategy_id,
@@ -1992,6 +2008,9 @@ export function listSessions(db: DBAdapter, params: ListSessionsParams): ListSes
     jobCode: r.job_code,
     taskCode: r.task_code,
     status: r.status as SessionStatus,
+    deliveryPhase: r.delivery_phase as DeliveryPhase | null,
+    eventSequenceVersion: r.event_sequence_version,
+    observationTemplateId: r.observation_template_id,
     onlineQuestionCount: r.online_question_count,
     onlineCompletedCount: r.online_completed_count,
     currentQuestionId: r.current_question_id,
@@ -2148,7 +2167,8 @@ export function listMySessions(db: DBAdapter, params: ListMySessionsParams): Lis
     .prepare(
       `SELECT s.session_id, s.student_id, sp.student_name,
               s.strategy_id, s.strategy_type, s.strategy_version,
-              s.job_code, s.task_code, s.status,
+              s.business_session_id, s.job_code, s.task_code, s.status,
+              s.delivery_phase, s.event_sequence_version, s.observation_template_id,
               s.online_question_count, s.online_completed_count,
               s.current_question_id, s.pause_count,
               s.redline_incident_id, s.last_interruption_reason,
@@ -2162,6 +2182,7 @@ export function listMySessions(db: DBAdapter, params: ListMySessionsParams): Lis
 
   const items: SessionListItem[] = rows.map((r) => ({
     sessionId: r.session_id,
+    businessSessionId: r.business_session_id,
     studentId: r.student_id,
     studentName: r.student_name,
     strategyId: r.strategy_id,
@@ -2170,6 +2191,9 @@ export function listMySessions(db: DBAdapter, params: ListMySessionsParams): Lis
     jobCode: r.job_code,
     taskCode: r.task_code,
     status: r.status as SessionStatus,
+    deliveryPhase: r.delivery_phase as DeliveryPhase | null,
+    eventSequenceVersion: r.event_sequence_version,
+    observationTemplateId: r.observation_template_id,
     onlineQuestionCount: r.online_question_count,
     onlineCompletedCount: r.online_completed_count,
     currentQuestionId: r.current_question_id,

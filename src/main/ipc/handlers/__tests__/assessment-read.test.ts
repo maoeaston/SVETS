@@ -211,17 +211,24 @@ function seedSessionDirect(over: {
   onlineQuestionCount?: number
   offlineQuestionCount?: number
   strategyType?: string
+  taskCode?: string
 }): string {
   const stud = over.studentId ?? studentId
   const strategyType = over.strategyType ?? 'BASELINE_ASSESSMENT'
+  const status = over.status ?? 'COMPLETED'
+  const targetTaskCode =
+    over.taskCode ??
+    (status === 'COMPLETED' || status === 'ABORTED' || status === 'REDLINE_HALTED'
+      ? `${taskCode}_${status}_${uuidv4().slice(0, 8)}`
+      : taskCode)
   return seedAssessmentSessionFixture(db, {
     studentId: stud,
     strategyId,
     strategyType,
     jobCode: 'SUPERMARKET_SHELVER',
-    taskCode,
+    taskCode: targetTaskCode,
     strategyVersion,
-    status: over.status ?? 'COMPLETED',
+    status,
     onlineQuestionCount: over.onlineQuestionCount,
     offlineQuestionCount: over.offlineQuestionCount,
     currentQuestionId: over.currentQuestionId,

@@ -94,7 +94,7 @@ export function submitOperationScores(
       `SELECT 1 FROM safety_incident
         WHERE student_id = ? AND task_code = ?
           AND status IN ('PENDING_DETAIL', 'CONFIRMED')
-          AND requires_review = 1
+          AND requires_review_before_next_session = 1
         LIMIT 1`
     )
     .get(session.student_id, session.task_code)

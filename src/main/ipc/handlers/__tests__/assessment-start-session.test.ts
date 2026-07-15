@@ -197,6 +197,12 @@ function baseListMyParams(over: Partial<ListMySessionsParams> = {}): ListMySessi
 
 /** 直接 UPDATE assessment_session.status，用于测 startSession 的 status 映射。 */
 function forceSessionStatus(sessionId: string, status: string): void {
+  if (status === 'COMPLETED') {
+    db.prepare(
+      "UPDATE assessment_session SET status = 'COMPLETED', delivery_phase = 'FINALIZED' WHERE session_id = ?"
+    ).run(sessionId)
+    return
+  }
   db.prepare('UPDATE assessment_session SET status = ? WHERE session_id = ?').run(status, sessionId)
 }
 

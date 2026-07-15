@@ -1,6 +1,6 @@
 # 题库与视觉资源当前合同
 
-**工程基线：** schema v0.1.13-multi-device-m1-identity / `doc/specs/MVP_PRD_v1.0.9-authoritative.md`
+**工程基线：** schema v0.1.14-multi-device-m2-session-foundation / `doc/specs/MVP_PRD_v1.0.9-authoritative.md`
 
 **视觉基线：** `visual-asset-master-plan.md v1.2.4-video-sop`
 

@@ -2,7 +2,7 @@
 
 > **适用范围：** A/B/C 三台 Windows + WSL 开发机轮流开发，不并发写入；当前开发阶段无须保留业务数据。
 > **内容包版本：** `scripts/config/database-content-pack.json`
-> **Schema 基线：** `v0.1.13-multi-device-m1-identity`
+> **Schema 基线：** `v0.1.14-multi-device-m2-session-foundation`
 
 ## 1. 同步模型
 
@@ -72,7 +72,7 @@ npm run dev
 `npm run db:verify` 检查：
 
 - `PRAGMA integrity_check = ok`、`foreign_key_check = 0`
-- 当前 M1 表、`student_profile.user_id` 与迁移记录存在
+- 当前 M1/M2 表、`student_profile.user_id`、业务父子会话约束与迁移记录存在
 - 三个开发账号的角色、状态和密码符合共享合同
 - BASE_ABILITY = 96、JOB_SPECIFIC = 298
 - 题库业务字段的 SHA-256 语义哈希与临时参考库一致
@@ -83,9 +83,9 @@ npm run dev
 ## 5. 启动迁移策略
 
 - 新库：事务内加载完整 `schema.sql`，全部成功后才登记当前 baseline。
-- v0.1.12 库：启动前创建 DB + JSONL 备份，随后真实执行 M1 `ALTER TABLE` 和新增表/索引；迁移记录只在结构验证通过后写入。
+- v0.1.12/v0.1.13 库：启动前创建 DB + JSONL 备份，随后按顺序执行 M1 与 M2 结构迁移；迁移记录只在结构验证通过后写入。
 - 早于 v0.1.12 或结构不完整的开发库：拒绝猜测式迁移，提示显式 `--reset`。
-- 即使旧库错误地提前写入了 v0.1.13 迁移记录，runner 仍按表、列、索引的真实结构判断并修复。
+- 即使旧库错误地提前写入了 v0.1.13/v0.1.14 迁移记录，runner 仍按表、列、索引和触发器的真实结构判断并修复。
 
 ## 6. 边界
 
