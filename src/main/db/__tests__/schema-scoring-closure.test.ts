@@ -188,22 +188,6 @@ describe('schema v0.1.10 scoring closure constraints', () => {
   })
 
   it('m2-aware session fixtures create parent rows and delivery phases when m2 columns exist', () => {
-    db.exec(`
-      CREATE TABLE business_session (
-        business_session_id TEXT PRIMARY KEY,
-        session_type TEXT NOT NULL,
-        student_id TEXT NOT NULL,
-        job_code TEXT NOT NULL,
-        task_code TEXT NOT NULL,
-        created_by TEXT
-      );
-      ALTER TABLE assessment_session ADD COLUMN business_session_id TEXT;
-      ALTER TABLE assessment_session ADD COLUMN delivery_phase TEXT;
-      ALTER TABLE assessment_session ADD COLUMN event_sequence_version INTEGER;
-      ALTER TABLE assessment_session ADD COLUMN observation_template_id TEXT;
-      ALTER TABLE training_session ADD COLUMN business_session_id TEXT;
-    `)
-
     const teacherId = seedCaller(db, 'TEACHER')
     const studentId = seedStudent(db)
     const completedId = seedAssessmentSessionFixture(db, {

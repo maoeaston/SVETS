@@ -2,6 +2,7 @@
 
 import type { AbilityTag, TeacherObservationPayload, JobSkillResultPayload } from './json-schemas'
 import type { OperationPassRatePayload } from './operation-scoring'
+import type { TrainingModuleType } from './training'
 
 export type AggregateType =
   | 'ASSESSMENT_SESSION'
@@ -77,6 +78,7 @@ export interface ActionLogEntry {
 
 export interface SessionStartedPayload {
   session_id: string
+  business_session_id?: string
   student_id: string
   strategy_id: string
   strategy_type: 'BASELINE_ASSESSMENT' | 'MOCK_EXAM' | 'JOB_SKILL_ASSESSMENT'
@@ -86,6 +88,8 @@ export interface SessionStartedPayload {
   online_question_count: number
   offline_question_count: number
   question_ids: string[]
+  initial_delivery_phase?: 'PREPARED'
+  observation_template_id?: string | null
 }
 
 // SESSION_FIRST_QUESTION_ACTIVATED — 学生首次点"开始答题"，初始化 current_question_id 指针。
@@ -190,6 +194,7 @@ export interface SessionAbortedPayload {
 
 export interface TrainingStartedPayload {
   training_session_id: string
+  business_session_id?: string
   student_id: string
   strategy_id: string
   strategy_type: 'TRAINING_PRACTICE'
@@ -198,6 +203,7 @@ export interface TrainingStartedPayload {
   task_code: string
   total_steps: number
   step_order: string[]
+  module_type?: TrainingModuleType
 }
 
 export interface TrainingStepPayload {

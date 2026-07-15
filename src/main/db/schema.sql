@@ -200,6 +200,29 @@ CREATE INDEX IF NOT EXISTS idx_auth_session_token
   ON auth_session(token_hash);
 
 -- ----------------------------------------------------------------------------
+-- 1c. Business session foundation (M2 staged)
+--     Step 4 adds the parent table, nullable child links, and indexes only.
+--     D2-D6/D8 trigger enforcement and migration versioning are enabled later.
+-- ----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS business_session (
+  business_session_id TEXT PRIMARY KEY,
+  session_type        TEXT NOT NULL CHECK (session_type IN ('ASSESSMENT','TRAINING','LEARNING')),
+  student_id          TEXT NOT NULL REFERENCES student_profile(student_id),
+  job_code            TEXT NOT NULL,
+  task_code           TEXT NOT NULL CHECK (length(trim(task_code)) > 0),
+  created_by          TEXT NOT NULL REFERENCES user_account(user_id),
+  created_at          TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at          TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_business_session_student
+  ON business_session(student_id, session_type);
+
+CREATE INDEX IF NOT EXISTS idx_business_session_student_job_task
+  ON business_session(student_id, job_code, task_code);
+
+-- ----------------------------------------------------------------------------
 -- 2. Strategy configuration: scoring, question generation, thresholds
 -- ----------------------------------------------------------------------------
 
@@ -399,6 +422,7 @@ CREATE INDEX IF NOT EXISTS idx_domain_event_projection_applied
 
 CREATE TABLE IF NOT EXISTS assessment_session (
   session_id                    TEXT PRIMARY KEY,
+  business_session_id           TEXT REFERENCES business_session(business_session_id),
   student_id                    TEXT NOT NULL REFERENCES student_profile(student_id),
   strategy_id                   TEXT NOT NULL,
   strategy_type                 TEXT NOT NULL CHECK (strategy_type IN (
@@ -420,12 +444,22 @@ CREATE TABLE IF NOT EXISTS assessment_session (
                                  'REDLINE_HALTED',
                                  'ABORTED'
                                )),
+  delivery_phase                TEXT CHECK (delivery_phase IS NULL OR delivery_phase IN (
+                                 'PREPARED',
+                                 'ONLINE_IN_PROGRESS',
+                                 'ONLINE_COMPLETED',
+                                 'OFFLINE_SCORING',
+                                 'OBSERVATION',
+                                 'READY_TO_FINALIZE',
+                                 'FINALIZED'
+                               )),
 
   current_question_id           TEXT REFERENCES question_bank(question_id),
   online_question_count         INTEGER NOT NULL CHECK (online_question_count >= 0),
   offline_question_count        INTEGER NOT NULL CHECK (offline_question_count >= 0),
   online_completed_count        INTEGER NOT NULL DEFAULT 0 CHECK (online_completed_count >= 0),
   offline_completed_count       INTEGER NOT NULL DEFAULT 0 CHECK (offline_completed_count >= 0),
+  observation_template_id       TEXT,
 
   pause_count                   INTEGER NOT NULL DEFAULT 0 CHECK (pause_count >= 0),
   pause_started_at              TEXT,
@@ -458,6 +492,7 @@ CREATE TABLE IF NOT EXISTS assessment_session (
   created_event_id              TEXT REFERENCES domain_event_projection(event_id),
   last_applied_event_id         TEXT REFERENCES domain_event_projection(event_id),
   last_status_event_id          TEXT REFERENCES domain_event_projection(event_id),
+  event_sequence_version        INTEGER NOT NULL DEFAULT 0 CHECK (event_sequence_version >= 0),
 
   CHECK (online_completed_count <= online_question_count),
   CHECK (offline_completed_count <= offline_question_count),
@@ -487,6 +522,12 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_assessment_one_open_session_per_student_tas
 
 CREATE INDEX IF NOT EXISTS idx_assessment_session_last_event
   ON assessment_session(last_applied_event_id);
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_assessment_business_session
+  ON assessment_session(business_session_id);
+
+CREATE INDEX IF NOT EXISTS idx_assessment_session_delivery_phase
+  ON assessment_session(delivery_phase);
 
 -- v0.1.12: question_phase adds OBSERVATION; question_type adds SOFTWARE_TASK;
 -- new bank_domain, job_module_code, item_usage; module_type nullable;
@@ -656,6 +697,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_offline_score_one_valid_task_operation
 
 CREATE TABLE IF NOT EXISTS training_session (
   training_session_id          TEXT PRIMARY KEY,
+  business_session_id          TEXT REFERENCES business_session(business_session_id),
   student_id                   TEXT NOT NULL REFERENCES student_profile(student_id),
   job_code                     TEXT NOT NULL,
   task_code                    TEXT NOT NULL CHECK (length(trim(task_code)) > 0),
@@ -730,6 +772,9 @@ CREATE INDEX IF NOT EXISTS idx_training_session_strategy
 CREATE UNIQUE INDEX IF NOT EXISTS ux_training_one_open_session_per_student_task
   ON training_session(student_id, task_code)
   WHERE status IN ('INIT', 'ACTIVE', 'EMOTION_INTERRUPTED', 'SUSPENDED_REVIEW_REQUIRED');
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_training_business_session
+  ON training_session(business_session_id);
 
 CREATE TABLE IF NOT EXISTS training_step_record (
   training_step_record_id      TEXT PRIMARY KEY,
