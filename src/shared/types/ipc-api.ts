@@ -77,6 +77,18 @@ import type {
   GetTeacherObservationsParams,
   GetTeacherObservationsResult
 } from './teacher-observation'
+import type {
+  CreateAssignmentParams,
+  CreateAssignmentResult,
+  ConfirmStudentAssignmentParams,
+  ConfirmStudentAssignmentResult,
+  StartAssignedAssessmentParams,
+  StartAssignedAssessmentResult,
+  RebindAssignmentParams,
+  RebindAssignmentResult,
+  ReleaseAssignmentParams,
+  ReleaseAssignmentResult
+} from './assignment'
 
 export interface LoginSuccess {
   success: true
@@ -163,6 +175,17 @@ export interface IpcApi {
     getTeacherObservations: (
       params: GetTeacherObservationsParams
     ) => Promise<GetTeacherObservationsResult>
+  }
+  assignment: {
+    create: (params: CreateAssignmentParams) => Promise<CreateAssignmentResult>
+    confirmStudent: (
+      params: ConfirmStudentAssignmentParams
+    ) => Promise<ConfirmStudentAssignmentResult>
+    startAssessment: (
+      params: StartAssignedAssessmentParams
+    ) => Promise<StartAssignedAssessmentResult>
+    rebind: (params: RebindAssignmentParams) => Promise<RebindAssignmentResult>
+    release: (params: ReleaseAssignmentParams) => Promise<ReleaseAssignmentResult>
   }
   training: {
     createSession: (params: CreateTrainingSessionParams) => Promise<CreateTrainingSessionResult>

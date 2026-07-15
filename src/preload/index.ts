@@ -51,6 +51,15 @@ const api = {
     getTeacherObservations: (params: unknown) =>
       ipcRenderer.invoke('assessment:getTeacherObservations', params)
   },
+  assignment: {
+    create: (params: unknown) => ipcRenderer.invoke('assignment:create', params),
+    confirmStudent: (params: unknown) =>
+      ipcRenderer.invoke('assignment:confirmStudent', params),
+    startAssessment: (params: unknown) =>
+      ipcRenderer.invoke('assignment:startAssessment', params),
+    rebind: (params: unknown) => ipcRenderer.invoke('assignment:rebind', params),
+    release: (params: unknown) => ipcRenderer.invoke('assignment:release', params)
+  },
   training: {
     createSession: (params: unknown) => ipcRenderer.invoke('training:createSession', params),
     listSessions:  (params: unknown) => ipcRenderer.invoke('training:listSessions', params),

@@ -3,10 +3,22 @@
 import type { AbilityTag, TeacherObservationPayload, JobSkillResultPayload } from './json-schemas'
 import type { OperationPassRatePayload } from './operation-scoring'
 import type { TrainingModuleType } from './training'
+import type {
+  AssignmentCapability,
+  AssignmentConfirmationEvidence,
+  AssignmentConfirmationMethod,
+  AssignmentDeliveryPhase,
+  AssignmentGrantStatus,
+  AssignmentGrantTerminalStatus,
+  AssignmentReleaseReason,
+  BusinessSessionAssignmentStatus,
+  SupportedAssignmentConfirmationMethod
+} from './assignment'
 
 export type AggregateType =
   | 'ASSESSMENT_SESSION'
   | 'TRAINING_SESSION'
+  | 'BUSINESS_SESSION'
   | 'STUDENT_PROFILE'
   | 'STRATEGY_CONFIG'
   | 'QUESTION_BANK'
@@ -54,6 +66,11 @@ export type EventType =
   | 'SNAPSHOT_COMMITTED'
   | 'RECOVERY_REPLAYED'
   | 'RECOVERY_LOG_TRUNCATED'
+  | 'ASSIGNMENT_CREATED'
+  | 'ASSIGNMENT_STUDENT_CONFIRMED'
+  | 'ASSIGNMENT_ASSESSMENT_STARTED'
+  | 'GRANT_REBOUND'
+  | 'ASSIGNMENT_RELEASED'
 
 export interface ActionLogEntry {
   event_id: string
@@ -102,6 +119,107 @@ export interface SessionFirstQuestionActivatedPayload {
   first_question_id: string
   first_question_order: number
   activated_at: string
+}
+
+export interface AssignmentCreatedPayload {
+  business_session_id: string
+  session_id: string
+  assignment_id: string
+  grant_id: string
+  student_id: string
+  device_id: string
+  device_runtime_session_id: string
+  teacher_auth_session_id: string
+  teacher_user_id: string
+  capabilities: AssignmentCapability[]
+  identity_confirmation_method: SupportedAssignmentConfirmationMethod
+  grant_status: 'ACTIVE'
+  assignment_status: 'PENDING_CONFIRM'
+  assigned_by: string
+  assigned_at: string
+  granted_at: string
+  expires_at: string
+  delivery_phase_before: 'PREPARED'
+  delivery_phase_after: 'ASSIGNED'
+}
+
+export interface AssignmentStudentConfirmedPayload {
+  business_session_id: string
+  session_id: string
+  assignment_id: string
+  grant_id: string
+  student_id: string
+  device_id: string
+  confirmed_by: string
+  identity_confirmation_method: SupportedAssignmentConfirmationMethod
+  confirmation_evidence?: AssignmentConfirmationEvidence | null
+  student_pin_verified: boolean
+  teacher_attested: boolean
+  confirmed_at: string
+  assignment_status_before: 'PENDING_CONFIRM'
+  assignment_status_after: 'ACTIVE'
+  delivery_phase_before: 'ASSIGNED'
+  delivery_phase_after: 'STUDENT_CONFIRMED'
+}
+
+export interface AssignmentAssessmentStartedPayload {
+  business_session_id: string
+  session_id: string
+  assignment_id: string
+  grant_id: string
+  student_id: string
+  device_id: string
+  first_question_id: string
+  first_question_order: number
+  started_at: string
+  delivery_phase_before: 'STUDENT_CONFIRMED'
+  delivery_phase_after: 'ONLINE_IN_PROGRESS'
+}
+
+export interface GrantReboundPayload {
+  business_session_id: string
+  session_id: string
+  assignment_id: string
+  student_id: string
+  device_id: string
+  old_grant_id: string
+  new_grant_id: string
+  old_device_runtime_session_id: string
+  new_device_runtime_session_id: string
+  teacher_auth_session_id: string
+  teacher_user_id: string
+  capabilities: AssignmentCapability[]
+  identity_confirmation_method: AssignmentConfirmationMethod
+  require_reconfirmation: boolean
+  assignment_version_before: number
+  assignment_version_after: number
+  assignment_status_before: BusinessSessionAssignmentStatus
+  assignment_status_after: 'PENDING_CONFIRM' | 'ACTIVE'
+  old_grant_status_after: 'EXPIRED'
+  new_grant_status: 'ACTIVE'
+  replaces_grant_id: string
+  student_confirmed_at_after?: string | null
+  delivery_phase_after: AssignmentDeliveryPhase
+  granted_at: string
+  expires_at: string
+  rebound_at: string
+}
+
+export interface AssignmentReleasedPayload {
+  business_session_id: string
+  session_id: string
+  assignment_id: string
+  grant_id: string
+  student_id: string
+  device_id: string
+  release_reason: AssignmentReleaseReason
+  released_by: string
+  released_at: string
+  assignment_status_before: BusinessSessionAssignmentStatus
+  assignment_status_after: 'RELEASED'
+  grant_status_before: AssignmentGrantStatus
+  grant_status_after: AssignmentGrantTerminalStatus
+  delivery_phase_at_release: AssignmentDeliveryPhase
 }
 
 export type AnswerPayloadDetail =
