@@ -1,5 +1,5 @@
 -- ============================================================================
--- 炫灿-职途向导系统 MVP schema.sql v0.1.14-multi-device-m2-session-foundation
+-- 炫灿-职途向导系统 MVP schema.sql v0.1.15-multi-device-m3-grant-assignment
 -- Architecture baseline:
 --   1. Lightweight event sourcing + SQLite projection.
 --   2. action_log.jsonl is the source of truth; SQLite is a query snapshot.
@@ -15,6 +15,12 @@
 --  12. JOB_SKILL_ASSESSMENT strategy supports fixed demo paper with M1-M6 modules.
 -- ----------------------------------------------------------------------------
 -- Merged from v0.1.10-scoring-closure + PRD v1.0.7 + v1.0.8 + v1.0.9.
+-- v0.1.15 patch notes (multi-device M3 — grant assignment foundation):
+--   Ref: doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md §6.2, §6.3, §7.5 D1/D9-D11
+--   1. assessment_session.delivery_phase now includes ASSIGNED and STUDENT_CONFIRMED.
+--   2. delegated_access_grant and business_session_assignment are now part of the full baseline.
+--   3. D1 enforces the full delivery_phase forward-only state machine.
+--   4. D9-D11 enforce grant self-consistency, assignment-grant consistency, and active assignment grant status.
 -- v0.1.14 patch notes (multi-device M2 — business session foundation):
 --   Ref: doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md §7.5 D2-D6/D8
 --   1. business_session parent table is now enforced for assessment/training child sessions.
@@ -228,6 +234,73 @@ CREATE INDEX IF NOT EXISTS idx_business_session_student_job_task
   ON business_session(student_id, job_code, task_code);
 
 -- ----------------------------------------------------------------------------
+-- 1d. Grant and assignment foundation (M3)
+-- ----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS delegated_access_grant (
+  grant_id                  TEXT PRIMARY KEY,
+  business_session_id       TEXT NOT NULL REFERENCES business_session(business_session_id),
+  teacher_auth_session_id   TEXT NOT NULL REFERENCES auth_session(auth_session_id),
+  teacher_user_id           TEXT NOT NULL REFERENCES user_account(user_id),
+  student_id                TEXT NOT NULL REFERENCES student_profile(student_id),
+  device_id                 TEXT NOT NULL REFERENCES device(device_id),
+  device_runtime_session_id TEXT NOT NULL REFERENCES device_runtime_session(device_runtime_session_id),
+  capabilities_json         TEXT NOT NULL CHECK (json_valid(capabilities_json)),
+  identity_confirmation_method TEXT CHECK (identity_confirmation_method IS NULL OR
+                               identity_confirmation_method IN ('PIN','TEACHER_ATTESTATION','PHOTO_MATCH','NONE_REQUIRED')),
+  confirmed_by              TEXT REFERENCES user_account(user_id),
+  confirmation_evidence     TEXT CHECK (confirmation_evidence IS NULL OR json_valid(confirmation_evidence)),
+  student_pin_verified      INTEGER NOT NULL DEFAULT 0 CHECK (student_pin_verified IN (0, 1)),
+  teacher_attested          INTEGER NOT NULL DEFAULT 0 CHECK (teacher_attested IN (0, 1)),
+  confirmed_at              TEXT,
+  status                    TEXT NOT NULL DEFAULT 'ACTIVE'
+                             CHECK (status IN ('ACTIVE','RELEASED','EXPIRED','REVOKED')),
+  replaces_grant_id         TEXT REFERENCES delegated_access_grant(grant_id),
+  granted_at                TEXT NOT NULL DEFAULT (datetime('now')),
+  released_at               TEXT,
+  release_reason            TEXT,
+  expires_at                TEXT NOT NULL,
+  created_at                TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at                TEXT NOT NULL DEFAULT (datetime('now')),
+  CHECK (replaces_grant_id IS NULL OR replaces_grant_id <> grant_id)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_grant_one_active_per_business_session
+  ON delegated_access_grant(business_session_id) WHERE status = 'ACTIVE';
+
+CREATE INDEX IF NOT EXISTS idx_grant_student_device_status
+  ON delegated_access_grant(student_id, device_id, status);
+
+CREATE TABLE IF NOT EXISTS business_session_assignment (
+  assignment_id             TEXT PRIMARY KEY,
+  business_session_id       TEXT NOT NULL REFERENCES business_session(business_session_id),
+  student_id                TEXT NOT NULL REFERENCES student_profile(student_id),
+  device_id                 TEXT NOT NULL REFERENCES device(device_id),
+  grant_id                  TEXT NOT NULL REFERENCES delegated_access_grant(grant_id),
+  assigned_by               TEXT NOT NULL REFERENCES user_account(user_id),
+  assigned_at               TEXT NOT NULL DEFAULT (datetime('now')),
+  student_confirmed_at      TEXT,
+  released_at               TEXT,
+  release_reason            TEXT CHECK (release_reason IS NULL OR release_reason IN (
+                               'COMPLETED','TEACHER_RELEASED','DEVICE_OFFLINE','REPLACED','ADMIN_REVOKED')),
+  replaces_assignment_id    TEXT REFERENCES business_session_assignment(assignment_id),
+  version                   INTEGER NOT NULL DEFAULT 1 CHECK (version >= 1),
+  status                    TEXT NOT NULL DEFAULT 'PENDING_CONFIRM'
+                             CHECK (status IN ('PENDING_CONFIRM','ACTIVE','RELEASED','VOID')),
+  created_at                TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at                TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_assignment_one_active_per_grant
+  ON business_session_assignment(grant_id) WHERE status IN ('PENDING_CONFIRM','ACTIVE');
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_assignment_one_active_per_session
+  ON business_session_assignment(business_session_id) WHERE status IN ('PENDING_CONFIRM','ACTIVE');
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_assignment_one_active_per_device
+  ON business_session_assignment(device_id) WHERE status IN ('PENDING_CONFIRM','ACTIVE');
+
+-- ----------------------------------------------------------------------------
 -- 2. Strategy configuration: scoring, question generation, thresholds
 -- ----------------------------------------------------------------------------
 
@@ -390,6 +463,7 @@ CREATE TABLE IF NOT EXISTS domain_event_projection (
                            'STUDENT_PROFILE',
                            'STRATEGY_CONFIG',
                            'QUESTION_BANK',
+                           'BUSINESS_SESSION',
                            'TASK_REPORT',
                            'SAFETY_INCIDENT',
                            'ASSET_RESOURCE',
@@ -451,6 +525,8 @@ CREATE TABLE IF NOT EXISTS assessment_session (
                                )),
   delivery_phase                TEXT CHECK (delivery_phase IS NULL OR delivery_phase IN (
                                  'PREPARED',
+                                 'ASSIGNED',
+                                 'STUDENT_CONFIRMED',
                                  'ONLINE_IN_PROGRESS',
                                  'ONLINE_COMPLETED',
                                  'OFFLINE_SCORING',
@@ -785,6 +861,35 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_training_business_session
 -- 9b. M2 business session and delivery phase guards (D2-D6, D8)
 -- ----------------------------------------------------------------------------
 
+CREATE TRIGGER IF NOT EXISTS trg_assessment_delivery_phase_forward_only
+BEFORE UPDATE OF delivery_phase ON assessment_session
+FOR EACH ROW
+WHEN OLD.delivery_phase IS NOT NULL AND NEW.delivery_phase IS NOT NULL
+  AND OLD.delivery_phase <> NEW.delivery_phase
+BEGIN
+  SELECT CASE
+    WHEN OLD.delivery_phase = 'FINALIZED' THEN
+      RAISE(ABORT, 'delivery_phase FINALIZED is terminal')
+    WHEN OLD.delivery_phase = 'READY_TO_FINALIZE' AND NEW.delivery_phase <> 'FINALIZED' THEN
+      RAISE(ABORT, 'READY_TO_FINALIZE can only advance to FINALIZED')
+    WHEN OLD.delivery_phase = 'OBSERVATION' AND NEW.delivery_phase <> 'READY_TO_FINALIZE' THEN
+      RAISE(ABORT, 'OBSERVATION can only advance to READY_TO_FINALIZE')
+    WHEN OLD.delivery_phase = 'OFFLINE_SCORING'
+      AND NEW.delivery_phase NOT IN ('OBSERVATION','READY_TO_FINALIZE') THEN
+      RAISE(ABORT, 'OFFLINE_SCORING can only advance to OBSERVATION or READY_TO_FINALIZE')
+    WHEN OLD.delivery_phase = 'ONLINE_COMPLETED' AND NEW.delivery_phase <> 'OFFLINE_SCORING' THEN
+      RAISE(ABORT, 'ONLINE_COMPLETED can only advance to OFFLINE_SCORING')
+    WHEN OLD.delivery_phase = 'ONLINE_IN_PROGRESS' AND NEW.delivery_phase <> 'ONLINE_COMPLETED' THEN
+      RAISE(ABORT, 'ONLINE_IN_PROGRESS can only advance to ONLINE_COMPLETED')
+    WHEN OLD.delivery_phase = 'STUDENT_CONFIRMED' AND NEW.delivery_phase <> 'ONLINE_IN_PROGRESS' THEN
+      RAISE(ABORT, 'STUDENT_CONFIRMED can only advance to ONLINE_IN_PROGRESS')
+    WHEN OLD.delivery_phase = 'ASSIGNED' AND NEW.delivery_phase <> 'STUDENT_CONFIRMED' THEN
+      RAISE(ABORT, 'ASSIGNED can only advance to STUDENT_CONFIRMED')
+    WHEN OLD.delivery_phase = 'PREPARED' AND NEW.delivery_phase <> 'ASSIGNED' THEN
+      RAISE(ABORT, 'PREPARED can only advance to ASSIGNED')
+  END;
+END;
+
 CREATE TRIGGER IF NOT EXISTS trg_assessment_delivery_phase_insert_prepared
 BEFORE INSERT ON assessment_session
 FOR EACH ROW WHEN NEW.delivery_phase IS NOT NULL AND NEW.delivery_phase <> 'PREPARED'
@@ -849,6 +954,54 @@ FOR EACH ROW
 WHEN OLD.session_type<>NEW.session_type OR OLD.student_id<>NEW.student_id
   OR OLD.job_code<>NEW.job_code OR OLD.task_code<>NEW.task_code
 BEGIN SELECT RAISE(ABORT, 'business_session key fields (session_type/student_id/job_code/task_code) are immutable'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_grant_self_consistency_insert
+BEFORE INSERT ON delegated_access_grant
+FOR EACH ROW
+WHEN NOT EXISTS (SELECT 1 FROM business_session bs WHERE bs.business_session_id=NEW.business_session_id AND bs.student_id=NEW.student_id)
+  OR NOT EXISTS (SELECT 1 FROM device_runtime_session drs WHERE drs.device_runtime_session_id=NEW.device_runtime_session_id AND drs.device_id=NEW.device_id)
+  OR NOT EXISTS (SELECT 1 FROM auth_session au WHERE au.auth_session_id=NEW.teacher_auth_session_id AND au.user_id=NEW.teacher_user_id AND au.status='ACTIVE' AND au.expires_at > datetime('now'))
+BEGIN SELECT RAISE(ABORT, 'grant self-consistency: student/business_session, device/runtime, teacher/auth must match and auth ACTIVE unexpired'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_grant_self_consistency_update
+BEFORE UPDATE OF business_session_id, student_id, device_id, device_runtime_session_id, teacher_auth_session_id, teacher_user_id ON delegated_access_grant
+FOR EACH ROW
+WHEN NOT EXISTS (SELECT 1 FROM business_session bs WHERE bs.business_session_id=NEW.business_session_id AND bs.student_id=NEW.student_id)
+  OR NOT EXISTS (SELECT 1 FROM device_runtime_session drs WHERE drs.device_runtime_session_id=NEW.device_runtime_session_id AND drs.device_id=NEW.device_id)
+  OR NOT EXISTS (SELECT 1 FROM auth_session au WHERE au.auth_session_id=NEW.teacher_auth_session_id AND au.user_id=NEW.teacher_user_id AND au.status='ACTIVE' AND au.expires_at > datetime('now'))
+BEGIN SELECT RAISE(ABORT, 'grant self-consistency violation on update'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_assignment_grant_consistency_insert
+BEFORE INSERT ON business_session_assignment
+FOR EACH ROW
+WHEN NOT EXISTS (SELECT 1 FROM delegated_access_grant g WHERE g.grant_id=NEW.grant_id
+    AND g.student_id=NEW.student_id AND g.device_id=NEW.device_id AND g.business_session_id=NEW.business_session_id)
+  OR NOT (NEW.assigned_by=(SELECT teacher_user_id FROM delegated_access_grant WHERE grant_id=NEW.grant_id)
+    OR EXISTS (SELECT 1 FROM user_account u WHERE u.user_id=NEW.assigned_by AND u.role='ADMIN' AND u.status='ACTIVE'))
+BEGIN SELECT RAISE(ABORT, 'assignment must match grant (student/device/business_session) and assigned_by must be grant teacher or ACTIVE ADMIN'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_assignment_grant_consistency_update
+BEFORE UPDATE OF grant_id, student_id, device_id, business_session_id, assigned_by ON business_session_assignment
+FOR EACH ROW
+WHEN NOT EXISTS (SELECT 1 FROM delegated_access_grant g WHERE g.grant_id=NEW.grant_id
+    AND g.student_id=NEW.student_id AND g.device_id=NEW.device_id AND g.business_session_id=NEW.business_session_id)
+  OR NOT (NEW.assigned_by=(SELECT teacher_user_id FROM delegated_access_grant WHERE grant_id=NEW.grant_id)
+    OR EXISTS (SELECT 1 FROM user_account u WHERE u.user_id=NEW.assigned_by AND u.role='ADMIN' AND u.status='ACTIVE'))
+BEGIN SELECT RAISE(ABORT, 'assignment-grant consistency violation on update'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_assignment_active_requires_active_grant_insert
+BEFORE INSERT ON business_session_assignment
+FOR EACH ROW
+WHEN NEW.status IN ('PENDING_CONFIRM','ACTIVE')
+  AND NOT EXISTS (SELECT 1 FROM delegated_access_grant g WHERE g.grant_id=NEW.grant_id AND g.status='ACTIVE')
+BEGIN SELECT RAISE(ABORT, 'active assignment must reference an ACTIVE grant'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_assignment_active_requires_active_grant_update
+BEFORE UPDATE OF status, grant_id ON business_session_assignment
+FOR EACH ROW
+WHEN NEW.status IN ('PENDING_CONFIRM','ACTIVE')
+  AND NOT EXISTS (SELECT 1 FROM delegated_access_grant g WHERE g.grant_id=NEW.grant_id AND g.status='ACTIVE')
+BEGIN SELECT RAISE(ABORT, 'active assignment must reference an ACTIVE grant'); END;
 
 CREATE TABLE IF NOT EXISTS training_step_record (
   training_step_record_id      TEXT PRIMARY KEY,
@@ -2013,8 +2166,13 @@ INSERT OR IGNORE INTO schema_migration (
   '2026-07-15_mvp_schema_v0_1_14_multi_device_m2_session_foundation',
   '0.1.14-multi-device-m2-session-foundation',
   'Full baseline: v0.1.12 MVP closure + M1 identity/topology + M2 business session foundation'
+),
+(
+  '2026-07-15_mvp_schema_v0_1_15_multi_device_m3_grant_assignment',
+  '0.1.15-multi-device-m3-grant-assignment',
+  'M3: grant assignment tables and delivery phase forward-only guards'
 );
 
 -- ============================================================================
--- End of schema.sql v0.1.14-multi-device-m2-session-foundation
+-- End of schema.sql v0.1.15-multi-device-m3-grant-assignment
 -- ============================================================================

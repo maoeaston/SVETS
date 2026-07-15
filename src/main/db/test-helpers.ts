@@ -25,6 +25,8 @@ export type AssessmentFixtureStatus =
 
 export type AssessmentFixtureDeliveryPhase =
   | 'PREPARED'
+  | 'ASSIGNED'
+  | 'STUDENT_CONFIRMED'
   | 'ONLINE_IN_PROGRESS'
   | 'ONLINE_COMPLETED'
   | 'OFFLINE_SCORING'
@@ -217,6 +219,48 @@ function resolveAssessmentDeliveryPhase(
   return 'PREPARED'
 }
 
+const ASSESSMENT_PHASE_ADVANCE_ORDER: AssessmentFixtureDeliveryPhase[] = [
+  'PREPARED',
+  'ASSIGNED',
+  'STUDENT_CONFIRMED',
+  'ONLINE_IN_PROGRESS',
+  'ONLINE_COMPLETED',
+  'OFFLINE_SCORING',
+  'OBSERVATION',
+  'READY_TO_FINALIZE',
+  'FINALIZED'
+]
+
+function advanceAssessmentDeliveryPhaseFixture(
+  db: DBAdapter,
+  sessionId: string,
+  targetPhase: AssessmentFixtureDeliveryPhase | null,
+  finalStatus: AssessmentFixtureStatus
+): void {
+  if (targetPhase === null) {
+    db.prepare(
+      'UPDATE assessment_session SET status = ?, delivery_phase = NULL WHERE session_id = ?'
+    ).run(finalStatus, sessionId)
+    return
+  }
+
+  const targetIndex = ASSESSMENT_PHASE_ADVANCE_ORDER.indexOf(targetPhase)
+  if (targetIndex < 0) {
+    throw new Error(`unknown assessment delivery_phase fixture target: ${targetPhase}`)
+  }
+
+  for (let i = 1; i < targetIndex; i++) {
+    db.prepare('UPDATE assessment_session SET delivery_phase = ? WHERE session_id = ?').run(
+      ASSESSMENT_PHASE_ADVANCE_ORDER[i],
+      sessionId
+    )
+  }
+
+  db.prepare(
+    'UPDATE assessment_session SET status = ?, delivery_phase = ? WHERE session_id = ?'
+  ).run(finalStatus, targetPhase, sessionId)
+}
+
 /**
  * 直接插入 assessment_session 的测试夹具。M2 列存在时自动写：
  * business_session_id=session_id、event_sequence_version=0，以及合理 delivery_phase。
@@ -306,9 +350,7 @@ export function setAssessmentSessionStateFixture(
 ): void {
   if (columnExists(db, 'assessment_session', 'delivery_phase')) {
     const phase = resolveAssessmentDeliveryPhase(status, deliveryPhase)
-    db.prepare(
-      'UPDATE assessment_session SET status = ?, delivery_phase = ? WHERE session_id = ?'
-    ).run(status, phase, sessionId)
+    advanceAssessmentDeliveryPhaseFixture(db, sessionId, phase, status)
     return
   }
   db.prepare('UPDATE assessment_session SET status = ? WHERE session_id = ?').run(status, sessionId)

@@ -20,9 +20,215 @@ function seedSystemEvent(eventId: string): void {
   ).run(eventId, eventId)
 }
 
+function schemaObjectExists(type: 'table' | 'index' | 'trigger', name: string): boolean {
+  const row = db
+    .prepare('SELECT 1 AS present FROM sqlite_master WHERE type = ? AND name = ?')
+    .get(type, name) as { present: number } | undefined
+  return Boolean(row)
+}
+
+function seedM3Topology() {
+  const teacherId = seedCaller(db, 'TEACHER')
+  const studentId = seedStudent(db)
+  db.prepare("INSERT INTO organization (organization_id, name) VALUES ('org_m3', 'M3 Org')").run()
+  db.prepare(
+    `INSERT INTO node (node_id, organization_id, node_name)
+     VALUES ('node_m3', 'org_m3', 'M3 Node')`
+  ).run()
+  db.prepare(
+    `INSERT INTO device (device_id, node_id, device_name, device_role, trust_state)
+     VALUES ('device_m3', 'node_m3', 'M3 Device', 'STUDENT_WORKSTATION', 'TRUSTED')`
+  ).run()
+  db.prepare(
+    `INSERT INTO device_runtime_session (device_runtime_session_id, device_id)
+     VALUES ('runtime_m3', 'device_m3')`
+  ).run()
+  db.prepare(
+    `INSERT INTO auth_session
+       (auth_session_id, user_id, device_runtime_session_id, auth_method, capabilities_json,
+        token_hash, expires_at, status)
+     VALUES ('auth_teacher_m3', ?, 'runtime_m3', 'PASSWORD', '[]',
+             'token_teacher_m3', datetime('now', '+1 day'), 'ACTIVE')`
+  ).run(teacherId)
+  const sessionId = seedAssessmentSessionFixture(db, {
+    sessionId: 'assessment_m3',
+    studentId,
+    strategyId: 'strategy_baseline_shelver_v1',
+    status: 'INIT',
+    createdBy: teacherId
+  })
+  return { teacherId, studentId, sessionId }
+}
+
+function insertGrant(over: Partial<{
+  grantId: string
+  businessSessionId: string
+  teacherAuthSessionId: string
+  teacherUserId: string
+  studentId: string
+  deviceId: string
+  runtimeId: string
+  status: string
+}> = {}): void {
+  db.prepare(
+    `INSERT INTO delegated_access_grant
+       (grant_id, business_session_id, teacher_auth_session_id, teacher_user_id,
+        student_id, device_id, device_runtime_session_id, capabilities_json, status, expires_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, '[]', ?, datetime('now', '+1 day'))`
+  ).run(
+    over.grantId ?? 'grant_m3',
+    over.businessSessionId ?? 'assessment_m3',
+    over.teacherAuthSessionId ?? 'auth_teacher_m3',
+    over.teacherUserId ?? '',
+    over.studentId ?? '',
+    over.deviceId ?? 'device_m3',
+    over.runtimeId ?? 'runtime_m3',
+    over.status ?? 'ACTIVE'
+  )
+}
+
 describe('schema v0.1.10 scoring closure constraints', () => {
   beforeEach(async () => {
     db = await createTestDb()
+  })
+
+  it('m3 schema baseline loads grant assignment objects and passes sqlite integrity checks', () => {
+    expect(db.prepare('PRAGMA foreign_key_check').all()).toEqual([])
+    const integrity = db.prepare('PRAGMA integrity_check').get() as Record<string, string>
+    expect(Object.values(integrity)).toContain('ok')
+
+    expect(
+      db
+        .prepare(
+          "SELECT 1 AS present FROM schema_migration WHERE migration_id = '2026-07-15_mvp_schema_v0_1_15_multi_device_m3_grant_assignment'"
+        )
+        .get()
+    ).toBeTruthy()
+
+    for (const table of ['delegated_access_grant', 'business_session_assignment']) {
+      expect(schemaObjectExists('table', table)).toBe(true)
+    }
+    for (const index of [
+      'ux_grant_one_active_per_business_session',
+      'idx_grant_student_device_status',
+      'ux_assignment_one_active_per_grant',
+      'ux_assignment_one_active_per_session',
+      'ux_assignment_one_active_per_device'
+    ]) {
+      expect(schemaObjectExists('index', index)).toBe(true)
+    }
+    for (const trigger of [
+      'trg_assessment_delivery_phase_forward_only',
+      'trg_grant_self_consistency_insert',
+      'trg_grant_self_consistency_update',
+      'trg_assignment_grant_consistency_insert',
+      'trg_assignment_grant_consistency_update',
+      'trg_assignment_active_requires_active_grant_insert',
+      'trg_assignment_active_requires_active_grant_update'
+    ]) {
+      expect(schemaObjectExists('trigger', trigger)).toBe(true)
+    }
+  })
+
+  it('m3 delivery_phase enum allows assignment phases and D1 blocks illegal jumps', () => {
+    const teacherId = seedCaller(db, 'TEACHER')
+    const studentId = seedStudent(db)
+    seedAssessmentSessionFixture(db, {
+      sessionId: 'phase_assigned',
+      studentId,
+      strategyId: 'strategy_baseline_shelver_v1',
+      taskCode: 'phase-assigned-task',
+      status: 'INIT',
+      createdBy: teacherId
+    })
+
+    expect(() => {
+      db.prepare("UPDATE assessment_session SET delivery_phase = 'ASSIGNED' WHERE session_id = 'phase_assigned'").run()
+      db.prepare(
+        "UPDATE assessment_session SET delivery_phase = 'STUDENT_CONFIRMED' WHERE session_id = 'phase_assigned'"
+      ).run()
+    }).not.toThrow()
+
+    seedAssessmentSessionFixture(db, {
+      sessionId: 'phase_prepared_jump',
+      studentId,
+      strategyId: 'strategy_baseline_shelver_v1',
+      taskCode: 'phase-prepared-jump-task',
+      status: 'INIT',
+      createdBy: teacherId
+    })
+    expect(() => {
+      db.prepare(
+        "UPDATE assessment_session SET delivery_phase = 'ONLINE_IN_PROGRESS' WHERE session_id = 'phase_prepared_jump'"
+      ).run()
+    }).toThrow(/PREPARED can only advance to ASSIGNED/)
+
+    seedAssessmentSessionFixture(db, {
+      sessionId: 'phase_assigned_jump',
+      studentId,
+      strategyId: 'strategy_baseline_shelver_v1',
+      taskCode: 'phase-assigned-jump-task',
+      status: 'INIT',
+      createdBy: teacherId
+    })
+    db.prepare("UPDATE assessment_session SET delivery_phase = 'ASSIGNED' WHERE session_id = 'phase_assigned_jump'").run()
+    expect(() => {
+      db.prepare(
+        "UPDATE assessment_session SET delivery_phase = 'ONLINE_IN_PROGRESS' WHERE session_id = 'phase_assigned_jump'"
+      ).run()
+    }).toThrow(/ASSIGNED can only advance to STUDENT_CONFIRMED/)
+
+    seedAssessmentSessionFixture(db, {
+      sessionId: 'phase_finalized',
+      studentId,
+      strategyId: 'strategy_baseline_shelver_v1',
+      taskCode: 'phase-finalized-task',
+      status: 'COMPLETED',
+      createdBy: teacherId
+    })
+    expect(() => {
+      db.prepare("UPDATE assessment_session SET delivery_phase = 'OBSERVATION' WHERE session_id = 'phase_finalized'").run()
+    }).toThrow(/FINALIZED|COMPLETED/)
+
+    expect(() => {
+      db.prepare("UPDATE assessment_session SET delivery_phase = 'INVALID_PHASE' WHERE session_id = 'phase_assigned'").run()
+    }).toThrow()
+  })
+
+  it('m3 grant and assignment triggers reject inconsistent rows', () => {
+    const { teacherId, studentId } = seedM3Topology()
+    const otherStudentId = seedStudent(db, { studentName: '其他学生' })
+
+    expect(() => {
+      insertGrant({
+        grantId: 'grant_bad_student',
+        teacherUserId: teacherId,
+        studentId: otherStudentId
+      })
+    }).toThrow(/grant self-consistency/)
+
+    insertGrant({ grantId: 'grant_active_m3', teacherUserId: teacherId, studentId })
+    expect(() => {
+      db.prepare(
+        `INSERT INTO business_session_assignment
+           (assignment_id, business_session_id, student_id, device_id, grant_id, assigned_by, status)
+         VALUES ('assignment_bad_actor', 'assessment_m3', ?, 'device_m3', 'grant_active_m3', ?, 'PENDING_CONFIRM')`
+      ).run(studentId, studentId)
+    }).toThrow(/assigned_by/)
+
+    insertGrant({
+      grantId: 'grant_expired_m3',
+      teacherUserId: teacherId,
+      studentId,
+      status: 'EXPIRED'
+    })
+    expect(() => {
+      db.prepare(
+        `INSERT INTO business_session_assignment
+           (assignment_id, business_session_id, student_id, device_id, grant_id, assigned_by, status)
+         VALUES ('assignment_inactive_grant', 'assessment_m3', ?, 'device_m3', 'grant_expired_m3', ?, 'PENDING_CONFIRM')`
+      ).run(studentId, teacherId)
+    }).toThrow(/ACTIVE grant/)
   })
 
   it('offline_score_record requires score_scope and separates offline ability from task operation', () => {
