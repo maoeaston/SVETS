@@ -68,6 +68,23 @@
           </td>
           <td>{{ formatTime(row.startedAt ?? row.createdAt) }}</td>
           <td class="col-action">
+            <!-- M3 INIT + PREPARED：教师手动分配给学生 -->
+            <button
+              v-if="row.status === 'INIT' && row.deliveryPhase === 'PREPARED'"
+              class="btn-inline btn-assign"
+              :disabled="actingSessionId === row.sessionId"
+              @click="handleAssign(row.businessSessionId, row.sessionId)"
+            >
+              分配给学生
+            </button>
+            <!-- M3 INIT + 已分配但学生未确认 -->
+            <span
+              v-else-if="row.status === 'INIT' && (row.deliveryPhase === 'ASSIGNED' || row.deliveryPhase === 'STUDENT_CONFIRMED')"
+              class="muted"
+            >
+              {{ row.deliveryPhase === 'ASSIGNED' ? '待学生确认' : '待学生开始' }}
+            </span>
+
             <!-- JOB_SKILL OFFLINE_PENDING：线下评分 + 观察录入 -->
             <template v-if="row.status === 'OFFLINE_PENDING' && row.strategyType === 'JOB_SKILL_ASSESSMENT'">
               <RouterLink
@@ -254,6 +271,18 @@ function statusTagClass(s: SessionStatus): string {
 
 function formatTime(iso: string): string {
   return iso.replace('T', ' ').slice(0, 16)
+}
+
+async function handleAssign(businessSessionId: string, sessionId: string): Promise<void> {
+  if (!auth.userId || !auth.role) return
+  actingSessionId.value = sessionId
+  const result = await store.createAssignment(auth.userId, auth.role, businessSessionId)
+  actingSessionId.value = null
+  if (!result.ok) {
+    errorMsg.value = store.mapAssignmentError(result.errorCode)
+    return
+  }
+  await fetchList()
 }
 
 async function handleResume(sessionId: string): Promise<void> {
@@ -474,6 +503,10 @@ onMounted(() => {
 .btn-abort {
   color: #b45309;
   border-color: #fcd34d;
+}
+.btn-assign {
+  color: #1d4ed8;
+  border-color: #93c5fd;
 }
 .btn-redline {
   color: #dc2626;

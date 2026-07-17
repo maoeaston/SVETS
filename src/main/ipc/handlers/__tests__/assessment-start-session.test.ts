@@ -476,6 +476,18 @@ describe('assessment:listMySessions', () => {
     expect(ids).toContain(sid2)
   })
 
+  it('未分配 session 的 assignmentId/assignmentStatus 为 null（LEFT JOIN 空安全）', () => {
+    const { sessionId } = setupSession()
+
+    const result = listMySessions(db, baseListMyParams())
+    expect(result.success).toBe(true)
+    if (!result.success) return
+    const item = result.items.find((i) => i.sessionId === sessionId)
+    expect(item).toBeDefined()
+    expect(item?.assignmentId).toBeNull()
+    expect(item?.assignmentStatus).toBeNull()
+  })
+
   it('不返回终态 session（COMPLETED/ABORTED/REDLINE_HALTED）', () => {
     const { sessionId } = setupSession()
     // 强制改 COMPLETED

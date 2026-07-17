@@ -60,8 +60,25 @@
           </div>
         </div>
         <div class="card-actions">
+          <!-- M3：分配给学生、待学生确认 -->
           <button
-            v-if="canContinue(row.status)"
+            v-if="row.deliveryPhase === 'ASSIGNED' && row.assignmentId"
+            class="btn-primary"
+            :disabled="actingSessionId === row.sessionId"
+            @click="handleConfirmAndStart(row.assignmentId!, row.sessionId)"
+          >
+            确认并开始
+          </button>
+          <!-- 等待教师分配（PREPARED 阶段或无 assignment） -->
+          <span
+            v-else-if="row.status === 'INIT' && (row.deliveryPhase === 'PREPARED' || !row.assignmentId)"
+            class="muted"
+          >
+            等待教师分配
+          </span>
+          <!-- 已有开放 session 可继续 -->
+          <button
+            v-else-if="canContinue(row.status)"
             class="btn-primary"
             @click="goContinue(row.sessionId)"
           >
@@ -90,6 +107,7 @@ const store = useAssessmentStore()
 
 const loading = ref(false)
 const errorMsg = ref('')
+const actingSessionId = ref<string | null>(null)
 
 const items = computed<SessionListItem[]>(() => store.sessionList)
 
@@ -110,6 +128,19 @@ async function fetchList(): Promise<void> {
 function canContinue(status: SessionStatus): boolean {
   // 仅 ACTIVE 可继续；EMOTION_INTERRUPTED 显示按钮但点击会跳转到答题页（学生端会看到"暂停中"提示）
   return status === 'ACTIVE' || status === 'EMOTION_INTERRUPTED'
+}
+
+async function handleConfirmAndStart(assignmentId: string, sessionId: string): Promise<void> {
+  if (!auth.userId || !auth.role) return
+  actingSessionId.value = sessionId
+  errorMsg.value = ''
+  const result = await store.confirmAndStartAssignment(auth.userId, auth.role, assignmentId)
+  actingSessionId.value = null
+  if (!result.ok) {
+    errorMsg.value = store.mapAssignmentError(result.errorCode)
+    return
+  }
+  void router.push(`/student/assessment/${result.sessionId}`)
 }
 
 function goContinue(sessionId: string): void {

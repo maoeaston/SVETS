@@ -1761,6 +1761,8 @@ interface SessionListJoinRow {
   task_code: string
   status: string
   delivery_phase: string | null
+  assignment_id: string | null
+  assignment_status: string | null
   event_sequence_version: number
   observation_template_id: string | null
   online_question_count: number
@@ -1771,6 +1773,35 @@ interface SessionListJoinRow {
   last_interruption_reason: string | null
   created_at: string
   started_at: string | null
+}
+
+/** SessionListJoinRow → SessionListItem 映射（listSessions / listMySessions 共用）。 */
+function mapSessionListRow(r: SessionListJoinRow): SessionListItem {
+  return {
+    sessionId: r.session_id,
+    businessSessionId: r.business_session_id,
+    studentId: r.student_id,
+    studentName: r.student_name,
+    strategyId: r.strategy_id,
+    strategyType: r.strategy_type as AssessmentStrategyType,
+    strategyVersion: r.strategy_version,
+    jobCode: r.job_code,
+    taskCode: r.task_code,
+    status: r.status as SessionStatus,
+    deliveryPhase: r.delivery_phase as DeliveryPhase | null,
+    assignmentId: r.assignment_id,
+    assignmentStatus: r.assignment_status as SessionListItem['assignmentStatus'],
+    eventSequenceVersion: r.event_sequence_version,
+    observationTemplateId: r.observation_template_id,
+    onlineQuestionCount: r.online_question_count,
+    onlineCompletedCount: r.online_completed_count,
+    currentQuestionId: r.current_question_id,
+    pauseCount: r.pause_count,
+    redlineIncidentId: r.redline_incident_id,
+    lastInterruptionReason: r.last_interruption_reason,
+    createdAt: r.created_at,
+    startedAt: r.started_at
+  }
 }
 
 /**
@@ -1980,13 +2011,17 @@ export function listSessions(db: DBAdapter, params: ListSessionsParams): ListSes
   const selectClause = `SELECT s.session_id, s.student_id, sp.student_name,
               s.strategy_id, s.strategy_type, s.strategy_version,
               s.business_session_id, s.job_code, s.task_code, s.status,
-              s.delivery_phase, s.event_sequence_version, s.observation_template_id,
+              s.delivery_phase, bsa.assignment_id, bsa.status AS assignment_status,
+              s.event_sequence_version, s.observation_template_id,
               s.online_question_count, s.online_completed_count,
               s.current_question_id, s.pause_count,
               s.redline_incident_id, s.last_interruption_reason,
               s.updated_at AS created_at, s.started_at
          FROM assessment_session s
-         JOIN student_profile sp ON sp.student_id = s.student_id`
+         JOIN student_profile sp ON sp.student_id = s.student_id
+         LEFT JOIN business_session_assignment bsa
+                ON bsa.business_session_id = s.business_session_id
+               AND bsa.status IN ('PENDING_CONFIRM', 'ACTIVE')`
   const orderClause = `ORDER BY s.updated_at DESC`
 
   const rows = params.studentId
@@ -1997,29 +2032,7 @@ export function listSessions(db: DBAdapter, params: ListSessionsParams): ListSes
         .prepare(`${selectClause} WHERE ${statusWhere} ${orderClause}`)
         .all(...OPEN_SESSION_STATUSES) as SessionListJoinRow[])
 
-  const items: SessionListItem[] = rows.map((r) => ({
-    sessionId: r.session_id,
-    businessSessionId: r.business_session_id,
-    studentId: r.student_id,
-    studentName: r.student_name,
-    strategyId: r.strategy_id,
-    strategyType: r.strategy_type as AssessmentStrategyType,
-    strategyVersion: r.strategy_version,
-    jobCode: r.job_code,
-    taskCode: r.task_code,
-    status: r.status as SessionStatus,
-    deliveryPhase: r.delivery_phase as DeliveryPhase | null,
-    eventSequenceVersion: r.event_sequence_version,
-    observationTemplateId: r.observation_template_id,
-    onlineQuestionCount: r.online_question_count,
-    onlineCompletedCount: r.online_completed_count,
-    currentQuestionId: r.current_question_id,
-    pauseCount: r.pause_count,
-    redlineIncidentId: r.redline_incident_id,
-    lastInterruptionReason: r.last_interruption_reason,
-    createdAt: r.created_at,
-    startedAt: r.started_at
-  }))
+  const items: SessionListItem[] = rows.map(mapSessionListRow)
 
   const result: ListSessionsSuccess = { success: true, items }
   return result
@@ -2174,41 +2187,23 @@ export function listMySessions(db: DBAdapter, params: ListMySessionsParams): Lis
       `SELECT s.session_id, s.student_id, sp.student_name,
               s.strategy_id, s.strategy_type, s.strategy_version,
               s.business_session_id, s.job_code, s.task_code, s.status,
-              s.delivery_phase, s.event_sequence_version, s.observation_template_id,
+              s.delivery_phase, bsa.assignment_id, bsa.status AS assignment_status,
+              s.event_sequence_version, s.observation_template_id,
               s.online_question_count, s.online_completed_count,
               s.current_question_id, s.pause_count,
               s.redline_incident_id, s.last_interruption_reason,
               s.updated_at AS created_at, s.started_at
          FROM assessment_session s
          JOIN student_profile sp ON sp.student_id = s.student_id
+         LEFT JOIN business_session_assignment bsa
+                ON bsa.business_session_id = s.business_session_id
+               AND bsa.status IN ('PENDING_CONFIRM', 'ACTIVE')
         WHERE s.student_id = ? AND s.status IN (${placeholders})
         ORDER BY s.updated_at DESC`
     )
     .all(stu.row.user_id, ...OPEN_SESSION_STATUSES) as SessionListJoinRow[]
 
-  const items: SessionListItem[] = rows.map((r) => ({
-    sessionId: r.session_id,
-    businessSessionId: r.business_session_id,
-    studentId: r.student_id,
-    studentName: r.student_name,
-    strategyId: r.strategy_id,
-    strategyType: r.strategy_type as AssessmentStrategyType,
-    strategyVersion: r.strategy_version,
-    jobCode: r.job_code,
-    taskCode: r.task_code,
-    status: r.status as SessionStatus,
-    deliveryPhase: r.delivery_phase as DeliveryPhase | null,
-    eventSequenceVersion: r.event_sequence_version,
-    observationTemplateId: r.observation_template_id,
-    onlineQuestionCount: r.online_question_count,
-    onlineCompletedCount: r.online_completed_count,
-    currentQuestionId: r.current_question_id,
-    pauseCount: r.pause_count,
-    redlineIncidentId: r.redline_incident_id,
-    lastInterruptionReason: r.last_interruption_reason,
-    createdAt: r.created_at,
-    startedAt: r.started_at
-  }))
+  const items: SessionListItem[] = rows.map(mapSessionListRow)
 
   const result: ListMySessionsSuccess = { success: true, items }
   return result

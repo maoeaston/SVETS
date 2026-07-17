@@ -5,6 +5,7 @@
 
 import type { AbilityTag } from './json-schemas'
 import type { AnswerPayloadDetail } from './event-payloads'
+import type { BusinessSessionAssignmentStatus } from './assignment'
 
 export type { AnswerPayloadDetail }
 
@@ -177,6 +178,10 @@ export interface SessionListItem {
   taskCode: string
   status: SessionStatus
   deliveryPhase: DeliveryPhase | null
+  // M3：该 session 当前非终态 assignment（PENDING_CONFIRM/ACTIVE）的 id 与状态；
+  // 无 assignment（PREPARED 未分配）或已释放/作废时为 null。学生确认+启动、教师判断是否已分配依赖此字段。
+  assignmentId: string | null
+  assignmentStatus: BusinessSessionAssignmentStatus | null
   eventSequenceVersion: number
   observationTemplateId: string | null
   onlineQuestionCount: number

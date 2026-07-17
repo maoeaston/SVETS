@@ -68,6 +68,7 @@ import {
   releaseAssignment,
   startAssignedAssessment
 } from '../assignment'
+import { listMySessions } from '../assessment'
 import {
   baseStrategyInput,
   createTestDb,
@@ -307,6 +308,19 @@ describe('assignment IPC handler', () => {
       delivery_phase: 'ONLINE_IN_PROGRESS',
       current_question_id: firstQuestionId
     })
+  })
+
+  it('listMySessions 暴露 assignmentId + assignmentStatus（供学生端确认/启动）', () => {
+    const created = createAssignment(db, baseCreateParams())
+    if (!created.success) throw new Error(`createAssignment failed: ${JSON.stringify(created)}`)
+
+    const listed = listMySessions(db, { callerUserId: studentId, callerRole: 'STUDENT' })
+    expect(listed.success).toBe(true)
+    if (!listed.success) return
+    const row = listed.items.find((i) => i.sessionId === sessionId)
+    expect(row).toBeDefined()
+    expect(row?.assignmentId).toBe(created.assignmentId)
+    expect(row?.assignmentStatus).toBe('PENDING_CONFIRM')
   })
 
   it('拒绝非教师创建、非活跃 runtime、过期 auth 和不支持的确认方式', () => {

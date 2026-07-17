@@ -32,6 +32,7 @@ import type {
   AssessmentErrorCode,
   AnswerPayloadDetail
 } from '@shared/types/assessment'
+import type { AssignmentErrorCode } from '@shared/types/assignment'
 
 export const useAssessmentStore = defineStore('assessment', () => {
   const currentSession = ref<SessionDetail | null>(null)
@@ -336,6 +337,97 @@ export const useAssessmentStore = defineStore('assessment', () => {
     errorMsg.value = ''
   }
 
+  /** AssignmentErrorCode → 中文消息。 */
+  function mapAssignmentError(code: AssignmentErrorCode | string): string {
+    const map: Record<string, string> = {
+      FORBIDDEN: '无权限',
+      NOT_FOUND: '分配记录不存在',
+      VALIDATION_ERROR: '参数有误',
+      ASSIGNMENT_REQUIRED: '需要教师分配后才能开始测评',
+      STUDENT_CONFIRMATION_REQUIRED: '需完成学生确认后才能开始测评',
+      ASSIGNMENT_NOT_ACTIVE: '分配记录已失效',
+      DEVICE_RUNTIME_NOT_ACTIVE: '设备运行时未就绪，请重新打开应用后重试',
+      GRANT_AUTH_INVALID: '授权失效，请刷新后重试',
+      UNSUPPORTED_CONFIRMATION_METHOD: '不支持的确认方式',
+      ASSIGNMENT_CONFLICT: '该测评已存在进行中的分配，请稍后重试',
+      ASSIGNMENT_SYSTEM_ERROR: '系统异常，请重试'
+    }
+    return map[code] ?? '操作失败'
+  }
+
+  /**
+   * 教师手动分配：将 PREPARED 会话分配给学生。
+   * 成功后调用方应刷新教师列表（由 view 层决定，store 不自动刷新）。
+   */
+  async function createAssignment(
+    callerUserId: string,
+    callerRole: string,
+    businessSessionId: string
+  ): Promise<{ ok: true; assignmentId: string } | { ok: false; errorCode: AssignmentErrorCode | string }> {
+    errorMsg.value = ''
+    try {
+      const res = await window.api.assignment.create({
+        callerUserId,
+        callerRole,
+        businessSessionId,
+        confirmationMethod: 'NONE_REQUIRED'
+      })
+      if (!res.success) {
+        errorMsg.value = mapAssignmentError(res.errorCode)
+        return { ok: false, errorCode: res.errorCode }
+      }
+      return { ok: true, assignmentId: res.assignmentId }
+    } catch (err) {
+      console.error('[assessment store] createAssignment failed:', err)
+      errorMsg.value = '系统异常，请重试'
+      return { ok: false, errorCode: 'ASSIGNMENT_SYSTEM_ERROR' }
+    }
+  }
+
+  /**
+   * 学生一键确认并启动测评（confirmStudent → startAssessment）。
+   * 成功后返回 sessionId + firstQuestionId，供 view 层跳转答题页。
+   * view 层跳转后由 loadSession 填充 currentSession / currentQuestion。
+   */
+  async function confirmAndStartAssignment(
+    callerUserId: string,
+    callerRole: string,
+    assignmentId: string
+  ): Promise<
+    | { ok: true; sessionId: string; firstQuestionId: string }
+    | { ok: false; errorCode: AssignmentErrorCode | string }
+  > {
+    errorMsg.value = ''
+    try {
+      const confirmed = await window.api.assignment.confirmStudent({
+        callerUserId,
+        callerRole,
+        assignmentId,
+        confirmationMethod: 'NONE_REQUIRED'
+      })
+      if (!confirmed.success) {
+        errorMsg.value = mapAssignmentError(confirmed.errorCode)
+        return { ok: false, errorCode: confirmed.errorCode }
+      }
+
+      const started = await window.api.assignment.startAssessment({
+        callerUserId,
+        callerRole,
+        assignmentId
+      })
+      if (!started.success) {
+        errorMsg.value = mapAssignmentError(started.errorCode)
+        return { ok: false, errorCode: started.errorCode }
+      }
+
+      return { ok: true, sessionId: started.sessionId, firstQuestionId: started.firstQuestionId }
+    } catch (err) {
+      console.error('[assessment store] confirmAndStartAssignment failed:', err)
+      errorMsg.value = '系统异常，请重试'
+      return { ok: false, errorCode: 'ASSIGNMENT_SYSTEM_ERROR' }
+    }
+  }
+
   return {
     currentSession,
     currentQuestion,
@@ -354,7 +446,10 @@ export const useAssessmentStore = defineStore('assessment', () => {
     emotionResume,
     calculateResult,
     clearCurrent,
-    mapError
+    mapError,
+    createAssignment,
+    confirmAndStartAssignment,
+    mapAssignmentError
   }
 })
 
