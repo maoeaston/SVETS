@@ -28,13 +28,25 @@ function validateSource(source, reasons) {
   }
 }
 
+/**
+ * 读交互配置：v1.2 结构把 options/items/zones 存在 content.interaction.config（运行时权威路径），
+ * 顶层字段为测试兼容 fallback（与 assessment.ts 读取顺序一致）。
+ */
+function interactionConfig(content) {
+  return isRecord(content.interaction) && isRecord(content.interaction.config)
+    ? content.interaction.config
+    : {}
+}
+
 function validateAbilityTags(content, moduleType, reasons) {
   if (!Array.isArray(content.ability_tags) || content.ability_tags.length === 0) {
     reasons.push('content_json.ability_tags must be a non-empty array')
     return
   }
 
-  if (!content.ability_tags.includes(moduleType)) {
+  // module_type 列为 null 时（JOB_SPECIFIC 域，模块归属在 job_module_code），
+  // ability_tags 承载基础能力构念，不要求含 null；仅 BASE_ABILITY（module_type 非空）校验包含关系。
+  if (moduleType != null && !content.ability_tags.includes(moduleType)) {
     reasons.push(`content_json.ability_tags must include module_type ${moduleType}`)
   }
 }
@@ -45,9 +57,17 @@ function validateQuestionType(content, questionType, reasons) {
   }
 }
 
-function validateScoringRule(scoringRule, questionType, reasons) {
+function validateScoringRule(scoringRule, questionType, itemUsage, reasons) {
   if (!isRecord(scoringRule)) {
     reasons.push('scoring_rule_json must be an object')
+    return
+  }
+
+  // 观察项（OBSERVATION_ONLY）不计分：scoring_type 必须为 NO_SCORE（与转换器一致），跳过题型评分校验。
+  if (itemUsage === 'OBSERVATION_ONLY') {
+    if (scoringRule.scoring_type !== 'NO_SCORE') {
+      reasons.push('OBSERVATION_ONLY scoring_type must be NO_SCORE')
+    }
     return
   }
 
@@ -60,11 +80,19 @@ function validateScoringRule(scoringRule, questionType, reasons) {
   }
 
   if (questionType === 'DRAG') {
-    if (scoringRule.scoring_type !== 'DRAG_PARTIAL') reasons.push('scoring_type must be DRAG_PARTIAL')
-    if (scoringRule.max_score !== 2) reasons.push('max_score must be 2 for DRAG_PARTIAL')
-    if (scoringRule.all_correct_score !== 2) reasons.push('all_correct_score must be 2 for DRAG_PARTIAL')
-    if (scoringRule.partial_correct_score !== 0) reasons.push('partial_correct_score must be 0 for DRAG_PARTIAL')
-    if (scoringRule.incorrect_score !== 0) reasons.push('incorrect_score must be 0 for DRAG_PARTIAL')
+    // v1.2 DRAG：ORDERING→ORDER_MATCH（correct_order），DRAG_DROP→MAPPING_MATCH（correct_mapping）。
+    if (scoringRule.scoring_type === 'ORDER_MATCH') {
+      if (!Array.isArray(scoringRule.correct_order) || scoringRule.correct_order.length === 0) {
+        reasons.push('correct_order must be a non-empty array for ORDER_MATCH')
+      }
+    } else if (scoringRule.scoring_type === 'MAPPING_MATCH') {
+      if (!isRecord(scoringRule.correct_mapping) || Object.keys(scoringRule.correct_mapping).length === 0) {
+        reasons.push('correct_mapping must be a non-empty object for MAPPING_MATCH')
+      }
+    } else {
+      reasons.push('scoring_type must be ORDER_MATCH or MAPPING_MATCH for DRAG')
+    }
+    if (scoringRule.max_score !== 2) reasons.push('max_score must be 2 for DRAG')
     return
   }
 
@@ -84,9 +112,13 @@ function validateScoringRule(scoringRule, questionType, reasons) {
   }
 }
 
-function validateTrueFalseContent(content, reasons) {
-  if (typeof content.expected_answer !== 'boolean') {
-    reasons.push('TRUE_FALSE expected_answer must be boolean')
+function validateTrueFalseContent(content, scoringRule, reasons) {
+  // 正确答案读 scoring_rule_json.correct_answer（运行时权威），顶层 expected_answer 为测试兼容 fallback
+  const expected = isRecord(scoringRule) && scoringRule.correct_answer != null
+    ? scoringRule.correct_answer
+    : content.expected_answer
+  if (typeof expected !== 'boolean') {
+    reasons.push('TRUE_FALSE correct_answer must be boolean')
   }
   if (content.variants != null) {
     if (!Array.isArray(content.variants)) {
@@ -105,14 +137,21 @@ function validateTrueFalseContent(content, reasons) {
   }
 }
 
-function validateSingleChoiceContent(content, reasons) {
-  if (!Array.isArray(content.options) || content.options.length < 2) {
+function validateSingleChoiceContent(content, scoringRule, reasons) {
+  // options 读 interaction.config（运行时权威），顶层为测试兼容 fallback
+  const cfg = interactionConfig(content)
+  const options = Array.isArray(cfg.options)
+    ? cfg.options
+    : Array.isArray(content.options)
+      ? content.options
+      : null
+  if (!options || options.length < 2) {
     reasons.push('SINGLE_CHOICE options must have at least 2 items')
     return
   }
 
   const keys = new Set()
-  for (const [index, option] of content.options.entries()) {
+  for (const [index, option] of options.entries()) {
     if (!isRecord(option)) {
       reasons.push(`options[${index}] must be an object`)
       continue
@@ -127,44 +166,70 @@ function validateSingleChoiceContent(content, reasons) {
     keys.add(option.key)
   }
 
-  if (typeof content.expected_answer !== 'string' || !keys.has(content.expected_answer)) {
-    reasons.push('SINGLE_CHOICE expected_answer must match options[].key')
+  // 正确答案读 scoring_rule_json.correct_answer（运行时权威），顶层 expected_answer 为测试兼容 fallback
+  const expected = isRecord(scoringRule) && scoringRule.correct_answer != null
+    ? scoringRule.correct_answer
+    : content.expected_answer
+  if (typeof expected !== 'string' || !keys.has(expected)) {
+    reasons.push('SINGLE_CHOICE correct_answer must match options[].key')
   }
 }
 
 function validateDragContent(content, reasons) {
-  if (!Array.isArray(content.drag_items) || !Array.isArray(content.drop_zones)) {
-    reasons.push('DRAG drag_items and drop_zones must be arrays')
+  // items/zones 读 interaction.config（运行时权威），顶层为测试兼容 fallback。
+  // v1.2 两种 DRAG 交互：ORDERING（仅 items，正确顺序在 scoring_rule.correct_order）
+  // 与 DRAG_DROP（items + zones，正确映射在 zone.accepts）。
+  const cfg = interactionConfig(content)
+  const items = Array.isArray(cfg.items)
+    ? cfg.items
+    : Array.isArray(content.drag_items)
+      ? content.drag_items
+      : null
+  if (!items) {
+    reasons.push('DRAG items must be an array')
     return
   }
   const itemIds = new Set()
-  for (const [index, item] of content.drag_items.entries()) {
+  for (const [index, item] of items.entries()) {
     if (!isRecord(item)) {
-      reasons.push(`drag_items[${index}] must be an object`)
+      reasons.push(`items[${index}] must be an object`)
       continue
     }
     if (typeof item.item_id !== 'string' || item.item_id.length === 0) {
-      reasons.push(`drag_items[${index}].item_id must be a non-empty string`)
+      reasons.push(`items[${index}].item_id must be a non-empty string`)
       continue
     }
     if (itemIds.has(item.item_id)) {
-      reasons.push(`drag_items[${index}].item_id must be unique`)
+      reasons.push(`items[${index}].item_id must be unique`)
     }
     itemIds.add(item.item_id)
   }
 
-  for (const [zoneIndex, zone] of content.drop_zones.entries()) {
-    if (!isRecord(zone)) {
-      reasons.push(`drop_zones[${zoneIndex}] must be an object`)
-      continue
+  const zones = Array.isArray(cfg.zones)
+    ? cfg.zones
+    : Array.isArray(content.drop_zones)
+      ? content.drop_zones
+      : null
+  const isOrdering = isRecord(content.interaction) && content.interaction.type === 'ORDERING'
+  if (!isOrdering) {
+    // DRAG_DROP：必须有 zones 且每个 zone.accepts 引用已知 item
+    if (!zones) {
+      reasons.push('DRAG_DROP zones must be an array')
+      return
     }
-    if (!Array.isArray(zone.accepts) || zone.accepts.length === 0) {
-      reasons.push(`drop_zones[${zoneIndex}].accepts must be a non-empty array`)
-      continue
-    }
-    for (const accepted of zone.accepts) {
-      if (!itemIds.has(accepted)) {
-        reasons.push(`drop_zones[${zoneIndex}].accepts contains unknown item_id ${accepted}`)
+    for (const [zoneIndex, zone] of zones.entries()) {
+      if (!isRecord(zone)) {
+        reasons.push(`zones[${zoneIndex}] must be an object`)
+        continue
+      }
+      if (!Array.isArray(zone.accepts) || zone.accepts.length === 0) {
+        reasons.push(`zones[${zoneIndex}].accepts must be a non-empty array`)
+        continue
+      }
+      for (const accepted of zone.accepts) {
+        if (!itemIds.has(accepted)) {
+          reasons.push(`zones[${zoneIndex}].accepts contains unknown item_id ${accepted}`)
+        }
       }
     }
   }
@@ -192,14 +257,18 @@ function collectAssetIds(question, content) {
     }
   }
 
-  if (Array.isArray(content.options)) {
-    for (const option of content.options) {
+  // options/items 优先读 interaction.config（v1.2 权威），顶层为测试兼容 fallback
+  const cfg = interactionConfig(content)
+  const optionList = Array.isArray(cfg.options) ? cfg.options : content.options
+  if (Array.isArray(optionList)) {
+    for (const option of optionList) {
       if (option?.image_asset_id) ids.push(option.image_asset_id)
     }
   }
 
-  if (Array.isArray(content.drag_items)) {
-    for (const item of content.drag_items) {
+  const itemList = Array.isArray(cfg.items) ? cfg.items : content.drag_items
+  if (Array.isArray(itemList)) {
+    for (const item of itemList) {
       if (item?.image_asset_id) ids.push(item.image_asset_id)
     }
   }
@@ -263,9 +332,9 @@ function reviewSingleQuestion(question, assetsById) {
     validateOnlineRubricText(content, question.question_type, reasons)
 
     if (question.question_type === 'TRUE_FALSE') {
-      validateTrueFalseContent(content, reasons)
+      validateTrueFalseContent(content, scoringRule, reasons)
     } else if (question.question_type === 'SINGLE_CHOICE') {
-      validateSingleChoiceContent(content, reasons)
+      validateSingleChoiceContent(content, scoringRule, reasons)
     } else if (question.question_type === 'DRAG') {
       validateDragContent(content, reasons)
     } else if (question.question_type === 'OFFLINE_OPERATION') {
@@ -276,7 +345,7 @@ function reviewSingleQuestion(question, assetsById) {
   }
 
   if (scoringRule) {
-    validateScoringRule(scoringRule, question.question_type, reasons)
+    validateScoringRule(scoringRule, question.question_type, question.item_usage, reasons)
   }
 
   return {

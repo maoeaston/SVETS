@@ -87,9 +87,11 @@ describe('ability_tags 清洗', () => {
     })
   })
 
-  it('端到端：mapImportRow 输出的 content_json.ability_tags 已清洗', () => {
+  it('端到端：mapImportRow 输出的 content_json.ability_tags 已清洗并按 module_type 回填', () => {
+    // 源 ability_tags=["0"] 先清洗为 []，再按行 module_type（RULE_EXECUTION）回填，
+    // 保证上线门禁要求的“非空且含本题基础能力构念”。
     const mapped = mapImportRow(makeRawRow())
-    expect(mapped.content_json.ability_tags).toEqual([])
+    expect(mapped.content_json.ability_tags).toEqual(['RULE_EXECUTION'])
     expect(mapped.cleaning_log).toContain('ability_tags_cleaned')
   })
 })

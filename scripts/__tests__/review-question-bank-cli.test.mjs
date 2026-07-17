@@ -62,6 +62,7 @@ async function createTempDb() {
     CREATE TABLE question_bank (
       question_id TEXT PRIMARY KEY,
       module_type TEXT NOT NULL,
+      item_usage TEXT NOT NULL DEFAULT 'SCORED_ITEM',
       question_type TEXT NOT NULL,
       status TEXT NOT NULL,
       media_asset_id TEXT,

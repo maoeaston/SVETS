@@ -168,16 +168,21 @@ export function migrateRubricScoringRule(oldScoringRule, isObservation) {
   if (isObservation) {
     return { scoring_type: 'NO_SCORE' }
   }
+  const score0 = oldScoringRule.score_0_description ?? '未能完成'
+  const score1 = oldScoringRule.score_1_description ?? '部分完成'
+  const score2 = oldScoringRule.score_2_description ?? '完全达标'
   return {
     scoring_type: 'OFFLINE_RUBRIC',
     max_score: 2,
+    // score_labels：顶层三档锚点，与运行时 validate-scoring-rule-json.ts 及上线门禁契约一致。
+    score_labels: { 0: score0, 1: score1, 2: score2 },
     criteria: [
       {
         criterion_id: 'r1',
         description: '综合操作达标度',
-        score_0: oldScoringRule.score_0_description ?? '未能完成',
-        score_1: oldScoringRule.score_1_description ?? '部分完成',
-        score_2: oldScoringRule.score_2_description ?? '完全达标'
+        score_0: score0,
+        score_1: score1,
+        score_2: score2
       }
     ],
     rubric_anchor_status: 'PENDING'
@@ -213,12 +218,19 @@ function buildReviewBlock(isObservation) {
   }
 }
 
-/** §3.4 source 块：保留导入溯源 + 解析 549 池原题号 + 旧 job_code/question_id 追溯。 */
-function buildSourceBlock({ oldSource, legacyQuestionId, transformation }) {
+/**
+ * §3.4 source 块：保留导入溯源 + 解析 549 池原题号 + 旧 job_code/question_id 追溯。
+ * source_row/imported_at/imported_by 为上线门禁（question-bank-review-gate）后加的溯源字段，
+ * 由导入执行器（question-bank-import.mjs）在映射时注入。
+ */
+function buildSourceBlock({ oldSource, legacyQuestionId, transformation, sourceRow, importedAt, importedBy }) {
   const sourceRef = oldSource?.source_ref ?? null
   return {
     import_batch_id: 'batch_reimport_v012',
     source_file: '专业岗位能力测评题库-M1-M6-数据库导出-298条.json',
+    source_row: sourceRow,
+    imported_at: importedAt,
+    imported_by: importedBy,
     source_ref: sourceRef,
     origin_refs: sourceRef ? [sourceRef] : [],
     source_ref_549: extract549Ref(sourceRef),
@@ -292,11 +304,24 @@ function buildOfflineOperationContent(base, oldContent, isObservation, variantTy
  * 单条 content_json 重构入口。返回 { contentJson, cleaningLog }。
  * cleaningLog 记录本条命中的清洗规则（供 dry-run §6.2 汇总统计）。
  */
-export function rebuildContentJson(oldContent, { questionId, isObservation }) {
+export function rebuildContentJson(
+  oldContent,
+  { questionId, isObservation, moduleType, sourceRow, importedAt, importedBy }
+) {
   const cleaningLog = []
 
-  const { tags: abilityTags, cleaned: tagsCleaned } = cleanAbilityTags(oldContent.ability_tags)
+  const { tags: cleanedTags, cleaned: tagsCleaned } = cleanAbilityTags(oldContent.ability_tags)
   if (tagsCleaned) cleaningLog.push('ability_tags_cleaned')
+
+  // ability_tags 回填：源题 ability_tags 常为脏值（["0"]/["1"]）或缺本行模块。
+  // 运行时组卷用 question_bank.module_type/job_module_code 列，不读 ability_tags；
+  // 但上线门禁要求 ability_tags 非空且含本题模块的基础能力构念（旧 module_type 即合法 AbilityTag）。
+  // 按裁决（转换器按 module_type 回填）：确保 moduleType 在 ability_tags 内。
+  let abilityTags = cleanedTags
+  if (moduleType && VALID_ABILITY_TAGS.has(moduleType) && !abilityTags.includes(moduleType)) {
+    abilityTags = [moduleType, ...abilityTags]
+    if (!tagsCleaned) cleaningLog.push('ability_tags_backfilled')
+  }
 
   const { note, cleaned: noteCleaned } = cleanNote(oldContent.note)
   if (noteCleaned) cleaningLog.push('note_status_cleaned')
@@ -324,7 +349,10 @@ export function rebuildContentJson(oldContent, { questionId, isObservation }) {
     source: buildSourceBlock({
       oldSource: oldContent.source,
       legacyQuestionId: questionId,
-      transformation: isVideoTransformed ? 'VIDEO_TO_IMAGE_CARD' : null
+      transformation: isVideoTransformed ? 'VIDEO_TO_IMAGE_CARD' : null,
+      sourceRow,
+      importedAt,
+      importedBy
     })
   }
 
@@ -362,7 +390,8 @@ export function rebuildContentJson(oldContent, { questionId, isObservation }) {
  * 将旧库一行（298条.json 的原始记录）转换为 v0.1.12 question_bank 行 + 清洗日志。
  * 抛错时抛出 IMP_E001~E006（§8），调用方应终止整体导入。
  */
-export function mapImportRow(rawRow) {
+export function mapImportRow(rawRow, ctx = {}) {
+  const { sourceRow = 1, importedAt = new Date().toISOString(), importedBy = 'system_import' } = ctx
   const questionId = rawRow.question_id
   if (!questionId) {
     throw new Error('[IMP_E001] question row missing question_id')
@@ -401,7 +430,14 @@ export function mapImportRow(rawRow) {
   const isObservation = isObservationItem(questionId, oldContent.prompt)
   const itemUsage = isObservation ? 'OBSERVATION_ONLY' : 'SCORED_ITEM'
 
-  const { contentJson, cleaningLog } = rebuildContentJson(oldContent, { questionId, isObservation })
+  const { contentJson, cleaningLog } = rebuildContentJson(oldContent, {
+    questionId,
+    isObservation,
+    moduleType: rawRow.module_type,
+    sourceRow,
+    importedAt,
+    importedBy
+  })
 
   const correctedExpectedAnswer = Object.prototype.hasOwnProperty.call(CORRECTED_ANSWER_KEYS, questionId)
     ? CORRECTED_ANSWER_KEYS[questionId]

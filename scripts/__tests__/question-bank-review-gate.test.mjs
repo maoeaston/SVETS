@@ -1,5 +1,8 @@
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { buildActivateEligibleSql, reviewQuestionBankRows } from '../lib/question-bank-review-gate.mjs'
+import { mapImportRow } from '../lib/question-bank-import.mjs'
 
 function buildTrueFalseRow(overrides = {}) {
   return {
@@ -84,29 +87,52 @@ describe('question-bank review gate', () => {
     expect(report.items[0].reasons.join('\n')).toMatch(/question_type/i)
   })
 
-  it('DRAG partial_correct_score=1 时失败', () => {
+  function buildDragDropRow(overrides = {}) {
+    return buildTrueFalseRow({
+      question_id: 'Q_BASE_FINE_MOTOR_DRAG_001',
+      module_type: 'FINE_MOTOR',
+      question_type: 'DRAG',
+      content_json: JSON.stringify({
+        question_type: 'DRAG',
+        prompt: '将商品拖到正确位置',
+        assessment_point: '货架分类认知',
+        ability_tags: ['FINE_MOTOR'],
+        // v1.2：items/zones 在 interaction.config（运行时权威路径）
+        interaction: {
+          type: 'DRAG_DROP',
+          config: {
+            items: [{ item_id: 'item_1', label: '牛奶', image_asset_id: 'asset_img_safety_001' }],
+            zones: [{ zone_id: 'zone_1', label: '冷藏区', accepts: ['item_1'] }]
+          }
+        },
+        source: {
+          import_batch_id: 'batch_20260704_001',
+          source_file: '通用基础能力评估题库.xlsx',
+          source_row: 30,
+          imported_at: '2026-07-04T01:00:00.000Z',
+          imported_by: 'codex'
+        }
+      }),
+      scoring_rule_json: JSON.stringify({
+        scoring_type: 'MAPPING_MATCH',
+        max_score: 2,
+        correct_mapping: { item_1: 'zone_1' },
+        all_correct_score: 2,
+        partial_credit: false
+      }),
+      ...overrides
+    })
+  }
+
+  it('合格 DRAG_DROP 题（interaction.config + MAPPING_MATCH）通过审核', () => {
+    const report = reviewQuestionBankRows([buildDragDropRow()], { assetsById: ACTIVE_ASSETS })
+    expect(report.items[0].status).toBe('ELIGIBLE')
+  })
+
+  it('DRAG scoring_type 非 ORDER_MATCH/MAPPING_MATCH 时失败', () => {
     const report = reviewQuestionBankRows(
       [
-        buildTrueFalseRow({
-          question_id: 'Q_BASE_FINE_MOTOR_DRAG_001',
-          module_type: 'FINE_MOTOR',
-          question_type: 'DRAG',
-          content_json: JSON.stringify({
-            question_type: 'DRAG',
-            prompt: '将商品拖到正确位置',
-            assessment_point: '货架分类认知',
-            ability_tags: ['FINE_MOTOR'],
-            drag_items: [{ item_id: 'item_1', label: '牛奶', image_asset_id: 'asset_img_safety_001' }],
-            drop_zones: [{ zone_id: 'zone_1', label: '冷藏区', accepts: ['item_1'] }],
-            scoring_mode: 'ALL_OR_NOTHING',
-            source: {
-              import_batch_id: 'batch_20260704_001',
-              source_file: '通用基础能力评估题库.xlsx',
-              source_row: 30,
-              imported_at: '2026-07-04T01:00:00.000Z',
-              imported_by: 'codex'
-            }
-          }),
+        buildDragDropRow({
           scoring_rule_json: JSON.stringify({
             scoring_type: 'DRAG_PARTIAL',
             max_score: 2,
@@ -120,7 +146,7 @@ describe('question-bank review gate', () => {
     )
 
     expect(report.items[0].status).toBe('BLOCKED')
-    expect(report.items[0].reasons.join('\n')).toMatch(/partial_correct_score/i)
+    expect(report.items[0].reasons.join('\n')).toMatch(/ORDER_MATCH or MAPPING_MATCH/i)
   })
 
   it('引用不存在 asset 时失败', () => {
@@ -217,5 +243,37 @@ describe('question-bank review gate', () => {
     expect(sql).toContain('UPDATE question_bank SET status = \'ACTIVE\'')
     expect(sql).toContain('Q_BASE_SAFETY_OPERATION_TF_001')
     expect(sql).not.toContain('Q_BASE_SAFETY_OPERATION_TF_002')
+  })
+
+  // 防漂移：转换器（question-bank-import）产物必须整体通过上线门禁。
+  // 二者若再次分叉（如一方改了 content_json 结构而另一方未跟上），本测试立即失败。
+  it('转换器产物整体通过门禁（母题库 298 条契约锁定）', () => {
+    const sourcePath = fileURLToPath(
+      new URL('../../doc/reference/专业岗位能力测评题库-M1-M6-数据库导出-298条.json', import.meta.url)
+    )
+    const rawRows = JSON.parse(readFileSync(sourcePath, 'utf-8'))
+    const rows = rawRows.map((raw, i) => {
+      const m = mapImportRow(raw, {
+        sourceRow: i + 1,
+        importedAt: '2026-07-16T00:00:00.000Z',
+        importedBy: 'question-bank-import'
+      })
+      return {
+        question_id: m.question_id,
+        module_type: m.module_type,
+        item_usage: m.item_usage,
+        question_type: m.question_type,
+        status: 'DRAFT',
+        media_asset_id: m.media_asset_id,
+        tool_asset_ids_json: m.tool_asset_ids_json,
+        content_json: JSON.stringify(m.content_json),
+        scoring_rule_json: JSON.stringify(m.scoring_rule_json)
+      }
+    })
+    // assetsById 传空：母题库题目 media_brief 待补素材，尚无 asset 引用（assets:[]），
+    // 故资产校验不产生引用；若未来补入 asset 引用需同步提供 assetsById。
+    const report = reviewQuestionBankRows(rows, { assetsById: {} })
+    expect(report.checked).toBe(298)
+    expect(report.blocked).toBe(0)
   })
 })

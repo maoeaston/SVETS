@@ -83,7 +83,7 @@ function extractImportBatchId(contentJsonText) {
 function loadDraftQuestionRows(db, batchId) {
   const rows = queryAll(
     db,
-    `SELECT question_id, module_type, question_type, status, media_asset_id, tool_asset_ids_json, content_json, scoring_rule_json
+    `SELECT question_id, module_type, item_usage, question_type, status, media_asset_id, tool_asset_ids_json, content_json, scoring_rule_json
      FROM question_bank
      WHERE status = 'DRAFT'
      ORDER BY question_id`
