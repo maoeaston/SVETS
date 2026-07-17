@@ -358,6 +358,79 @@ describe('database migrations', () => {
     db.close()
   })
 
+  it('preserves baseline assessment_session triggers across the M3 table rebuild', async () => {
+    const db = await createMigratedM2Database()
+    // 真实旧库的 assessment_session 上挂着基线 schema.sql 触发器（redline/safety/no_delete 等），
+    // 这些不在 M2 白名单里。M3 为扩 delivery_phase CHECK 重建整表时必须原样保留它们。
+    db.exec(`
+      CREATE TRIGGER trg_assessment_session_no_delete
+      BEFORE DELETE ON assessment_session
+      FOR EACH ROW
+      BEGIN
+        SELECT RAISE(ABORT, 'assessment_session cannot be deleted');
+      END;
+      CREATE TRIGGER trg_assessment_session_no_terminal_status_change
+      BEFORE UPDATE OF status ON assessment_session
+      FOR EACH ROW
+      WHEN OLD.status IN ('COMPLETED', 'REDLINE_HALTED', 'ABORTED')
+           AND NEW.status <> OLD.status
+      BEGIN
+        SELECT RAISE(ABORT, 'assessment_session terminal status cannot be changed');
+      END;
+    `)
+
+    expect(runDatabaseMigrations(db)).toEqual([CURRENT_MIGRATION_ID])
+
+    expect(
+      db.prepare(`
+        SELECT COUNT(*) AS count FROM sqlite_master
+         WHERE type = 'trigger'
+           AND name IN ('trg_assessment_session_no_delete', 'trg_assessment_session_no_terminal_status_change')
+      `).get()
+    ).toMatchObject({ count: 2 })
+    // 恢复后的触发器仍生效：删除被拒。
+    expect(() => db.prepare("DELETE FROM assessment_session WHERE session_id = 'a-m2'").run())
+      .toThrow('assessment_session cannot be deleted')
+    expectDatabaseIntegrity(db)
+    assertCurrentDatabaseSchema(db)
+    db.close()
+  })
+
+  it('keeps external triggers whose body references assessment_session pointing at the rebuilt table', async () => {
+    const db = await createMigratedM2Database()
+    // 真实旧库里有定义在别的表、但 body 引用 assessment_session 的触发器
+    // （如 trg_safety_incident_bind_open_assessments）。M3 重建整表时用 ALTER TABLE
+    // RENAME；默认 legacy_alter_table=OFF 会把这类外部触发器 body 里的表名一起改写成
+    // 临时旧表名，旧表 DROP 后触发器悬空、后续写入报 "no such table"。
+    db.exec(`
+      CREATE TABLE probe_source (probe_id TEXT PRIMARY KEY, student_id TEXT NOT NULL);
+      CREATE TABLE probe_hit (probe_id TEXT PRIMARY KEY);
+      CREATE TRIGGER trg_probe_touch_assessment
+      AFTER INSERT ON probe_source
+      FOR EACH ROW
+      BEGIN
+        INSERT INTO probe_hit (probe_id)
+        SELECT NEW.probe_id FROM assessment_session s WHERE s.student_id = NEW.student_id LIMIT 1;
+      END;
+    `)
+
+    expect(runDatabaseMigrations(db)).toEqual([CURRENT_MIGRATION_ID])
+
+    // 触发器 body 仍应引用真实表名，不带临时后缀。
+    const triggerSql = db
+      .prepare("SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = 'trg_probe_touch_assessment'")
+      .get() as { sql: string } | undefined
+    expect(triggerSql?.sql).toContain('FROM assessment_session s')
+    expect(triggerSql?.sql).not.toContain('__m3_')
+    // 外部触发器仍能对重建后的表正常执行，不再报 no such table。
+    expect(() => db.prepare("INSERT INTO probe_source (probe_id, student_id) VALUES ('p1', 's1')").run()).not.toThrow()
+    expect(db.prepare("SELECT COUNT(*) AS count FROM probe_hit WHERE probe_id = 'p1'").get())
+      .toMatchObject({ count: 1 })
+    expectDatabaseIntegrity(db)
+    assertCurrentDatabaseSchema(db)
+    db.close()
+  })
+
   it('records a missing M3 ledger row only when the full M3 structure is already present and valid', async () => {
     const db = await MemoryAdapter.create()
     const schema = readFileSync(resolve(process.cwd(), 'src/main/db/schema.sql'), 'utf8')

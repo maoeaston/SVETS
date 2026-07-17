@@ -820,23 +820,6 @@ function existingAssessmentIndexSql(database: DBAdapter): string[] {
   return rows.map((row) => row.sql)
 }
 
-function assertNoUnknownAssessmentTriggers(database: DBAdapter): void {
-  const allowed = new Set(M2_TRIGGERS.filter((triggerName) => triggerName.includes('assessment_')))
-  const rows = database
-    .prepare(`
-      SELECT name
-        FROM sqlite_master
-       WHERE type = 'trigger'
-         AND tbl_name = 'assessment_session'
-       ORDER BY name
-    `)
-    .all() as Array<{ name: string }>
-  const unknown = rows.map((row) => row.name).filter((name) => !allowed.has(name))
-  if (unknown.length > 0) {
-    throw new Error(`[DB] Unexpected assessment_session triggers before M3 rebuild: ${unknown.join(', ')}`)
-  }
-}
-
 function selectSnapshotRows(database: DBAdapter, tableName: string, preferredColumns: string[]): unknown[] {
   const columns = columnNames(database, tableName)
   const selected = preferredColumns.filter((column) => columns.has(column))
@@ -857,8 +840,20 @@ function replaceCreateTableName(sql: string, fromName: string, toName: string): 
   )
 }
 
+function existingAssessmentTriggers(database: DBAdapter): Array<{ name: string; sql: string }> {
+  return database
+    .prepare(`
+      SELECT name, sql
+        FROM sqlite_master
+       WHERE type = 'trigger'
+         AND tbl_name = 'assessment_session'
+         AND sql IS NOT NULL
+       ORDER BY name
+    `)
+    .all() as Array<{ name: string; sql: string }>
+}
+
 function rebuildAssessmentSessionForM3(database: DBAdapter): void {
-  assertNoUnknownAssessmentTriggers(database)
   const originalSql = sqliteObjectSql(database, 'table', 'assessment_session')
   if (!originalSql) throw new Error('[DB] assessment_session table is missing before M3 rebuild')
 
@@ -886,17 +881,16 @@ function rebuildAssessmentSessionForM3(database: DBAdapter): void {
     'event_sequence_version'
   ])
   const indexes = existingAssessmentIndexSql(database)
+  // 重建表会连同表一起丢弃其上全部触发器（基线 schema + M2）。捕获全部触发器 DDL，
+  // 重建后原样恢复，避免静默丢失基线 redline/safety/strategy 触发器。
+  const triggers = existingAssessmentTriggers(database)
   const columns = Array.from(columnNames(database, 'assessment_session'))
   const columnList = columns.join(', ')
   const createNewSql = replaceCreateTableName(nextSql, 'assessment_session', 'assessment_session__m3_new')
 
+  const dropTriggers = triggers.map((trigger) => `DROP TRIGGER ${trigger.name};`).join('\n')
   database.exec(`
-DROP TRIGGER trg_assessment_delivery_phase_insert_prepared;
-DROP TRIGGER trg_assessment_delivery_phase_frozen_on_abnormal;
-DROP TRIGGER trg_assessment_finalized_completed_consistency_insert;
-DROP TRIGGER trg_assessment_finalized_completed_consistency_update;
-DROP TRIGGER trg_assessment_business_session_consistency_insert;
-DROP TRIGGER trg_assessment_business_session_consistency_update;
+${dropTriggers}
 ALTER TABLE assessment_session RENAME TO assessment_session__m3_old;
 ${createNewSql};
 INSERT INTO assessment_session__m3_new (${columnList})
@@ -906,10 +900,16 @@ ALTER TABLE assessment_session__m3_new RENAME TO assessment_session;
 `)
 
   for (const indexSql of indexes) database.exec(indexSql)
-  for (const triggerName of M2_TRIGGERS.filter((name) => name.includes('assessment_'))) {
-    const triggerSql = M2_TRIGGER_SQL_BY_NAME.get(triggerName)
-    if (!triggerSql) throw new Error(`[DB] Missing M2 trigger SQL for ${triggerName}`)
-    database.exec(triggerSql)
+  for (const trigger of triggers) database.exec(trigger.sql)
+
+  const restoredTriggerNames = new Set(
+    existingAssessmentTriggers(database).map((trigger) => trigger.name)
+  )
+  const missing = triggers
+    .map((trigger) => trigger.name)
+    .filter((name) => !restoredTriggerNames.has(name))
+  if (missing.length > 0) {
+    throw new Error(`[DB] M3 rebuild failed to restore assessment_session triggers: ${missing.join(', ')}`)
   }
 
   const afterCount = database
@@ -1116,6 +1116,11 @@ export function runDatabaseMigrations(
 
     if (migration.rebuildsReferencedTables) {
       database.exec('PRAGMA foreign_keys = OFF;')
+      // 表重建会 RENAME 旧表。默认 legacy_alter_table=OFF 时，RENAME 会自动改写
+      // 其它对象（含定义在别的表、body 引用本表的触发器与视图）里的旧表名引用，
+      // 导致这些外部对象在旧表 DROP 后悬空。开启 legacy_alter_table 关闭该改写，
+      // 这是 SQLite 官方文档针对表重建流程推荐的做法。
+      database.exec('PRAGMA legacy_alter_table = ON;')
       try {
         database.exec('BEGIN;')
         ensureMigrationTable(database)
@@ -1134,6 +1139,7 @@ export function runDatabaseMigrations(
         }
         throw error
       } finally {
+        database.exec('PRAGMA legacy_alter_table = OFF;')
         database.exec('PRAGMA foreign_keys = ON;')
       }
     } else {
