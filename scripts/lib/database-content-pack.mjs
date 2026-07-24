@@ -32,7 +32,14 @@ export const contentPack = JSON.parse(
 )
 
 const schemaPath = join(projectRoot, 'src', 'main', 'db', 'schema.sql')
-const managedAssetRoles = ['QUESTION_MEDIA', 'UI_ASSET', 'TOOL_CHECKLIST']
+const managedAssetRoles = [
+  'QUESTION_MEDIA',
+  'UI_ASSET',
+  'TOOL_CHECKLIST',
+  'ROLE_PLAY_SCRIPT',
+  'SEALED_ADMIN_CONFIG',
+  'OFFLINE_SETUP_GUIDE'
+]
 const seededStrategyIds = [
   'strategy_baseline_shelver_v1',
   'strategy_mock_shelver_v1',
@@ -217,20 +224,72 @@ function digest(value) {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex')
 }
 
+function digestFile(path) {
+  return `sha256:${createHash('sha256').update(readFileSync(path)).digest('hex')}`
+}
+
+function verifyJobSkillRuntimeContract() {
+  const contract = contentPack.jobSkillRuntimeContract
+  if (!contract) throw new Error('内容包缺少 jobSkillRuntimeContract')
+  const authorityPath = join(projectRoot, contract.authorityPath)
+  const deliveryLockPath = join(projectRoot, contract.deliveryLockPath)
+  const activationGatePath = join(projectRoot, contract.activationGatePath)
+  const questionContract = contentPack.questionContracts.find((item) => item.domain === 'JOB_SPECIFIC')
+  if (!questionContract) throw new Error('内容包缺少 JOB_SPECIFIC question contract')
+  const sqlPath = join(projectRoot, questionContract.path)
+
+  const pinned = [
+    [authorityPath, contract.authorityFileSha256, 'runtime authority'],
+    [deliveryLockPath, contract.deliveryLockFileSha256, 'delivery lock'],
+    [activationGatePath, contract.activationGateFileSha256, 'activation gate'],
+    [sqlPath, contract.questionSqlSha256, 'JOB_SPECIFIC SQL']
+  ]
+  for (const [path, expected, label] of pinned) {
+    const actual = digestFile(path)
+    if (actual !== expected) throw new Error(`${label} 文件哈希漂移：${actual} != ${expected}`)
+  }
+
+  const authority = JSON.parse(readFileSync(authorityPath, 'utf8'))
+  const deliveryLock = JSON.parse(readFileSync(deliveryLockPath, 'utf8'))
+  const gate = JSON.parse(readFileSync(activationGatePath, 'utf8'))
+  if (authority.authority_hash !== contract.authorityHash) throw new Error('runtime authority_hash 漂移')
+  if (authority.semantic_root_hash !== contract.semanticRootHash) throw new Error('runtime semantic_root_hash 漂移')
+  if (deliveryLock.lock_hash !== contract.deliveryLockHash) throw new Error('delivery lock_hash 漂移')
+  if (gate.runtime_authority?.authority_hash !== contract.authorityHash) throw new Error('activation gate 未绑定当前 runtime authority')
+  if (gate.delivery_lock?.lock_hash !== contract.deliveryLockHash) throw new Error('activation gate 未绑定当前 delivery lock')
+  if (gate.authority?.may_compile_draft_seed !== true) throw new Error('activation gate 不允许编译 DRAFT seed')
+  return { authority, deliveryLock, gate }
+}
+
 function buildReferenceSnapshot() {
   const tempDir = mkdtempSync(join(tmpdir(), 'xc-db-reference-'))
   const dbPath = join(tempDir, 'reference.db')
   try {
     runSql(dbPath, fullSchemaSql())
+    const runtimeContract = verifyJobSkillRuntimeContract()
     const seed = contentSeedSql()
     runSql(dbPath, seed.sql)
+    const activeJobSkillCount = Number(queryScalar(
+      dbPath,
+      "SELECT COUNT(*) FROM question_bank WHERE bank_domain='JOB_SPECIFIC' AND status='ACTIVE';"
+    ))
+    if (runtimeContract.gate.authority.may_activate !== true && activeJobSkillCount !== 0) {
+      throw new Error('激活门禁关闭时 JOB_SPECIFIC seed 必须全部保持 DRAFT')
+    }
     return {
       questionHash: digest(questionRows(dbPath)),
       assetHash: digest(activeManagedAssetRows(dbPath)),
       strategyHash: digest(seededStrategyRows(dbPath)),
       questionImportEventHash: digest(questionImportEventRows(dbPath)),
       explicitSchemaObjects: explicitSchemaObjectNames(dbPath),
-      approvedAssetCount: seed.approvedAssetCount
+      approvedAssetCount: seed.approvedAssetCount,
+      runtimeContractHash: digest({
+        authorityHash: runtimeContract.authority.authority_hash,
+        semanticRootHash: runtimeContract.authority.semantic_root_hash,
+        deliveryLockHash: runtimeContract.deliveryLock.lock_hash,
+        activationGateHash: runtimeContract.gate.gate_hash,
+        questionSqlSha256: contentPack.jobSkillRuntimeContract.questionSqlSha256
+      })
     }
   } finally {
     rmSync(tempDir, { recursive: true, force: true })
@@ -279,15 +338,19 @@ function verifyStructure(dbPath, issues) {
   }
 
   if (tables.has('schema_migration')) {
-    const migrationCount = Number(
-      queryScalar(
-        dbPath,
-        `SELECT COUNT(*) FROM schema_migration
-         WHERE migration_id='${contentPack.migrationId}'
-           AND schema_version='${contentPack.schemaVersion}';`
+    for (const migration of contentPack.requiredMigrationLedger) {
+      const migrationCount = Number(
+        queryScalar(
+          dbPath,
+          `SELECT COUNT(*) FROM schema_migration
+           WHERE migration_id='${migration.migrationId}'
+             AND schema_version='${migration.schemaVersion}';`
+        )
       )
-    )
-    if (migrationCount !== 1) issues.push(`缺少当前迁移记录 ${contentPack.migrationId}`)
+      if (migrationCount !== 1) {
+        issues.push(`缺少迁移记录 ${migration.migrationId}@${migration.schemaVersion}`)
+      }
+    }
   }
   return ready
 }
@@ -385,10 +448,12 @@ export function verifyDatabase(dbPath, options = {}) {
   const packHash = digest({
     version: contentPack.version,
     schemaVersion: contentPack.schemaVersion,
+    requiredMigrationLedger: contentPack.requiredMigrationLedger,
     questionHash: reference.questionHash,
     assetHash: reference.assetHash,
     strategyHash: reference.strategyHash,
     questionImportEventHash: reference.questionImportEventHash,
+    runtimeContractHash: reference.runtimeContractHash,
     explicitSchemaObjectHash: digest(reference.explicitSchemaObjects)
   })
   const result = {
@@ -441,6 +506,8 @@ export function syncDatabase(dbPath, options = {}) {
     }
     throw error
   }
+  // 所有内容合同必须在创建目录、备份、建表或 seed 之前通过，避免失败后留下半写入运行库。
+  verifyJobSkillRuntimeContract()
   mkdirSync(dirname(dbPath), { recursive: true })
   let backupPath = null
   const actionLogPath = join(dirname(dbPath), 'action_log.jsonl')

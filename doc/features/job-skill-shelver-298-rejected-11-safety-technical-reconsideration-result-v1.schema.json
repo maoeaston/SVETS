@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "package_id",
+    "case_set_id",
+    "case_set_hash",
+    "reviewer",
+    "submitted_at",
+    "summary",
+    "questions"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "job-skill-shelver-298-rejected-11-safety-technical-reconsideration-result-v1"
+    },
+    "package_id": {
+      "const": "job-skill-shelver-298-rejected-11-safety-technical-reconsideration-packet-he-dong-v1"
+    },
+    "case_set_id": {
+      "const": "job-skill-shelver-298-rejected-11-reconsideration-cases-v1"
+    },
+    "case_set_hash": {
+      "const": "sha256:1db049721d76607f9c2712226d4447931705616ecfc222cc51db6c63f84ec93c"
+    },
+    "reviewer": {
+      "const": "赫东"
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total",
+        "pass_as_is",
+        "return_for_redesign",
+        "confirm_rejected"
+      ],
+      "properties": {
+        "total": {
+          "const": 11
+        },
+        "pass_as_is": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 11
+        },
+        "return_for_redesign": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 11
+        },
+        "confirm_rejected": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 11
+        }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 11,
+      "maxItems": 11,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "question_id",
+          "question_version",
+          "source_record_hash",
+          "reconsideration_record_hash",
+          "safety_conclusion",
+          "decision",
+          "review_note"
+        ],
+        "properties": {
+          "question_id": {
+            "enum": [
+              "M1_OB_048",
+              "M1_OP_042",
+              "M3_OP_056",
+              "M4_OP_043",
+              "M4_OP_044",
+              "M4_OP_045",
+              "M4_OP_046",
+              "M4_OP_047",
+              "M4_OP_048",
+              "M5_OP_048",
+              "M5_OP_055"
+            ]
+          },
+          "question_version": {
+            "const": 1
+          },
+          "source_record_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "reconsideration_record_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "safety_conclusion": {
+            "enum": [
+              "PASS",
+              "RETURN_FOR_REDESIGN"
+            ]
+          },
+          "decision": {
+            "enum": [
+              "PASS_AS_IS",
+              "RETURN_FOR_REDESIGN",
+              "CONFIRM_REJECTED"
+            ]
+          },
+          "review_note": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

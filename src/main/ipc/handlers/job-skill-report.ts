@@ -109,7 +109,11 @@ export function maybeGenerateJobSkillReport(
       job_code: session.job_code,
       task_code: session.task_code,
       report_type: 'FULL_REPORT',
+      source_aggregate_type: 'ASSESSMENT_SESSION',
+      source_aggregate_id: sessionId,
       result_ids: [result.result_id],
+      report_title: `${session.job_code}专业岗位测评报告`,
+      report_content: reportContent as unknown as Record<string, unknown>,
       generated_at: generatedAt,
       generated_by: callerUserId
     }
@@ -130,7 +134,7 @@ export function maybeGenerateJobSkillReport(
     ).run(
       reportId, session.student_id, sessionId,
       JSON.stringify([result.result_id]),
-      `${session.job_code}专业岗位测评报告`,
+      reportEventPayload.report_title,
       JSON.stringify(reportContent),
       reportEvent.event_id, callerUserId, generatedAt
     )

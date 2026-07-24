@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import initSqlJs from 'sql.js'
 import { fileURLToPath } from 'node:url'
 import { buildActivateEligibleSql, reviewQuestionBankRows } from './lib/question-bank-review-gate.mjs'
+import { verifyJobSkillPhase4Contracts } from './lib/job-skill-phase4-contract.mjs'
 import { resolveDefaultDbPath } from './lib/database-path.mjs'
 
 let sqlPromise
@@ -81,9 +82,11 @@ function extractImportBatchId(contentJsonText) {
 }
 
 function loadDraftQuestionRows(db, batchId) {
+  const columns = new Set(queryAll(db, "PRAGMA table_info('question_bank')").map((row) => row.name))
+  const bankDomainSelect = columns.has('bank_domain') ? 'bank_domain' : 'NULL AS bank_domain'
   const rows = queryAll(
     db,
-    `SELECT question_id, module_type, item_usage, question_type, status, media_asset_id, tool_asset_ids_json, content_json, scoring_rule_json
+    `SELECT question_id, ${bankDomainSelect}, module_type, item_usage, question_type, status, media_asset_id, tool_asset_ids_json, content_json, scoring_rule_json
      FROM question_bank
      WHERE status = 'DRAFT'
      ORDER BY question_id`
@@ -148,6 +151,13 @@ export async function runQuestionBankReviewCli(
     if (!args.activate) {
       io.stdout('[question-bank-review] dry run only; DB unchanged')
       return { dbPath, reportPath, report, activated: 0 }
+    }
+
+    if (questionRows.some((row) => row.bank_domain === 'JOB_SPECIFIC')) {
+      const { gate } = verifyJobSkillPhase4Contracts({ root: projectRoot })
+      if (gate.authority.may_activate !== true) {
+        throw new Error(`JOB_SPECIFIC activation gate blocked: ${gate.blockers.map((item) => item.code).join(', ')}`)
+      }
     }
 
     db.exec(buildActivateEligibleSql(report.items))

@@ -1,5 +1,16 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import type { AuthRole } from '@shared/types/auth'
+
+function homeForRole(role: AuthRole | null): string {
+  if (role === 'STUDENT') {
+    return '/student'
+  }
+  if (role === 'ADMIN') {
+    return '/admin'
+  }
+  return '/teacher'
+}
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -7,13 +18,15 @@ const router = createRouter({
     { path: '/', redirect: '/login' },
     {
       path: '/login',
+      meta: { anonymousOnly: true },
       component: () => import('../views/LoginView.vue')
     },
     {
       path: '/teacher',
+      meta: { allowedRoles: ['TEACHER'] },
       component: () => import('../views/teacher/TeacherLayout.vue'),
       children: [
-        { path: '', redirect: '/teacher/students' },
+        { path: '', component: () => import('../views/teacher/TeacherHomeView.vue') },
         {
           path: 'students',
           component: () => import('../views/teacher/StudentListView.vue')
@@ -53,19 +66,35 @@ const router = createRouter({
         {
           path: 'trainings/create',
           component: () => import('../views/teacher/TrainingCreateView.vue')
+        },
+        {
+          path: 'safety',
+          component: () => import('../views/foundation/SafetyIncidentListView.vue')
+        },
+        {
+          path: 'safety/:incidentId',
+          component: () => import('../views/foundation/SafetyIncidentDetailView.vue')
+        },
+        {
+          path: 'exceptions',
+          component: () => import('../views/foundation/ExceptionListView.vue')
+        },
+        {
+          path: 'exceptions/:errorEventId',
+          component: () => import('../views/foundation/ExceptionDetailView.vue')
         }
       ]
     },
     {
-      // /admin 与 /teacher 平级，复用 TeacherLayout（MVP 不为 ADMIN 单建 layout，
-      // 与 student-profile 决策一致）。本步只注册 list + version-list 两条子路由；
-      // form 三条（strategies/new、:strategyId/new-version、:strategyId/v/:version）
-      // 在 Step 6 创建 StrategyFormView.vue 后再补，避免 lazy import 找不到模块致
-      // typecheck 失败。
       path: '/admin',
-      component: () => import('../views/teacher/TeacherLayout.vue'),
+      meta: { allowedRoles: ['ADMIN'] },
+      component: () => import('../views/admin/AdminLayout.vue'),
       children: [
-        { path: '', redirect: '/admin/strategies' },
+        { path: '', component: () => import('../views/admin/AdminHomeView.vue') },
+        {
+          path: 'accounts',
+          component: () => import('../views/admin/AccountManagementView.vue')
+        },
         {
           path: 'strategies',
           component: () => import('../views/admin/StrategyListView.vue')
@@ -75,7 +104,6 @@ const router = createRouter({
           component: () => import('../views/admin/StrategyVersionListView.vue')
         },
         {
-          // form 三条子路由（Step 6 补）——共用 StrategyFormView，按 route 判断模式
           path: 'strategies/new',
           component: () => import('../views/admin/StrategyFormView.vue')
         },
@@ -86,11 +114,32 @@ const router = createRouter({
         {
           path: 'strategies/:strategyId/v/:version',
           component: () => import('../views/admin/StrategyFormView.vue')
+        },
+        {
+          path: 'safety',
+          component: () => import('../views/foundation/SafetyIncidentListView.vue')
+        },
+        {
+          path: 'safety/:incidentId',
+          component: () => import('../views/foundation/SafetyIncidentDetailView.vue')
+        },
+        {
+          path: 'exceptions',
+          component: () => import('../views/foundation/ExceptionListView.vue')
+        },
+        {
+          path: 'exceptions/:errorEventId',
+          component: () => import('../views/foundation/ExceptionDetailView.vue')
+        },
+        {
+          path: 'readiness',
+          component: () => import('../views/admin/SystemReadinessView.vue')
         }
       ]
     },
     {
       path: '/student',
+      meta: { allowedRoles: ['STUDENT'] },
       component: () => import('../views/student/StudentLayout.vue'),
       children: [
         {
@@ -106,37 +155,50 @@ const router = createRouter({
           component: () => import('../views/student/TrainingView.vue')
         }
       ]
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      component: () => import('../views/NotFoundView.vue')
     }
   ]
 })
 
-// 全局路由守卫：登录 + role-prefix 检查。
-// [!] role 检查避免教师误访问学生答题页等场景触发 handler FORBIDDEN（handler 兜底，
-// 但 UX 差——用户看到"无权限"而非"页面不存在"）。
-router.beforeEach((to) => {
+// 全局路由守卫：先向主进程恢复一次可信会话，再按路由 meta 控制页面体验。
+// 主进程 auth_session 是最终权限来源；这里仅负责跳转体验，不代替 IPC 安全校验。
+router.beforeEach(async (to) => {
   const authStore = useAuthStore()
-  const protectedPrefixes = ['/teacher', '/student', '/admin']
-  const needsAuth = protectedPrefixes.some((p) => to.path.startsWith(p))
+
+  if (!authStore.initialized) {
+    try {
+      const restored = await window.api.auth.getCurrentSession()
+      if (restored.success) {
+        authStore.setUser(restored)
+      } else {
+        authStore.clear()
+      }
+    } catch (err) {
+      console.error('[Router] failed to restore auth session:', err)
+      authStore.clear()
+    }
+  }
+
+  const allowedRoles = to.matched.flatMap((record) => {
+    const roles = record.meta.allowedRoles
+    return Array.isArray(roles) ? (roles as AuthRole[]) : []
+  })
+  const needsAuth = allowedRoles.length > 0
+  const anonymousOnly = to.matched.some((record) => record.meta.anonymousOnly === true)
 
   if (needsAuth && !authStore.isLoggedIn) {
     return { path: '/login' }
   }
 
-  // role 与前缀匹配：ADMIN 复用 /teacher layout（MVP 决策），故 /teacher 允许 TEACHER + ADMIN
-  if (authStore.isLoggedIn && authStore.role) {
-    const role = authStore.role
-    if (to.path.startsWith('/student') && role !== 'STUDENT') {
-      // role ∈ {TEACHER, ADMIN} → 回 /teacher
-      return { path: '/teacher' }
-    }
-    if (to.path.startsWith('/teacher') && role !== 'TEACHER' && role !== 'ADMIN') {
-      // role === STUDENT → 回 /student
-      return { path: '/student' }
-    }
-    if (to.path.startsWith('/admin') && role !== 'ADMIN') {
-      // role ∈ {STUDENT, TEACHER} → 回 /teacher
-      return { path: '/teacher' }
-    }
+  if (authStore.isLoggedIn && anonymousOnly) {
+    return { path: homeForRole(authStore.role) }
+  }
+
+  if (authStore.isLoggedIn && authStore.role && needsAuth && !allowedRoles.includes(authStore.role)) {
+    return { path: homeForRole(authStore.role) }
   }
 })
 

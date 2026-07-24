@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Rejected Replacement V2 Content Confirmation Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "package_id",
+    "candidate_set_id",
+    "candidate_set_hash",
+    "reviewer",
+    "submitted_at",
+    "authority",
+    "summary",
+    "questions"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "job-skill-shelver-298-rejected-replacement-content-confirmation-result-v1"
+    },
+    "package_id": {
+      "const": "job-skill-shelver-298-rejected-replacement-content-confirmation-packet-chen-xiaoqing-v1"
+    },
+    "candidate_set_id": {
+      "const": "job-skill-shelver-298-rejected-replacement-candidates-v2"
+    },
+    "candidate_set_hash": {
+      "const": "sha256:28a1d072fb81ed85dd3ee923f40c04a569a2b18248f1092684bf2faef2bd34ab"
+    },
+    "reviewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "track",
+        "role"
+      ],
+      "properties": {
+        "name": {
+          "const": "陈晓青"
+        },
+        "track": {
+          "const": "CONTENT_CONFIRMATION"
+        },
+        "role": {
+          "const": "内容确认"
+        }
+      }
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "activation_authority_granted",
+        "can_activate_questions",
+        "runtime_database_change_allowed",
+        "activation_sql_generated"
+      ],
+      "properties": {
+        "activation_authority_granted": {
+          "const": false
+        },
+        "can_activate_questions": {
+          "const": false
+        },
+        "runtime_database_change_allowed": {
+          "const": false
+        },
+        "activation_sql_generated": {
+          "const": false
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total",
+        "pass",
+        "return_for_revision"
+      ],
+      "properties": {
+        "total": {
+          "const": 11
+        },
+        "pass": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 11
+        },
+        "return_for_revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 11
+        }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 11,
+      "maxItems": 11,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "question_id",
+          "previous_question_id",
+          "new_semantic_hash",
+          "candidate_record_hash",
+          "activation_authority",
+          "conclusion",
+          "review_fields"
+        ],
+        "properties": {
+          "question_id": {
+            "type": "string",
+            "pattern": "^M[1-6]_[A-Z]+_\\d+_V2$"
+          },
+          "previous_question_id": {
+            "type": "string",
+            "pattern": "^M[1-6]_[A-Z]+_\\d+$"
+          },
+          "new_semantic_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "candidate_record_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "activation_authority": {
+            "const": "NONE"
+          },
+          "conclusion": {
+            "enum": [
+              "PASS",
+              "RETURN_FOR_REVISION"
+            ]
+          },
+          "review_fields": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

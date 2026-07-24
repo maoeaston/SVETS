@@ -1,0 +1,1407 @@
+{
+  "schema_version": "job-skill-shelver-298-v4-editorial-input-v1",
+  "section": "DRAG",
+  "questions": [
+    {
+      "question_id": "M1_DG_028_V4",
+      "previous_question_id": "M1_DG_028_V3",
+      "source_question_id": "M1_DG_028",
+      "question_type": "DRAG",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "恢复商品分区构念，将普通酸奶明确归入冷藏乳品区，并把常温饮品与冷藏商品分开判定。",
+      "proposed_question": {
+        "content": {
+          "question_type": "DRAG",
+          "prompt": "请根据包装标注的储存条件，把 6 件商品拖入对应的货架区域。",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": [
+            "0"
+          ],
+          "media_brief": "商品分区分类 R2，区域标识包含常温饮品区和冷藏乳品区",
+          "note": "ACTIVE",
+          "drag_items": [
+            {
+              "item_id": "i1",
+              "label": "原味薯片"
+            },
+            {
+              "item_id": "i2",
+              "label": "常温瓶装可乐"
+            },
+            {
+              "item_id": "i3",
+              "label": "洗衣液"
+            },
+            {
+              "item_id": "i4",
+              "label": "夹心饼干"
+            },
+            {
+              "item_id": "i5",
+              "label": "标注 2 至 6 摄氏度冷藏的原味酸奶"
+            },
+            {
+              "item_id": "i6",
+              "label": "洗洁精"
+            }
+          ],
+          "drop_zones": [
+            {
+              "zone_id": "z1",
+              "label": "零食区",
+              "accepts": [
+                "i1",
+                "i4"
+              ]
+            },
+            {
+              "zone_id": "z2",
+              "label": "常温饮品区",
+              "accepts": [
+                "i2"
+              ]
+            },
+            {
+              "zone_id": "z3",
+              "label": "洗护清洁区",
+              "accepts": [
+                "i3",
+                "i6"
+              ]
+            },
+            {
+              "zone_id": "z4",
+              "label": "冷藏乳品区",
+              "accepts": [
+                "i5"
+              ]
+            }
+          ],
+          "scoring_mode": "PARTIAL_CREDIT"
+        },
+        "scoring_rule": {
+          "scoring_type": "DRAG_PARTIAL",
+          "max_score": 2,
+          "all_correct_score": 2,
+          "partial_correct_score": 0,
+          "incorrect_score": 0
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现商品储存标注与目标区域不符时，停止归位并保持商品规定的温控条件；将商品隔离标识并上报负责人，不得把需冷藏商品放入常温区。"
+      }
+    },
+    {
+      "question_id": "M1_DG_029_V4",
+      "previous_question_id": "M1_DG_029_V3",
+      "source_question_id": "M1_DG_029",
+      "question_type": "DRAG",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "恢复货架分层构念，为商品补充明确重量和包装形态，并将稳定摆放、层板承重和排面条件写入题设。",
+      "proposed_question": {
+        "content": {
+          "question_type": "DRAG",
+          "prompt": "货架已固定且层板承重满足要求。请按重物低位、玻璃瓶稳放中层、轻小件放上层的排面要求，把 3 件商品拖到正确层。",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": [
+            "0"
+          ],
+          "media_brief": "三层固定货架分层摆放 R5",
+          "note": "ACTIVE",
+          "drag_items": [
+            {
+              "item_id": "i1",
+              "label": "5 升桶装水，约 5.2 千克"
+            },
+            {
+              "item_id": "i2",
+              "label": "500 毫升玻璃瓶果汁，需竖直放稳"
+            },
+            {
+              "item_id": "i3",
+              "label": "100 克小袋糖果"
+            }
+          ],
+          "drop_zones": [
+            {
+              "zone_id": "z1",
+              "label": "下层",
+              "accepts": [
+                "i1"
+              ]
+            },
+            {
+              "zone_id": "z2",
+              "label": "中层",
+              "accepts": [
+                "i2"
+              ]
+            },
+            {
+              "zone_id": "z3",
+              "label": "上层",
+              "accepts": [
+                "i3"
+              ]
+            }
+          ],
+          "scoring_mode": "PARTIAL_CREDIT"
+        },
+        "scoring_rule": {
+          "scoring_type": "DRAG_PARTIAL",
+          "max_score": 2,
+          "all_correct_score": 2,
+          "partial_correct_score": 0,
+          "incorrect_score": 0
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现层板晃动、商品超出层板边缘、玻璃瓶无法竖直放稳或重量超过标示承重时，立即停止摆放并远离货架，设置警示后上报负责人。"
+      }
+    },
+    {
+      "question_id": "M1_DG_032_V4",
+      "previous_question_id": "M1_DG_032_V3",
+      "source_question_id": "M1_DG_032",
+      "question_type": "DRAG",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "恢复上架前商品状态判别构念，明确轻微褶皱商品可直接上架所需的完整边界条件。",
+      "proposed_question": {
+        "content": {
+          "question_type": "DRAG",
+          "prompt": "请根据包装状态和价签信息，把 4 件商品拖入“可直接上架”或“隔离复核后处理”。",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": [
+            "0"
+          ],
+          "media_brief": "可上架判别 R8/R9",
+          "note": "ACTIVE",
+          "drag_items": [
+            {
+              "item_id": "i1",
+              "label": "包装完整、清洁，商品信息与价签一致"
+            },
+            {
+              "item_id": "i2",
+              "label": "包装封口开裂"
+            },
+            {
+              "item_id": "i3",
+              "label": "外包装仅有轻微褶皱，封口完好，无污染、漏气或异常鼓胀，符合门店外观标准"
+            },
+            {
+              "item_id": "i4",
+              "label": "商品规格与货架价签不一致"
+            }
+          ],
+          "drop_zones": [
+            {
+              "zone_id": "z1",
+              "label": "可直接上架",
+              "accepts": [
+                "i1",
+                "i3"
+              ]
+            },
+            {
+              "zone_id": "z2",
+              "label": "隔离复核后处理",
+              "accepts": [
+                "i2",
+                "i4"
+              ]
+            }
+          ],
+          "scoring_mode": "PARTIAL_CREDIT"
+        },
+        "scoring_rule": {
+          "scoring_type": "DRAG_PARTIAL",
+          "max_score": 2,
+          "all_correct_score": 2,
+          "partial_correct_score": 0,
+          "incorrect_score": 0
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M2_DG_026_V4",
+      "previous_question_id": "M2_DG_026_V3",
+      "source_question_id": "M2_DG_026",
+      "question_type": "DRAG",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "恢复补货前商品状态判别构念，明确褶皱包装的验收条件，并把破损、过期和受潮商品归入隔离复核流程。",
+      "proposed_question": {
+        "content": {
+          "question_type": "DRAG",
+          "prompt": "请检查 5 件待补商品的包装和效期，把它们拖入“可补货上架”或“停止上架并隔离复核”。",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": [
+            "0"
+          ],
+          "media_brief": "可补货判别 R8/R9",
+          "note": "ACTIVE",
+          "drag_items": [
+            {
+              "item_id": "i1",
+              "label": "包装完好且在有效期内的新品"
+            },
+            {
+              "item_id": "i2",
+              "label": "包装破损并有漏气迹象的商品"
+            },
+            {
+              "item_id": "i3",
+              "label": "已超过保质期的商品"
+            },
+            {
+              "item_id": "i4",
+              "label": "包装受潮并明显变形的商品"
+            },
+            {
+              "item_id": "i5",
+              "label": "包装仅有轻微褶皱，封口完好，无污染、漏气或异常鼓胀，符合门店外观标准"
+            }
+          ],
+          "drop_zones": [
+            {
+              "zone_id": "z1",
+              "label": "可补货上架",
+              "accepts": [
+                "i1",
+                "i5"
+              ]
+            },
+            {
+              "zone_id": "z2",
+              "label": "停止上架并隔离复核",
+              "accepts": [
+                "i2",
+                "i3",
+                "i4"
+              ]
+            }
+          ],
+          "scoring_mode": "PARTIAL_CREDIT"
+        },
+        "scoring_rule": {
+          "scoring_type": "DRAG_PARTIAL",
+          "max_score": 2,
+          "all_correct_score": 2,
+          "partial_correct_score": 0,
+          "incorrect_score": 0
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现泄漏、刺激性气味、尖锐破口或污染物时，立即停止接触并远离商品，设置警示、隔离现场并上报负责人，由评估员接管。"
+      }
+    },
+    {
+      "question_id": "M3_DG_038_V4",
+      "previous_question_id": "M3_DG_038_V3",
+      "source_question_id": "M3_DG_038",
+      "question_type": "DRAG",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "恢复正常、临期和异常商品三类判别构念，固定临期口径并将报损改为理货员权限内的隔离待处置。",
+      "proposed_question": {
+        "content": {
+          "question_type": "DRAG",
+          "prompt": "本店模拟规则规定剩余 1 至 10 天为临期。请根据包装和效期，把 6 件商品拖入“正常上架区”“临期专区”或“隔离待处置区”。",
+          "assessment_point": "RULE_EXECUTION|COGNITION",
+          "ability_tags": [
+            "0"
+          ],
+          "media_brief": "三区分类综合 R7/R8/R9，异常样品与同款正常样对照展示",
+          "note": "ACTIVE",
+          "drag_items": [
+            {
+              "item_id": "i1",
+              "label": "包装完好、距到期 60 天的新品"
+            },
+            {
+              "item_id": "i2",
+              "label": "包装仅有轻微褶皱，封口完好，无污染、漏气或异常鼓胀的商品"
+            },
+            {
+              "item_id": "i3",
+              "label": "包装完好、距到期 8 天的商品"
+            },
+            {
+              "item_id": "i4",
+              "label": "包装破损并漏气的商品"
+            },
+            {
+              "item_id": "i5",
+              "label": "已超过保质期的商品"
+            },
+            {
+              "item_id": "i6",
+              "label": "与同款正常样相比明显异常鼓胀的奶粉袋"
+            }
+          ],
+          "drop_zones": [
+            {
+              "zone_id": "z1",
+              "label": "正常上架区",
+              "accepts": [
+                "i1",
+                "i2"
+              ]
+            },
+            {
+              "zone_id": "z2",
+              "label": "临期专区",
+              "accepts": [
+                "i3"
+              ]
+            },
+            {
+              "zone_id": "z3",
+              "label": "隔离待处置区",
+              "accepts": [
+                "i4",
+                "i5",
+                "i6"
+              ]
+            }
+          ],
+          "scoring_mode": "PARTIAL_CREDIT"
+        },
+        "scoring_rule": {
+          "scoring_type": "DRAG_PARTIAL",
+          "max_score": 2,
+          "all_correct_score": 2,
+          "partial_correct_score": 0,
+          "incorrect_score": 0
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现泄漏、异常气味、粉末散落或包装可能破裂时，立即停止接触并远离商品，设置警示、隔离现场并上报负责人；不得自行挤压、开启或报损处理。"
+      }
+    },
+    {
+      "question_id": "M3_DG_041_V4",
+      "previous_question_id": "M3_DG_041_V3",
+      "source_question_id": "M3_DG_041",
+      "question_type": "DRAG",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "恢复商品状态与处置方式匹配构念，将异常品处置补齐为隔离、登记、上报和授权处理。",
+      "proposed_question": {
+        "content": {
+          "question_type": "DRAG",
+          "prompt": "本店模拟规则规定剩余 1 至 10 天为临期。请把 4 种商品状态拖到理货员应采取的处置方式。",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": [
+            "0"
+          ],
+          "media_brief": "四种商品状态对应处置 R7/R8",
+          "note": "ACTIVE",
+          "drag_items": [
+            {
+              "item_id": "i1",
+              "label": "包装完好且距到期 60 天的新品"
+            },
+            {
+              "item_id": "i2",
+              "label": "包装完好且距到期 10 天的商品"
+            },
+            {
+              "item_id": "i3",
+              "label": "包装破损并漏气的商品"
+            },
+            {
+              "item_id": "i4",
+              "label": "已超过保质期的商品"
+            }
+          ],
+          "drop_zones": [
+            {
+              "zone_id": "z1",
+              "label": "核验后正常上架",
+              "accepts": [
+                "i1"
+              ]
+            },
+            {
+              "zone_id": "z2",
+              "label": "移入临期专区并记录",
+              "accepts": [
+                "i2"
+              ]
+            },
+            {
+              "zone_id": "z3",
+              "label": "停止上架，隔离标识、登记并上报",
+              "accepts": [
+                "i3"
+              ]
+            },
+            {
+              "zone_id": "z4",
+              "label": "立即下架，隔离登记并等待授权处置",
+              "accepts": [
+                "i4"
+              ]
+            }
+          ],
+          "scoring_mode": "PARTIAL_CREDIT"
+        },
+        "scoring_rule": {
+          "scoring_type": "DRAG_PARTIAL",
+          "max_score": 2,
+          "all_correct_score": 2,
+          "partial_correct_score": 0,
+          "incorrect_score": 0
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现商品泄漏、破口尖锐或污染周边时，立即停止接触并远离，设置警示、隔离现场并上报负责人；不得自行决定报损、退货或销毁。"
+      }
+    },
+    {
+      "question_id": "M4_DG_023_V4",
+      "previous_question_id": "M4_DG_023_V3",
+      "source_question_id": "M4_DG_023",
+      "question_type": "DRAG",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "恢复收货流程构念，将共同核验步骤与无异常、发现异常两条后续路径分开排序。",
+      "proposed_question": {
+        "content": {
+          "question_type": "DRAG",
+          "prompt": "请把收货操作拖到共同核验、无异常路径和发现异常路径的正确步骤位置。",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": [
+            "0"
+          ],
+          "media_brief": "收货共同步骤及双分支流程 R12",
+          "note": "ACTIVE",
+          "drag_items": [
+            {
+              "item_id": "i1",
+              "label": "核对到货商品与送货单的品名、规格和数量"
+            },
+            {
+              "item_id": "i2",
+              "label": "检查商品包装、效期和外观状态"
+            },
+            {
+              "item_id": "i3",
+              "label": "无异常时完成入库登记"
+            },
+            {
+              "item_id": "i4",
+              "label": "无异常时按授权完成签收"
+            },
+            {
+              "item_id": "i5",
+              "label": "发现数量或包装异常时暂停收货并隔离异常货物"
+            },
+            {
+              "item_id": "i6",
+              "label": "复核并记录差异，立即上报负责人"
+            },
+            {
+              "item_id": "i7",
+              "label": "按负责人确认结果拒收、退回或转入待处理区，不继续签收"
+            }
+          ],
+          "drop_zones": [
+            {
+              "zone_id": "z1",
+              "label": "共同第 1 步",
+              "accepts": [
+                "i1"
+              ]
+            },
+            {
+              "zone_id": "z2",
+              "label": "共同第 2 步",
+              "accepts": [
+                "i2"
+              ]
+            },
+            {
+              "zone_id": "z3",
+              "label": "无异常第 3 步",
+              "accepts": [
+                "i3"
+              ]
+            },
+            {
+              "zone_id": "z4",
+              "label": "无异常第 4 步",
+              "accepts": [
+                "i4"
+              ]
+            },
+            {
+              "zone_id": "z5",
+              "label": "发现异常第 3 步",
+              "accepts": [
+                "i5"
+              ]
+            },
+            {
+              "zone_id": "z6",
+              "label": "发现异常第 4 步",
+              "accepts": [
+                "i6"
+              ]
+            },
+            {
+              "zone_id": "z7",
+              "label": "发现异常第 5 步",
+              "accepts": [
+                "i7"
+              ]
+            }
+          ],
+          "scoring_mode": "PARTIAL_CREDIT"
+        },
+        "scoring_rule": {
+          "scoring_type": "DRAG_PARTIAL",
+          "max_score": 2,
+          "all_correct_score": 2,
+          "partial_correct_score": 0,
+          "incorrect_score": 0
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现泄漏、尖锐破损、刺激性气味或货物失稳时，立即停止收货并远离，设置警示、隔离异常货物并上报负责人；评估员接管现场后方可继续。"
+      }
+    },
+    {
+      "question_id": "M4_DG_025_V4",
+      "previous_question_id": "M4_DG_025_V3",
+      "source_question_id": "M4_DG_025",
+      "question_type": "DRAG",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "恢复库房分区构念，将冷藏与冷冻拆成不同温控区域，并保留重货低位存放规则。",
+      "proposed_question": {
+        "content": {
+          "question_type": "DRAG",
+          "prompt": "请根据重量和包装标注的储存条件，把 6 件货物拖入库房对应区域。",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": [
+            "0"
+          ],
+          "media_brief": "库房重货、常温、冷藏和冷冻分区 R5",
+          "note": "ACTIVE",
+          "drag_items": [
+            {
+              "item_id": "i1",
+              "label": "5 升桶装水"
+            },
+            {
+              "item_id": "i2",
+              "label": "4 千克整箱常温奶粉"
+            },
+            {
+              "item_id": "i3",
+              "label": "袋装零食"
+            },
+            {
+              "item_id": "i4",
+              "label": "罐头食品"
+            },
+            {
+              "item_id": "i5",
+              "label": "标注零下 18 摄氏度冷冻保存的速冻食品"
+            },
+            {
+              "item_id": "i6",
+              "label": "标注 2 至 6 摄氏度冷藏的酸奶"
+            }
+          ],
+          "drop_zones": [
+            {
+              "zone_id": "z1",
+              "label": "重货区下层",
+              "accepts": [
+                "i1",
+                "i2"
+              ]
+            },
+            {
+              "zone_id": "z2",
+              "label": "普通常温货架区",
+              "accepts": [
+                "i3",
+                "i4"
+              ]
+            },
+            {
+              "zone_id": "z3",
+              "label": "冷冻区",
+              "accepts": [
+                "i5"
+              ]
+            },
+            {
+              "zone_id": "z4",
+              "label": "冷藏区",
+              "accepts": [
+                "i6"
+              ]
+            }
+          ],
+          "scoring_mode": "PARTIAL_CREDIT"
+        },
+        "scoring_rule": {
+          "scoring_type": "DRAG_PARTIAL",
+          "max_score": 2,
+          "all_correct_score": 2,
+          "partial_correct_score": 0,
+          "incorrect_score": 0
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现冷藏或冷冻商品离开规定温控、重货区层板晃动、货物失稳或超出承重时，立即停止搬放并远离，设置警示、隔离商品并上报负责人。"
+      }
+    },
+    {
+      "question_id": "M5_DG_033_V4",
+      "previous_question_id": "M5_DG_033_V3",
+      "source_question_id": "M5_DG_033",
+      "question_type": "DRAG",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "恢复安全隐患处置顺序构念，将情境限定为倾斜松动货架，避免把不同危险套入同一固定流程。",
+      "proposed_question": {
+        "content": {
+          "question_type": "DRAG",
+          "prompt": "巡检时发现货架支架明显松动并向通道倾斜。请把理货员的处置步骤按顺序排好。",
+          "assessment_point": "SAFETY_OPERATION",
+          "ability_tags": [
+            "1"
+          ],
+          "media_brief": "使用牢固货架上的视觉标识模拟松动倾斜，不设置真实失稳结构",
+          "note": "ACTIVE",
+          "drag_items": [
+            {
+              "item_id": "i1",
+              "label": "立即停止作业，与货架保持安全距离"
+            },
+            {
+              "item_id": "i2",
+              "label": "提醒顾客和同事绕行，在不靠近货架的前提下设置外围警示"
+            },
+            {
+              "item_id": "i3",
+              "label": "立即上报负责人并说明货架位置和倾斜情况"
+            },
+            {
+              "item_id": "i4",
+              "label": "等待授权人员处置，不触碰、搬货或自行维修货架"
+            }
+          ],
+          "drop_zones": [
+            {
+              "zone_id": "z1",
+              "label": "第 1 步",
+              "accepts": [
+                "i1"
+              ]
+            },
+            {
+              "zone_id": "z2",
+              "label": "第 2 步",
+              "accepts": [
+                "i2"
+              ]
+            },
+            {
+              "zone_id": "z3",
+              "label": "第 3 步",
+              "accepts": [
+                "i3"
+              ]
+            },
+            {
+              "zone_id": "z4",
+              "label": "第 4 步",
+              "accepts": [
+                "i4"
+              ]
+            }
+          ],
+          "scoring_mode": "PARTIAL_CREDIT"
+        },
+        "scoring_rule": {
+          "scoring_type": "DRAG_PARTIAL",
+          "max_score": 2,
+          "all_correct_score": 2,
+          "partial_correct_score": 0,
+          "incorrect_score": 0
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现货架真实晃动、商品滑落或结构继续倾斜时，立即停止并撤离到安全距离，口头警示他人、扩大隔离范围并紧急上报，由评估员终止任务。"
+      }
+    },
+    {
+      "question_id": "M5_DG_034_V4",
+      "previous_question_id": "M5_DG_034_V3",
+      "source_question_id": "M5_DG_034",
+      "question_type": "DRAG",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "恢复顾客晕倒应急步骤构念，补齐现场安全判断、急救呼叫、受训人员和 AED 支持，不再以等待负责人替代紧急响应。",
+      "proposed_question": {
+        "content": {
+          "question_type": "DRAG",
+          "prompt": "发现顾客倒地且没有明显外伤。请按门店应急预案，把普通员工应采取的步骤按顺序排好。",
+          "assessment_point": "SAFETY_OPERATION",
+          "ability_tags": [
+            "1"
+          ],
+          "media_brief": "顾客晕倒应急流程 R13，评估员使用角色卡模拟",
+          "note": "ACTIVE",
+          "drag_items": [
+            {
+              "item_id": "i1",
+              "label": "停止周边作业，确认现场没有车辆、坠物或漏电等持续危险"
+            },
+            {
+              "item_id": "i2",
+              "label": "呼叫顾客并请指定同事拨打 120、通知受训急救员和负责人"
+            },
+            {
+              "item_id": "i3",
+              "label": "请同事取来 AED 交给受训人员，保持通道畅通"
+            },
+            {
+              "item_id": "i4",
+              "label": "在旁看护并按急救调度或受训人员指示协助，不随意移动顾客"
+            }
+          ],
+          "drop_zones": [
+            {
+              "zone_id": "z1",
+              "label": "第 1 步",
+              "accepts": [
+                "i1"
+              ]
+            },
+            {
+              "zone_id": "z2",
+              "label": "第 2 步",
+              "accepts": [
+                "i2"
+              ]
+            },
+            {
+              "zone_id": "z3",
+              "label": "第 3 步",
+              "accepts": [
+                "i3"
+              ]
+            },
+            {
+              "zone_id": "z4",
+              "label": "第 4 步",
+              "accepts": [
+                "i4"
+              ]
+            }
+          ],
+          "scoring_mode": "PARTIAL_CREDIT"
+        },
+        "scoring_rule": {
+          "scoring_type": "DRAG_PARTIAL",
+          "max_score": 2,
+          "all_correct_score": 2,
+          "partial_correct_score": 0,
+          "incorrect_score": 0
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "若现场存在漏电、火情、坠物或其他持续危险，立即停止接近并疏散警示，呼叫 120 和负责人；除非持续危险威胁生命，不得移动顾客，由评估员或受训急救人员接管。"
+      }
+    },
+    {
+      "question_id": "M5_DG_036_V4",
+      "previous_question_id": "M5_DG_036_V3",
+      "source_question_id": "M5_DG_036",
+      "question_type": "DRAG",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "恢复岗位权限分类构念，将日常任务、可控现场风险、失稳隐患和医疗紧急情况拆成四种明确处置路径。",
+      "proposed_question": {
+        "content": {
+          "question_type": "DRAG",
+          "prompt": "请根据理货员的职责和现场风险，把 5 种情境拖到对应的首要处置方式。",
+          "assessment_point": "RULE_EXECUTION|SAFETY_OPERATION",
+          "ability_tags": [
+            "0"
+          ],
+          "media_brief": "岗位权限与风险分流 R13",
+          "note": "ACTIVE",
+          "drag_items": [
+            {
+              "item_id": "i1",
+              "label": "顾客询问一个你能准确指出位置的商品"
+            },
+            {
+              "item_id": "i2",
+              "label": "通道有一小片水渍，旁边备有警示牌和清洁工具"
+            },
+            {
+              "item_id": "i3",
+              "label": "货架支架明显松动并向通道倾斜"
+            },
+            {
+              "item_id": "i4",
+              "label": "顾客突然倒地且呼叫没有回应"
+            },
+            {
+              "item_id": "i5",
+              "label": "同事请你复核货架上某商品的数量"
+            }
+          ],
+          "drop_zones": [
+            {
+              "zone_id": "z1",
+              "label": "在职责内直接处理",
+              "accepts": [
+                "i1",
+                "i5"
+              ]
+            },
+            {
+              "zone_id": "z2",
+              "label": "先警示隔离，再通知清洁人员或负责人",
+              "accepts": [
+                "i2"
+              ]
+            },
+            {
+              "zone_id": "z3",
+              "label": "立即停止接近、远离警示并上报负责人",
+              "accepts": [
+                "i3"
+              ]
+            },
+            {
+              "zone_id": "z4",
+              "label": "确认现场安全并立即呼叫 120、受训急救员和负责人",
+              "accepts": [
+                "i4"
+              ]
+            }
+          ],
+          "scoring_mode": "PARTIAL_CREDIT"
+        },
+        "scoring_rule": {
+          "scoring_type": "DRAG_PARTIAL",
+          "max_score": 2,
+          "all_correct_score": 2,
+          "partial_correct_score": 0,
+          "incorrect_score": 0
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "遇到货架失稳、顾客倒地、漏电、火情或其他持续危险时，立即停止原任务并远离风险源，口头警示、设置隔离并呼叫相应紧急支持；由评估员决定是否终止任务。"
+      }
+    },
+    {
+      "question_id": "M5_DG_037_V4",
+      "previous_question_id": "M5_DG_037_V3",
+      "source_question_id": "M5_DG_037",
+      "question_type": "DRAG",
+      "required_review_tracks": [
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "恢复商品召回处置顺序构念，补齐通知核验、适用批次识别、停售隔离、清点记录和交接闭环。",
+      "proposed_question": {
+        "content": {
+          "question_type": "DRAG",
+          "prompt": "门店收到一份指定商品和批次的召回通知。请把理货员的处置步骤按顺序排好。",
+          "assessment_point": "SAFETY_OPERATION",
+          "ability_tags": [
+            "1"
+          ],
+          "media_brief": "商品召回通知、三件批次标记商品和密封答案键",
+          "note": "ACTIVE",
+          "drag_items": [
+            {
+              "item_id": "i1",
+              "label": "核对召回通知中的商品名称、规格、条码和适用批次"
+            },
+            {
+              "item_id": "i2",
+              "label": "停止销售并从货架和待补区取下所有匹配商品"
+            },
+            {
+              "item_id": "i3",
+              "label": "将召回商品集中隔离，张贴召回标识并清点数量"
+            },
+            {
+              "item_id": "i4",
+              "label": "登记商品、批次、数量和位置，上报负责人并完成交接"
+            }
+          ],
+          "drop_zones": [
+            {
+              "zone_id": "z1",
+              "label": "第 1 步",
+              "accepts": [
+                "i1"
+              ]
+            },
+            {
+              "zone_id": "z2",
+              "label": "第 2 步",
+              "accepts": [
+                "i2"
+              ]
+            },
+            {
+              "zone_id": "z3",
+              "label": "第 3 步",
+              "accepts": [
+                "i3"
+              ]
+            },
+            {
+              "zone_id": "z4",
+              "label": "第 4 步",
+              "accepts": [
+                "i4"
+              ]
+            }
+          ],
+          "scoring_mode": "PARTIAL_CREDIT"
+        },
+        "scoring_rule": {
+          "scoring_type": "DRAG_PARTIAL",
+          "max_score": 2,
+          "all_correct_score": 2,
+          "partial_correct_score": 0,
+          "incorrect_score": 0
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现召回商品泄漏、破损或存在接触风险时，立即停止搬动并远离，设置警示、隔离现场并上报负责人；不得自行开启、销毁或恢复销售。"
+      }
+    },
+    {
+      "question_id": "M5_DG_038_V4",
+      "previous_question_id": "M5_DG_038_V3",
+      "source_question_id": "M5_DG_038",
+      "question_type": "DRAG",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "恢复玻璃碎片处置顺序构念，补齐同步上报、PPE、专用工具、硬质容器和残片复查。",
+      "proposed_question": {
+        "content": {
+          "question_type": "DRAG",
+          "prompt": "评测区使用钝边仿真碎片模拟玻璃瓶破碎。请把理货员的处置步骤按顺序排好。",
+          "assessment_point": "SAFETY_OPERATION",
+          "ability_tags": [
+            "1"
+          ],
+          "media_brief": "钝边仿真碎片、警示牌、防割手套、夹取和清扫工具、硬质容器",
+          "note": "ACTIVE",
+          "drag_items": [
+            {
+              "item_id": "i1",
+              "label": "立即停止周边作业，阻止他人进入并设置警示隔离"
+            },
+            {
+              "item_id": "i2",
+              "label": "立即报告负责人，确认按门店程序开展清理"
+            },
+            {
+              "item_id": "i3",
+              "label": "佩戴防割手套和封闭鞋，使用夹取或清扫工具收集碎片"
+            },
+            {
+              "item_id": "i4",
+              "label": "将碎片放入有标识的硬质防穿刺容器"
+            },
+            {
+              "item_id": "i5",
+              "label": "复查细小残片并报告结果，确认安全后再解除警示"
+            }
+          ],
+          "drop_zones": [
+            {
+              "zone_id": "z1",
+              "label": "第 1 步",
+              "accepts": [
+                "i1"
+              ]
+            },
+            {
+              "zone_id": "z2",
+              "label": "第 2 步",
+              "accepts": [
+                "i2"
+              ]
+            },
+            {
+              "zone_id": "z3",
+              "label": "第 3 步",
+              "accepts": [
+                "i3"
+              ]
+            },
+            {
+              "zone_id": "z4",
+              "label": "第 4 步",
+              "accepts": [
+                "i4"
+              ]
+            },
+            {
+              "zone_id": "z5",
+              "label": "第 5 步",
+              "accepts": [
+                "i5"
+              ]
+            }
+          ],
+          "scoring_mode": "PARTIAL_CREDIT"
+        },
+        "scoring_rule": {
+          "scoring_type": "DRAG_PARTIAL",
+          "max_score": 2,
+          "all_correct_score": 2,
+          "partial_correct_score": 0,
+          "incorrect_score": 0
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "如发现真实玻璃、锐利边缘、人员受伤或仿真碎片超出隔离区，立即停止并远离，扩大警示隔离范围并上报负责人，由评估员接管；不得徒手捡拾。"
+      }
+    },
+    {
+      "question_id": "M6_DG_027_V4",
+      "previous_question_id": "M6_DG_027_V3",
+      "source_question_id": "M6_DG_027",
+      "question_type": "DRAG",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "恢复多品类货架分区构念，新增冷藏乳品区并将酸奶与常温饮品、冷冻食品分别映射。",
+      "proposed_question": {
+        "content": {
+          "question_type": "DRAG",
+          "prompt": "请根据商品类别和包装标注的储存条件，把 6 件商品拖入对应的货架区域。",
+          "assessment_point": "COGNITION",
+          "ability_tags": [
+            "0"
+          ],
+          "media_brief": "五区商品分类综合 R2",
+          "note": "ACTIVE",
+          "drag_items": [
+            {
+              "item_id": "i1",
+              "label": "原味薯片"
+            },
+            {
+              "item_id": "i2",
+              "label": "常温瓶装可乐"
+            },
+            {
+              "item_id": "i3",
+              "label": "洗发水"
+            },
+            {
+              "item_id": "i4",
+              "label": "标注零下 18 摄氏度冷冻保存的速冻饺子"
+            },
+            {
+              "item_id": "i5",
+              "label": "标注 2 至 6 摄氏度冷藏的原味酸奶"
+            },
+            {
+              "item_id": "i6",
+              "label": "洗洁精"
+            }
+          ],
+          "drop_zones": [
+            {
+              "zone_id": "z1",
+              "label": "零食区",
+              "accepts": [
+                "i1"
+              ]
+            },
+            {
+              "zone_id": "z2",
+              "label": "常温饮品区",
+              "accepts": [
+                "i2"
+              ]
+            },
+            {
+              "zone_id": "z3",
+              "label": "洗护清洁区",
+              "accepts": [
+                "i3",
+                "i6"
+              ]
+            },
+            {
+              "zone_id": "z4",
+              "label": "冷冻区",
+              "accepts": [
+                "i4"
+              ]
+            },
+            {
+              "zone_id": "z5",
+              "label": "冷藏乳品区",
+              "accepts": [
+                "i5"
+              ]
+            }
+          ],
+          "scoring_mode": "PARTIAL_CREDIT"
+        },
+        "scoring_rule": {
+          "scoring_type": "DRAG_PARTIAL",
+          "max_score": 2,
+          "all_correct_score": 2,
+          "partial_correct_score": 0,
+          "incorrect_score": 0
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现冷藏或冷冻商品与目标温区不符时，立即停止归位并保持规定温控，隔离标识商品并上报负责人；不得将冷藏商品放入常温区或将冷藏、冷冻区域混用。"
+      }
+    },
+    {
+      "question_id": "M6_DG_030_V4",
+      "previous_question_id": "M6_DG_030_V3",
+      "source_question_id": "M6_DG_030",
+      "question_type": "DRAG",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "恢复商品信息核验通道选择构念，按条码可用性、离线数据库匹配和包装文字可读性建立互斥处理分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "DRAG",
+          "prompt": "离线商品数据库可用。请根据条码和包装文字状态，把 4 件商品拖到下一步核验方式。",
+          "assessment_point": "COGNITION",
+          "ability_tags": [
+            "0"
+          ],
+          "media_brief": "商品信息核验通道选择 B 组",
+          "note": "ACTIVE",
+          "drag_items": [
+            {
+              "item_id": "i1",
+              "label": "条码完整清晰，扫码后数据库返回唯一商品记录"
+            },
+            {
+              "item_id": "i2",
+              "label": "条码图形破损无法扫描，但下方 13 位数字完整可读"
+            },
+            {
+              "item_id": "i3",
+              "label": "没有可用条码，中文品名和规格清晰，且与货位标签一致"
+            },
+            {
+              "item_id": "i4",
+              "label": "条码无法使用，外文包装文字无法确认品名和规格"
+            }
+          ],
+          "drop_zones": [
+            {
+              "zone_id": "z1",
+              "label": "扫码并核对数据库记录",
+              "accepts": [
+                "i1"
+              ]
+            },
+            {
+              "zone_id": "z2",
+              "label": "手工输入条码数字查询",
+              "accepts": [
+                "i2"
+              ]
+            },
+            {
+              "zone_id": "z3",
+              "label": "核对包装文字和货位标签",
+              "accepts": [
+                "i3"
+              ]
+            },
+            {
+              "zone_id": "z4",
+              "label": "隔离待确认并上报负责人",
+              "accepts": [
+                "i4"
+              ]
+            }
+          ],
+          "scoring_mode": "PARTIAL_CREDIT"
+        },
+        "scoring_rule": {
+          "scoring_type": "DRAG_PARTIAL",
+          "max_score": 2,
+          "all_correct_score": 2,
+          "partial_correct_score": 0,
+          "incorrect_score": 0
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M6_DG_033_V4",
+      "previous_question_id": "M6_DG_033_V3",
+      "source_question_id": "M6_DG_033",
+      "question_type": "DRAG",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "恢复重下轻上的货架分层构念，为每件商品补充明确重量，并锁定货架固定和承重前提。",
+      "proposed_question": {
+        "content": {
+          "question_type": "DRAG",
+          "prompt": "货架已固定且各层承重满足要求。请按重物低位、轻小件高位和商品稳定取放原则，把 5 件商品拖到正确层。",
+          "assessment_point": "COGNITION|RULE_EXECUTION",
+          "ability_tags": [
+            "0"
+          ],
+          "media_brief": "分层摆放综合 R5，商品重量在卡片上明确标示",
+          "note": "ACTIVE",
+          "drag_items": [
+            {
+              "item_id": "i1",
+              "label": "5 升桶装水，约 5.2 千克"
+            },
+            {
+              "item_id": "i2",
+              "label": "单件罐头食品，约 500 克"
+            },
+            {
+              "item_id": "i3",
+              "label": "小包糖果，约 100 克"
+            },
+            {
+              "item_id": "i4",
+              "label": "普通瓶装饮料，约 600 克"
+            },
+            {
+              "item_id": "i5",
+              "label": "整箱饼干，约 4 千克"
+            }
+          ],
+          "drop_zones": [
+            {
+              "zone_id": "z1",
+              "label": "下层重货区",
+              "accepts": [
+                "i1",
+                "i5"
+              ]
+            },
+            {
+              "zone_id": "z2",
+              "label": "中层常用区",
+              "accepts": [
+                "i2",
+                "i4"
+              ]
+            },
+            {
+              "zone_id": "z3",
+              "label": "上层轻货区",
+              "accepts": [
+                "i3"
+              ]
+            }
+          ],
+          "scoring_mode": "PARTIAL_CREDIT"
+        },
+        "scoring_rule": {
+          "scoring_type": "DRAG_PARTIAL",
+          "max_score": 2,
+          "all_correct_score": 2,
+          "partial_correct_score": 0,
+          "incorrect_score": 0
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现货架未固定、层板晃动、商品重量超过标示承重、商品超边或有坠落风险时，立即停止摆放并远离，设置警示后上报负责人，不得继续搬动失稳货物。"
+      }
+    }
+  ]
+}

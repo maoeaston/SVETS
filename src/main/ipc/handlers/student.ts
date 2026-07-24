@@ -11,6 +11,7 @@ import { getDatabase } from '../../db/connection'
 import { hashPassword } from '../../utils/password'
 import { validateSensoryProfile } from '../../utils/validate-sensory-profile'
 import { assertCaller } from '../../utils/auth-context'
+import { resolveBoundAuthSession } from '../../utils/auth-session'
 import type {
   CreateStudentParams,
   CreateStudentResult,
@@ -26,9 +27,38 @@ import type {
   StudentStatus,
   SensoryProfileJson
 } from '../../../shared/types/student'
+import type { AuthRole } from '../../../shared/types/auth'
 
 function todayISO(): string {
   return new Date().toISOString().slice(0, 10)
+}
+
+type StudentCallerParams = {
+  callerUserId: string
+  callerRole: string
+}
+
+export function resolveTrustedStudentCaller<T extends StudentCallerParams>(
+  db: DBAdapter,
+  senderId: number,
+  params: T
+): { ok: true; params: T } | { ok: false; errorCode: 'FORBIDDEN' } {
+  const session = resolveBoundAuthSession(db, senderId)
+  if (!session.success) {
+    return { ok: false, errorCode: 'FORBIDDEN' }
+  }
+  if (session.role !== 'TEACHER' && session.role !== 'ADMIN') {
+    return { ok: false, errorCode: 'FORBIDDEN' }
+  }
+
+  return {
+    ok: true,
+    params: {
+      ...params,
+      callerUserId: session.userId,
+      callerRole: session.role as AuthRole
+    }
+  }
 }
 
 /**
@@ -89,7 +119,8 @@ function logStudentEvent(
  * 任一失败整体回滚。成功后写 INFO 审计；UNIQUE 冲突转 USERNAME_TAKEN；
  * 其它异常写 ERROR 审计并返回 SYSTEM_ERROR。
  *
- * 同 UUID 复用：user_account.user_id === student_profile.student_id（应用层关联，schema 无 FK）。
+ * 当前仍复用同一 UUID 作为账号和档案主键，同时写入 student_profile.user_id
+ * 作为 v0.1.15 的显式账号关联。后续读写只依赖 user_id，不再依赖主键恰好相同。
  */
 export function createStudent(db: DBAdapter, params: CreateStudentParams): CreateStudentResult {
   const caller = assertCaller(db, params.callerUserId, params.callerRole)
@@ -117,15 +148,18 @@ export function createStudent(db: DBAdapter, params: CreateStudentParams): Creat
        VALUES (?, ?, ?, 'STUDENT', ?, 'ACTIVE')`
     ).run(studentId, params.username, hashPassword(params.password), params.studentName)
     db.prepare(
-      `INSERT INTO student_profile (student_id, student_name, gender, birth_date, guardian_contact, sensory_profile_json, status)
-       VALUES (?, ?, ?, ?, ?, ?, 'ACTIVE')`
+      `INSERT INTO student_profile
+         (student_id, student_name, gender, birth_date, guardian_contact,
+          sensory_profile_json, user_id, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 'ACTIVE')`
     ).run(
       studentId,
       params.studentName,
       params.gender ?? null,
       params.birthDate ?? null,
       params.guardianContact ?? null,
-      sensoryJson
+      sensoryJson,
+      studentId
     )
   })
 
@@ -158,7 +192,7 @@ interface StudentRow {
   status: string
   created_at: string
   updated_at: string
-  username: string
+  username: string | null
 }
 
 function mapSummary(row: StudentRow): StudentSummary {
@@ -192,7 +226,7 @@ export function getStudent(
       `SELECT sp.student_id, sp.student_name, sp.gender, sp.birth_date, sp.guardian_contact,
               sp.sensory_profile_json, sp.status, sp.created_at, sp.updated_at, ua.username
          FROM student_profile sp
-         JOIN user_account ua ON ua.user_id = sp.student_id
+         LEFT JOIN user_account ua ON ua.user_id = sp.user_id
         WHERE sp.student_id = ?`
     )
     .get(params.studentId) as StudentRow | undefined
@@ -248,7 +282,7 @@ export function listStudents(db: DBAdapter, params: StudentListParams): StudentL
         `SELECT sp.student_id, sp.student_name, sp.gender, sp.birth_date, sp.guardian_contact,
                 sp.sensory_profile_json, sp.status, sp.created_at, sp.updated_at, ua.username
            FROM student_profile sp
-           JOIN user_account ua ON ua.user_id = sp.student_id
+           LEFT JOIN user_account ua ON ua.user_id = sp.user_id
           WHERE sp.status IN (${placeholders}) AND sp.student_name LIKE ?
           ${orderBy}`
       )
@@ -259,7 +293,7 @@ export function listStudents(db: DBAdapter, params: StudentListParams): StudentL
         `SELECT sp.student_id, sp.student_name, sp.gender, sp.birth_date, sp.guardian_contact,
                 sp.sensory_profile_json, sp.status, sp.created_at, sp.updated_at, ua.username
            FROM student_profile sp
-           JOIN user_account ua ON ua.user_id = sp.student_id
+           LEFT JOIN user_account ua ON ua.user_id = sp.user_id
           WHERE sp.status IN (${placeholders})
           ${orderBy}`
       )
@@ -284,7 +318,7 @@ const UPDATE_FIELDS = {
 type UpdateKey = keyof typeof UPDATE_FIELDS
 
 /**
- * student:update 核心纯函数。逐字段更新白名单字段，每个字段单独 UPDATE。
+ * student:update 核心纯函数。先校验并归一化全部白名单字段，再在单一事务更新。
  * [!] 字段名来自固定常量 UPDATE_FIELDS，不来自 patch 的 key。
  * - 目标不存在 → NOT_FOUND
  * - 目标 ARCHIVED → ARCHIVED（不允许编辑已归档档案）
@@ -302,8 +336,8 @@ export function updateStudent(db: DBAdapter, params: UpdateStudentParams): Updat
   }
 
   const target = db
-    .prepare('SELECT status FROM student_profile WHERE student_id = ?')
-    .get(params.studentId) as { status: string } | undefined
+    .prepare('SELECT status, user_id FROM student_profile WHERE student_id = ?')
+    .get(params.studentId) as { status: string; user_id: string | null } | undefined
   if (!target) {
     return { success: false, errorCode: 'NOT_FOUND' }
   }
@@ -312,7 +346,7 @@ export function updateStudent(db: DBAdapter, params: UpdateStudentParams): Updat
   }
 
   const patch = params.patch ?? {}
-  const applied: UpdateKey[] = []
+  const normalized: Array<{ key: UpdateKey; value: unknown }> = []
 
   for (const key of Object.keys(patch) as UpdateKey[]) {
     if (!(key in UPDATE_FIELDS)) continue // 非白名单 key 静默忽略
@@ -332,17 +366,44 @@ export function updateStudent(db: DBAdapter, params: UpdateStudentParams): Updat
       return { success: false, errorCode: 'VALIDATION_ERROR' }
     }
 
-    db.prepare(
-      `UPDATE student_profile SET ${UPDATE_FIELDS[key]} = ?, updated_at = datetime('now') WHERE student_id = ?`
-    ).run(value, params.studentId)
-    applied.push(key)
+    if (key === 'studentName' && (typeof value !== 'string' || value.trim().length === 0)) {
+      return { success: false, errorCode: 'VALIDATION_ERROR' }
+    }
+
+    normalized.push({ key, value })
   }
 
-  if (applied.length > 0) {
-    logStudentEvent(db, 'STUDENT_PROFILE_UPDATED', 'INFO', params.studentId, caller.row.user_id, {
-      fields: applied
+  if (normalized.length === 0) return { success: true }
+
+  const tx = db.transaction(() => {
+    for (const { key, value } of normalized) {
+      db.prepare(
+        `UPDATE student_profile SET ${UPDATE_FIELDS[key]} = ?, updated_at = datetime('now') WHERE student_id = ?`
+      ).run(value, params.studentId)
+
+      if (key === 'studentName' && target.user_id) {
+        db.prepare(
+          `UPDATE user_account
+              SET display_name = ?, updated_at = datetime('now')
+            WHERE user_id = ? AND role = 'STUDENT'`
+        ).run(value, target.user_id)
+      }
+    }
+  })
+
+  try {
+    tx()
+  } catch (err) {
+    logStudentEvent(db, 'STUDENT_PROFILE_SYSTEM_ERROR', 'ERROR', params.studentId, caller.row.user_id, {
+      operation: 'update',
+      error: String(err)
     })
+    return { success: false, errorCode: 'SYSTEM_ERROR' }
   }
+
+  logStudentEvent(db, 'STUDENT_PROFILE_UPDATED', 'INFO', params.studentId, caller.row.user_id, {
+    fields: normalized.map(({ key }) => key)
+  })
   return { success: true }
 }
 
@@ -350,8 +411,9 @@ export function updateStudent(db: DBAdapter, params: UpdateStudentParams): Updat
  * student:archive 核心纯函数。
  * - 目标不存在 → NOT_FOUND
  * - 目标已 ARCHIVED → 幂等 success（不写审计，避免重复噪音）
- * - 事务：UPDATE student_profile status=ARCHIVED + UPDATE user_account status=DISABLED
- *   [!] role='STUDENT' 锁：防止 student_id 与 user_id 因脏数据不一致时改错非 STUDENT 账号
+ * - 事务：UPDATE student_profile status=ARCHIVED + 通过显式 user_id 停用绑定账号
+ * - user_id 为空的历史/无账号档案仍可归档
+ *   [!] role='STUDENT' 锁：即使关联数据异常，也不修改非 STUDENT 账号
  */
 export function archiveStudent(
   db: DBAdapter,
@@ -366,8 +428,8 @@ export function archiveStudent(
   }
 
   const target = db
-    .prepare('SELECT status FROM student_profile WHERE student_id = ?')
-    .get(params.studentId) as { status: string } | undefined
+    .prepare('SELECT status, user_id FROM student_profile WHERE student_id = ?')
+    .get(params.studentId) as { status: string; user_id: string | null } | undefined
   if (!target) {
     return { success: false, errorCode: 'NOT_FOUND' }
   }
@@ -379,10 +441,14 @@ export function archiveStudent(
     db.prepare(
       `UPDATE student_profile SET status = 'ARCHIVED', updated_at = datetime('now') WHERE student_id = ?`
     ).run(params.studentId as string)
-    // [!] role='STUDENT' 锁：只改匹配的 STUDENT 账号
-    db.prepare(
-      `UPDATE user_account SET status = 'DISABLED', updated_at = datetime('now') WHERE user_id = ? AND role = 'STUDENT'`
-    ).run(params.studentId as string)
+    if (target.user_id) {
+      // [!] role='STUDENT' 锁：只改显式绑定的 STUDENT 账号
+      db.prepare(
+        `UPDATE user_account
+            SET status = 'DISABLED', updated_at = datetime('now')
+          WHERE user_id = ? AND role = 'STUDENT'`
+      ).run(target.user_id)
+    }
   })
 
   try {
@@ -422,25 +488,50 @@ export function registerStudentHandlers(getDb: () => DBAdapter = defaultGetDb): 
     return db
   }
 
-  ipcMain.handle('student:create', (_e, params: CreateStudentParams) => {
-    return createStudent(ensureSeeded(), params)
+  ipcMain.handle('student:create', (event, params: CreateStudentParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedStudentCaller(db, event.sender.id, params)
+    if (!trusted.ok) {
+      return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    }
+    return createStudent(db, trusted.params)
   })
   ipcMain.handle(
     'student:get',
-    (_e, params: { callerUserId: string; callerRole: string; studentId: string }) => {
-      return getStudent(ensureSeeded(), params)
+    (event, params: { callerUserId: string; callerRole: string; studentId: string }) => {
+      const db = ensureSeeded()
+      const trusted = resolveTrustedStudentCaller(db, event.sender.id, params)
+      if (!trusted.ok) {
+        return { success: false as const, errorCode: 'FORBIDDEN' as const }
+      }
+      return getStudent(db, trusted.params)
     }
   )
-  ipcMain.handle('student:list', (_e, params: StudentListParams) => {
-    return listStudents(ensureSeeded(), params)
+  ipcMain.handle('student:list', (event, params: StudentListParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedStudentCaller(db, event.sender.id, params)
+    if (!trusted.ok) {
+      return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    }
+    return listStudents(db, trusted.params)
   })
-  ipcMain.handle('student:update', (_e, params: UpdateStudentParams) => {
-    return updateStudent(ensureSeeded(), params)
+  ipcMain.handle('student:update', (event, params: UpdateStudentParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedStudentCaller(db, event.sender.id, params)
+    if (!trusted.ok) {
+      return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    }
+    return updateStudent(db, trusted.params)
   })
   ipcMain.handle(
     'student:archive',
-    (_e, params: { callerUserId: string; callerRole: string; studentId: string }) => {
-      return archiveStudent(ensureSeeded(), params)
+    (event, params: { callerUserId: string; callerRole: string; studentId: string }) => {
+      const db = ensureSeeded()
+      const trusted = resolveTrustedStudentCaller(db, event.sender.id, params)
+      if (!trusted.ok) {
+        return { success: false as const, errorCode: 'FORBIDDEN' as const }
+      }
+      return archiveStudent(db, trusted.params)
     }
   )
 }

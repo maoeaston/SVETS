@@ -23,6 +23,10 @@ export type JobSkillScoringErrorCode =
 export interface JobSkillOfflineScoreItem {
   questionId: string
   score: 0 | 1 | 2
+  /** 评分锚点版本，当前按 questionId@questionVersion 固定。 */
+  anchorVersion?: string
+  /** 教师在界面选择分数时实际命中的完整行为锚点。 */
+  selectedAnchor?: string
   observationNote?: string
 }
 
@@ -55,6 +59,8 @@ export interface GetJobSkillOfflineScoresParams {
 export interface JobSkillOfflineScoreView {
   questionId: string
   score: 0 | 1 | 2
+  anchorVersion: string | null
+  selectedAnchor: string | null
   observationNote: string | null
   scoredAt: string
 }
@@ -81,6 +87,16 @@ export interface GetSessionScoringQuestionsParams {
 export interface SessionScoringQuestion {
   questionId: string
   jobModuleCode: string
+  questionVersion: number
+  questionType: string
+  prompt: string
+  toolBrief: string | null
+  rubricCriteria: Array<{ criterionId: string; description: string }>
+  scoreAnchors: { '0': string; '1': string; '2': string } | null
+  safetyStopConditions: string | null
+  anchorVersion: string
+  /** 仅 TEACHER/ADMIN 返回；学生端主进程固定返回 null。 */
+  sealedAdminConfig: Record<string, unknown> | null
 }
 
 export type GetSessionScoringQuestionsResult =

@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xuancan.example/schemas/job-skill-shelver-pilot-review-result-v1.schema.json",
+  "title": "超市理货员 Pilot 内容审核结果 v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "result_id",
+    "status",
+    "package",
+    "strategy",
+    "reviewer",
+    "summary",
+    "questions"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "job-skill-content-review-result-v1"
+    },
+    "result_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "const": "SUBMITTED"
+    },
+    "package": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["package_id", "package_version", "manifest_id", "manifest_version"],
+      "properties": {
+        "package_id": { "const": "job-skill-shelver-pilot-content-review-packet-v1" },
+        "package_version": { "const": 1 },
+        "manifest_id": { "const": "strategy_job_skill_shelver_v1@1-pilot-r0" },
+        "manifest_version": { "const": 1 }
+      }
+    },
+    "strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategy_id", "strategy_version"],
+      "properties": {
+        "strategy_id": { "const": "strategy_job_skill_shelver_v1" },
+        "strategy_version": { "const": 1 }
+      }
+    },
+    "reviewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "role", "reviewed_date", "submitted_at"],
+      "properties": {
+        "name": { "const": "陈晓青" },
+        "role": { "const": "CONTENT_VOCATIONAL_REVIEWER" },
+        "reviewed_date": { "type": "string", "format": "date" },
+        "submitted_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total",
+        "online_total",
+        "offline_total",
+        "approved",
+        "return_for_revision",
+        "rejected",
+        "text_only_approved",
+        "asset_required"
+      ],
+      "properties": {
+        "total": { "const": 24 },
+        "online_total": { "const": 18 },
+        "offline_total": { "const": 6 },
+        "approved": { "type": "integer", "minimum": 0, "maximum": 18 },
+        "return_for_revision": { "type": "integer", "minimum": 0, "maximum": 24 },
+        "rejected": { "type": "integer", "minimum": 0, "maximum": 24 },
+        "text_only_approved": { "type": "integer", "minimum": 0, "maximum": 18 },
+        "asset_required": { "type": "integer", "minimum": 0, "maximum": 18 }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 24,
+      "maxItems": 24,
+      "items": {
+        "oneOf": [
+          { "$ref": "#/$defs/onlineReview" },
+          { "$ref": "#/$defs/offlineReview" }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "baseReview": {
+      "type": "object",
+      "required": [
+        "question_id",
+        "question_version",
+        "candidate_record_hash",
+        "question_type",
+        "content_conclusion",
+        "review_note"
+      ],
+      "properties": {
+        "question_id": { "type": "string", "pattern": "^M[1-6]_(SC|OP)_[0-9]{3}$" },
+        "question_version": { "const": 1 },
+        "candidate_record_hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "question_type": { "enum": ["SINGLE_CHOICE", "OFFLINE_OPERATION"] },
+        "content_conclusion": { "enum": ["APPROVED", "RETURN_FOR_REVISION", "REJECTED"] },
+        "review_note": { "type": "string", "minLength": 1 }
+      }
+    },
+    "onlineReview": {
+      "allOf": [
+        { "$ref": "#/$defs/baseReview" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "question_id",
+            "question_version",
+            "candidate_record_hash",
+            "question_type",
+            "prompt_review",
+            "options_review",
+            "answer_review",
+            "candidate_answer",
+            "reviewed_answer",
+            "review_basis",
+            "material_decision",
+            "material_requirement",
+            "content_conclusion",
+            "review_note"
+          ],
+          "properties": {
+            "question_id": { "type": "string" },
+            "question_version": { "const": 1 },
+            "candidate_record_hash": { "type": "string" },
+            "question_type": { "const": "SINGLE_CHOICE" },
+            "prompt_review": { "enum": ["PASS", "RETURN"] },
+            "options_review": { "enum": ["UNIQUE_BEST", "AMBIGUOUS"] },
+            "answer_review": { "enum": ["CONFIRMED", "CHANGED", "UNABLE"] },
+            "candidate_answer": { "enum": ["A", "B", "C"] },
+            "reviewed_answer": { "type": ["string", "null"], "enum": ["A", "B", "C", null] },
+            "review_basis": { "type": "string", "minLength": 1 },
+            "material_decision": { "enum": ["TEXT_ONLY_APPROVED", "ASSET_REQUIRED"] },
+            "material_requirement": { "type": ["string", "null"] },
+            "content_conclusion": { "enum": ["APPROVED", "RETURN_FOR_REVISION", "REJECTED"] },
+            "review_note": { "type": "string", "minLength": 1 }
+          }
+        }
+      ]
+    },
+    "offlineReview": {
+      "allOf": [
+        { "$ref": "#/$defs/baseReview" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "question_id",
+            "question_version",
+            "candidate_record_hash",
+            "question_type",
+            "task_executable",
+            "tools_complete",
+            "criteria_sufficient",
+            "proposed_anchors",
+            "safety_note",
+            "content_conclusion",
+            "review_note"
+          ],
+          "properties": {
+            "question_id": { "type": "string" },
+            "question_version": { "const": 1 },
+            "candidate_record_hash": { "type": "string" },
+            "question_type": { "const": "OFFLINE_OPERATION" },
+            "task_executable": { "enum": ["YES", "NO"] },
+            "tools_complete": { "enum": ["YES", "NO"] },
+            "criteria_sufficient": { "enum": ["YES", "NO"] },
+            "proposed_anchors": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["score_0", "score_1", "score_2"],
+              "properties": {
+                "score_0": { "type": "string", "minLength": 1 },
+                "score_1": { "type": "string", "minLength": 1 },
+                "score_2": { "type": "string", "minLength": 1 }
+              }
+            },
+            "safety_note": { "type": "string" },
+            "content_conclusion": { "enum": ["RETURN_FOR_REVISION", "REJECTED"] },
+            "review_note": { "type": "string", "minLength": 1 }
+          }
+        }
+      ]
+    }
+  }
+}

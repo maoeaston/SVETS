@@ -27,16 +27,12 @@
       </div>
     </header>
 
-    <p
-      v-if="errorMsg"
-      class="error-msg"
-      role="alert"
-    >
-      {{ errorMsg }}
-    </p>
+    <PageState v-if="loading" kind="loading" title="正在读取学生档案" description="加载完成前不会显示空数据结论。" />
+    <PageState v-else-if="errorMsg" :kind="errorMsg === '无权限' ? 'forbidden' : 'error'" title="学生档案没有加载成功" :description="errorMsg" action-label="重新加载" @action="fetchStudents" />
+    <PageState v-else-if="items.length === 0" kind="empty" title="当前没有学生档案" description="可以新建学生，或调整搜索与归档筛选。" action-label="新建学生" @action="goCreate" />
 
     <table
-      v-if="!loading"
+      v-if="!loading && !errorMsg && items.length > 0"
       class="table"
     >
       <thead>
@@ -51,14 +47,6 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-if="items.length === 0">
-          <td
-            colspan="5"
-            class="empty"
-          >
-            暂无学生
-          </td>
-        </tr>
         <tr
           v-for="row in items"
           :key="row.studentId"
@@ -82,13 +70,6 @@
         </tr>
       </tbody>
     </table>
-    <p
-      v-else
-      class="loading"
-    >
-      加载中…
-    </p>
-
     <footer
       v-if="!loading && items.length > 0"
       class="pagination"
@@ -116,6 +97,7 @@
 import { ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
+import PageState from '../../components/PageState.vue'
 import type { StudentSummary } from '@shared/types/student'
 
 const router = useRouter()

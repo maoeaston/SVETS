@@ -51,7 +51,7 @@ vi.mock('../../../domain/event-writer', () => ({
 }))
 
 import { createSession, seedAssessmentErrorCodes, submitAnswer } from '../assessment'
-import { submitJobSkillOfflineScores, getJobSkillOfflineScores } from '../job-skill-scoring'
+import { submitJobSkillOfflineScores, getJobSkillOfflineScores, getSessionScoringQuestions } from '../job-skill-scoring'
 import {
   createTestDb,
   seedCaller,
@@ -504,5 +504,74 @@ describe('TC-O: JOB_SKILL 线下评分录入', () => {
     for (const item of result.items) {
       expect(item.score).toBe(2)
     }
+  })
+
+  it('线下题详情按角色脱敏，学生端不返回锚点和密封配置', () => {
+    const sessionId = createOfflinePendingSession()
+    const questionId = bankIds.offlineIds[0]
+    db.exec('DROP TRIGGER IF EXISTS trg_question_bank_active_semantic_immutable')
+    db.exec('DROP TRIGGER IF EXISTS trg_question_bank_referenced_semantic_immutable')
+    db.prepare('UPDATE question_bank SET content_json = ?, scoring_rule_json = ? WHERE question_id = ?').run(
+      JSON.stringify({
+        question_type: 'OFFLINE_OPERATION',
+        prompt: '将5件训练商品安全摆到货架中层。',
+        offline_tool_brief: '稳定迷你货架；5件轻型训练商品',
+        rubric_criteria: [{ criterion_id: 'r1', description: '商品全部放在中层' }],
+        rubric: {
+          anchors: { 0: '任务未形成合格陈列', 1: '部分完成或需提示', 2: '独立完全达标' },
+          sealed_admin_config: { expected_count: 5 }
+        },
+        safety: { proposed_stop_conditions: '货架晃动或出现攀爬时立即停止。' }
+      }),
+      JSON.stringify({ scoring_type: 'OFFLINE_RUBRIC', max_score: 2 }),
+      questionId
+    )
+
+    const teacher = getSessionScoringQuestions(db, { callerUserId: callerId, callerRole: 'TEACHER', sessionId })
+    expect(teacher.success).toBe(true)
+    if (!teacher.success) return
+    const teacherQuestion = teacher.offlineQuestions.find((question) => question.questionId === questionId)!
+    expect(teacherQuestion.prompt).toContain('5件训练商品')
+    expect(teacherQuestion.toolBrief).toContain('迷你货架')
+    expect(teacherQuestion.rubricCriteria).toHaveLength(1)
+    expect(teacherQuestion.scoreAnchors?.['2']).toBe('独立完全达标')
+    expect(teacherQuestion.sealedAdminConfig).toEqual({ expected_count: 5 })
+
+    const student = getSessionScoringQuestions(db, { callerUserId: studentId, callerRole: 'STUDENT', sessionId })
+    expect(student.success).toBe(true)
+    if (!student.success) return
+    const studentQuestion = student.offlineQuestions.find((question) => question.questionId === questionId)!
+    expect(studentQuestion.prompt).toBe(teacherQuestion.prompt)
+    expect(studentQuestion.toolBrief).toBe(teacherQuestion.toolBrief)
+    expect(studentQuestion.safetyStopConditions).toContain('立即停止')
+    expect(studentQuestion.rubricCriteria).toEqual([])
+    expect(studentQuestion.scoreAnchors).toBeNull()
+    expect(studentQuestion.sealedAdminConfig).toBeNull()
+  })
+
+  it('评分事件快照保存命中锚点和锚点版本', () => {
+    const sessionId = createOfflinePendingSession()
+    const questionId = bankIds.offlineIds[0]
+    db.exec('DROP TRIGGER IF EXISTS trg_question_bank_active_semantic_immutable')
+    db.exec('DROP TRIGGER IF EXISTS trg_question_bank_referenced_semantic_immutable')
+    db.prepare('UPDATE question_bank SET content_json = ? WHERE question_id = ?').run(
+      JSON.stringify({
+        question_type: 'OFFLINE_OPERATION', prompt: '线下任务', offline_tool_brief: '训练工具', rubric_criteria: [],
+        rubric: { anchors: { 0: '未完成', 1: '部分完成', 2: '完全达标' } }
+      }),
+      questionId
+    )
+    const scores = sixValidScores(1)
+    scores[0] = { questionId, score: 2, anchorVersion: `${questionId}@1`, selectedAnchor: '完全达标' }
+    const submitted = submitJobSkillOfflineScores(db, { callerUserId: callerId, callerRole: 'TEACHER', sessionId, scores })
+    expect(submitted.success).toBe(true)
+    const result = getJobSkillOfflineScores(db, { callerUserId: callerId, callerRole: 'TEACHER', sessionId })
+    expect(result.success).toBe(true)
+    if (!result.success) return
+    expect(result.items.find((item) => item.questionId === questionId)).toMatchObject({
+      score: 2,
+      anchorVersion: `${questionId}@1`,
+      selectedAnchor: '完全达标'
+    })
   })
 })

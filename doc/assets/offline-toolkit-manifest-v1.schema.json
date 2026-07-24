@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "offline-toolkit-manifest-v1.schema.json",
+  "title": "SVETS Offline Toolkit Manifest v1",
+  "type": "object",
+  "required": ["$schema", "schema_version", "manifest_id", "toolkit_version", "status", "generated_at", "source_files", "summary", "inventory", "setups", "reverse_index", "manifest_hash"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema_version": { "const": "offline-toolkit-manifest-v1" },
+    "manifest_id": { "const": "job-skill-shelver-offline-toolkit-v2.2" },
+    "toolkit_version": { "const": "2.2" },
+    "status": { "const": "LOCKED_FOR_PRODUCTION" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "source_files": { "type": "array", "minItems": 3, "items": { "$ref": "#/$defs/sourceFile" } },
+    "summary": { "$ref": "#/$defs/summary" },
+    "inventory": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/inventoryItem" } },
+    "setups": { "type": "array", "minItems": 100, "maxItems": 100, "items": { "$ref": "#/$defs/setup" } },
+    "reverse_index": { "$ref": "#/$defs/reverseIndex" },
+    "manifest_hash": { "$ref": "#/$defs/hash" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "sourceFile": {
+      "type": "object",
+      "required": ["path", "sha256"],
+      "properties": { "path": { "type": "string", "minLength": 1 }, "sha256": { "$ref": "#/$defs/hash" } },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": ["offline_question_total", "inventory_item_total", "by_module", "date_question_total", "script_question_total", "example_image_total"],
+      "properties": {
+        "offline_question_total": { "const": 100 },
+        "inventory_item_total": { "type": "integer", "minimum": 1 },
+        "by_module": {
+          "type": "object",
+          "required": ["M1", "M2", "M3", "M4", "M5", "M6"],
+          "properties": { "M1": { "const": 16 }, "M2": { "const": 15 }, "M3": { "const": 16 }, "M4": { "const": 21 }, "M5": { "const": 17 }, "M6": { "const": 15 } },
+          "additionalProperties": false
+        },
+        "date_question_total": { "const": 20 },
+        "script_question_total": { "const": 13 },
+        "example_image_total": { "const": 4 }
+      },
+      "additionalProperties": false
+    },
+    "inventoryItem": {
+      "type": "object",
+      "required": ["item_id", "kind", "description", "quantity_contract", "safety_contract"],
+      "properties": {
+        "item_id": { "type": "string", "pattern": "^[a-z][a-z0-9_]+$" },
+        "kind": { "enum": ["PHYSICAL", "DOCUMENT", "CONSUMABLE", "SOFTWARE"] },
+        "description": { "type": "string", "minLength": 1 },
+        "quantity_contract": { "type": "string", "minLength": 1 },
+        "safety_contract": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "setup": {
+      "type": "object",
+      "required": ["setup_id", "source_question_id", "current_question_id", "module", "status", "item_ids", "asset_ids", "public_instruction", "reset_instruction", "answer_contract_hash"],
+      "properties": {
+        "setup_id": { "type": "string", "pattern": "^setup_[a-z0-9_]+$" },
+        "source_question_id": { "type": "string", "minLength": 1 },
+        "current_question_id": { "type": "string", "minLength": 1 },
+        "module": { "enum": ["M1", "M2", "M3", "M4", "M5", "M6"] },
+        "status": { "const": "LOCKED_FOR_PRODUCTION" },
+        "item_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
+        "asset_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^asset_[a-z0-9_]+$" } },
+        "public_instruction": { "type": "string", "minLength": 1 },
+        "reset_instruction": { "type": "string", "minLength": 1 },
+        "answer_contract_hash": { "$ref": "#/$defs/hash" }
+      },
+      "additionalProperties": false
+    },
+    "reverseIndex": {
+      "type": "object",
+      "required": ["item_to_setup_ids", "asset_to_setup_ids"],
+      "properties": {
+        "item_to_setup_ids": { "type": "object", "additionalProperties": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } } },
+        "asset_to_setup_ids": { "type": "object", "additionalProperties": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } } }
+      },
+      "additionalProperties": false
+    }
+  }
+}

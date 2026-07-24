@@ -19,7 +19,7 @@ export function executeSqliteScript(dbPath, sql, options = {}) {
 }
 
 export function runSqliteCommand(args, options = {}) {
-  const result = spawnSync('sqlite3', args, options)
+  const result = spawnSync('sqlite3', args, { maxBuffer: 16 * 1024 * 1024, ...options })
   if (result.status === 0) return result.stdout
   if (result.error) throw result.error
 

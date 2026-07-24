@@ -420,6 +420,27 @@ describe('规则13 ASSET', () => {
     }))
     expect(hasError(r, 'ASSET_005')).toBe(true)
   })
+
+  it('ASSET_006: script/sealed/offline setup/tool 引用任一缺失即失败', () => {
+    const r = validateQuestionContract(makeInput({
+      questionRow: { ...makeInput().questionRow, tool_asset_ids_json: ['asset-tool'] },
+      contentJson: {
+        ...makeInput().contentJson,
+        administration: {
+          script_asset_id: 'asset-script',
+          sealed_config_asset_id: 'asset-sealed'
+        },
+        offline_setup: { setup_id: 'setup-1', item_ids: [], asset_ids: ['asset-setup'] }
+      } as unknown as ContentJson,
+      assetRegistry: {
+        exists: (id) => id !== 'asset-sealed',
+        isActive: () => true,
+        hashMatch: () => true
+      }
+    }))
+    expect(hasError(r, 'ASSET_006')).toBe(true)
+    expect(r.errors.find((error) => error.code === 'ASSET_006')?.message).toContain('asset-sealed')
+  })
 })
 
 // ──────────────────────────────────────────────────────────

@@ -1,5 +1,7 @@
 [TEMPLATE_ID: offline-demo]
-[VERSION: v1.2.2]
+[VERSION: v1.3.0]
+[CONTRACT: asset-manifest-v0.5.0]
+Compile this template only from the asset manifest fields for the selected asset: description, target_cue, current_question_ids, required_overlay, forbidden_visual_cues, reference_asset_ids, and question_authority.
 
 Photorealistic Chinese supermarket vocational demonstration using the approved worker and setting.
 One action per frame or shot, fixed readable camera, natural pace, restrained color, no dramatic effects.

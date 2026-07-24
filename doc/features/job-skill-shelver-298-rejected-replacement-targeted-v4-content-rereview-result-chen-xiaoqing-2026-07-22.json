@@ -1,0 +1,127 @@
+{
+  "schema_version": "job-skill-shelver-298-rejected-replacement-targeted-v4-content-rereview-result-v1",
+  "package_id": "job-skill-shelver-298-rejected-replacement-targeted-v4-content-rereview-packet-chen-xiaoqing-v1",
+  "candidate_set_id": "job-skill-shelver-298-rejected-replacement-targeted-candidates-v4",
+  "candidate_set_hash": "sha256:6ec5020603b1e7989d384fd1b40236a574c208e00d9bc85255cd3fd56536bdcb",
+  "reviewer": {
+    "name": "陈晓青",
+    "track": "CONTENT_REREVIEW",
+    "role": "内容定点复审"
+  },
+  "submitted_at": "2026-07-22T06:25:13.691Z",
+  "summary": {
+    "total": 6,
+    "pass": 6,
+    "return_for_revision": 0
+  },
+  "authority": {
+    "activation_authority_granted": false,
+    "can_activate_questions": false,
+    "runtime_database_change_allowed": false,
+    "activation_sql_generated": false
+  },
+  "questions": [
+    {
+      "question_id": "M1_OP_042_V4",
+      "previous_question_id": "M1_OP_042_V3",
+      "new_semantic_hash": "sha256:89f1888d14191e356737bd8fcd58769e1a317bb9d2973ac745795b4c7efa5cfc",
+      "candidate_record_hash": "sha256:62497b427e3e44a40fb86b3daf5c9b845d99623c971c5f7a5d980676c855af3d",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "content_conclusion": "PASS",
+        "occupational_authenticity": "PASS",
+        "prompt_and_boundary": "PASS",
+        "rubric_observability": "PASS",
+        "material_feasibility": "PASS",
+        "content_note": "通过",
+        "required_revision": "无"
+      }
+    },
+    {
+      "question_id": "M3_OP_056_V4",
+      "previous_question_id": "M3_OP_056_V3",
+      "new_semantic_hash": "sha256:b6c5cdaf519121ced592a847837c32961a44b71bc8a6757e4256a784fadcb696",
+      "candidate_record_hash": "sha256:f2b16dcea0a879cd0e3b024b59306e5b8e6e4f9e9e4280b49a9bc141a0bcba5f",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "content_conclusion": "PASS",
+        "occupational_authenticity": "PASS",
+        "prompt_and_boundary": "PASS",
+        "rubric_observability": "PASS",
+        "material_feasibility": "PASS",
+        "content_note": "通过",
+        "required_revision": "无"
+      }
+    },
+    {
+      "question_id": "M4_OP_045_V4",
+      "previous_question_id": "M4_OP_045_V3",
+      "new_semantic_hash": "sha256:a127321c15a0f7f0b65719e001301688c25ae4248ed87ad4bd6739c613788f73",
+      "candidate_record_hash": "sha256:1c197d726e6f5d343aa1c97cba5e734091e4557c30f171641f0e21f7cd1c942f",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "content_conclusion": "PASS",
+        "occupational_authenticity": "PASS",
+        "prompt_and_boundary": "PASS",
+        "rubric_observability": "PASS",
+        "material_feasibility": "PASS",
+        "content_note": "通过",
+        "required_revision": "无"
+      }
+    },
+    {
+      "question_id": "M4_OP_046_V4",
+      "previous_question_id": "M4_OP_046_V3",
+      "new_semantic_hash": "sha256:aa0eecc3b2e9a3cfa64ad95fd017b7fdf9d65e96d465ce151f38b79b7ae73dc7",
+      "candidate_record_hash": "sha256:d98f9c6039fe6b57a476eb980525fe298d07bc562203c185ef9d4bd7773cf7fd",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "content_conclusion": "PASS",
+        "occupational_authenticity": "PASS",
+        "prompt_and_boundary": "PASS",
+        "rubric_observability": "PASS",
+        "material_feasibility": "PASS",
+        "content_note": "通过",
+        "required_revision": "无"
+      }
+    },
+    {
+      "question_id": "M4_OP_048_V4",
+      "previous_question_id": "M4_OP_048_V3",
+      "new_semantic_hash": "sha256:9cbcf53c74aa4438503c239906f6032a3128fb76c6ee8dad50406268a62f9df3",
+      "candidate_record_hash": "sha256:9f889d73ccba792fcb54a52580dd9dbe6eb354f81f924ba42021da79fe3b77cd",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "content_conclusion": "PASS",
+        "occupational_authenticity": "PASS",
+        "prompt_and_boundary": "PASS",
+        "rubric_observability": "PASS",
+        "material_feasibility": "PASS",
+        "content_note": "通过",
+        "required_revision": "无"
+      }
+    },
+    {
+      "question_id": "M5_OP_048_V4",
+      "previous_question_id": "M5_OP_048_V3",
+      "new_semantic_hash": "sha256:c9a486ac865c44b3cee832299c8b877d5fa933b0783c95c2d4942165fbb9996a",
+      "candidate_record_hash": "sha256:85f7966ce5e7a74eb6c8e70a92b0dd8e7508bc7a607e4acfe7a5f414643dcd0c",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "content_conclusion": "PASS",
+        "occupational_authenticity": "PASS",
+        "prompt_and_boundary": "PASS",
+        "rubric_observability": "PASS",
+        "material_feasibility": "PASS",
+        "content_note": "通过",
+        "required_revision": "无"
+      }
+    }
+  ]
+}

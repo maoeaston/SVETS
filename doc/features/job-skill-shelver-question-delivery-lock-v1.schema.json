@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "job-skill-shelver-question-delivery-lock-v1.schema.json",
+  "title": "Job Skill Shelver Question Delivery Lock v1",
+  "type": "object",
+  "required": ["$schema", "schema_version", "lock_id", "status", "generated_at", "authority", "sources", "summary", "release_gate", "questions", "reverse_index", "lock_hash"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema_version": { "const": "job-skill-shelver-question-delivery-lock-v1" },
+    "lock_id": { "const": "job-skill-shelver-delivery-lock-2026-07-22" },
+    "status": { "const": "LOCKED_FOR_PRODUCTION_NOT_RELEASE" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "authority": {
+      "type": "object",
+      "required": ["authority_id", "authority_hash", "semantic_root_hash"],
+      "properties": {
+        "authority_id": { "type": "string" },
+        "authority_hash": { "$ref": "#/$defs/hash" },
+        "semantic_root_hash": { "$ref": "#/$defs/hash" }
+      },
+      "additionalProperties": false
+    },
+    "sources": { "type": "array", "minItems": 3, "items": { "$ref": "#/$defs/sourceFile" } },
+    "summary": { "$ref": "#/$defs/summary" },
+    "release_gate": {
+      "type": "object",
+      "required": ["releaseable", "reason"],
+      "properties": { "releaseable": { "const": false }, "reason": { "type": "string", "minLength": 1 } },
+      "additionalProperties": false
+    },
+    "questions": { "type": "array", "minItems": 181, "maxItems": 181, "items": { "$ref": "#/$defs/question" } },
+    "reverse_index": {
+      "type": "object",
+      "required": ["setup_to_question_id", "asset_to_question_ids"],
+      "properties": {
+        "setup_to_question_id": { "type": "object", "additionalProperties": { "type": "string" } },
+        "asset_to_question_ids": { "type": "object", "additionalProperties": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } } }
+      },
+      "additionalProperties": false
+    },
+    "lock_hash": { "$ref": "#/$defs/hash" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "sourceFile": {
+      "type": "object",
+      "required": ["path", "sha256"],
+      "properties": { "path": { "type": "string" }, "sha256": { "$ref": "#/$defs/hash" } },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": ["locked_question_total", "offline_setup_total", "video_answer_total", "image_requirement_total", "offline_example_image_total", "date_question_total", "script_question_total"],
+      "properties": {
+        "locked_question_total": { "const": 181 },
+        "offline_setup_total": { "const": 100 },
+        "video_answer_total": { "const": 68 },
+        "image_requirement_total": { "const": 13 },
+        "offline_example_image_total": { "const": 4 },
+        "date_question_total": { "const": 20 },
+        "script_question_total": { "const": 13 }
+      },
+      "additionalProperties": false
+    },
+    "delivery": {
+      "type": "object",
+      "required": ["types", "offline_setup_id", "asset_ids", "expected_answer", "answer_contract_hash"],
+      "properties": {
+        "types": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["OFFLINE_SETUP", "VIDEO_ANSWER", "IMAGE_REQUIREMENT", "OFFLINE_EXAMPLE_IMAGE", "ROLE_PLAY_SCRIPT", "AUDIO_CUE"] } },
+        "offline_setup_id": { "type": ["string", "null"] },
+        "asset_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^asset_[a-z0-9_]+$" } },
+        "expected_answer": {},
+        "answer_contract_hash": { "$ref": "#/$defs/hash" }
+      },
+      "additionalProperties": false
+    },
+    "question": {
+      "type": "object",
+      "required": ["source_question_id", "current_question_id", "current_question_version", "module", "question_type", "disposition", "semantic_hash", "delivery"],
+      "properties": {
+        "source_question_id": { "type": "string" },
+        "current_question_id": { "type": "string" },
+        "current_question_version": { "type": "integer", "minimum": 1 },
+        "module": { "enum": ["M1", "M2", "M3", "M4", "M5", "M6"] },
+        "question_type": { "type": "string" },
+        "disposition": { "type": "string" },
+        "semantic_hash": { "$ref": "#/$defs/hash" },
+        "delivery": { "$ref": "#/$defs/delivery" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

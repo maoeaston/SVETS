@@ -11,6 +11,7 @@ import type { DBAdapter } from '../../db/interface'
 import { SqliteAdapter } from '../../db/sqlite-adapter'
 import { getDatabase } from '../../db/connection'
 import { assertCaller, assertStudent } from '../../utils/auth-context'
+import { resolveTrustedAuthSessionCaller } from '../../utils/auth-session'
 import { writeEvent } from '../../domain/event-writer'
 import type {
   CreateTrainingSessionParams,
@@ -18,6 +19,8 @@ import type {
   ListTrainingSessionsParams,
   ListTrainingSessionsResult,
   ListTrainingSessionsSuccess,
+  ListMyTrainingSessionsParams,
+  ListMyTrainingSessionsResult,
   TrainingSessionListItem,
   GetTrainingSessionParams,
   GetTrainingSessionResult,
@@ -304,6 +307,53 @@ export function listTrainingSessions(
 
   const success: ListTrainingSessionsSuccess = { success: true, sessions, total: countRow.total }
   return success
+}
+
+export function listMyTrainingSessions(
+  db: DBAdapter,
+  params: ListMyTrainingSessionsParams
+): ListMyTrainingSessionsResult {
+  const caller = assertStudent(db, params.callerUserId, params.callerRole)
+  if (!caller.ok) return { success: false, errorCode: 'FORBIDDEN' }
+  const profile = db.prepare(
+    `SELECT student_id FROM student_profile
+      WHERE user_id = ? OR (user_id IS NULL AND student_id = ?)
+      LIMIT 1`
+  ).get(caller.row.user_id, caller.row.user_id) as { student_id: string } | undefined
+  if (!profile) return { success: true, sessions: [], total: 0 }
+
+  const limit = Number.isInteger(params.limit) && (params.limit ?? 0) > 0
+    ? Math.min(params.limit as number, 100)
+    : 50
+  const offset = Number.isInteger(params.offset) && (params.offset ?? -1) >= 0
+    ? params.offset as number
+    : 0
+  const rows = db.prepare(
+    `SELECT ts.training_session_id, ts.business_session_id, ts.student_id, ts.module_type, ts.status,
+            ts.total_step_count, ts.completed_step_count, ts.completion_rate,
+            ts.created_by, ts.started_at, ts.completed_at
+       FROM training_session ts
+      WHERE ts.student_id = ?
+      ORDER BY ts.updated_at DESC
+      LIMIT ? OFFSET ?`
+  ).all(profile.student_id, limit, offset) as TrainingSessionListRow[]
+  const total = (db.prepare(
+    'SELECT COUNT(*) AS total FROM training_session WHERE student_id = ?'
+  ).get(profile.student_id) as { total: number }).total
+  const sessions: TrainingSessionListItem[] = rows.map((row) => ({
+    trainingSessionId: row.training_session_id,
+    businessSessionId: row.business_session_id,
+    studentId: row.student_id,
+    moduleType: row.module_type,
+    status: row.status as TrainingSessionStatus,
+    totalStepCount: row.total_step_count,
+    completedStepCount: row.completed_step_count,
+    completionRate: row.completion_rate,
+    createdBy: row.created_by,
+    startedAt: row.started_at,
+    completedAt: row.completed_at
+  }))
+  return { success: true, sessions, total }
 }
 
 // ---------------------------------------------------------------------------
@@ -736,30 +786,60 @@ export function haltTrainingSessionSteps(
 export function registerTrainingHandlers(): void {
   const getDb = (): DBAdapter => new SqliteAdapter(getDatabase())
 
-  ipcMain.handle('training:createSession', (_event, params: unknown) =>
-    createTrainingSession(getDb(), params as CreateTrainingSessionParams)
-  )
-  ipcMain.handle('training:listSessions', (_event, params: unknown) =>
-    listTrainingSessions(getDb(), params as ListTrainingSessionsParams)
-  )
-  ipcMain.handle('training:getSession', (_event, params: unknown) =>
-    getTrainingSession(getDb(), params as GetTrainingSessionParams)
-  )
-  ipcMain.handle('training:startStep', (_event, params: unknown) =>
-    startStep(getDb(), params as TrainingStepActionParams)
-  )
-  ipcMain.handle('training:completeStep', (_event, params: unknown) =>
-    completeStep(getDb(), params as TrainingStepActionParams)
-  )
-  ipcMain.handle('training:skipStep', (_event, params: unknown) =>
-    skipStep(getDb(), params as TrainingStepActionParams)
-  )
-  ipcMain.handle('training:failStep', (_event, params: unknown) =>
-    failStep(getDb(), params as TrainingStepActionParams)
-  )
-  ipcMain.handle('training:retryStep', (_event, params: unknown) =>
-    retryStep(getDb(), params as TrainingStepActionParams)
-  )
+  ipcMain.handle('training:createSession', (event, params: unknown) => {
+    const db = getDb()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params as CreateTrainingSessionParams)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return createTrainingSession(db, trusted.params)
+  })
+  ipcMain.handle('training:listSessions', (event, params: unknown) => {
+    const db = getDb()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params as ListTrainingSessionsParams)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return listTrainingSessions(db, trusted.params)
+  })
+  ipcMain.handle('training:listMySessions', (event, params: unknown) => {
+    const db = getDb()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params as ListMyTrainingSessionsParams)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return listMyTrainingSessions(db, trusted.params)
+  })
+  ipcMain.handle('training:getSession', (event, params: unknown) => {
+    const db = getDb()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params as GetTrainingSessionParams)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return getTrainingSession(db, trusted.params)
+  })
+  ipcMain.handle('training:startStep', (event, params: unknown) => {
+    const db = getDb()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params as TrainingStepActionParams)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return startStep(db, trusted.params)
+  })
+  ipcMain.handle('training:completeStep', (event, params: unknown) => {
+    const db = getDb()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params as TrainingStepActionParams)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return completeStep(db, trusted.params)
+  })
+  ipcMain.handle('training:skipStep', (event, params: unknown) => {
+    const db = getDb()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params as TrainingStepActionParams)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return skipStep(db, trusted.params)
+  })
+  ipcMain.handle('training:failStep', (event, params: unknown) => {
+    const db = getDb()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params as TrainingStepActionParams)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return failStep(db, trusted.params)
+  })
+  ipcMain.handle('training:retryStep', (event, params: unknown) => {
+    const db = getDb()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params as TrainingStepActionParams)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return retryStep(db, trusted.params)
+  })
 }
 
 // 导出 applyTrainingEvent 供测试复用

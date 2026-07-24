@@ -1,8 +1,11 @@
 # 视觉资产合同执行清单
 
-**当前基线：** `visual-asset-master-plan.md v1.2.4-video-sop` / `asset-manifest.schema.json v0.3.1`
+> [!IMPORTANT]
+> 素材生产先读 `job-skill-shelver-current-contracts.md`、`job-skill-shelver-runtime-authority-v1.json` 和 `asset-manifest.json`。旧 Pilot 文档、旧审核包和 archive 文件只作追溯，不得直接生成图片、视频或入库 SQL。
 
-**适用范围：** 231 个 A-G 交付资产 + 6 个 R1-R6 核心参考资产
+**当前基线：** `visual-asset-master-plan.md v1.3.0-298-runtime-authority` / `asset-manifest.schema.json v0.5.0`
+
+**适用范围：** 270 项资产：231 个 A-G 资产 + 33 个 DELIVERY 资产 + 6 个 R1-R6 核心参考资产
 
 **唯一机器合同：** `doc/assets/asset-manifest.json`
 
@@ -27,7 +30,7 @@ visual-asset-master-plan.md（风格、范围、审核原则）
 
 ## 2. 生产前
 
-1. 运行 `npm run asset:validate`，当前基线必须显示 `total=237`。
+1. 运行 `npm run asset:validate`，当前基线必须显示 `total=270, planned=270, approved=0`，除非本批真实完成了批准。
 2. 优先完成 R1-R6；非参考资产必须至少引用一个核心参考资产。
 3. 从 `doc/assets/prompt-templates/` 读取对应模板，不得从 archive 复制旧 Prompt。
 4. 按 `visual-asset-prompt-compilation-session-guide.md` 分批编译并独立复核逐资产 `prompt_text`。
@@ -78,6 +81,7 @@ planned -> generated -> composited（按需） -> reviewing -> approved
 关联前运行 `npm run asset:validate`，确认：
 
 - `question_ids` 在当前 96 + 298 题合同中存在
+- `current_question_ids` 能从 298 题运行时权威或 BASE_ABILITY 当前题号映射得到
 - `expected_answer` 与题库 `scoring_rule_json` 一致
 - 被题目引用的资产已经 `approved`
 - 测评素材不存在高亮、箭头、勾叉、颜色暗示或答案文字

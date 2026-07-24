@@ -3,7 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { initDatabase, closeDatabase } from './db/connection'
 import { registerAppAssetProtocol } from './protocol/app-asset'
-import './ipc'
+import { registerIpcHandlers } from './ipc'
 
 // 注册 app:// 为 privileged scheme。必须在 app.whenReady() 之前调用，且整个进程只能调一次。
 // 没有这一步，<img src="app://asset/..."> 会被 Chromium 当作不安全协议直接拦截。
@@ -64,6 +64,7 @@ app.whenReady().then(() => {
   })
 
   initDatabase()
+  registerIpcHandlers()
   registerAppAssetProtocol()
   createWindow()
 

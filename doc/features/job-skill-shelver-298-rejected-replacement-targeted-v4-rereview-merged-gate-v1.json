@@ -1,0 +1,433 @@
+{
+  "schema_version": "job-skill-shelver-298-rejected-replacement-targeted-v4-rereview-merged-gate-v1",
+  "gate_id": "job-skill-shelver-298-rejected-replacement-targeted-v4-rereview-merged-gate-v1",
+  "status": "PASSED_REVIEW_ONLY_NO_ACTIVATION_AUTHORITY",
+  "generated_at": "2026-07-22T18:00:00+08:00",
+  "candidate_set": {
+    "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-candidates-v4.json",
+    "candidate_set_hash": "sha256:6ec5020603b1e7989d384fd1b40236a574c208e00d9bc85255cd3fd56536bdcb",
+    "sha256": "sha256:826c0e0f28a4f22a26fab5c2334ad04c8f05b9c086626d3991f531c26f40156c"
+  },
+  "pending_gate": {
+    "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v4-content-rereview-gate-v1.json",
+    "gate_hash": "sha256:77d5b77f94f00bdf56919669c586137222f54604737d46399e68d180f4330c03",
+    "sha256": "sha256:ebf98a03101f76d267dad6b79d6d9affc4d1abac80052efe29cd6a4a5ebffca0"
+  },
+  "source_result": {
+    "content": {
+      "source_path": "E:\\Downloads\\job-skill-shelver-298-rejected-replacement-targeted-v4-content-rereview-packet-chen-xiaoqing-v1-result.json",
+      "received_path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v4-content-rereview-result-chen-xiaoqing-2026-07-22.json",
+      "bytes": 4902,
+      "sha256": "sha256:2347aa2e61ab73e69b43ff32ea28fb0aedfa9f07ac80364fe84ab32e1e0ead5c",
+      "reviewer": {
+        "name": "陈晓青",
+        "track": "CONTENT_REREVIEW",
+        "role": "内容定点复审"
+      },
+      "submitted_at": "2026-07-22T06:25:13.691Z",
+      "attachment_byte_match_verified": true
+    }
+  },
+  "validation": {
+    "schema_identity_submitted_at_scope_hash_summary": "PASSED",
+    "exact_content_question_set": [
+      "M1_OP_042_V4",
+      "M3_OP_056_V4",
+      "M4_OP_045_V4",
+      "M4_OP_046_V4",
+      "M4_OP_048_V4",
+      "M5_OP_048_V4"
+    ],
+    "carried_forward_safety_technical_pass_hashes": "PASSED",
+    "effective_status_policy": "FAIL_CLOSED_IF_ANY_CONTENT_SUBFIELD_RETURNS",
+    "source_internal_consistency": "PASSED",
+    "source_consistency_anomalies": [],
+    "scope_anomalies": []
+  },
+  "summary": {
+    "v4_total": 6,
+    "v4_passed_review_only_no_activation_authority": 6,
+    "v4_return_for_revision": 0,
+    "v4_pending": 0,
+    "content_v4": {
+      "total": 6,
+      "passed": 6,
+      "return_for_revision": 0
+    },
+    "safety_technical_v4": {
+      "total": 6,
+      "passed_carried_forward": 6,
+      "return_for_revision": 0
+    },
+    "cumulative_replacement_review": {
+      "total": 11,
+      "passed_review_only_no_activation_authority": 11,
+      "return_for_revision": 0
+    }
+  },
+  "cumulative_passed_references": [
+    {
+      "question_id": "M4_OP_043_V2",
+      "version": 2,
+      "semantic_hash": "sha256:7df37f5d3f61aeb8fce82e17493401713b3cb84a72dfc9e540b20bd25127a119",
+      "candidate_record_hash": "sha256:27068d7eef3394c3c5d77827da331c5267b9b9fbc43d88d2d3796ba451ac1418",
+      "activation_authority": "NONE"
+    },
+    {
+      "question_id": "M4_OP_044_V2",
+      "version": 2,
+      "semantic_hash": "sha256:d36525b4131dce063a73e55b7b661b6c076c36b96ceef5cef50acdbead3f4b82",
+      "candidate_record_hash": "sha256:5e3a6e7305b38d4ca5f0c11f97aa3590b9f8da731ebf725abb01a748b8632dff",
+      "activation_authority": "NONE"
+    },
+    {
+      "question_id": "M1_OB_048_V3",
+      "version": 3,
+      "semantic_hash": "sha256:1e641508132b4f09ff926596382b26685857bc5832aff4c4ca9647cbe66981e5",
+      "candidate_record_hash": "sha256:002747a15bb22cd2cd1134dd200ca0f0435cba3929321a249c08cb2dc681fda3",
+      "activation_authority": "NONE"
+    },
+    {
+      "question_id": "M4_OP_047_V3",
+      "version": 3,
+      "semantic_hash": "sha256:f42242e98260c906a30fc01361c35627463c328e7e388b5a1b38e5383504b6b1",
+      "candidate_record_hash": "sha256:c5163f8d6607553c0e45fcb4126ef89b0e2d0eace79991fb7c9938a27c68d28c",
+      "activation_authority": "NONE"
+    },
+    {
+      "question_id": "M5_OP_055_V3",
+      "version": 3,
+      "semantic_hash": "sha256:64b8778f81fbf40160e03ecc5b94543ca229919d70d38817bfd271d9ddc412e0",
+      "candidate_record_hash": "sha256:a111139bd3f5b0216e3deaf9329eaf8879f854d9c4be56c73fb86bc2fcb828ca",
+      "activation_authority": "NONE"
+    },
+    {
+      "question_id": "M1_OP_042_V4",
+      "version": 4,
+      "semantic_hash": "sha256:89f1888d14191e356737bd8fcd58769e1a317bb9d2973ac745795b4c7efa5cfc",
+      "candidate_record_hash": "sha256:62497b427e3e44a40fb86b3daf5c9b845d99623c971c5f7a5d980676c855af3d",
+      "activation_authority": "NONE"
+    },
+    {
+      "question_id": "M3_OP_056_V4",
+      "version": 4,
+      "semantic_hash": "sha256:b6c5cdaf519121ced592a847837c32961a44b71bc8a6757e4256a784fadcb696",
+      "candidate_record_hash": "sha256:f2b16dcea0a879cd0e3b024b59306e5b8e6e4f9e9e4280b49a9bc141a0bcba5f",
+      "activation_authority": "NONE"
+    },
+    {
+      "question_id": "M4_OP_045_V4",
+      "version": 4,
+      "semantic_hash": "sha256:a127321c15a0f7f0b65719e001301688c25ae4248ed87ad4bd6739c613788f73",
+      "candidate_record_hash": "sha256:1c197d726e6f5d343aa1c97cba5e734091e4557c30f171641f0e21f7cd1c942f",
+      "activation_authority": "NONE"
+    },
+    {
+      "question_id": "M4_OP_046_V4",
+      "version": 4,
+      "semantic_hash": "sha256:aa0eecc3b2e9a3cfa64ad95fd017b7fdf9d65e96d465ce151f38b79b7ae73dc7",
+      "candidate_record_hash": "sha256:d98f9c6039fe6b57a476eb980525fe298d07bc562203c185ef9d4bd7773cf7fd",
+      "activation_authority": "NONE"
+    },
+    {
+      "question_id": "M4_OP_048_V4",
+      "version": 4,
+      "semantic_hash": "sha256:9cbcf53c74aa4438503c239906f6032a3128fb76c6ee8dad50406268a62f9df3",
+      "candidate_record_hash": "sha256:9f889d73ccba792fcb54a52580dd9dbe6eb354f81f924ba42021da79fe3b77cd",
+      "activation_authority": "NONE"
+    },
+    {
+      "question_id": "M5_OP_048_V4",
+      "version": 4,
+      "semantic_hash": "sha256:c9a486ac865c44b3cee832299c8b877d5fa933b0783c95c2d4942165fbb9996a",
+      "candidate_record_hash": "sha256:85f7966ce5e7a74eb6c8e70a92b0dd8e7508bc7a607e4acfe7a5f414643dcd0c",
+      "activation_authority": "NONE"
+    }
+  ],
+  "authority": {
+    "activation_authority_granted": false,
+    "can_activate_questions": false,
+    "candidate_set_ready_for_separate_authority_amendment": true,
+    "separate_authority_amendment_required": true,
+    "authority_amendment_executed": false,
+    "existing_287_unchanged": true,
+    "rejected_originals_11_unchanged": true,
+    "runtime_database_unchanged": true,
+    "activation_sql_generated": false,
+    "delivery_lock_unchanged": true,
+    "next_revision_required": 0
+  },
+  "questions": [
+    {
+      "question_id": "M1_OP_042_V4",
+      "previous_question_id": "M1_OP_042_V3",
+      "source_question_id": "M1_OP_042",
+      "question_version": 4,
+      "candidate_record_hash": "sha256:62497b427e3e44a40fb86b3daf5c9b845d99623c971c5f7a5d980676c855af3d",
+      "semantic_hash": "sha256:89f1888d14191e356737bd8fcd58769e1a317bb9d2973ac745795b4c7efa5cfc",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v4-content-rereview-gate-v1.json",
+        "gate_hash": "sha256:77d5b77f94f00bdf56919669c586137222f54604737d46399e68d180f4330c03",
+        "status": "PENDING_TARGETED_V4_CONTENT_REREVIEW_NO_ACTIVATION_AUTHORITY"
+      },
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "source": "V4_RESULT",
+          "review_fields": {
+            "content_conclusion": "PASS",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "PASS",
+            "material_feasibility": "PASS",
+            "content_note": "通过",
+            "required_revision": "无"
+          },
+          "source_record_hash": "sha256:8c4f1b9cda6ea24652e316b25bbff85613a1029647aed5a9baadfb540318d5bf"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source": "CARRIED_FROM_PRIOR_REVIEW",
+          "source_record_hash": "sha256:27d0ddf7e70b93d383d0b773ae791b38262650777550ca83d5f6c00218a420f7"
+        }
+      },
+      "status": "PASSED_REVIEW_ONLY_NO_ACTIVATION_AUTHORITY",
+      "failed_review_tracks": [],
+      "next_question_id": null,
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "previous_v3_not_activated": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:c579dddea11a6b0b398e09d86668c71c55271b3d23d909b0b9f10c3ead2261ee"
+    },
+    {
+      "question_id": "M3_OP_056_V4",
+      "previous_question_id": "M3_OP_056_V3",
+      "source_question_id": "M3_OP_056",
+      "question_version": 4,
+      "candidate_record_hash": "sha256:f2b16dcea0a879cd0e3b024b59306e5b8e6e4f9e9e4280b49a9bc141a0bcba5f",
+      "semantic_hash": "sha256:b6c5cdaf519121ced592a847837c32961a44b71bc8a6757e4256a784fadcb696",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v4-content-rereview-gate-v1.json",
+        "gate_hash": "sha256:77d5b77f94f00bdf56919669c586137222f54604737d46399e68d180f4330c03",
+        "status": "PENDING_TARGETED_V4_CONTENT_REREVIEW_NO_ACTIVATION_AUTHORITY"
+      },
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "source": "V4_RESULT",
+          "review_fields": {
+            "content_conclusion": "PASS",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "PASS",
+            "material_feasibility": "PASS",
+            "content_note": "通过",
+            "required_revision": "无"
+          },
+          "source_record_hash": "sha256:93880def702127367b7fa81aa09aa6e7961c91f1532fe1af02a1260330d3c981"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source": "CARRIED_FROM_PRIOR_REVIEW",
+          "source_record_hash": "sha256:3e7482520b61eea56c7eb57a776994461c3fbeb6452380252b4cce4bd193c502"
+        }
+      },
+      "status": "PASSED_REVIEW_ONLY_NO_ACTIVATION_AUTHORITY",
+      "failed_review_tracks": [],
+      "next_question_id": null,
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "previous_v3_not_activated": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:8b8ac6a72e4939031f129e2139556a39e48c3df69fd6feb09eadc31f2930c661"
+    },
+    {
+      "question_id": "M4_OP_045_V4",
+      "previous_question_id": "M4_OP_045_V3",
+      "source_question_id": "M4_OP_045",
+      "question_version": 4,
+      "candidate_record_hash": "sha256:1c197d726e6f5d343aa1c97cba5e734091e4557c30f171641f0e21f7cd1c942f",
+      "semantic_hash": "sha256:a127321c15a0f7f0b65719e001301688c25ae4248ed87ad4bd6739c613788f73",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v4-content-rereview-gate-v1.json",
+        "gate_hash": "sha256:77d5b77f94f00bdf56919669c586137222f54604737d46399e68d180f4330c03",
+        "status": "PENDING_TARGETED_V4_CONTENT_REREVIEW_NO_ACTIVATION_AUTHORITY"
+      },
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "source": "V4_RESULT",
+          "review_fields": {
+            "content_conclusion": "PASS",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "PASS",
+            "material_feasibility": "PASS",
+            "content_note": "通过",
+            "required_revision": "无"
+          },
+          "source_record_hash": "sha256:b9c7fb5ec930ef6fa84910492a63657cf82b0d4d0e6fe960ccd6266137be618f"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source": "CARRIED_FROM_PRIOR_REVIEW",
+          "source_record_hash": "sha256:1bf9c1f771c22c56ca756fa5296f94e20bc8dee33db35e9c0e73ee3d5cd40f06"
+        }
+      },
+      "status": "PASSED_REVIEW_ONLY_NO_ACTIVATION_AUTHORITY",
+      "failed_review_tracks": [],
+      "next_question_id": null,
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "previous_v3_not_activated": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:9a74a2a50e98494ec7e054f1a51fdc15df8aa0daa5e70f5af10a8ce053d23e74"
+    },
+    {
+      "question_id": "M4_OP_046_V4",
+      "previous_question_id": "M4_OP_046_V3",
+      "source_question_id": "M4_OP_046",
+      "question_version": 4,
+      "candidate_record_hash": "sha256:d98f9c6039fe6b57a476eb980525fe298d07bc562203c185ef9d4bd7773cf7fd",
+      "semantic_hash": "sha256:aa0eecc3b2e9a3cfa64ad95fd017b7fdf9d65e96d465ce151f38b79b7ae73dc7",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v4-content-rereview-gate-v1.json",
+        "gate_hash": "sha256:77d5b77f94f00bdf56919669c586137222f54604737d46399e68d180f4330c03",
+        "status": "PENDING_TARGETED_V4_CONTENT_REREVIEW_NO_ACTIVATION_AUTHORITY"
+      },
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "source": "V4_RESULT",
+          "review_fields": {
+            "content_conclusion": "PASS",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "PASS",
+            "material_feasibility": "PASS",
+            "content_note": "通过",
+            "required_revision": "无"
+          },
+          "source_record_hash": "sha256:e9ae8e92bf78531af14140f68a5d9faa35d71d4420d6c4090cf3dc145d459618"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source": "CARRIED_FROM_PRIOR_REVIEW",
+          "source_record_hash": "sha256:33599dc6c9f7acd691070d6550fca77506ac635d82b9aa11fca975c9a2cf6eb5"
+        }
+      },
+      "status": "PASSED_REVIEW_ONLY_NO_ACTIVATION_AUTHORITY",
+      "failed_review_tracks": [],
+      "next_question_id": null,
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "previous_v3_not_activated": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:faf7262d239c7179d0c943c39d7a0684c92a11b6e2c0f68b63a484bb8b0752fa"
+    },
+    {
+      "question_id": "M4_OP_048_V4",
+      "previous_question_id": "M4_OP_048_V3",
+      "source_question_id": "M4_OP_048",
+      "question_version": 4,
+      "candidate_record_hash": "sha256:9f889d73ccba792fcb54a52580dd9dbe6eb354f81f924ba42021da79fe3b77cd",
+      "semantic_hash": "sha256:9cbcf53c74aa4438503c239906f6032a3128fb76c6ee8dad50406268a62f9df3",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v4-content-rereview-gate-v1.json",
+        "gate_hash": "sha256:77d5b77f94f00bdf56919669c586137222f54604737d46399e68d180f4330c03",
+        "status": "PENDING_TARGETED_V4_CONTENT_REREVIEW_NO_ACTIVATION_AUTHORITY"
+      },
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "source": "V4_RESULT",
+          "review_fields": {
+            "content_conclusion": "PASS",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "PASS",
+            "material_feasibility": "PASS",
+            "content_note": "通过",
+            "required_revision": "无"
+          },
+          "source_record_hash": "sha256:3af07b281e6117d27b76c8c11feeae8b2fac143cfdc56a4cf12664f1954d7099"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source": "CARRIED_FROM_PRIOR_REVIEW",
+          "source_record_hash": "sha256:824243fb7fbf98c5bddec15964dbf1770951f74814a7c334b04411fec9e8b02e"
+        }
+      },
+      "status": "PASSED_REVIEW_ONLY_NO_ACTIVATION_AUTHORITY",
+      "failed_review_tracks": [],
+      "next_question_id": null,
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "previous_v3_not_activated": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:cd2e10eda9d20c2e148f49d593aa54f16fcf513a2ca820388be3fde6573634b1"
+    },
+    {
+      "question_id": "M5_OP_048_V4",
+      "previous_question_id": "M5_OP_048_V3",
+      "source_question_id": "M5_OP_048",
+      "question_version": 4,
+      "candidate_record_hash": "sha256:85f7966ce5e7a74eb6c8e70a92b0dd8e7508bc7a607e4acfe7a5f414643dcd0c",
+      "semantic_hash": "sha256:c9a486ac865c44b3cee832299c8b877d5fa933b0783c95c2d4942165fbb9996a",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v4-content-rereview-gate-v1.json",
+        "gate_hash": "sha256:77d5b77f94f00bdf56919669c586137222f54604737d46399e68d180f4330c03",
+        "status": "PENDING_TARGETED_V4_CONTENT_REREVIEW_NO_ACTIVATION_AUTHORITY"
+      },
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "source": "V4_RESULT",
+          "review_fields": {
+            "content_conclusion": "PASS",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "PASS",
+            "material_feasibility": "PASS",
+            "content_note": "通过",
+            "required_revision": "无"
+          },
+          "source_record_hash": "sha256:79c996c9819749b86a46694143d313e9025c17ec5e06ca28b7635b710a375ca6"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source": "CARRIED_FROM_PRIOR_REVIEW",
+          "source_record_hash": "sha256:120adc58a2237e1b9527a3df5ea972bc034996d36e6d02c367de8764054d6d69"
+        }
+      },
+      "status": "PASSED_REVIEW_ONLY_NO_ACTIVATION_AUTHORITY",
+      "failed_review_tracks": [],
+      "next_question_id": null,
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "previous_v3_not_activated": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:23637f9156d5343d3aec5031361dc5ed8743c0214955f67840be50d3e23121ef"
+    }
+  ],
+  "gate_hash": "sha256:395aa1d1426a8177f66142953a508b35d0b7f158eb811e26885c5562a1bcdfff"
+}

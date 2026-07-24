@@ -1,0 +1,1162 @@
+{
+  "schema_version": "job-skill-shelver-298-rejected-replacement-targeted-candidates-v3",
+  "candidate_set_id": "job-skill-shelver-298-rejected-replacement-targeted-candidates-v3",
+  "status": "DRAFT_TARGETED_REREVIEW_REQUIRED_NO_ACTIVATION_AUTHORITY",
+  "generated_at": "2026-07-22T15:00:00+08:00",
+  "sources": [
+    {
+      "path": "doc/features/job-skill-shelver-298-rejected-replacement-candidates-v2.json",
+      "sha256": "sha256:36a7c8fd3f48799c66804586e30fbc849cd62f9dba7090a355a7b6c156008f97"
+    },
+    {
+      "path": "doc/features/job-skill-shelver-298-rejected-replacement-review-merged-gate-v1.json",
+      "sha256": "sha256:1b6af34c6b62c2e0ed120606430d474862aa7eb313ce9509e0756fea1c864c38"
+    },
+    {
+      "path": "doc/features/job-skill-shelver-298-rejected-replacement-content-confirmation-result-chen-xiaoqing-2026-07-22.json",
+      "sha256": "sha256:c1ee9285ee6dec38bc52d487ed4d7391d581c02ee9caf9a3c3a85bdb6bce4e6e"
+    },
+    {
+      "path": "doc/features/job-skill-shelver-298-rejected-replacement-safety-technical-review-result-he-dong-2026-07-22.json",
+      "sha256": "sha256:755837f746e55ba580f9d20b7fd9ea129cc29277f068e8d399d114bad715aabe"
+    }
+  ],
+  "semantic_hash_contract": {
+    "algorithm": "SHA-256(JSON.stringify(recursively-key-sorted explicit question semantic projection))",
+    "includes": [
+      "question_type",
+      "prompt",
+      "options",
+      "drag_items",
+      "drop_zones",
+      "effective_answer",
+      "rubric_criteria",
+      "scoring_rule",
+      "safety_sensitive",
+      "safety_stop_conditions"
+    ],
+    "delivery_fields_excluded_by_construction": true
+  },
+  "summary": {
+    "v2_reviewed_total": 11,
+    "v2_passed_references_unchanged": 2,
+    "v2_returned_for_targeted_revision": 9,
+    "v3_candidates": 9,
+    "content_rereview_required": 8,
+    "safety_technical_rereview_required": 7,
+    "by_module": {
+      "M1": 2,
+      "M3": 1,
+      "M4": 4,
+      "M5": 2
+    }
+  },
+  "authority": {
+    "activation_authority_granted": false,
+    "can_activate_questions": false,
+    "changes_current_authority": false,
+    "existing_287_unchanged": true,
+    "rejected_originals_11_unchanged": true,
+    "runtime_database_unchanged": true,
+    "activation_sql_generated": false,
+    "delivery_lock_unchanged": true
+  },
+  "passed_v2_references": [
+    {
+      "question_id": "M4_OP_043_V2",
+      "candidate_record_hash": "sha256:27068d7eef3394c3c5d77827da331c5267b9b9fbc43d88d2d3796ba451ac1418",
+      "semantic_hash": "sha256:7df37f5d3f61aeb8fce82e17493401713b3cb84a72dfc9e540b20bd25127a119",
+      "review_status": "PASSED_REVIEW_ONLY_NO_ACTIVATION_AUTHORITY",
+      "merged_record_hash": "sha256:3a20abb36ac00779b76affb5076db6c7ba6943976dd0d22dc176152fe068ca16",
+      "activation_authority": "NONE",
+      "treatment": "PRESERVE_V2_AS_REVIEW_ONLY_REFERENCE_NO_V3_NO_ACTIVATION"
+    },
+    {
+      "question_id": "M4_OP_044_V2",
+      "candidate_record_hash": "sha256:5e3a6e7305b38d4ca5f0c11f97aa3590b9f8da731ebf725abb01a748b8632dff",
+      "semantic_hash": "sha256:d36525b4131dce063a73e55b7b661b6c076c36b96ceef5cef50acdbead3f4b82",
+      "review_status": "PASSED_REVIEW_ONLY_NO_ACTIVATION_AUTHORITY",
+      "merged_record_hash": "sha256:82ca1811bc593cd619875ff715a8b5004d62ffba144f77d9b6e701a61db8da41",
+      "activation_authority": "NONE",
+      "treatment": "PRESERVE_V2_AS_REVIEW_ONLY_REFERENCE_NO_V3_NO_ACTIVATION"
+    }
+  ],
+  "questions": [
+    {
+      "question_id": "M1_OB_048_V3",
+      "previous_question_id": "M1_OB_048_V2",
+      "source_question_id": "M1_OB_048",
+      "question_version": 3,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "status": "DRAFT_TARGETED_REREVIEW_REQUIRED",
+      "replacement_relationship": {
+        "rejected_original_remains_rejected": true,
+        "previous_v2_not_activated": true,
+        "supersedes_original": false
+      },
+      "structured_replacement_plan": {
+        "question_id": "M1_OB_048_V3",
+        "question_type": "OFFLINE_OPERATION",
+        "prompt": "补货时发现通道中央有一处不明液体（使用蓝色防滑仿真水渍标识片模拟）。请按门店流程处置。",
+        "materials": "干燥防滑的蓝色仿真水渍标识片1张、警示牌1个、隔离带或路障2个、负责人角色牌；不得使用真实液体。",
+        "unique_outcome_label": "唯一达标行为",
+        "unique_outcome": "立即停止周边补货；提醒人员绕行；放置警示牌并隔离区域；不徒手接触或自行判断不明液体；通知负责人和清洁责任人员；得到“已清除且地面干燥”的确认后才恢复作业。",
+        "scoring_thresholds": {
+          "score_0": "停止周边补货、提醒绕行、警示隔离、不接触不明液体、通知负责人和清洁责任人员中的任一关键安全动作缺失，或允许人员通行、触碰或跨越不明液体、未经确认恢复作业，或接受指向性提示，或累计2次及以上提示。",
+          "score_1": "独立完成5项关键安全动作并保持隔离，但未主动说明恢复作业前的确认条件；或恰好1次非指向性提示后完成全部6项。",
+          "score_2": "独立完成全部6项且0次提示。"
+        },
+        "boundary_label": "停止条件",
+        "boundary": "出现真实液体、标识片翘起或隔离空间不足时立即终止施测，保持警示隔离且不得接触，通知负责人和清洁责任人员处理；确认现场安全后另行重测。"
+      },
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "补货时发现通道中央有一处不明液体（使用蓝色防滑仿真水渍标识片模拟）。请按门店流程处置。",
+          "assessment_point": "不明液体发现、隔离、上报与恢复条件确认",
+          "ability_tags": [
+            "SAFETY_OPERATION",
+            "RULE_EXECUTION"
+          ],
+          "note": "停止条件：出现真实液体、标识片翘起或隔离空间不足时立即终止施测，保持警示隔离且不得接触，通知负责人和清洁责任人员处理；确认现场安全后另行重测。",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m1.csv",
+            "source_ref": "新增嵌入观察项",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "干燥防滑的蓝色仿真水渍标识片1张、警示牌1个、隔离带或路障2个、负责人角色牌；不得使用真实液体。",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "立即停止周边补货"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "提醒人员绕行"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "放置警示牌并隔离区域"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "不徒手接触或自行判断不明液体"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "通知负责人和清洁责任人员"
+            },
+            {
+              "criterion_id": "r6",
+              "description": "得到“已清除且地面干燥”的确认后才恢复作业"
+            }
+          ],
+          "professional_review": {
+            "required": true,
+            "status": "PENDING",
+            "tracks": [
+              "CONTENT",
+              "SAFETY_TECHNICAL"
+            ]
+          }
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：停止周边补货、提醒绕行、警示隔离、不接触不明液体、通知负责人和清洁责任人员中的任一关键安全动作缺失，或允许人员通行、触碰或跨越不明液体、未经确认恢复作业，或接受指向性提示，或累计2次及以上提示。",
+          "score_1_description": "1分：独立完成5项关键安全动作并保持隔离，但未主动说明恢复作业前的确认条件；或恰好1次非指向性提示后完成全部6项。",
+          "score_2_description": "2分：独立完成全部6项且0次提示。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "停止条件：出现真实液体、标识片翘起或隔离空间不足时立即终止施测，保持警示隔离且不得接触，通知负责人和清洁责任人员处理；确认现场安全后另行重测。"
+      },
+      "revision_trace": {
+        "source_merged_record_hash": "sha256:99426874baa9f1ed16d6b8e24cac7cbe284123842bdd86d9e72df275a79625ff",
+        "failed_review_tracks": [
+          "CONTENT",
+          "SAFETY_TECHNICAL"
+        ],
+        "carried_forward_review_passes": [],
+        "content_required_revision": "最低修改要求：将assessment_point改为明确的“不明液体发现与隔离上报”或同等岗位测点；ability_tags至少改为SAFETY_OPERATION、RULE_EXECUTION，并重新生成候选hash。题干、材料、rubric和0/1/2分阈值可保持不变。",
+        "safety_stop_condition_note": "退回复修：当前停止条件把误放真实液体写成由评估员“复位后重测”，未要求立即封锁、停止接触并通知负责人或清洁责任人员；真实不明液体不得由评估员自行复位。最低要求：出现真实液体、标识片翘起或隔离空间不足时立即终止施测，保持警示隔离，通知负责人和清洁责任人员处理，确认现场安全后另行重测。",
+        "safety_technical_note": "退回复修：1分允许任意只完成4至5项，可能遗漏“警示隔离”“不接触不明液体”或“上报”等关键安全动作仍得分，评分锚点未设置安全门槛。最低要求：将停止、提醒绕行、隔离、不接触和上报设为1分及以上的必备条件；任一缺失、允许人员通行、触碰或跨越不明液体、未经确认恢复作业，均判0分并停止。",
+        "changed_fields": [
+          "assessment_point",
+          "ability_tags",
+          "scoring_rule",
+          "note",
+          "safety_stop_conditions"
+        ]
+      },
+      "old_semantic_hash": "sha256:15d21ff96b88405a253a7e22427332e67b852e7e5fe3f9bb01578548fc579d59",
+      "new_semantic_hash": "sha256:1e641508132b4f09ff926596382b26685857bc5832aff4c4ca9647cbe66981e5",
+      "source_candidate_record_hash": "sha256:f7fc18686e5958a640a3a0e740e3aa3cd96d4ece727fb4a055203a7d9627bf8e",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "activation_authority": "NONE",
+      "candidate_record_hash": "sha256:002747a15bb22cd2cd1134dd200ca0f0435cba3929321a249c08cb2dc681fda3"
+    },
+    {
+      "question_id": "M1_OP_042_V3",
+      "previous_question_id": "M1_OP_042_V2",
+      "source_question_id": "M1_OP_042",
+      "question_version": 3,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "status": "DRAFT_TARGETED_REREVIEW_REQUIRED",
+      "replacement_relationship": {
+        "rejected_original_remains_rejected": true,
+        "previous_v2_not_activated": true,
+        "supersedes_original": false
+      },
+      "structured_replacement_plan": {
+        "question_id": "M1_OP_042_V3",
+        "question_type": "OFFLINE_OPERATION",
+        "prompt": "依据补货任务单、唯一排面图、价签和批次标签，将8件轻质商品补入4个指定货位。每个SKU各有1件旧批次和1件新批次。完成第4件后，评估员按固定脚本中断20秒；中断前放置进度标记，恢复后从未完成项继续，最后复查。",
+        "materials": "固定货架1组；4个SKU各2件轻质空包装，每个SKU分别标注1件旧批次和1件新批次；固定批次标签、补货任务单、唯一排面图、价签、进度标记牌、固定中断脚本、唯一答案卡。",
+        "unique_outcome_label": "唯一达标行为",
+        "unique_outcome": "逐件核对SKU、规格、价签和批次标签；8件全部进入唯一正确货位；每个SKU旧批次在前、新批次在后；中断时标记当前位置并停止；恢复后从标记处接续，不重复移动已完成商品；最后复查。",
+        "scoring_thresholds": {
+          "score_0": "少于6件处于唯一正确货位，或任一已完成SKU出现新批次在前、旧批次在后，或中断后未按标记接续或大范围重做，或接受指向性提示，或累计2次及以上提示。",
+          "score_1": "独立使6至7件处于唯一正确货位，已完成SKU均为旧批次在前、新批次在后，并正确完成中断标记、接续和复查；或恰好1次非指向性提示后完成全部要求。",
+          "score_2": "8件全部处于唯一正确货位，4个SKU均为旧批次在前、新批次在后，正确完成中断标记、接续和复查，且0次提示。"
+        },
+        "boundary_label": "设置异常",
+        "boundary": "商品、批次标签、价签、排面图、任务单或中断脚本不一致，或唯一答案无法成立时暂停计分，由评估员复位后重测。"
+      },
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "依据补货任务单、唯一排面图、价签和批次标签，将8件轻质商品补入4个指定货位。每个SKU各有1件旧批次和1件新批次。完成第4件后，评估员按固定脚本中断20秒；中断前放置进度标记，恢复后从未完成项继续，最后复查。",
+          "assessment_point": "中断情境下按货位与先进先出规则完成补货",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "note": "设置异常：商品、批次标签、价签、排面图、任务单或中断脚本不一致，或唯一答案无法成立时暂停计分，由评估员复位后重测。",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m1.csv",
+            "source_ref": "原题90",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "固定货架1组；4个SKU各2件轻质空包装，每个SKU分别标注1件旧批次和1件新批次；固定批次标签、补货任务单、唯一排面图、价签、进度标记牌、固定中断脚本、唯一答案卡。",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "逐件核对SKU、规格、价签和批次标签"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "8件全部进入唯一正确货位"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "每个SKU旧批次在前、新批次在后"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "中断时标记当前位置并停止"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "恢复后从标记处接续且不重复移动已完成商品"
+            },
+            {
+              "criterion_id": "r6",
+              "description": "完成最终复查"
+            }
+          ],
+          "professional_review": {
+            "required": true,
+            "status": "PENDING",
+            "tracks": [
+              "CONTENT",
+              "SAFETY_TECHNICAL"
+            ]
+          }
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：少于6件处于唯一正确货位，或任一已完成SKU出现新批次在前、旧批次在后，或中断后未按标记接续或大范围重做，或接受指向性提示，或累计2次及以上提示。",
+          "score_1_description": "1分：独立使6至7件处于唯一正确货位，已完成SKU均为旧批次在前、新批次在后，并正确完成中断标记、接续和复查；或恰好1次非指向性提示后完成全部要求。",
+          "score_2_description": "2分：8件全部处于唯一正确货位，4个SKU均为旧批次在前、新批次在后，正确完成中断标记、接续和复查，且0次提示。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      },
+      "revision_trace": {
+        "source_merged_record_hash": "sha256:8cf10754f9839db4b765c9b2d5d6e4a67518c49718bddb16c6a191523b94195a",
+        "failed_review_tracks": [
+          "CONTENT",
+          "SAFETY_TECHNICAL"
+        ],
+        "carried_forward_review_passes": [],
+        "content_required_revision": "最低修改要求：为4个SKU分别配置1件旧批次和1件新批次，写明固定日期/批次标签及唯一答案卡；材料清单同步加入这些标识。将1分明确为“6至7件处于唯一正确货位，且已完成SKU均旧货前置、新货后置，并正确完成中断标记与接续”；明确任一已完成SKU新旧倒置的计分归属。",
+        "safety_stop_condition_note": "通过；本题使用固定货架和轻质空包装，无独立安全敏感风险，建议取消安全敏感标记。商品、价签、排面图或脚本不一致时暂停计分并由评估员复位的条件可执行。",
+        "safety_technical_note": "退回复修：题干和rubric要求同SKU旧货前置、新货后置，但现场材料仅有4个SKU各2件轻质空包装，未说明哪些是旧货或新货，也未提供日期、批次标签或货架预置旧货，FIFO无法观察和唯一判定。最低要求：为每个SKU设置可识别的旧货与新货，并用固定日期或批次标签锁定答案；或在货架预置旧货、另提供待补新货。否则删除FIFO指标及相关评分条件。",
+        "changed_fields": [
+          "prompt",
+          "offline_tool_brief",
+          "assessment_point",
+          "rubric_criteria",
+          "scoring_rule",
+          "safety_sensitive",
+          "safety_stop_conditions"
+        ]
+      },
+      "old_semantic_hash": "sha256:0b2a1b9a77329eb5de7514b7f6810ef919d337d1f31e3d012c71db169085d367",
+      "new_semantic_hash": "sha256:9ebaa103184bc056930aecc5e52738fea17931f66ff86f84924502be2394e658",
+      "source_candidate_record_hash": "sha256:1491cf6b2db9a222cb3c772bc3c4aa1110ee9a3fde911fb11d441b94a1bff552",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "activation_authority": "NONE",
+      "candidate_record_hash": "sha256:9d9a4aa8a8fdc65adb25b9978cb756837e81e7b1bfc1d180fac666f624c35986"
+    },
+    {
+      "question_id": "M3_OP_056_V3",
+      "previous_question_id": "M3_OP_056_V2",
+      "source_question_id": "M3_OP_056",
+      "question_version": 3,
+      "module": "M3",
+      "question_type": "OFFLINE_OPERATION",
+      "status": "DRAFT_TARGETED_REREVIEW_REQUIRED",
+      "replacement_relationship": {
+        "rejected_original_remains_rejected": true,
+        "previous_v2_not_activated": true,
+        "supersedes_original": false
+      },
+      "structured_replacement_plan": {
+        "question_id": "M3_OP_056_V3",
+        "question_type": "OFFLINE_OPERATION",
+        "prompt": "逐件翻看8件同SKU商品底部或背面的到期日，将每件商品编号和到期日写入8行核验记录表；找出最早到期的2件并前置，其余按日期顺序后置；最后把8件商品恢复正面朝外，并保持价签可见。",
+        "materials": "8件带编号的轻质商品、固定到期日标签、8行到期日核验记录表、书写笔、唯一答案卡、货架价签；8件均为合格且非临期商品。",
+        "unique_outcome_label": "唯一达标行为",
+        "unique_outcome": "在核验记录表中正确记录8件商品的编号和到期日；准确找出最早到期2件并前置；其余商品按日期顺序后置；所有商品恢复正面朝外且价签可见。",
+        "scoring_thresholds": {
+          "score_0": "正确记录少于6件商品的到期日，或最早到期2件均未正确前置，或错误前置其他商品，或检查后未恢复排面，或接受指向性提示，或累计2次及以上提示。",
+          "score_1": "独立正确记录6至7件商品的到期日，最早到期2件中正确前置1件且未错误前置其他商品，并恢复排面；或恰好1次非指向性提示后完成全部要求。",
+          "score_2": "独立正确记录8件商品的到期日，正确完成前置、后置和排面恢复，且0次提示。"
+        },
+        "boundary_label": "设置异常",
+        "boundary": "日期标签缺失或无法识别、商品编号重复、商品数量或状态不符、记录表行数不足或答案不唯一时，本次施测无效，由评估员复位。"
+      },
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "逐件翻看8件同SKU商品底部或背面的到期日，将每件商品编号和到期日写入8行核验记录表；找出最早到期的2件并前置，其余按日期顺序后置；最后把8件商品恢复正面朝外，并保持价签可见。",
+          "assessment_point": "到期日逐件核验记录与先进先出排面恢复",
+          "ability_tags": [
+            "COGNITION",
+            "FINE_MOTOR"
+          ],
+          "note": "设置异常：日期标签缺失或无法识别、商品编号重复、商品数量或状态不符、记录表行数不足或答案不唯一时，本次施测无效，由评估员复位。",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m3.csv",
+            "source_ref": "原题56",
+            "imported_at": "2026-07-04T14:48:06.004017Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "8件带编号的轻质商品、固定到期日标签、8行到期日核验记录表、书写笔、唯一答案卡、货架价签；8件均为合格且非临期商品。",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "正确记录8件商品的编号和到期日"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "准确找出最早到期2件并前置"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "其余商品按日期顺序后置"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "所有商品恢复正面朝外且价签可见"
+            }
+          ],
+          "professional_review": {
+            "required": true,
+            "status": "PENDING",
+            "tracks": [
+              "CONTENT"
+            ]
+          }
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：正确记录少于6件商品的到期日，或最早到期2件均未正确前置，或错误前置其他商品，或检查后未恢复排面，或接受指向性提示，或累计2次及以上提示。",
+          "score_1_description": "1分：独立正确记录6至7件商品的到期日，最早到期2件中正确前置1件且未错误前置其他商品，并恢复排面；或恰好1次非指向性提示后完成全部要求。",
+          "score_2_description": "2分：独立正确记录8件商品的到期日，正确完成前置、后置和排面恢复，且0次提示。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      },
+      "revision_trace": {
+        "source_merged_record_hash": "sha256:d352c4d9496093f33ea5571c88bb3a002dce9dced712a144d02c7e8081b33543",
+        "failed_review_tracks": [
+          "CONTENT"
+        ],
+        "carried_forward_review_passes": [
+          {
+            "track": "SAFETY_TECHNICAL",
+            "status": "PASS",
+            "source_record_hash": "sha256:3e7482520b61eea56c7eb57a776994461c3fbeb6452380252b4cce4bd193c502"
+          }
+        ],
+        "content_required_revision": "最低修改要求：二选一。方案A：要求学员逐件读出或在核验表记录8个到期日，并增加核验记录表，使“正确核验几件”可直接核对；方案B：删除按核验件数评分，仅按最终8个位置、最早到期2件前置、排面恢复和提示次数设置互斥的0/1/2分阈值。",
+        "safety_stop_condition_note": "通过",
+        "safety_technical_note": "通过",
+        "changed_fields": [
+          "prompt",
+          "offline_tool_brief",
+          "assessment_point",
+          "rubric_criteria",
+          "scoring_rule",
+          "note"
+        ]
+      },
+      "old_semantic_hash": "sha256:fa5e1945e97a1ac6fee17712924f6628122e8f400375d9b48f28f58347cb31af",
+      "new_semantic_hash": "sha256:218c32730081b9df9ccf09f449b787d4d8142c3aecda542d042645aad233ec08",
+      "source_candidate_record_hash": "sha256:f1ca96705755eef044b1b7712858140df645bd590c01583a33754a59e553453f",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "activation_authority": "NONE",
+      "candidate_record_hash": "sha256:0b25bd9785cc8e4b76149ce672ea5e9f6fa184d708f2219a08cda79a4bda870b"
+    },
+    {
+      "question_id": "M4_OP_045_V3",
+      "previous_question_id": "M4_OP_045_V2",
+      "source_question_id": "M4_OP_045",
+      "question_version": 3,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "status": "DRAFT_TARGETED_REREVIEW_REQUIRED",
+      "replacement_relationship": {
+        "rejected_original_remains_rejected": true,
+        "previous_v2_not_activated": true,
+        "supersedes_original": false
+      },
+      "structured_replacement_plan": {
+        "question_id": "M4_OP_045_V3",
+        "question_type": "OFFLINE_OPERATION",
+        "prompt": "三个周转箱分别标注“零食区”“常温饮品区”“洗护清洁区”。其中有1件商品放错箱，请核对商品和区域标签，找出并移入正确周转箱，随后复查其余商品。",
+        "materials": "三个标识明确的周转箱、共9件常温轻质商品，其中仅1件错区、唯一答案卡。",
+        "unique_outcome_label": "唯一达标行为",
+        "unique_outcome": "识别唯一错区商品；移动到唯一正确区域；复查后其余8件不被误动。",
+        "scoring_thresholds": {
+          "score_0": "未找到错区商品、移动了任一正确商品、将错区商品归入错误区域，或接受指向性提示，或累计2次及以上提示。",
+          "score_1": "独立识别唯一错区商品但未完成正确归位，且未误动其余8件；或恰好1次非指向性提示后完成全部要求。",
+          "score_2": "独立完成识别、正确归位和复查，未误动其余8件，且0次提示。"
+        },
+        "boundary_label": "设置异常",
+        "boundary": "存在两件及以上错区商品、商品区域信息不唯一、区域标签缺失或唯一答案无法成立时暂停计分，由评估员复位。"
+      },
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "三个周转箱分别标注“零食区”“常温饮品区”“洗护清洁区”。其中有1件商品放错箱，请核对商品和区域标签，找出并移入正确周转箱，随后复查其余商品。",
+          "assessment_point": "周转箱错区商品识别、归位与复查",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "note": "设置异常：存在两件及以上错区商品、商品区域信息不唯一、区域标签缺失或唯一答案无法成立时暂停计分，由评估员复位。",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m4.csv",
+            "source_ref": "文职平行版3",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "三个标识明确的周转箱、共9件常温轻质商品，其中仅1件错区、唯一答案卡。",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "识别唯一错区商品"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "将错区商品移动到唯一正确区域"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "复查并确认其余8件未被误动"
+            }
+          ],
+          "professional_review": {
+            "required": true,
+            "status": "PENDING",
+            "tracks": [
+              "CONTENT",
+              "SAFETY_TECHNICAL"
+            ]
+          }
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未找到错区商品、移动了任一正确商品、将错区商品归入错误区域，或接受指向性提示，或累计2次及以上提示。",
+          "score_1_description": "1分：独立识别唯一错区商品但未完成正确归位，且未误动其余8件；或恰好1次非指向性提示后完成全部要求。",
+          "score_2_description": "2分：独立完成识别、正确归位和复查，未误动其余8件，且0次提示。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      },
+      "revision_trace": {
+        "source_merged_record_hash": "sha256:2faf4b027b8b9e528c97a16c5e9e51a95f91ef384af4765929b2095f1acf4ab8",
+        "failed_review_tracks": [
+          "CONTENT",
+          "SAFETY_TECHNICAL"
+        ],
+        "carried_forward_review_passes": [],
+        "content_required_revision": "最低修改要求：二选一。方案A：增加带明确标识的问题商品暂存位，并在rubric和材料中同步定义；方案B：删除该不存在的动作，将1分改为“独立识别唯一错区商品但未完成正确归位，且未误动其余8件”，同时保持2分为识别、正确归位和复查全部完成。",
+        "safety_stop_condition_note": "通过；题目使用常温轻质商品，不涉及危险操作。存在两件以上错区、商品区域信息不唯一或答案不唯一时，应暂停计分并由评估员复位。",
+        "safety_technical_note": "退回复修：1分锚点要求把错区商品放入“问题暂存位”，但现场材料只提供三个周转箱，没有问题暂存位；该动作也不在题干、唯一达标行为或rubric中，现场无法按统一条件执行和评分。最低要求：删除该分支，改为“正确识别错区商品但未完成正确归位”；或在题干、材料和rubric中明确增加唯一问题暂存位及其使用条件，并同步评分。",
+        "changed_fields": [
+          "assessment_point",
+          "rubric_criteria",
+          "scoring_rule",
+          "note"
+        ]
+      },
+      "old_semantic_hash": "sha256:6ea00bf423c14ea51c76b67873e9ae3e27b24baa6d643192f28dd28fbdce0c1c",
+      "new_semantic_hash": "sha256:d832aca0d47bb56e9222b86ad892aafad30716ecb0d42f1e56756eca74538de6",
+      "source_candidate_record_hash": "sha256:55c3a86bdc4f9a077ea259cd1c3d9c7c889d8b8cebe6c6fb3acfbf42209813c2",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "activation_authority": "NONE",
+      "candidate_record_hash": "sha256:f88e4582b6120e54a401a6fba5db649ee7de4f18a9efc7b54734beb09bde426f"
+    },
+    {
+      "question_id": "M4_OP_046_V3",
+      "previous_question_id": "M4_OP_046_V2",
+      "source_question_id": "M4_OP_046",
+      "question_version": 3,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "status": "DRAFT_TARGETED_REREVIEW_REQUIRED",
+      "replacement_relationship": {
+        "rejected_original_remains_rejected": true,
+        "previous_v2_not_activated": true,
+        "supersedes_original": false
+      },
+      "structured_replacement_plan": {
+        "question_id": "M4_OP_046_V3",
+        "question_type": "OFFLINE_OPERATION",
+        "prompt": "核对补货清单与6件轻质商品。6件实物中有且仅有1件的规格或条码与清单不符。请找出该商品，暂停该项补货，贴上问题标识并报告负责人。",
+        "materials": "6件轻质商品、补货清单1份；其中1件使用固定规格或条码不符标签，其余5件与清单一致；问题标识贴、负责人角色牌、唯一答案卡。",
+        "unique_outcome_label": "唯一达标行为",
+        "unique_outcome": "逐件核对品名、规格、条码和清单；指出唯一不符商品；该商品不进入货架；贴上问题标识并报告负责人。",
+        "scoring_thresholds": {
+          "score_0": "未发现唯一不符商品、指出错误对象、将不符商品上架、同时标记正常商品，或接受指向性提示，或累计2次及以上提示。",
+          "score_1": "独立发现并隔离唯一不符商品，但遗漏“贴问题标识”或“报告负责人”中的1项；或恰好1次非指向性提示后完成全部要求。",
+          "score_2": "独立完成逐件核对、正确识别、停止该项补货、标识和上报，且0次提示。"
+        },
+        "boundary_label": "设置异常",
+        "boundary": "清单存在多处差错、实物数量异常、规格或条码标签无法识别、正常商品与清单不一致或唯一答案无法成立时暂停计分，由评估员复位。"
+      },
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "核对补货清单与6件轻质商品。6件实物中有且仅有1件的规格或条码与清单不符。请找出该商品，暂停该项补货，贴上问题标识并报告负责人。",
+          "assessment_point": "补货清单与实物条码规格差错核对和上报",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "note": "设置异常：清单存在多处差错、实物数量异常、规格或条码标签无法识别、正常商品与清单不一致或唯一答案无法成立时暂停计分，由评估员复位。",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m4.csv",
+            "source_ref": "文职平行版4",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "6件轻质商品、补货清单1份；其中1件使用固定规格或条码不符标签，其余5件与清单一致；问题标识贴、负责人角色牌、唯一答案卡。",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "逐件核对品名、规格、条码和清单"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "指出唯一不符商品"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "不符商品不进入货架"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "贴上问题标识并报告负责人"
+            }
+          ],
+          "professional_review": {
+            "required": true,
+            "status": "PENDING",
+            "tracks": [
+              "CONTENT",
+              "SAFETY_TECHNICAL"
+            ]
+          }
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未发现唯一不符商品、指出错误对象、将不符商品上架、同时标记正常商品，或接受指向性提示，或累计2次及以上提示。",
+          "score_1_description": "1分：独立发现并隔离唯一不符商品，但遗漏“贴问题标识”或“报告负责人”中的1项；或恰好1次非指向性提示后完成全部要求。",
+          "score_2_description": "2分：独立完成逐件核对、正确识别、停止该项补货、标识和上报，且0次提示。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      },
+      "revision_trace": {
+        "source_merged_record_hash": "sha256:5e81211216c284d487234baa2d00dfa9b92ce801a15c23b606a6c590a6aaeb1a",
+        "failed_review_tracks": [
+          "CONTENT",
+          "SAFETY_TECHNICAL"
+        ],
+        "carried_forward_review_passes": [],
+        "content_required_revision": "最低修改要求：锁定一种差错类型。建议改为“6件实物中有1件规格/条码与补货清单不符”，明确该唯一商品、答案卡、问题标识和上报对象；或将数量不足、数量多出分别制作独立版本，为每种版本写明唯一处置。题干、材料、rubric和0/1/2分必须使用同一差错类型。",
+        "safety_stop_condition_note": "通过；本题使用轻质商品，无独立危险源。清单存在多处差错、实物数量异常或答案不唯一时，应暂停计分并由评估员复位。",
+        "safety_technical_note": "退回复修：候选把“规格不符”和“数量不符”合并为同一唯一差错，但后续统一要求“问题商品不进入货架并贴问题标识”。数量短缺或多出属于清单、收货或交接差异，不一定存在可唯一标识的问题商品，处置对象和答案不唯一。最低要求：将预埋差错限定为1件商品的品名、规格或条码与清单不符；或拆分数量异常分支，明确暂停该清单项、记录数量差异并上报，不把正常商品错误标为问题品，并分别设置答案和rubric。",
+        "changed_fields": [
+          "prompt",
+          "offline_tool_brief",
+          "assessment_point",
+          "rubric_criteria",
+          "scoring_rule",
+          "note"
+        ]
+      },
+      "old_semantic_hash": "sha256:896a5e25a4a0f267366f3afd8999660629872dd0dddf1a88a4ab103f4364f681",
+      "new_semantic_hash": "sha256:d2b9af088eb511484619dc2d5ef9548e9029439c974894adca6ab90cde484c2f",
+      "source_candidate_record_hash": "sha256:ef02afbcee4372d706019c04381ee4c2d417ea7a582fffc73c84b3a2846383d9",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "activation_authority": "NONE",
+      "candidate_record_hash": "sha256:4a108428c1ea75b29eab8ff67ab042e1066ae9f10e15c3d09adae6c1cec76437"
+    },
+    {
+      "question_id": "M4_OP_047_V3",
+      "previous_question_id": "M4_OP_047_V2",
+      "source_question_id": "M4_OP_047",
+      "question_version": 3,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "status": "DRAFT_TARGETED_REREVIEW_REQUIRED",
+      "replacement_relationship": {
+        "rejected_original_remains_rejected": true,
+        "previous_v2_not_activated": true,
+        "supersedes_original": false
+      },
+      "structured_replacement_plan": {
+        "question_id": "M4_OP_047_V3",
+        "question_type": "OFFLINE_OPERATION",
+        "prompt": "将8件同SKU合格商品按到期日由早到晚排列。日期统一采用YYYY-MM-DD格式；到期日相同的商品按本题锁定的门店次级规则，将4位纯数字批次号由小到大排列。",
+        "materials": "8件轻质商品；统一YYYY-MM-DD格式的固定到期日标签；等长4位纯数字批次号；模拟工作日卡“2026-07-22”；门店次级排序规则卡；唯一答案卡。所有商品均包装完好、未过期且非临期。",
+        "unique_outcome_label": "唯一结果",
+        "unique_outcome": "8件商品按统一到期日由早到晚排列；到期日相同的商品按本题锁定规则，将4位纯数字批次号由小到大排列。",
+        "scoring_thresholds": {
+          "score_0": "正确位置少于5个，或改写日期或批次标签，或未按锁定次级规则处理相同到期日商品，或接受指向性提示，或累计2次及以上提示。",
+          "score_1": "独立形成5至7个正确位置；或恰好1次非指向性提示后全部正确。",
+          "score_2": "8件全部处于唯一正确位置且0次提示。"
+        },
+        "boundary_label": "停止条件",
+        "boundary": "日期标签缺失或格式无法识别、批次号不是4位纯数字或无法比较、模拟工作日卡缺失、发现过期或临期商品、答案不唯一时立即暂停计分，由评估员更换材料后重测。"
+      },
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "将8件同SKU合格商品按到期日由早到晚排列。日期统一采用YYYY-MM-DD格式；到期日相同的商品按本题锁定的门店次级规则，将4位纯数字批次号由小到大排列。",
+          "assessment_point": "按统一到期日和门店锁定批次规则完成商品排序",
+          "ability_tags": [
+            "COGNITION"
+          ],
+          "note": "停止条件：日期标签缺失或格式无法识别、批次号不是4位纯数字或无法比较、模拟工作日卡缺失、发现过期或临期商品、答案不唯一时立即暂停计分，由评估员更换材料后重测。",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m4.csv",
+            "source_ref": "文职平行版5",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "8件轻质商品；统一YYYY-MM-DD格式的固定到期日标签；等长4位纯数字批次号；模拟工作日卡“2026-07-22”；门店次级排序规则卡；唯一答案卡。所有商品均包装完好、未过期且非临期。",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "按YYYY-MM-DD格式正确读取8个到期日"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "按到期日由早到晚排列"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "相同到期日按门店锁定规则比较4位纯数字批次号"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "形成唯一正确的8个位置"
+            }
+          ],
+          "professional_review": {
+            "required": true,
+            "status": "PENDING",
+            "tracks": [
+              "SAFETY_TECHNICAL"
+            ]
+          }
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：正确位置少于5个，或改写日期或批次标签，或未按锁定次级规则处理相同到期日商品，或接受指向性提示，或累计2次及以上提示。",
+          "score_1_description": "1分：独立形成5至7个正确位置；或恰好1次非指向性提示后全部正确。",
+          "score_2_description": "2分：8件全部处于唯一正确位置且0次提示。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "停止条件：日期标签缺失或格式无法识别、批次号不是4位纯数字或无法比较、模拟工作日卡缺失、发现过期或临期商品、答案不唯一时立即暂停计分，由评估员更换材料后重测。"
+      },
+      "revision_trace": {
+        "source_merged_record_hash": "sha256:2867467f356d6148be7ffd45d98ffea469cbb952927e045f8c076b7c36febd55",
+        "failed_review_tracks": [
+          "SAFETY_TECHNICAL"
+        ],
+        "carried_forward_review_passes": [
+          {
+            "track": "CONTENT",
+            "status": "PASS",
+            "source_record_hash": "sha256:248557ffd348d730b142212239e3f9d2fab05e9bea3412ca4fbeae13511c0a69"
+          }
+        ],
+        "content_required_revision": "无。",
+        "safety_stop_condition_note": "退回复修：现场混用“年月日、斜杠和8位数字”三种日期格式，却未定义斜杠格式和8位数字的解析口径，也未固定模拟工作日；可能造成效期误读和错误轮转。最低要求：统一为YYYY-MM-DD，或提供明确格式图例并固定模拟工作日及效期口径；日期标签缺失、格式无法识别、批次号不可比较或答案不唯一时立即暂停计分，由评估员更换材料后重测。",
+        "safety_technical_note": "退回复修：同到期日按批次号由小到大不是通用FIFO或FEFO规则，且当前未说明批次号是否为等长纯数字、如何比较。最低要求：明确这是本题或门店锁定的次级排序规则，并使用等长可比较的批次编号；或仅考查到期日排序，将相同到期日设置为等价位置。同步锁定日期格式、唯一答案和评分口径。",
+        "changed_fields": [
+          "prompt",
+          "offline_tool_brief",
+          "assessment_point",
+          "rubric_criteria",
+          "scoring_rule",
+          "note",
+          "safety_sensitive",
+          "safety_stop_conditions"
+        ]
+      },
+      "old_semantic_hash": "sha256:e622ca49cb3916e644e95b7ede5a4c6989490848b27049af178a924fd6dba4e4",
+      "new_semantic_hash": "sha256:f42242e98260c906a30fc01361c35627463c328e7e388b5a1b38e5383504b6b1",
+      "source_candidate_record_hash": "sha256:98b1d1375a1a377f3edbc39650157281b0f54ffcd9235fc1ea5c0555ef449354",
+      "required_review_tracks": [
+        "SAFETY_TECHNICAL"
+      ],
+      "activation_authority": "NONE",
+      "candidate_record_hash": "sha256:c5163f8d6607553c0e45fcb4126ef89b0e2d0eace79991fb7c9938a27c68d28c"
+    },
+    {
+      "question_id": "M4_OP_048_V3",
+      "previous_question_id": "M4_OP_048_V2",
+      "source_question_id": "M4_OP_048",
+      "question_version": 3,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "status": "DRAFT_TARGETED_REREVIEW_REQUIRED",
+      "replacement_relationship": {
+        "rejected_original_remains_rejected": true,
+        "previous_v2_not_activated": true,
+        "supersedes_original": false
+      },
+      "structured_replacement_plan": {
+        "question_id": "M4_OP_048_V3",
+        "question_type": "OFFLINE_OPERATION",
+        "prompt": "按补货任务单处理10件轻质商品，其中9件为合格补货品，1件为条码与任务单不符的安全仿真异常品。将9件合格品补入唯一正确货位，将异常品放入问题暂存区。完成第5件时，评估员按固定脚本中断20秒；中断时放置进度标记，恢复后从标记处接续，最后复查。",
+        "materials": "固定货架、9件合格轻质商品、1件使用无液体、无尖锐、无污染空包装制作的条码不符仿真异常品、补货任务单、价签、带明确标识的问题暂存区、进度标记牌、固定中断脚本、唯一答案卡。",
+        "unique_outcome_label": "唯一达标行为",
+        "unique_outcome": "逐件核对SKU、规格和条码；9件合格品进入唯一正确货位；1件仿真异常品进入问题暂存区；中断时正确标记并停止；恢复后从标记处接续而非重做；完成最终复查。",
+        "scoring_thresholds": {
+          "score_0": "少于7件合格品进入唯一正确货位，或仿真异常品被上架或未进入问题暂存区，或中断后未按标记接续，或接受指向性提示，或累计2次及以上提示。",
+          "score_1": "独立使7至8件合格品进入唯一正确货位，仿真异常品正确进入问题暂存区，并正确完成中断标记、接续和复查；或恰好1次非指向性提示后完成全部要求。",
+          "score_2": "9件合格品全部进入唯一正确货位，1件仿真异常品进入问题暂存区，正确完成中断标记、接续和复查，且0次提示。"
+        },
+        "boundary_label": "停止条件",
+        "boundary": "发现真实泄漏、尖锐破损、异味、污染或货架不稳时立即停止施测，保持隔离警示并通知评估员或负责人处理，确认现场安全前不得继续；商品构成、任务单或中断脚本不一致时暂停计分并复位。"
+      },
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "按补货任务单处理10件轻质商品，其中9件为合格补货品，1件为条码与任务单不符的安全仿真异常品。将9件合格品补入唯一正确货位，将异常品放入问题暂存区。完成第5件时，评估员按固定脚本中断20秒；中断时放置进度标记，恢复后从标记处接续，最后复查。",
+          "assessment_point": "中断情境下完成正常品上架与唯一异常品隔离",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "note": "停止条件：发现真实泄漏、尖锐破损、异味、污染或货架不稳时立即停止施测，保持隔离警示并通知评估员或负责人处理，确认现场安全前不得继续；商品构成、任务单或中断脚本不一致时暂停计分并复位。",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m4.csv",
+            "source_ref": "文职平行版6",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "固定货架、9件合格轻质商品、1件使用无液体、无尖锐、无污染空包装制作的条码不符仿真异常品、补货任务单、价签、带明确标识的问题暂存区、进度标记牌、固定中断脚本、唯一答案卡。",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "逐件核对SKU、规格和条码"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "9件合格品进入唯一正确货位"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "1件仿真异常品进入问题暂存区"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "中断时正确标记并停止"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "恢复后从标记处接续而非重做"
+            },
+            {
+              "criterion_id": "r6",
+              "description": "完成最终复查"
+            }
+          ],
+          "professional_review": {
+            "required": true,
+            "status": "PENDING",
+            "tracks": [
+              "CONTENT",
+              "SAFETY_TECHNICAL"
+            ]
+          }
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：少于7件合格品进入唯一正确货位，或仿真异常品被上架或未进入问题暂存区，或中断后未按标记接续，或接受指向性提示，或累计2次及以上提示。",
+          "score_1_description": "1分：独立使7至8件合格品进入唯一正确货位，仿真异常品正确进入问题暂存区，并正确完成中断标记、接续和复查；或恰好1次非指向性提示后完成全部要求。",
+          "score_2_description": "2分：9件合格品全部进入唯一正确货位，1件仿真异常品进入问题暂存区，正确完成中断标记、接续和复查，且0次提示。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "停止条件：发现真实泄漏、尖锐破损、异味、污染或货架不稳时立即停止施测，保持隔离警示并通知评估员或负责人处理，确认现场安全前不得继续；商品构成、任务单或中断脚本不一致时暂停计分并复位。"
+      },
+      "revision_trace": {
+        "source_merged_record_hash": "sha256:a277b530cb17372b49a1e095e4291cbc6d85aa161a34ea89e27a1794d489d3a5",
+        "failed_review_tracks": [
+          "CONTENT",
+          "SAFETY_TECHNICAL"
+        ],
+        "carried_forward_review_passes": [],
+        "content_required_revision": "最低修改要求：锁定总数和构成，例如“10件中9件为合格补货品、1件为条码/规格不符的异常干扰品”；材料列明异常标识和唯一答案卡；题干明确异常品应进入问题暂存区。将2分写成“9件进入唯一正确货位、1件进入问题区并完成中断标记、接续和复查”；1分和0分也按同一10件计数口径重写。",
+        "safety_stop_condition_note": "退回复修：材料和题干只写“异常项按题设进入问题区”，未定义异常项数量、类型和安全模拟方式；若现场误用真实破损、泄漏或污染商品，现有停止条件也未覆盖。最低要求：锁定唯一安全仿真异常品，使用无液体、无尖锐、无污染的空包装或图片卡；发现真实泄漏、尖锐破损、异味、污染或货架不稳时立即停止、隔离警示并由评估员或负责人处理，确认前不得继续。",
+        "safety_technical_note": "退回复修：题干、材料和rubric均未说明哪一件商品因何属于异常，“异常项按题设”没有实际题设，导致10件正确数量、问题区处置和答案无法唯一判定。最低要求：明确10件中正常品和异常品的数量、异常判据、对应货位或问题区答案以及中断前后状态；评分1分和2分应分别锁定正确上架数量、异常处置与最终复查要求。",
+        "changed_fields": [
+          "prompt",
+          "offline_tool_brief",
+          "assessment_point",
+          "rubric_criteria",
+          "scoring_rule",
+          "note",
+          "safety_stop_conditions"
+        ]
+      },
+      "old_semantic_hash": "sha256:fd0eb08f69cd179445021530f8b2068546f65229ffe98d6306073a5722644a13",
+      "new_semantic_hash": "sha256:fa0e01a00233784470d774eb02c8bb90521175bf9a84f06b707fe548063848f2",
+      "source_candidate_record_hash": "sha256:925cccefdaa3011984ad265cd28a70ca065141d7e3fde21fb77b348c4ebe27aa",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "activation_authority": "NONE",
+      "candidate_record_hash": "sha256:a80c054a04e5225a9622b59d0d58d1aa56c9c1314c48dd6077f92002b8189fe9"
+    },
+    {
+      "question_id": "M5_OP_048_V3",
+      "previous_question_id": "M5_OP_048_V2",
+      "source_question_id": "M5_OP_048",
+      "question_version": 3,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "status": "DRAFT_TARGETED_REREVIEW_REQUIRED",
+      "replacement_relationship": {
+        "rejected_original_remains_rejected": true,
+        "previous_v2_not_activated": true,
+        "supersedes_original": false
+      },
+      "structured_replacement_plan": {
+        "question_id": "M5_OP_048_V3",
+        "question_type": "OFFLINE_OPERATION",
+        "prompt": "补货时发现通道内散落3个轻质空纸箱和1段塑料包装膜。请按门店安全流程恢复通道。",
+        "materials": "在划定模拟区内放置3个折叠轻质空纸箱、1段短塑料膜、警示牌、纸箱回收区和塑料膜回收区；不得形成真实绊倒路径。",
+        "unique_outcome_label": "唯一达标行为",
+        "unique_outcome": "停止推车或搬运；提醒人员绕行并放置警示；确认材料无尖锐、污染或重压风险；安全移除全部4件散落物并分类；复查通道完全畅通后才恢复通行。",
+        "scoring_thresholds": {
+          "score_0": "任一散落物仍处于通道且未被路障完全隔离，或用脚踢或抛掷材料，或未警示即让人员进入，或未经复查恢复通行，或接受指向性提示，或累计2次及以上提示。",
+          "score_1": "独立将4件散落物全部移出通道并保持警示，但恰好有1件分类错误；或恰好1次非指向性提示后完成全部要求。",
+          "score_2": "独立完成停止作业、提醒绕行和警示、安全确认、移除并正确分类全部4件散落物、复查并恢复通行，且0次提示。"
+        },
+        "boundary_label": "停止条件",
+        "boundary": "发现真实尖锐物、泄漏、污染、异味、过重物或模拟区无法隔离时立即停止操作，保持警示隔离并报告负责人，由负责人安排处理；确认现场安全前不得恢复通行。"
+      },
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "补货时发现通道内散落3个轻质空纸箱和1段塑料包装膜。请按门店安全流程恢复通道。",
+          "assessment_point": "通道散落物的警示隔离、安全移除、分类与复查",
+          "ability_tags": [
+            "SAFETY_OPERATION",
+            "RULE_EXECUTION"
+          ],
+          "note": "停止条件：发现真实尖锐物、泄漏、污染、异味、过重物或模拟区无法隔离时立即停止操作，保持警示隔离并报告负责人，由负责人安排处理；确认现场安全前不得恢复通行。",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m5.csv",
+            "source_ref": "新增嵌入观察项",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "在划定模拟区内放置3个折叠轻质空纸箱、1段短塑料膜、警示牌、纸箱回收区和塑料膜回收区；不得形成真实绊倒路径。",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "停止推车或搬运"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "提醒人员绕行并放置警示"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "确认材料无尖锐、污染或重压风险"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "安全移除并分类全部4件散落物"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "复查通道完全畅通后才恢复通行"
+            }
+          ],
+          "professional_review": {
+            "required": true,
+            "status": "PENDING",
+            "tracks": [
+              "CONTENT",
+              "SAFETY_TECHNICAL"
+            ]
+          }
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：任一散落物仍处于通道且未被路障完全隔离，或用脚踢或抛掷材料，或未警示即让人员进入，或未经复查恢复通行，或接受指向性提示，或累计2次及以上提示。",
+          "score_1_description": "1分：独立将4件散落物全部移出通道并保持警示，但恰好有1件分类错误；或恰好1次非指向性提示后完成全部要求。",
+          "score_2_description": "2分：独立完成停止作业、提醒绕行和警示、安全确认、移除并正确分类全部4件散落物、复查并恢复通行，且0次提示。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "停止条件：发现真实尖锐物、泄漏、污染、异味、过重物或模拟区无法隔离时立即停止操作，保持警示隔离并报告负责人，由负责人安排处理；确认现场安全前不得恢复通行。"
+      },
+      "revision_trace": {
+        "source_merged_record_hash": "sha256:ea8431733de2487876bb02b035ed67ae9e1a8c18aa681a8ca7603abcaa6aa54d",
+        "failed_review_tracks": [
+          "CONTENT",
+          "SAFETY_TECHNICAL"
+        ],
+        "carried_forward_review_passes": [],
+        "content_required_revision": "最低修改要求：将assessment_point改为明确的“通道散落物安全处置”或同等岗位测点；ability_tags至少改为SAFETY_OPERATION、RULE_EXECUTION，并重新生成候选hash。题干、材料、rubric和评分阈值可保持不变。",
+        "safety_stop_condition_note": "退回复修：1分允许只清除并分类3件散落物，而0分又规定“仍留有明显绊倒物”即0分；若第4件仍在通道，现场同时满足1分条件和0分红线，且未明确继续隔离至评估员接管。最低要求：安全红线优先，任何未隔离的遗留绊倒物均判0分并停止；1分可改为4件全部移出但有1件分类错误，或明确剩余物持续被路障完全隔离并由评估员接管后才可判1分。",
+        "safety_technical_note": "退回复修：0分与1分阈值不互斥，评估员无法对“清除3件、遗留1件”的同一表现唯一评分。最低要求：重写1分锚点，使其与0分红线互斥，并明确遗留物数量、是否仍处通道、隔离状态及恢复通行权限；未清除或未隔离的绊倒物不得获得1分。",
+        "changed_fields": [
+          "assessment_point",
+          "ability_tags",
+          "rubric_criteria",
+          "scoring_rule",
+          "note",
+          "safety_stop_conditions"
+        ]
+      },
+      "old_semantic_hash": "sha256:dd1de83733c7cedc6a9a133e84ad19f68e91852c70eac348fda43604cc94b261",
+      "new_semantic_hash": "sha256:c7e32ef6c8e4cd9fe13883a5a9a2a38b579748b5b3905ffc5bb0f9a25c9d67c1",
+      "source_candidate_record_hash": "sha256:2c8e2481d47bb49e6f407f80f201615b26674c69616688e0440283497be632d2",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "activation_authority": "NONE",
+      "candidate_record_hash": "sha256:9cadb07c134ee9a5b95dca45a16a4fa6d1890ac8fa2d23b2a2c5c68575b0273d"
+    },
+    {
+      "question_id": "M5_OP_055_V3",
+      "previous_question_id": "M5_OP_055_V2",
+      "source_question_id": "M5_OP_055",
+      "question_version": 3,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "status": "DRAFT_TARGETED_REREVIEW_REQUIRED",
+      "replacement_relationship": {
+        "rejected_original_remains_rejected": true,
+        "previous_v2_not_activated": true,
+        "supersedes_original": false
+      },
+      "structured_replacement_plan": {
+        "question_id": "M5_OP_055_V3",
+        "question_type": "OFFLINE_OPERATION",
+        "prompt": "负责人说：“把那边的货补一下。”现场有两个货架、三种SKU和两个优先级标识，指令不能唯一确定任务。请在移动商品前澄清四个维度：目标位置、商品身份、数量和优先级；随后复述完整任务并等待负责人确认。确认后本题结束，不开始补货。",
+        "materials": "两个货架、三种轻质SKU、普通或优先任务标识、负责人角色卡；至少提供6瓶500毫升无糖茶及其他干扰SKU。角色卡锁定答案为“B货架第二层，500毫升无糖茶6瓶，优先补货”。",
+        "unique_outcome_label": "唯一达标行为",
+        "unique_outcome": "在移动商品前完成四维澄清：目标位置同时包含货架和层位；商品身份同时包含品名或SKU和规格；数量明确；优先级明确；准确复述完整任务并等待负责人确认后结束。",
+        "scoring_thresholds": {
+          "score_0": "完整澄清少于3个维度、凭猜测移动商品、复述内容与角色卡不一致、未等待负责人确认，或接受指向性提示，或累计2次及以上提示。",
+          "score_1": "独立完整澄清四个维度中的3个，未移动商品，并准确复述已确认信息；或恰好1次非指向性提示后完成全部要求。",
+          "score_2": "独立完整澄清四个维度，准确复述并等待负责人确认，0次提示。"
+        },
+        "boundary_label": "异常分支",
+        "boundary": "负责人仍无法给出唯一任务，或指令涉及无权限或不安全操作时，学员应暂停并请求更高层负责人确认，不得自行猜测执行。"
+      },
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "负责人说：“把那边的货补一下。”现场有两个货架、三种SKU和两个优先级标识，指令不能唯一确定任务。请在移动商品前澄清四个维度：目标位置、商品身份、数量和优先级；随后复述完整任务并等待负责人确认。确认后本题结束，不开始补货。",
+          "assessment_point": "模糊补货指令的四维澄清、复述与确认",
+          "ability_tags": [
+            "BASIC_SOCIAL",
+            "RULE_EXECUTION"
+          ],
+          "note": "异常分支：负责人仍无法给出唯一任务，或指令涉及无权限或不安全操作时，学员应暂停并请求更高层负责人确认，不得自行猜测执行。",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m5.csv",
+            "source_ref": "新增嵌入观察项",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "两个货架、三种轻质SKU、普通或优先任务标识、负责人角色卡；至少提供6瓶500毫升无糖茶及其他干扰SKU。角色卡锁定答案为“B货架第二层，500毫升无糖茶6瓶，优先补货”。",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "目标位置包含明确货架和层位"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "商品身份包含明确品名或SKU和规格"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "数量明确为6瓶"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "优先级明确为优先补货"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "准确复述完整任务并等待负责人确认后结束"
+            }
+          ],
+          "professional_review": {
+            "required": true,
+            "status": "PENDING",
+            "tracks": [
+              "CONTENT"
+            ]
+          },
+          "administration": {
+            "variant_type": "ROLE_PLAY",
+            "script_locked": true
+          }
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：完整澄清少于3个维度、凭猜测移动商品、复述内容与角色卡不一致、未等待负责人确认，或接受指向性提示，或累计2次及以上提示。",
+          "score_1_description": "1分：独立完整澄清四个维度中的3个，未移动商品，并准确复述已确认信息；或恰好1次非指向性提示后完成全部要求。",
+          "score_2_description": "2分：独立完整澄清四个维度，准确复述并等待负责人确认，0次提示。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "异常分支：负责人仍无法给出唯一任务，或指令涉及无权限或不安全操作时，学员应暂停并请求更高层负责人确认，不得自行猜测执行。"
+      },
+      "revision_trace": {
+        "source_merged_record_hash": "sha256:16082dd37520bae4c4cbd1047d76384cde512c5d9382b804bc6fa278500bc46e",
+        "failed_review_tracks": [
+          "CONTENT"
+        ],
+        "carried_forward_review_passes": [
+          {
+            "track": "SAFETY_TECHNICAL",
+            "status": "PASS",
+            "source_record_hash": "sha256:65eff944f2b4732800c4c8da1033bb0d1d6cc0c3bb6dc1edd5727b457db232d3"
+          }
+        ],
+        "content_required_revision": "最低修改要求：明确四个评分维度及合并规则，例如①目标位置=货架+层位，②商品身份=品名/SKU+规格，③数量，④优先级；逐项写入rubric。材料明确至少提供6瓶500毫升无糖茶及其他干扰SKU。说明评分在学员准确复述并等待确认后结束，或若要求开始补货则补充后续操作和评分。",
+        "safety_stop_condition_note": "通过",
+        "safety_technical_note": "通过",
+        "changed_fields": [
+          "prompt",
+          "offline_tool_brief",
+          "assessment_point",
+          "ability_tags",
+          "rubric_criteria",
+          "scoring_rule"
+        ]
+      },
+      "old_semantic_hash": "sha256:7307e88432f95c06091d39ce418a1d4bc13da45f3a28e367242ef212d5c564ae",
+      "new_semantic_hash": "sha256:64b8778f81fbf40160e03ecc5b94543ca229919d70d38817bfd271d9ddc412e0",
+      "source_candidate_record_hash": "sha256:dbe4a823ad5881ce60dc79863d53200221ce7f946ac28071cd85bfb22d7939b5",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "activation_authority": "NONE",
+      "candidate_record_hash": "sha256:a111139bd3f5b0216e3deaf9329eaf8879f854d9c4be56c73fb86bc2fcb828ca"
+    }
+  ],
+  "candidate_set_hash": "sha256:6066f243639237f898095b79ecd667d93bf54a1dc2ecf39a85852d7df96870f4"
+}

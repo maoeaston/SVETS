@@ -3,7 +3,9 @@
 对应 PRD：`doc/features/student-profile-prd.md`
 分支：`feat/student-profile`
 创建日期：2026-07-01
-状态：v1.1（已过 Reviewer，修订 severity bug / build 顺序 / 测试盲区）
+状态：历史实施步骤记录；当前行为以代码、主 PRD和本文顶部增量说明为准
+
+> 2026-07-22 F1 增量：schema v0.1.15 已提供 `student_profile.user_id` 外键。创建时显式写入该字段，get/list/update/archive 均通过该字段关联账号；无账号档案保持可管理，姓名与账号显示名采用事务同步。下文 v0.1.7 的逐步代码片段只用于追溯首次实现，不再作为复制实现的输入。当前总计划见 `pilot-r0-foundation-development-plan-2026-07-22.md`。
 
 ---
 
@@ -14,13 +16,13 @@
 ## 前置条件
 
 - 已落地：登录功能（`auth:login` handler、`useAuthStore`、全局路由守卫）——commit 4344b9f + fb70618
-- 已存在表：`user_account`、`student_profile`、`error_event_log`、`error_code_registry`（schema v0.1.7）
+- 已存在表：`user_account`、`student_profile`、`error_event_log`、`error_code_registry`（当前 schema v0.1.15）
 - 已存在工具：`src/main/utils/password.ts`（hashPassword / verifyPassword）、`src/main/db/connection.ts`（getDatabase）
 - TeacherLayout 当前为占位页，本功能将其改造为带导航 + router-view 的布局
 
 ## 关键设计决策（贯穿所有步骤）
 
-1. **同 UUID 复用**：`student:create` 时生成一个 UUID，同时写入 `user_account.user_id` 和 `student_profile.student_id`，作为两表隐式关联（schema 无 FK，应用层维护）
+1. **显式账号关联**：`student:create` 当前仍复用一个 UUID，同时写入 `user_account.user_id`、`student_profile.student_id` 和 `student_profile.user_id`；读写只依赖 `student_profile.user_id` 外键，不依赖两个主键相同
 2. **caller 身份**：每个 handler 接收 `{ callerUserId, callerRole, ... }`，校验 callerRole ∈ {TEACHER, ADMIN} 且 caller 的 user_account.status = ACTIVE 且 role 与 callerRole 一致。这是软校验（无 token），MVP 可接受（PRD 风险点已记录）
 3. **审计写 error_event_log**：error_category='SYSTEM'（枚举不含 STUDENT_PROFILE），related_aggregate_type='STUDENT_PROFILE'，related_aggregate_id=student_id。**recovery_status 不显式写**（用 schema 默认 'UNRESOLVED'）——审计 INFO 不是「已解决异常」，写 RESOLVED 会污染运维查询
 4. **sensory_profile_json 校验**：手写纯函数校验（接口小，不引入 ajv），null 通过，非 null 按 JSON 字段规范 §8 校验
@@ -651,11 +653,11 @@ StudentFormView 必须在 Step 6 以占位文件存在，否则路由的动态 i
 **[!] 测试用依赖注入而非 vi.mock**  
 `registerStudentHandlers(getDb = getDatabase)` 接收可选 db-getter。测试 `registerStudentHandlers(() => testDb)`，生产 `registerStudentHandlers()`。避免 `vi.mock('../../db/connection')` 的 hoisting 复杂性和多文件隔离坑。`vi.hoisted` 虽可行但更脆弱。
 
-**[!] test-db schema 路径**  
-createTestDb 用 `resolve(process.cwd(), 'doc/...sql')`，不依赖 `__dirname`（vitest ESM 下 __dirname 可能未定义）。vitest 默认从项目根运行，process.cwd() 稳定。若 schema 文件名含版本号，升级 schema 时需同步此路径。
+**test-db schema 路径**
+createTestDb 直接加载 `src/main/db/schema.sql`，测试与生产共用同一 schema 源，禁止恢复为 `doc/` 下的历史镜像。
 
-**[!] archive 的 role 锁**  
-`UPDATE user_account ... WHERE user_id=? AND role='STUDENT'`：若 student_id 与 user_id 因任何原因不一致（脏数据、并发违规），此条件防止改错非 STUDENT 账号。若更新 0 行（无匹配 STUDENT），事务仍提交（student_profile 已改 ARCHIVED）——这是已知边界，可接受（约定破坏时数据已不一致）。
+**[!] archive 的账号定位与 role 锁**
+归档先读取 `student_profile.user_id`，再执行 `UPDATE user_account ... WHERE user_id=? AND role='STUDENT'`。档案 ID 与账号 ID 不同不会停错账号；`user_id IS NULL` 的无账号档案仍可归档；role 条件继续防止异常关联修改非 STUDENT 账号。
 
 **[!] username 大小写**  
 SQLite 默认大小写敏感，`Alice` 与 `alice` 视为不同。PRD 接受此行为，不做 lowercase 归一化。search 的 LIKE 同样大小写敏感（SQLite LIKE 默认对 ASCII 不区分大小写——注意这与 = 的行为不同，文档化此差异）。

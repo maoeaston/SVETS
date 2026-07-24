@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Job Skill Targeted V5 SAFETY_TECHNICAL Failed-track Re-review Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "package_id",
+    "candidate_set_hash",
+    "reviewer",
+    "submitted_at",
+    "summary",
+    "questions"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "job-skill-shelver-298-targeted-v5-safety-technical-rereview-result-v1"
+    },
+    "package_id": {
+      "const": "job-skill-shelver-298-targeted-v5-safety-technical-rereview-packet-v1"
+    },
+    "candidate_set_hash": {
+      "const": "sha256:55b761ed6cf8b62460a79006d10ec37fa25a41702ab61b25fd26f185b8c403a7"
+    },
+    "reviewer": {
+      "const": "赫东"
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total",
+        "pass",
+        "return_for_revision"
+      ],
+      "properties": {
+        "total": {
+          "const": 2
+        },
+        "pass": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "return_for_revision": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "question_id",
+          "previous_question_id",
+          "new_semantic_hash",
+          "candidate_record_hash",
+          "conclusion",
+          "review_note"
+        ],
+        "properties": {
+          "question_id": {
+            "type": "string",
+            "pattern": "^M[1-6]_[A-Z]+_\\d+_V5$"
+          },
+          "previous_question_id": {
+            "type": "string",
+            "pattern": "^M[1-6]_[A-Z]+_\\d+_V4$"
+          },
+          "new_semantic_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "candidate_record_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "conclusion": {
+            "enum": [
+              "PASS",
+              "RETURN_FOR_REVISION"
+            ]
+          },
+          "review_note": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

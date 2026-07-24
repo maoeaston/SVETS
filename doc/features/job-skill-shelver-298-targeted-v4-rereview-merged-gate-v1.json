@@ -1,0 +1,4824 @@
+{
+  "schema_version": "job-skill-shelver-298-targeted-v4-rereview-merged-gate-v1",
+  "gate_id": "job-skill-shelver-298-targeted-v4-rereview-merged-gate-v1",
+  "status": "COMPLETED_WITH_RETURNS",
+  "generated_at": "2026-07-20T17:30:00+08:00",
+  "candidate_set": {
+    "path": "doc/features/job-skill-shelver-298-question-revision-candidates-v4.json",
+    "candidate_set_hash": "sha256:309a399aed46d0a7f5ca257c74a30312bd3a2931f53e5c03422739602c8c0d5a",
+    "sha256": "sha256:cc717f9d7f062929f83244d1fa676c4d761a9d3dc1851a0a161261033c464f2d"
+  },
+  "pending_gate": {
+    "path": "doc/features/job-skill-shelver-298-targeted-v4-rereview-gate-v1.json",
+    "gate_hash": "sha256:000f8a975f8d605fc2116647122fed1cdd70d6b66469546eea176e13cdbeca5b",
+    "sha256": "sha256:3ae9c4b8da136ca4ae611ea117cb07ece7fa5242f1e6b16a8524106b950bb15e"
+  },
+  "source_results": {
+    "content": {
+      "source_path": "E:\\Downloads\\job-skill-shelver-298-targeted-v4-content-rereview-packet-v1-result.json",
+      "received_path": "doc/features/job-skill-shelver-298-targeted-v4-content-rereview-result-chen-xiaoqing-2026-07-20.json",
+      "bytes": 52749,
+      "sha256": "sha256:420289fbf3481415322f46a006613e79421fa8b0c485dfb241d7a2176a9c6409",
+      "reviewer": "陈晓青",
+      "submitted_at": "2026-07-20T08:58:25.746Z"
+    },
+    "safety_technical": {
+      "source_path": "E:\\Downloads\\job-skill-shelver-298-targeted-v4-safety-technical-rereview-packet-v1-result.json",
+      "received_path": "doc/features/job-skill-shelver-298-targeted-v4-safety-technical-rereview-result-he-dong-2026-07-20.json",
+      "bytes": 45089,
+      "sha256": "sha256:8b2d1c5c03ee98eba9e09e57ec58aa90112738690c520663267e89b9f45583b3",
+      "reviewer": "赫东",
+      "submitted_at": "2026-07-20T09:01:55.000Z"
+    }
+  },
+  "validation": {
+    "schema_identity_scope_hash_summary": "PASSED",
+    "video_rule_behavior_answer_contract": {
+      "status": "PASSED",
+      "checked": 12,
+      "conflicts": []
+    },
+    "scope_anomalies": []
+  },
+  "summary": {
+    "total": 145,
+    "passed": 139,
+    "passed_v3_references": 4,
+    "passed_v4": 135,
+    "return_for_revision": 6,
+    "blocked_contract_conflict": 0,
+    "pending": 0,
+    "content": {
+      "total": 140,
+      "passed": 135,
+      "return_for_revision": 5
+    },
+    "safety_technical": {
+      "total": 120,
+      "passed": 118,
+      "return_for_revision": 2
+    },
+    "returns_by_question_type": {
+      "DRAG": 1,
+      "OFFLINE_OPERATION": 5
+    },
+    "returns_by_failed_tracks": {
+      "CONTENT": 4,
+      "CONTENT+SAFETY_TECHNICAL": 1,
+      "SAFETY_TECHNICAL": 1
+    },
+    "v5_by_next_review_tracks": {
+      "CONTENT": 4,
+      "CONTENT+SAFETY_TECHNICAL": 1,
+      "SAFETY_TECHNICAL": 1
+    }
+  },
+  "authority": {
+    "releaseable": false,
+    "phase_4_allowed": false,
+    "runtime_database_unchanged": true,
+    "activation_sql_generated": false,
+    "delivery_lock_unchanged": true,
+    "v5_required": 6
+  },
+  "questions": [
+    {
+      "question_id": "M1_DG_028_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_DG_028_V3",
+      "candidate_record_hash": "sha256:ee14b5cffcbfde2346cce9c40ff1eaf4992b6c52de85b120a8bd84ef46399ff9",
+      "new_semantic_hash": "sha256:ee2d6b47c48b749716b10b164e5458d671e39689f68f16251941537ae13f4825",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:fb99ea9e46c7fea90bd19e766aa983144cb70bf53a07b2c04d6f5781e5da40d2"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:5625a0cb9f9f1b9ef514316286e0a71a2def04984c8df12c8f569720e42e8b3e"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:e4d676453c7d3d6f31943b7785b5118e2a987dbbac9d6e6295b5db310467acbd"
+    },
+    {
+      "question_id": "M1_DG_029_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_DG_029_V3",
+      "candidate_record_hash": "sha256:b7284be5cc7d791c787724ca9aec8ecb5b89d3a1bf78b155d9b345a306adcaf4",
+      "new_semantic_hash": "sha256:0149982f97b7913f630dbf4dd20d45e497e7fe695d30f281374bad45a6d2233b",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:30c69ccb0691c19d6e41425faab50eb35570d21af2f7a68c2ef793e88bfadcd0"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:e76711fdc1bd2d323b4de210ac3b9a22d7e50bb7b01b3e54769330e2b4ef2049"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:6293956a366575988484fcbc98b7dd7f4b45b5edf00da6dcfe14bf7d8b44872f"
+    },
+    {
+      "question_id": "M1_DG_032_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_DG_032_V3",
+      "candidate_record_hash": "sha256:9898eb5033f6bb8d48e5d37d86d5f9740e9e7ff7b959292df0691b2dabfba6d1",
+      "new_semantic_hash": "sha256:5d6e566a02d0ae4e3159d3b84cfbdbc880f3b58c682b59c95bb6b057a03e2f5c",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:08805f7e0282b1b7cb8bd438199c664310300c8dc9223cfa682ba205368ba843"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:62632f1740f55c2ca6cd0ba90e593794cd822faf128942e0cc27303c4f6150aa"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:0931d66bb4bcc96711540b805fc197419ce3bd859ea5abe4b1c1478b49fcc2a0"
+    },
+    {
+      "question_id": "M1_OP_034_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_OP_034_V3",
+      "candidate_record_hash": "sha256:9836d564a90ee67b8aa6caf125cff8e2e00c55d8f61c7634e42bf256a93423d4",
+      "new_semantic_hash": "sha256:5909aab96e42a707819c2b63f29bd3b912fa5db51a0af099b720aba4ed2edc4a",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:488f31b18b1220aae10bd5f7a0878c1a225bea88ee21d34dc06ebc85cf96460c"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:e45aac73e548036f06902011c4e61323387683726ca2d3c721bf3401fe87bf40"
+    },
+    {
+      "question_id": "M1_OP_035_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_OP_035_V3",
+      "candidate_record_hash": "sha256:21390a62e2bf2ca88d37f5e7a935afb5fe2e88f8aced1241df266306cd0bf60a",
+      "new_semantic_hash": "sha256:7f7c7b7adc913f7b465b7a11b40432833fa1ccaa9e71aabaed79b070915d14ab",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:a9ff220c5d23353a505d36a6163ce185bcf5188ade3387facd5dda180dc333a6"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:6107eecfd917d5cc655c79aa9ea976272df35f7d841feb73f8bee5923aa7da57"
+    },
+    {
+      "question_id": "M1_OP_036_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_OP_036_V3",
+      "candidate_record_hash": "sha256:8c98f1aab841c369223bdda2c6f08759bb791dad37dc013d575d72ea6d88eca9",
+      "new_semantic_hash": "sha256:bb950a546177634c3443bc1fda0ca2ed8bcbf505dd57f3bc97cda4d2c9c1210b",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:80f45986ced8b3b57df0352a4cb02aeec39fb2602d4f5f265162ae4cc7535588"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:ff59b6bdd608923c33c8aa0a2ee4f356d01b7a3faba8f543a9ca33fb9b99b9a6"
+    },
+    {
+      "question_id": "M1_OP_037_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_OP_037_V3",
+      "candidate_record_hash": "sha256:edd5b458da50cf8becf9d55bf12a9ffd31c3410adbeeb2b96a9040aad780e7e2",
+      "new_semantic_hash": "sha256:89ae022814d0b5e6feeb895e270120756175b75c307616f6f85f913be8712119",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:e3c5ab0e6c635e61c22531c10a81bcb3e8e463310b066e2ff570f12c7b370688"
+        },
+        "safety_technical": {
+          "status": "RETURN_FOR_REVISION",
+          "review_note": "退回复修：工具条件写明5件均为不同SKU/规格，但题干、rubric和2分锚点要求“同一SKU连续成面”。在当前道具集下不存在可形成连续排面的同SKU复数商品，r3无法观察，2分标准不可执行；assessment_point仍为“大小排序实操”，与V4实际考查的排面图/SKU归位不一致。最低可接受修正：至少设置一个SKU包含2件及以上同款商品并锁定唯一排面图，或删除“同一SKU连续成面”指标；同步更新assessment_point、rubric及0/1/2分阈值，确保每项指标均可由现场道具观察和唯一判定。",
+          "source_record_hash": "sha256:a4f7573d6f99c9a8db8bff9197e184036110c7a6f2b8121abd7db2aa4e253f6d"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "SAFETY_TECHNICAL"
+      ],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [
+        "SAFETY_TECHNICAL"
+      ],
+      "next_question_id": "M1_OP_037_V5",
+      "merged_record_hash": "sha256:193f8e8924dfdc29d859b58abc780c13ee3846fbb5ba096aa4d1b4065f3ff80d"
+    },
+    {
+      "question_id": "M1_OP_038_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_OP_038_V3",
+      "candidate_record_hash": "sha256:30565f78e4e85042d9910c4e7eff3653198702ab04cd0c3b95c392a0021ce2d8",
+      "new_semantic_hash": "sha256:6ad4488d8d8363cca02f4160ca46f43cfb6f91552b59373465eb731c67ebcc3c",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "review_note": "评分计数口径仍不一致。题干和score_1按“移货、隔离、清洁、干燥、复位、复查”6步计算4至5步，但rubric只有5项，其中“确认干燥后再复位”把干燥和复位合并为1项。当学员完成干燥但未复位，或未干燥就复位时，不同教师可能按1步或2步计数。最低修改要求：把“确认干燥”和“复位商品”拆成两个独立可观察指标并继续按6步评分，或统一改为5项指标并重新定义0/1/2分阈值，同时把未干燥即复位列为明确红线。",
+          "source_record_hash": "sha256:f8eff45bbffe482cf879586f39c2dea5c22d65a7251ecd9d5336b9dce0c0b49e"
+        },
+        "safety_technical": {
+          "status": "RETURN_FOR_REVISION",
+          "review_note": "退回复修：题干定义6个步骤（移货、警示隔离、清洁、干燥、复位、复查），rubric仅列5项并把“确认干燥”和“复位商品”合并，1分锚点却按“6步中的4至5步”计分，评分单位不一致，评估员无法稳定判定4步或5步，且可能漏判未干燥即复位。最低可接受修正：将“确认层板干燥”和“复位商品”拆成两个独立criterion，或统一改成5项流程并重写0/1/2分阈值；明确未隔离湿区或未确认干燥即复位商品均立即停止并判0分。",
+          "source_record_hash": "sha256:159c63bd51089b235cb46d0a3d29307a17c7c389673598b495dc56f39d9a42d1"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "next_question_id": "M1_OP_038_V5",
+      "merged_record_hash": "sha256:9b1fd8c91e25fe68c0f61a07dcefa58a322517d4946e95a180724b4fbc949739"
+    },
+    {
+      "question_id": "M1_OP_039_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_OP_039_V3",
+      "candidate_record_hash": "sha256:00992d0fcceb0b8914c6d3cf4ff79d81930451a9d4edcbda9f2f20ed15fba717",
+      "new_semantic_hash": "sha256:cf6e579ec2905fac4dfbf48176ec0dc50ddd5df8f5fa4073bfcb24d54681e2bd",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:e57a39157c04d808320545a98086eccf66242793e67ae80b8db5f6340ed54bf9"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:bca53c6151a2aa7c6153a00c394134c2f1218463eec3cd8a82e1942a1cea3250"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:8eea503a43a12f78cb8003b7785f550d4e5ea958d0b865adb152da5d2431add1"
+    },
+    {
+      "question_id": "M1_OP_040_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_OP_040_V3",
+      "candidate_record_hash": "sha256:f0216ebbad26756a74cba586fb7f9d4e203808a81b2e1b4c398c5c3da96cf24a",
+      "new_semantic_hash": "sha256:70fb682cc69307366c311d03c2f10d19414526d56467ec7936952932c8bb230c",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:db2f9a3badb2c10467cbc5181cfcef2d81983fb88d88d4dfdd84d52e8df98c21"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:13ac071edef08952c8fe9b5764e7e25168320b96b41a6adfeb781aae13f7464b"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:c3aa6f32031f69631835d8c9577e988c97ec07771bb0ae94513b0f5f14864c4d"
+    },
+    {
+      "question_id": "M1_OP_041_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_OP_041_V3",
+      "candidate_record_hash": "sha256:33952866b0eaca88273e17f9fb4ef24376fcb8f7aaf4aba594b610c6dedbac37",
+      "new_semantic_hash": "sha256:cfb15eb0282b175050b71863eb5c7f3255318418e47c4226046004e810770f6d",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:5f2d721258f2422b348cdb9afc1b60aa784916d91a10c8f9b4a2a6b833facd3e"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:87c0dbd3ab275cb637967c231067bd50800b86566cc7384983d25055b5c75795"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:5ca170e0e18f1a54db0ebd276fe2afcfdbdfef433b58679de783b105adfa03a8"
+    },
+    {
+      "question_id": "M1_OP_043_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_OP_043_V3",
+      "candidate_record_hash": "sha256:063e504661f9cfa6cea8f971d9dbcf42b884a9e16ca19225f705ed11edcc9a26",
+      "new_semantic_hash": "sha256:4600a1a4554696e2226c0275fc2b89b40eb84115e704f2055aec77e9cceb2609",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:0472b2a1d77bad7441d5d7d956792cda06a59830baee8e7e16874f44ce656325"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:6d09d398e20a55dbb4a426bc8eea5532736b6c0a3049ff80e3230715eb6e1227"
+    },
+    {
+      "question_id": "M1_OP_044_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_OP_044_V3",
+      "candidate_record_hash": "sha256:43c04de22f7938393e6baaa41e061623d3c3ae307328788e66524efeeca21abc",
+      "new_semantic_hash": "sha256:460689fb673ccbb0c99e03d082cd2c05ffc70e6683c72a6dd15f5d6e80844ddb",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:0b229047e3daf176d8cad6e3cdc0ff9249ae1d4153a2314dae5538706bce221a"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:d6c66bdaf6bec27f16b52eddbe4fcfe358e13f1ef4b2e653eb0f49fda756bd51"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:078553145a1a54203fbdeb9e076aec8d1d0bdde5634326b028af53e00f993c7e"
+    },
+    {
+      "question_id": "M1_OP_045_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_OP_045_V3",
+      "candidate_record_hash": "sha256:ae3bb54c4137208e03c77fe051e7a3e6dfff523ba22630919dba94d6225e4299",
+      "new_semantic_hash": "sha256:f310ffb4bd11f4c25314d094db0b28678c8f225dd93ce225401b910fe275d4a4",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:ca182f44ae8d5ab69acbf287b4c0fffb7920c9dd54b2eaedb809ecdf51258350"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:08c373aac3ecbe81bcd7f63b4c14d47311079e14ced817da0afb29689d9a5ca9"
+    },
+    {
+      "question_id": "M1_OP_046_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_OP_046_V3",
+      "candidate_record_hash": "sha256:dcd55c83ce69c72d17f0356a1c5108f8f8d1cb944df07cad1066e50308014767",
+      "new_semantic_hash": "sha256:ba2ed38b0c5777284ab7bf9b60c0eaed54bfb58d027fa4aa46fbeac47441c0df",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:add124c4d0842e92674b3d85869dcd8bb5eb2e5ad06a862112a7fb40f67f98d6"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:5101578927b76179932661a9466b96835de5d0514a22945fb4d9bfe8ccad8e72"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:31821817414535063d736c67e41b1026e9664ff99de313af0b00a8d6ed008316"
+    },
+    {
+      "question_id": "M1_OP_047_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_OP_047_V3",
+      "candidate_record_hash": "sha256:0dbec97029108762af3cbe1789563310e3f494c8776fecb86a709465129639b9",
+      "new_semantic_hash": "sha256:71ae520691e479d7433bee6db126cfcaa532fca3db9c8f06ca1c84d3481eb119",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:9c765e606dd2e7e39d5f33b6a232b219be78989e460a4335499ebe9582452f02"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:3af9cadf15827c5bfb9c9023772596cf2fcf56a4102d5cd2f2c117fcb782ed1c"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:6d46d7ee9459082505e86b617de6e211dbd60b84f2df759c6a195371cb5adb86"
+    },
+    {
+      "question_id": "M1_SC_005_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_SC_005_V3",
+      "candidate_record_hash": "sha256:4be6d8d02b82ba1198f6afbbfd23a5fdde2cfb205724c895baa10735c2151567",
+      "new_semantic_hash": "sha256:d45f7229ce6385d8ad4f397fdde0f57d38b9434349a28e7a6739da9977668db6",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:07381eb53aeabd97e02db7ce70ede6aeb4c5dc29f566429fc0e64c74ff6b6ddb"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:5e443d9c9d88b36a915851143d2e4971efddb7f1555c27be35f665c88a6be4e9"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:b408745cc82dc2d163a313beead47422260ba820d2f12451e37baa1403654161"
+    },
+    {
+      "question_id": "M1_SC_012_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_SC_012_V3",
+      "candidate_record_hash": "sha256:c460537c62fc32ae9b2a80fcffc32d4e247d0b60461aa9959a335819e33b93cc",
+      "new_semantic_hash": "sha256:467d8f3884c21f1c5f033e3b99b3111b2f6407ce057d6ffac3aafda0c9ddfc8e",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:e1007ebab06e8e0f3cad4f19780da8929817cd16f20265dd4878cc10857882fc"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:27db89e6a841ace802449ce5df6f212a4777aa6b07fc0c717471179184419067"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:ef4423494b13767d54c977f8db5194ca642b7046e15c1ee45cf9f888bf535b8b"
+    },
+    {
+      "question_id": "M1_TF_025_V4",
+      "question_version": 4,
+      "previous_question_id": "M1_TF_025_V3",
+      "candidate_record_hash": "sha256:cbd29eaac0ed163e690846c49f90c2516c1a2b1f48464921db4ce7cd012ce859",
+      "new_semantic_hash": "sha256:e1b4aad970878ba021cdfbfa7cb810710866fbcbcf8df36bae12d54cd14c426b",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:9d2603b27d39cedeac2a9102dfb33b236de943bd0e4f5256d0fff0709344075f"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:92b139519843a9a95d1bce387f569f185f96d0f7c0d5625d9b1fb4a3931020d7"
+        }
+      },
+      "video_contract_check": {
+        "status": "PASS",
+        "behavior_conforms": false,
+        "expected_answer": false
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:d62ebd16ae8c94bdab3f4f5b8dee1a0930ac566a61443fd9f02e96643775d2f1"
+    },
+    {
+      "question_id": "M2_DG_026_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_DG_026_V3",
+      "candidate_record_hash": "sha256:3d9bfab5007dbf03fa9040c4f7c30b14abccc8f536183e73dca0a5b8cda8e924",
+      "new_semantic_hash": "sha256:d44aaee2178589cd9584f41d3d1abae1048cfc23f61c2d833da8ae0138a28a37",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:50f6a295a847a5b513da59fa725a305bc88c3cfcd17c5ec5c8b454cc980a42e2"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:6681893cf2623dd16008c65eb07d5feab4a81f5688779c0f538fcc77d33c53aa"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:a4de5691e8db76217401a23a5950ad95e2c4b071be4d9663d33805383693a1a2"
+    },
+    {
+      "question_id": "M2_OP_028_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_OP_028_V3",
+      "candidate_record_hash": "sha256:d7cd07f83d3f5ee71c8a26075f6ab9404ce40438abc2588d9ee0f90b9ab805cf",
+      "new_semantic_hash": "sha256:ee71ce72f464135214aa02c4c6a30f3cd804ef73bf7d0612738a42c0235c330f",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:9b5949de24e540a14d4f50abb05ef37861c9cb6b0de2a935cb670c78aee9f1c1"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:484a4126eec7d5fd4f6a54354faaa034e5249d197d9d076f7a045b7d3bdebf08"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:9761c509687d7e51e84ee0fc97e59b8117e76676e6dd305d6e90c15092d1389c"
+    },
+    {
+      "question_id": "M2_OP_029_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_OP_029_V3",
+      "candidate_record_hash": "sha256:37e6ce8276b96f5baf860106fe1e720123a471bef3196fb8bb03124e0976561e",
+      "new_semantic_hash": "sha256:878f466d698a4178f151648d67f5d26dd61708de3ccbca9bab96a87aaeb958cc",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:f6d3e46dbc1df8392a4e3f6dd678053bbbf937cb75c7425b9720f1eadbb14b7f"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:c427f7b714734f421e1aab915df7e0c734223a4e01bda595039142e0b3e7f823"
+    },
+    {
+      "question_id": "M2_OP_030_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_OP_030_V3",
+      "candidate_record_hash": "sha256:218080f9db5e047cf6c2e89242ccfec3bb61cb44fdd17b81f9f9f6421b34281a",
+      "new_semantic_hash": "sha256:4daf52b158260aae4e443dc861ee63b95a6f72a6b386b0d6a3e975b4c78b22f5",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:24e9c30fc7d46512c46ac08221e5b2fe30f0eae12ff8ecc831c9a28bfee2c315"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:f52de9f7bdf1d18365778b83f27b93086f63d005eb3a1f7377c80aaa038f33fa"
+    },
+    {
+      "question_id": "M2_OP_031_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_OP_031_V3",
+      "candidate_record_hash": "sha256:3bdcdbdec644b138c6045d563305926529c09500c23a5ba13b4916461f61f12a",
+      "new_semantic_hash": "sha256:28f1f63e2d651d94b71986a56041586cecc3ed2a7c6ca35d336ab8c4d04f871e",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "review_note": "0分锚点引用了本题不存在的对象。工具和题设明确只有5件同SKU、包装完好、未过期且非临期商品，但score_0仍写“选择过期/破损干扰品”。该条件无法观察，也会使教师误以为本题应另设干扰品。最低修改要求：删除该不存在的干扰品条件；如确需考查异常排除，则必须在题干和材料中加入明确数量的异常品，并同步调整总数、正确答案和0/1/2分数量阈值。",
+          "source_record_hash": "sha256:dace3a91a955742110e2b0053d7f97484064496359f4930b54e25fa652c6633e"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:e2fc48e0a5a0ca772aa034aa68105f72a5a3b9cf37e1f5903dccfa4163459c72"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT"
+      ],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [
+        "CONTENT"
+      ],
+      "next_question_id": "M2_OP_031_V5",
+      "merged_record_hash": "sha256:c1fbc9ccfb4f0221219ad74823a51b95593a5170c2dc628afd857166d0ba98f6"
+    },
+    {
+      "question_id": "M2_OP_032_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_OP_032_V3",
+      "candidate_record_hash": "sha256:e8fb4473204c9f80ebadc25b3a2534c58a2a4a336abce73617c9840bdbbe9f8b",
+      "new_semantic_hash": "sha256:be75881556a4b1c36bbfb00732cdcf785cb3a9ed1aecba3c7eb25bdffbc6fa38",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:8f2db019133e56892bde923d917947639fdc46f6f35ffba1112c7a3c18334489"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:50b3318b0a72af5b4defbf7395d6b519e7512b627729dd070c60e5ab792fff40"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:c04ba4e3417df3732efb66ef8f7da4f0eaf0804e9830ef2737ed632fc448a775"
+    },
+    {
+      "question_id": "M2_OP_033_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_OP_033_V3",
+      "candidate_record_hash": "sha256:ca0dbd9e2355b84ab84805f078057b9e3789f951f1334d7b2fabe9e18c0942f8",
+      "new_semantic_hash": "sha256:6248f2ab11609f01676946ca99ff4228d42fd8f1ed4d1a545403e42d6b6d3e55",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:83f3359ddd8a1605987cf49a88f86b0d79cb829fee8e72cf3dabc99af3518511"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:dc63f1eb92cd01e2cac924b470f475829f6db785c47139fc88ad3263bc5c1515"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:c80760a21307630e3377864682ab3781a8d214892f9314109b1338e6e1432702"
+    },
+    {
+      "question_id": "M2_OP_034_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_OP_034_V3",
+      "candidate_record_hash": "sha256:75039d04af60dba0183650248ae6ff781a6a2dfdb633b8b78d4c145716ba1387",
+      "new_semantic_hash": "sha256:a4087c4bca7044363a7d65b6d1bb44871cd5afcf4e4aee6c06b58bf1a707cda3",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:b85e6c84fb43eb7f7ec3a26f30f8d889d58e57f237c858adbe677286ff54edb0"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:b82358b04b9bfb6801c33112cb0f6a2522f12b84490cbcb651fba333fed78524"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:5ed4d8057d82c7baf568da7bd4dafaa1111995d1253292a12c4958a609c1a74b"
+    },
+    {
+      "question_id": "M2_OP_035_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_OP_035_V3",
+      "candidate_record_hash": "sha256:f91a30f44bf1cbc855b1cfc1a515fd8a4502db5233bc4f1406bec6c46275316a",
+      "new_semantic_hash": "sha256:400e8b8f639b67698fd534ff24cec79864bf85eb582ada1c48ab4e9553c9cb5f",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:c6a2c698b849f4913fb4366c714d378a4e5f3a56388d4c41bdfa0fe4b232a1ff"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:97c4d35a06cabfb7b35c894b29e88a051d777def211368036cbf64b56e3135a8"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:c49cee7708578feb2938f7c0f994fd6e48b31924766817aed98a8b05fa032133"
+    },
+    {
+      "question_id": "M2_OP_036_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_OP_036_V3",
+      "candidate_record_hash": "sha256:14bb983a1ee4f89dc98e3e64f36201408fe28017aca1d9b77ec53b5cf146f240",
+      "new_semantic_hash": "sha256:74dd307a15634050cc51a7f17c3dae64d47700b855e44e9fd58feb6798fcb627",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:a135a04ecc1492567833c3db77a5152073f33c5711026b33d425c178fe7547bf"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:3c59617cc1b019dae05386118c77fb633ee997391bb42528a15d8b29b187e507"
+    },
+    {
+      "question_id": "M2_OP_037_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_OP_037_V3",
+      "candidate_record_hash": "sha256:7bdca07c78f027a89b50dc7ceea05e3d76b231a70bfd877c20bd39d7a5cb222c",
+      "new_semantic_hash": "sha256:b8afe642e67997a27e876e09e87e6d6f50c813598c5c371f9e7b6b3a8fb9a33c",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:a56dd0ab954bdb23cc319e674540f87952a04957b8e2685bb602082f2e5afda8"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:84e5849d914e37056522e196ccde02da753ef3d7588dd51fa7ca3e610e776258"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:dc7a2a4cec43e3ca14ae481432d429d21d9a67c22a46991744fbeff36fdf6b98"
+    },
+    {
+      "question_id": "M2_OP_038_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_OP_038_V3",
+      "candidate_record_hash": "sha256:5b782b84467dbd307a13fab287051253293717a076cc78bc8dc6dcb18315e688",
+      "new_semantic_hash": "sha256:9d6ff5e46b2191a23fe0a40d384204f6602699328a8cd1ad82714debc32ec7cb",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "review_note": "0分锚点引用了本题不存在的“异常干扰品”。题设明确8件商品均为同SKU、包装完好、未过期且非临期，因此“把异常干扰品纳入FIFO”不是本题可发生、可观察的评分事件。最低修改要求：删除该条件；如要保留异常筛除构念，应增加明确异常品并同步修改题干、商品总数、答案键和分数阈值。",
+          "source_record_hash": "sha256:c60cbf606f328bdd037fc84e1c1479f2f5561ec55580a20dc85f3e3f4bd9196b"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:4887d5ff4ab7a81832161043d5024fbfb9996a41fb1d19ae3aea62d8a4e8ff0e"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT"
+      ],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [
+        "CONTENT"
+      ],
+      "next_question_id": "M2_OP_038_V5",
+      "merged_record_hash": "sha256:b62cf6eb121c6f4844077ccfaf90c35e642675bc22caff87ea07c2c2f7572546"
+    },
+    {
+      "question_id": "M2_OP_039_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_OP_039_V3",
+      "candidate_record_hash": "sha256:8f6097104357521d42f029e48b1a3424ba20efeb76b78d6732d57f6a47fa0f2f",
+      "new_semantic_hash": "sha256:e1e11e5b946b21a5d9d81376de4692335a700846c88e939b89610398c0dffa93",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:8b7de796624077f89c99be0c2b508772895cf7e4228f25586069768893b83668"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:a975a914b8c0b9a535ae9030b44865e8769f090443561292ecc7bad591d4b922"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:b5f81e4cf065428c19779ec31450c2b1908c9b20c0081f6a7f7285eeaa08a8a7"
+    },
+    {
+      "question_id": "M2_OP_040_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_OP_040_V3",
+      "candidate_record_hash": "sha256:586b658771d16b1e8ca6064af955fa8eab9a1b1eb547170891efedb6a3460c8d",
+      "new_semantic_hash": "sha256:73de3aa67b13592741f4edcd84564f48ea2eb9db150bb1da752da9203f1fa70c",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:cb482e7e5bee180aa44734548fc540cc2243a15405d31a5dac51819d2fecdec6"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:f77d1fec1fc0ed7a1944cb0bc46a00dd6cda301f49022b1b417113189dff5aac"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:3947f51151b8d737c8f6e51b95d3e2c6a34dfe0fa08d5ba9784ddd703814e508"
+    },
+    {
+      "question_id": "M2_OP_041_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_OP_041_V3",
+      "candidate_record_hash": "sha256:8c15deac8b5adddfb1ef675bed6f73a77798fbf23a617e7b07e6e4a36695062e",
+      "new_semantic_hash": "sha256:7c4ec6606db75d5a2dfd39c54c6f693a00527fc614f03bc3563fba9fb0da3ced",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "review_note": "0分锚点引用了本题不存在的过期、破损或临期干扰品。题设和材料明确10件均为同SKU、包装完好、未过期且非临期商品，实际任务只考查FIFO排序和中断恢复。该不存在的红线会造成评分合同与现场设置不一致。最低修改要求：删除干扰品相关条件；如需同时考查异常筛除，必须加入明确异常品并重新锁定总数、排序答案和0/1/2分阈值。",
+          "source_record_hash": "sha256:d1ede3a47c3585474fa741a1843dcf64e10f61ecb4037486933a927b154b66c6"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:b47d72e9b2379b31a484fdb5a61b20c99e357af87f6bb27ddf35b1dffe2ed555"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT"
+      ],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [
+        "CONTENT"
+      ],
+      "next_question_id": "M2_OP_041_V5",
+      "merged_record_hash": "sha256:d70f629e323270ed4e882674cac08f3996872dca31663b31604dc21fd7119e30"
+    },
+    {
+      "question_id": "M2_SC_001_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_SC_001_V3",
+      "candidate_record_hash": "sha256:67f5fbfc9df846898fc3ded164b95b414d6fb530bc9e1d83e63dc33f1abb759a",
+      "new_semantic_hash": "sha256:37ed3d38305cf9150d776d544bb0b6c868a46203b9f78bba78207d504c9de516",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:0f43f6f6b1737ef506179338d1f6dd78ea3df5df0c84a2d921047f854911e3ba"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:521446f2321aedfaec9d124efa5a21713a7208446c2e8e5fef8ee4df3c82ce7a"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:a71ea3e4e388911f68c1625ec193d202e347c0ba7e5a306e0fdafe584c3ef602"
+    },
+    {
+      "question_id": "M2_SC_007_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_SC_007_V3",
+      "candidate_record_hash": "sha256:e17c06b9751d8bce7e17c738d6aeb35d9723977921a562cf69fea5865fef5e8b",
+      "new_semantic_hash": "sha256:ca9eedc7dc42f1a3fb8cfd492e230ce7f29ed5d98566eadcf5e3d299d4077efa",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:7a5b14f034452e66c52490958f671bde1fc07acf47073f4eba72c5bbdc683217"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:595042b44184ffe94e750edd9613a1d395a60c47b388d78072b0827752ab9adc"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:010effb3f46d101b653d988a045b07a8c069a1cb2d3ea9a0527065d7333797ed"
+    },
+    {
+      "question_id": "M2_TF_018_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_TF_018_V3",
+      "candidate_record_hash": "sha256:7d5000b407067f067c58a58cf813cb71fb1172e40760fc71fb74972e6ad4622c",
+      "new_semantic_hash": "sha256:115a37b0a7c99234b987976a2026eb6504331c5ada4542d4af24266fb0107fb3",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:d715250f18a2438c752bf44f87a26885533131b7e430af5feaa4ecca4929ae99"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "PASS",
+        "behavior_conforms": true,
+        "expected_answer": true
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:7de5d3234241db89e5015149fdd78c14f35cde1e62aa8f13603a0a1626c3efae"
+    },
+    {
+      "question_id": "M2_TF_022_V4",
+      "question_version": 4,
+      "previous_question_id": "M2_TF_022_V3",
+      "candidate_record_hash": "sha256:c052bc8826cd8bacb4a7f7bcda40b9e2a1e3be22817bbb54121c9fb3981fbe74",
+      "new_semantic_hash": "sha256:a4e85109fd737bcadc9c5cb3ab34902d44da6fec1764f0ffd11b6bd73f3a6cc3",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:67ea5ea15e94edbc0afc679b8570869b0f340900097627e6e462d04e4ed710b9"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:998b68a38cc1921d1bad9f52ad2cf205c74f943922d0bbfde6e9f443f7bcf4e7"
+        }
+      },
+      "video_contract_check": {
+        "status": "PASS",
+        "behavior_conforms": false,
+        "expected_answer": false
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:41912f9471f4a23eac1fdcdebdf4909befdfb6e0cc4f96373f7b623cc4153283"
+    },
+    {
+      "question_id": "M3_DG_038_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_DG_038_V3",
+      "candidate_record_hash": "sha256:6d7a5059ca3457608c52878ae00af1f5804578be98557454a0e4e788516d8363",
+      "new_semantic_hash": "sha256:e8b5855e8ddfac3efc0598532c4aa8fc1f625d20937ccbd8b88db123bd863a45",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:5fbc5875c2586669bc75a34d306ada93069b578db68371771c137354b7962d85"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:37b44bbe3247ee454c8102b382a6a440bc0c6b94667a4db954febd637c07d9cd"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:9fbf97958a9ab38566f04e853f6a8d445428abbf4ac789ebed5518a4626a40cf"
+    },
+    {
+      "question_id": "M3_DG_041_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_DG_041_V3",
+      "candidate_record_hash": "sha256:641c66727324ca3a414f6ddc08ab3d6e07d60db6de6e4d63d9ba4756cdcbb863",
+      "new_semantic_hash": "sha256:3362d31883e4079a06934754c90c66ac9991e1bd238c0b289d41115115d1f7b7",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:6e15d0f28170e06f14e529f7c1abfa603859177043bc07893fb95a170610665f"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:74c1877bf752179cb9ce41ff0dd59c9ec343f837b3d052b7c0e20d4b29a3687b"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:4d5e94c308c4ccf995bb7585214eec2316d8985f5bb98f15bf618ee0ca38821f"
+    },
+    {
+      "question_id": "M3_OP_044_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_OP_044_V3",
+      "candidate_record_hash": "sha256:01f5e8a2b92988d9463fbad32938f8a658747611dfd907ca420857d2e079731a",
+      "new_semantic_hash": "sha256:56ac4618ac7ed8717c82586c3ec584de8100f8677775107e600533888af2c35d",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:d72562de4ac2ea96bf8e39e04c4c90019089505ebc5defc656cb42b3c243f926"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:a8f48c0f59299af46d1f67be5257e8c56b62148c4210c53b9704c1079e1d9b77"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:7be6117ce67f7e9c519bd62b2bab3701490a11b7ac03ff864c2309a2910e2de6"
+    },
+    {
+      "question_id": "M3_OP_045_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_OP_045_V3",
+      "candidate_record_hash": "sha256:26dd78094fafef7fec76f62bb9bc26955585974f311ca78d30bf1007d94de574",
+      "new_semantic_hash": "sha256:768e2708590dcdff841ab192d0831d36736637b1718d33b94e1be589480825d1",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:d729c276ebbc5e92273e119438a5389bd278271747dcccca04506ec469bd20be"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:d00666cf86353210d87f93290e7369ced591dd1a150b9bba3557e9a846c548fb"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:d0eec7df4f568a0f366bb34f20bde7d080e23a6b18f6fa8967b55c52e5bf9877"
+    },
+    {
+      "question_id": "M3_OP_046_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_OP_046_V3",
+      "candidate_record_hash": "sha256:16237844b03675d1d513c077ad0824588eeef98eee5ac38b0fd9c953fc513b17",
+      "new_semantic_hash": "sha256:78fab1bd2f5d7621752b38f29dd045de455c70e275427934fdde04aba52ce0f9",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:e9290809bdf763ec4f2fd3a72196c032155d9213ff8afe422c7ce54c642546e8"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:99582cdff57314fd917656a4ac44cd27dcc088c7b7df0e0cb97470da6ccd1c05"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:9b7ff95a3c6914227bb452a298bcf0acabcc1fd7196d28230dda61b67758fdc0"
+    },
+    {
+      "question_id": "M3_OP_047_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_OP_047_V3",
+      "candidate_record_hash": "sha256:73a956f5df6829caad5aa2520ae5560c3907fc0abaae25489871499da69186ae",
+      "new_semantic_hash": "sha256:68cea308d454718b60047d3293ff36dbb48b12f83a1bb09aa94dc41165439cd5",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:f33c6e5890df82dab1ca4ab4995438645fef4caaa87f481cf109ef4f6d6a14dc"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:a15746d8357e0d04c8cfc16a5880021e5123a2d830c1960514d0b091c50f2a52"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:a8271db50522ba60e5a6fffe471eea4ac0fd1a8fc2f82bd7f0581799c02f6b55"
+    },
+    {
+      "question_id": "M3_OP_048_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_OP_048_V3",
+      "candidate_record_hash": "sha256:afd885fbb6252f6e4f3abcdcfdf262ad8206c7a095317061d452775a54847845",
+      "new_semantic_hash": "sha256:5c5358282e66fd792eb79545ea3ce34983de12ae1d5116a4e02780fd75f5de72",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:a09e785f91cc63eec68fe589b41a5cd420d30b14218ffbb6af60f7ba4eb2a37d"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:d9ab3d03d6b21621005b715425d3d3b704fde64426e4973d23c6c5876c2a3040"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:55ed579016d2eccf0e0dddc695a73ff28a72969a2bef027e438afb1f9100ce7b"
+    },
+    {
+      "question_id": "M3_OP_049_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_OP_049_V3",
+      "candidate_record_hash": "sha256:7d4e30e47b453b86553b5ef2731aaf4a204f8c0b035f44371169ad00ee261e6b",
+      "new_semantic_hash": "sha256:e7870eecf0d3bb6f21767026816a93ba6c5850de6e535d2d3961ff4738f261ee",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:a6daa4fc69b7340228dcf09bd99e6630960de57c1378ff2157085b98ddce001e"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:da028a77b5713db3bce5eecc7a4e6ec624253c8f3e7495b6556416e3da97233d"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:0dcfb96fecd9c5e40ae57ac8d94f17b55b6e34198cfc589e3e05f16d81b84f7b"
+    },
+    {
+      "question_id": "M3_OP_050_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_OP_050_V3",
+      "candidate_record_hash": "sha256:704ed41744f18837bde39559c176e11714f51d7e4e0073f19a24f44a79e50f15",
+      "new_semantic_hash": "sha256:540b9ef6a0a9e8a11378e07180ca9abcab8153e65015b3ee8aa942f2a23b66b4",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:665202ebdf6734b61053d67decfa8953c83e45fa9f2f785ef798103cd9b3b15d"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:a816438b8168f74ba4db83ebd031ee3977917d8cc23998d1531e0b893ba16f63"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:af4e22d6808d38e57e55af7c4afa60a56c38aec9115e9442e3abf6a55f2704d3"
+    },
+    {
+      "question_id": "M3_OP_051_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_OP_051_V3",
+      "candidate_record_hash": "sha256:a1e5d3d8919457c3ea2a0bde446c7f91aa7598a6a551de0daf166a9a3b7f4faa",
+      "new_semantic_hash": "sha256:7293a6dd11cbd370634a828a430b2447c7f876380a23be27f1e97efee97bba0f",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:bc5c763096b612c60465d6a4a8cba00504f5d0b84985e4c3995b33c329505a27"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:ae187b480160d424d5f538a65d1a6dcf2207975680735547a0550ab6b6ae9f34"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:dcc8f36861c9e721fad302246cdefcccf8dec712405b4327fcc68cc6a83e5f7a"
+    },
+    {
+      "question_id": "M3_OP_052_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_OP_052_V3",
+      "candidate_record_hash": "sha256:5db77aa50dc4cdde7d3c6bc5d578dbfb7816410541ddacec844d284ce4bd3346",
+      "new_semantic_hash": "sha256:cbe809ab93d6d4f2ea334661871634d501de8667eda7e1dcd24bc6bd655bfc6f",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:5d6877c986634436fb17e48d68bdfb1f4efab15766c09c5859eeba7a5def490b"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:2e1eb49ad64f7e764d78a65a487ea6a9ac3b232be69b17e45e4cb08c227c4909"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:44d6989d229b2553801fb839807f5fff6d1f031e0a5ad3ef57d19ce58237c6cc"
+    },
+    {
+      "question_id": "M3_OP_053_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_OP_053_V3",
+      "candidate_record_hash": "sha256:99bed9ed7f59411b60c3c81b63de9a9ed18088b75b8156855a1802a392a4189c",
+      "new_semantic_hash": "sha256:a2dcb2b53fba2b14a49d6761209914f7635b847c8782c898932d9dc4c6eb3916",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:3520d117cf92db5f51a355e8f570a439cd2e50a5bca92152cf5a0819ea5d321a"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:48dcf7be4758166cf6235413464a862dced9c98ab871d8f25b9c5ffc62ac576a"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:8448262fcc11e838a63fba62476d0850a1fc80dc1ca76051b1602bafe47a284e"
+    },
+    {
+      "question_id": "M3_OP_054_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_OP_054_V3",
+      "candidate_record_hash": "sha256:3a837d637fd488d9e2c674d3b81a0398f5bbe82b2fc897dbd45ef970bec1f9e5",
+      "new_semantic_hash": "sha256:10c683642ccd770c10ab0cc0e3bc3845e3b4d9fc9c18445433910b5da2c932fa",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:36ae17600b4bb617fcc335c3b7b203b0105733ac9f59c00b71730094aa41fe38"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:ebbe9edee03f48353e6f00d92adaf4917e37597895b0c1f0303898467806df09"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:f3abdfed2b48380a0bb005f396e551f5cb4cdf48b0527decd5ca2bace972d5aa"
+    },
+    {
+      "question_id": "M3_OP_055_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_OP_055_V3",
+      "candidate_record_hash": "sha256:e771b7ffd68e7f82152a8519f85e47b219e1bf9a4b46df5fd23c8c881c177d95",
+      "new_semantic_hash": "sha256:4571b5e43dd0ebf5fbaf14c5ccc6e668442db54f5b922ae377680a765caa2a65",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:33cc96f3013ca3a57222efd056cb26497165c72a1aee7a9f4b585c51525ef6e6"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:3d0ab7f3cd963f0779bc1504b86061501b406012e3b0b9799e0a384f2c822905"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:4254c349537c9addfdb0771c3a3b4f1045030d28f62e7469a6c657c53b5d50cb"
+    },
+    {
+      "question_id": "M3_OP_057_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_OP_057_V3",
+      "candidate_record_hash": "sha256:b6cacf98c891c309d8021d94007d24783aedfd4c9b708ac1433c52b958d052d0",
+      "new_semantic_hash": "sha256:b53282972a1d2ada1e4c0c789ac957fe97e2e3897179c073a7e3ff828faf426b",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:9f42d26b972aa8bf29f52c9ead214acdae9fbb66146ac7e28baa580ab09a346b"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:7775ea7388a2f15a3f5300b13115fe2db4ced3d1ef83d29b9ad039e015e9d4e0"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:89fe076e9304b5e6917ea94b7ba7d7d6253dcf738e728477a6a61ecf2ede3f89"
+    },
+    {
+      "question_id": "M3_OP_058_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_OP_058_V3",
+      "candidate_record_hash": "sha256:28d3ac354d0510a7ee58bb2d1e1419e7f8b54d3a73472cb616ee0252ff55d788",
+      "new_semantic_hash": "sha256:c71bca3aad0f4d1b1d4b2849e905f53095f7b959b5c2ecf80d8a031ea4afa8ac",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:dcac11ad1c53c23b6c5a2f6bcfe813349749cc321d5fd356c1ff2c42cfe65c2f"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:9749d90d8a3d0dd65ec4661f6fb2526002ff41498fe928d736a9f01a6f51962d"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:dd1cbc467aad84a0282bac56d9e500ca83b48fbba9b54de1ee65295bfdb0fde7"
+    },
+    {
+      "question_id": "M3_SC_003_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_SC_003_V3",
+      "candidate_record_hash": "sha256:8239117d0bd58c99cb25fd77fb89328ce4a2d4815a1c092909498f4474789149",
+      "new_semantic_hash": "sha256:d8c1ed50ba004bf136636c00f2b1ecaf5b02e97d8fdb5b887266251c47a356b9",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:5fa779bbcc0fba08c5729108dff19e6b0a2d98609d7169a0763cb301fc6432a7"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:a1f9dc57c69198b6d3c864a62238c16ec0736430a7283e3419769bbbb534c386"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:89224af7c312f6c003fbd8cc857c528ab5292b98d493edb9bfdf539c8c4fe418"
+    },
+    {
+      "question_id": "M3_SC_004_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_SC_004_V3",
+      "candidate_record_hash": "sha256:fb673235f4bad2cdf4af0affd8f375e86fa70af20ab102b2ad1ed9a19a9dd27c",
+      "new_semantic_hash": "sha256:80511a059ac8b3e6d1496fec9081ed438ca10aaaa093c9d62b6f94e7773b890b",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:2da0e47dec6c9e4e9f5505959e9bfac24e2195fbc7b67951607fddafe0bfc3df"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:f098555525d80d8e179aed3bbab897c62c535a51edcbeae55ebf1bda7f3d2de7"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:8e6f5ae9731675ec4c63f68dd94d1749927d786cb15ad917aa6b3490d6b4a46c"
+    },
+    {
+      "question_id": "M3_SC_006_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_SC_006_V3",
+      "candidate_record_hash": "sha256:c922a1c6773a4de2ec387452488c03f6f083d86a18487044209e29944b5cd595",
+      "new_semantic_hash": "sha256:73446c3d2c283ecbec70c738a0621f56c22499322b32aeb9f3068025f7191a95",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:a5380c8f04cc642a773dd9675f53fc61a97f0822565c48264aee232273c9421a"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:f62191b2c739a540a24f24a4772f67f2bdb12f20860b4ea2ff54ea46f1842acc"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:31e9baf597bab032629e301c4a2473e2ecd3d282cf28c1d57671144ba1fb2d34"
+    },
+    {
+      "question_id": "M3_SC_007_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_SC_007_V3",
+      "candidate_record_hash": "sha256:2f18f6434bd227b69e2cd8e8ea4f454c3a7d559af3175ea2658efcae6a7541c2",
+      "new_semantic_hash": "sha256:26fb5e3cf3a902478dbfae9c8f356d026f1b22717658b6e6aec5988b2182e0d1",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:5071a36872ea759ca8009c19a23148ce1be0263f1253c92a28aaebced95e283e"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:74a738556db7ebfe28942d0137f85b954c16bc69efb5306122593b364e30cfe6"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:2668c0e389338a176df8352ae4003619e39192de232fd18668f7b5f29ac54d89"
+    },
+    {
+      "question_id": "M3_SC_008_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_SC_008_V3",
+      "candidate_record_hash": "sha256:c5fd09d4ce80f3bee1d74669a503e028d76c26832dd9d91d381c3d3fa361dc9b",
+      "new_semantic_hash": "sha256:4c7afd24655e4c9fb4f84379b41fd74ff6e2d11e9120e70560ab5ef20ddb5a38",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:31373259bfd39e14042473bdcbb3e1055177a117736b080c532e2b1f4f7c5c53"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:1cf8120f9756834828b19fe1f3034e0ef70ddc7df5b350cec317942c97aa7897"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:8dd9917af68303437f21133b9f7108691ba1eddc9d3305aec96c0cee12923a6f"
+    },
+    {
+      "question_id": "M3_SC_009_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_SC_009_V3",
+      "candidate_record_hash": "sha256:27563023033560962497122dbb0ba50ff59947aca52f495efd30d209becf8ecb",
+      "new_semantic_hash": "sha256:c926b2912aa31e413b1defd8562859c656be1066a6921fa7cd6b81a14485a2ef",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:a8e5d75b4daefbcae4c992fffef69fb94779a3981f984c2047c19c4f90ddf64d"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:90c46f632b5cdafdee80821f39aa0817ed758eccd02cb82d79a0fde549337e2b"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:be5fc2b312820173e76853d0334dd2a57b65803a7efc9662f08d38501619ef01"
+    },
+    {
+      "question_id": "M3_SC_010_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_SC_010_V3",
+      "candidate_record_hash": "sha256:c5c1844fea327e3fd6c4e64e40c9e4c4ad223c0c3516e16a4cb67399b2f1ee2c",
+      "new_semantic_hash": "sha256:189a57916ed8486aae652de0430cb6b9ec1efcc5e614a52b3f3490daabb9e7bd",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:ca09736bedcb94932a3bcb528f153324246831fdb6fb7b4230842c0a7d3feca3"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:80e2196f556008471bf04d604a18bdca3be59f14e2cdcd1b509b73708d8633a4"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:0fcf3ca3380d2e4654386a9747e4207b0fc11e50612c0989acbe5f5199559736"
+    },
+    {
+      "question_id": "M3_SC_012_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_SC_012_V3",
+      "candidate_record_hash": "sha256:dcaeec006b1dbeb5497bfbdcc596b78e57e30f306eac5d7f5105e8995964c20d",
+      "new_semantic_hash": "sha256:b634c0df6573605dc46f428d2da7d047006c1945059ab5d2587fcb6e4b69e5ce",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:20c0c3da57f857cfb263f6344934e88143cd46dd554b3867b8cf4b9bd4f3caa9"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:6c2cb6b8d095435b138ced1b5498eab0f733dd4db8bbe7a1b16e80b017c1d343"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:5e20eedf813a7d8038ea2faed4cb1b413bc0a0c9c3ed283713b52ad0026b5fec"
+    },
+    {
+      "question_id": "M3_SC_014_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_SC_014_V3",
+      "candidate_record_hash": "sha256:b0740ada555817c4f49b10bac2ae893e3a508228f5d595383bcae50f460c8dad",
+      "new_semantic_hash": "sha256:5cb6cdfada6a0ac5652a2c41a8f3d83d9fbc0a34f3b84a50bc0417087eae4439",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:ad6fc7ae21e5c90a048e3ea28387c0106ddd59b1ed83c3998b85ebac1de94462"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:416416308f3046be7e2f6c7557e1a65262ba9b3e7ecdeddc0f43e54587b04d67"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:cb82f655dcedfdb0b33a52c98d2a6e5854bb04e175b48c7e1bb03fd38ac56120"
+    },
+    {
+      "question_id": "M3_SC_015_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_SC_015_V3",
+      "candidate_record_hash": "sha256:4b4e64b8a3bf0b006fd776d81c644cf447f8fc7b7a46d2203054881564fbf1a0",
+      "new_semantic_hash": "sha256:a3ba428ba696af36061bf1a225225c1fa9c477068db6ec2dfb90af88370544dc",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:ed75466ed5ccef07242c2ae8fcc7bdde8382a17d1577cec1cde3a7bc142a9fa5"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:5ed5a961c70f08d10a88812e60df3c4650f22e99a903b34b608771cc79d88dc5"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:c8870f1f58df5060e78188c3251d3a96e3222533008328b97b02014ae44f645c"
+    },
+    {
+      "question_id": "M3_SC_021_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_SC_021_V3",
+      "candidate_record_hash": "sha256:bb3bd3a21f449d498ab3cda05f9ebb75565dd2b26dd7f5b0be8f4338be3cfe82",
+      "new_semantic_hash": "sha256:eb81cc25dd473ed5a3b403f97a815c0fea13f0e296352616c1bf23a28b9b9dbc",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:6763f98c4bf3caae64e08dfb97a06e2b65c36802e865380a4ce39d66e740bacf"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:425371969747e912cfd9ee7be46fe96b22f0b7f3e222dccd48c134082522475c"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:a259791fdfce27aa9da98492b022b84109b7a280bfa18ce7487872cec6dd6b9b"
+    },
+    {
+      "question_id": "M3_SC_022_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_SC_022_V3",
+      "candidate_record_hash": "sha256:6e471e70dfcfdb7cf2fae951b55d275c28f171a962c58b3fb6856b17387745e2",
+      "new_semantic_hash": "sha256:b250199243f23b9f6ff6582681968abecb18d00d4f712890c6ac4e8001c7fda5",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:b7033ec4f2016c70c6dce3fd2d92f73129a797bbee62bce21026ef6549c1f544"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:e835a899b2c5cd3136c3aeb2f5649e267e618706de11ac2f4f3b07986ec39ad2"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:f537b85529874ca767baa92c56893053c9295a5bb5bd0670b86bb20ba0e01e3f"
+    },
+    {
+      "question_id": "M3_SC_023_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_SC_023_V3",
+      "candidate_record_hash": "sha256:85db28ffbfc53bec342549e62bb3f44c9184923fb88c415085a8cef99a7ba97a",
+      "new_semantic_hash": "sha256:5cda0ed23ff937dc88c898b5cb149148cf198e6cc30ae0122820ef04ac0eff98",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:3660dff0511a9177c4b2553a8981c8fc9a62cb507f56e377d1863b860c3dee4c"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:a2e6194fc109823e1dd573cfb431f1cc00b68a467fa16c573acec8fd693ed234"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:c7ceb6b7e78fe2d63c85e4d99cc89e2d2dd748a79cfdd599898b1d20e519835d"
+    },
+    {
+      "question_id": "M3_TF_025_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_TF_025_V3",
+      "candidate_record_hash": "sha256:45967455cb9a0f2be34ea153b34f37b3722683bed5ef3d334635933bd7c8d163",
+      "new_semantic_hash": "sha256:017546d711230b2e4936d4ba5d717dc288b173c529e5979b81a435204ae6b10d",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:baf6b7aaa185a67103f6cbfac801142b932a07a4204e12d89fe8d6cbbd0e04f6"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:f481898665247782307bec2b58a26f1d7bf0ed82064a60951f5f47ef5b8f2a06"
+        }
+      },
+      "video_contract_check": {
+        "status": "PASS",
+        "behavior_conforms": true,
+        "expected_answer": true
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:9292bb3c149e9b9476bfd7d0c14521cd47ac0b171b7891428087a68ee9da2b5a"
+    },
+    {
+      "question_id": "M3_TF_028_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_TF_028_V3",
+      "candidate_record_hash": "sha256:04f550b08c83dd616517950a41eaf1cad3c2d29ba259af5079d796a9aaeac691",
+      "new_semantic_hash": "sha256:b0c2bfff32cecbd6ab1ea1ee730aaeacc05d6eeb99e0cdb4be8a88f28c869aab",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:62c822bbd587443851becbef49fc576f0ae5e7224341d1bcfb5ed8cc17d64273"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "PASS",
+        "behavior_conforms": false,
+        "expected_answer": false
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:1d5b9430250ca54f677616b3c68de7261856d3a99f330df24d4320e5f3ef74d1"
+    },
+    {
+      "question_id": "M3_TF_030_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_TF_030_V3",
+      "candidate_record_hash": "sha256:e338b3bb60479fd9ada3e2547f4102c7ec8af866f4970dd4d32446ff9f600696",
+      "new_semantic_hash": "sha256:8d86d5d57fc1707a8586694aac57266ee0b2e86dfddaa0b65c184d99a3a1cf9e",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:18715879de31ad2d0dde5f6a647a82cb1aecb67e4768ff1b28139e813f297d8f"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:2121a1882650c5554e0ad176695ed10c9fa7181e0d9e2d691b7f2269d7c1117b"
+        }
+      },
+      "video_contract_check": {
+        "status": "PASS",
+        "behavior_conforms": false,
+        "expected_answer": false
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:752ab85f364818edd7f6f2eb5eef46de3dc9a00b41431cfae4b90f5f30c0a33b"
+    },
+    {
+      "question_id": "M3_TF_033_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_TF_033_V3",
+      "candidate_record_hash": "sha256:6a16529c1ce94fd21f4be7623e6bd05e1275e6de0b7edf01c967ce8728edd783",
+      "new_semantic_hash": "sha256:3927ce1ba6cd3ad4afb5a40f8e0a57f0456c2db68cc1f75f9a36d54c29613fc2",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:16cec9ee442c5cc9b4ee986ac1b8d9098dab5388fab71bd1942a0ee701ec1030"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:130445feee8c1121de9b3b07e355f527ffdc94d4eb37a5f9fa7a24a74b83f320"
+        }
+      },
+      "video_contract_check": {
+        "status": "PASS",
+        "behavior_conforms": true,
+        "expected_answer": true
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:1e5727a7e423293e23d4b94bd0cf1027c84a44b802d453777f760019664df4b6"
+    },
+    {
+      "question_id": "M3_TF_034_V4",
+      "question_version": 4,
+      "previous_question_id": "M3_TF_034_V3",
+      "candidate_record_hash": "sha256:536761bf9c59de975ee7c0bdc611845c2507426cd01203ebd24f5d96eb2bb341",
+      "new_semantic_hash": "sha256:5fbdae0d5f377aef14f2d11059e0065d54394095708508009ea073582e7bd8c3",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:bd5d21fa345dad0c459f746e3ce46d0ca50b4e1190d5303dde058aaa1f583f39"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:1f1dc172b51656f76fe87ac6e3955e3617ac873352e5fb0322f2dc9e3fb48fed"
+        }
+      },
+      "video_contract_check": {
+        "status": "PASS",
+        "behavior_conforms": false,
+        "expected_answer": false
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:d444bd616afc405cf9ffaad07fe07ee91188238f88d1d25470633a2fd74e1199"
+    },
+    {
+      "question_id": "M4_DG_023_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_DG_023_V3",
+      "candidate_record_hash": "sha256:b87b0a38026e720b4ce58c7ac3ae6082661c8a90e619ebe01c1132a3450661b2",
+      "new_semantic_hash": "sha256:5a8506b26c9b7beb42e8b5519e5a1dc9753510d75a5fdd5a0566a45edc9e01ef",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:ee666d82c6a45867894c330f9eff1b6295160a3376c01adfa52452e06770d779"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:9243dbe0749c1a0ef74fb6070687b90d8c5c59a089fa911214394faffd88e8d9"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:628d55be316586d5e7d3525ce04b7a4caef4d3d61b92e9b5b7ca343d7ad00d80"
+    },
+    {
+      "question_id": "M4_DG_025_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_DG_025_V3",
+      "candidate_record_hash": "sha256:1d214939e994bbfb2ca39a81d4efec075b0fcff0b588e4f13f540c67fd0a7006",
+      "new_semantic_hash": "sha256:3a0b0ee55d9cd3d6e4f4a9e732a272ded1dcb2fe2d7c65cd28cbc077eccc7722",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:8986dde158a5f51d70ad10f30ae87c8d79797902689d59914337825eefb18c95"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:3c7fac2fe52512c4e5ef3b046531d3c9342d99379abd3c4a44fc4a2ddd035cdb"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:ef612ab0ca1fd953cdcd72986c30ea454fe17294596fbf90d1d98a5cbaa19771"
+    },
+    {
+      "question_id": "M4_OP_028_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_OP_028_V3",
+      "candidate_record_hash": "sha256:ea16387fbd09f38adc1e6b1c7ebe8b4ce29ef46c9601db496ae501f22ec6da35",
+      "new_semantic_hash": "sha256:55cfc23764a348a41258d2543633d1b0e62bb2a939fa58672107f6b6e31feb34",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:2d589af7db49f916b0bbfc3ad7ce54c314f1e3b474382865757de0364622b4f6"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:c06e093788a932f1dc710ac39043a71311c101f82af6305947e358c7b512a7df"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:d26f016ab24a4ab473a85a4557023c2054b87b3778602d7b8c3d00d8c811ffd3"
+    },
+    {
+      "question_id": "M4_OP_030_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_OP_030_V3",
+      "candidate_record_hash": "sha256:64e2553bbde4f7ac2154a1230a883b0b0f012f7d5e29e38ee516ec7fd0649fc5",
+      "new_semantic_hash": "sha256:dac805607f2c72b8e077dd56c5998a1876638e55e40f9ad969c774b65035dfc3",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:1bb02ed1c7300a35c4987bbab658129833071bd2e43f0167b964ad7e99667ee7"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:a2307b56ba705ac977428274841aa36270af259f6195063cf6c8ea27b5ee0835"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:4c35817d7dc4d032cfd41177dfb9a5eb380daad3b7db779289170e215f9fc816"
+    },
+    {
+      "question_id": "M4_OP_031_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_OP_031_V3",
+      "candidate_record_hash": "sha256:6543691473be2c18c56b3711724bd2f40eb83383f76b4ba340c4fd2bb2a88a6d",
+      "new_semantic_hash": "sha256:637d65a8fa34050bfc3c3ba5c0d975d4e599c4ffe62fc75a42e69165355ea50c",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:b674e654cde15558ce775f69705c75a25b3fc0211b6c1eeaee90cd96e419c965"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:b28b7741edde4c1db29887fe049c8cadcdcf2854f389f129bf2cd73ca55a03ed"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:568fa1a17e87da06200a31ae606f818148d0ddf38436652fee7f4f750fa73bbe"
+    },
+    {
+      "question_id": "M4_OP_032_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_OP_032_V3",
+      "candidate_record_hash": "sha256:f9e921639445965df6d5c79e9fe87a5a27110f8670b5c504861ab119ac33065c",
+      "new_semantic_hash": "sha256:892691bb94992f85691f8414d3f0081e7128d909334fc8b07b51910e68d16790",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:a5977f13775a46a65b4b967e737c9beaa3f3184b593d5de76e95b766b396fbb8"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:75e988c126bb5aa0e65ebcecb2e2fe30754feaa066877e5bf2ceb6288ff5dd5a"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:f1923e11b0e39c8ebd7a53950efa560f50a99d5b571bd7521f2cb64d3ebcfe47"
+    },
+    {
+      "question_id": "M4_OP_033_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_OP_033_V3",
+      "candidate_record_hash": "sha256:ee355bdd82213dbdd23f8487e47a5cf93d44d76a5f0f6c157ed77a248a046829",
+      "new_semantic_hash": "sha256:e34dfd626b69a5133dca9c544ddd6bbba84ec63422531c862076d01c1dff8408",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:435e50b516ebe7352286b8ff324c80c2d4183532089f3f89dec8de54bce37e58"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:0f1815c8ac221c28bcd618ec94e836ca3aed4592b3a66b81d26571bbf5dcc17b"
+    },
+    {
+      "question_id": "M4_OP_034_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_OP_034_V3",
+      "candidate_record_hash": "sha256:3359494a03a10b1d5a90d13659ad7cbe93a106a3b8cddad00684b8d1eabc2639",
+      "new_semantic_hash": "sha256:fdfcea62905c307b196f1cd804adf0732e2e8991b800cd6b37b505fef60f2b52",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:fcc26f83e76f08277644a6f6b3bf8672ccf77e4e81b3692d99b4063208990961"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:c0e34f98521381ce7811dac4f49d43a2ab64abf9704deb4c78c5c7724024667f"
+    },
+    {
+      "question_id": "M4_OP_035_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_OP_035_V3",
+      "candidate_record_hash": "sha256:b6c052b10be065f6f6073c6e87761d379f781ecd90fa0693cfd654e5a756a078",
+      "new_semantic_hash": "sha256:c8c604fb8862d0fa8f406aecad85b081cf858e3f41909718335227c3b6289609",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:a06d8b7d23c6df04de0e96d54b9c21072d3ce51991585c33bba469f09089dc96"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:ec2e93868f6ac4fbf7bfdb56400d4d0c964a4d113ad6ba872ac89ef4102cd179"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:7e8428b97873da0abc6944519fdcbb2cae424556bdf8dfab3c8f8afb613d1845"
+    },
+    {
+      "question_id": "M4_OP_036_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_OP_036_V3",
+      "candidate_record_hash": "sha256:66c4008e907ee06c778cf942a9bfe91dec8316af27e8a581fbcc2da8fefa12d3",
+      "new_semantic_hash": "sha256:39ed17e489b22b8c3f30c5668b418a2e8c2c496c4f33707212bdd98c1f83f516",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:3c0480ebd91a6a1d1b609162fa7ff4d4ca7621892d9cc1224cc8f8b0e4082736"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:c7fc04a182649515b5d38092ce909090f1b27ec069cb1ed5b2544b95533452ff"
+    },
+    {
+      "question_id": "M4_OP_037_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_OP_037_V3",
+      "candidate_record_hash": "sha256:9aa47611aef1ad35d8978a19477365ac1c6e61a90831dd2a8fec9fb3c2592c25",
+      "new_semantic_hash": "sha256:0df27f67694a5da5df9ea24599a5ad659354b8e9c09b00eb957e82c2e931fb84",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:f9d5ffede7c0a74562b4df200af57f395b5a5ba3d56f4d64483053e9e487b3b8"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:06406ac2f6246107c9d8163f740618b44544c2352210877d03af157de584d013"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:1e3bae2fca705b0236754e15bd56f6f7a73ed8f23cbec15c417930045e4d496d"
+    },
+    {
+      "question_id": "M4_OP_038_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_OP_038_V3",
+      "candidate_record_hash": "sha256:da6f72d9abc71ad028f15d2f51c577c4e553e5a276b2b72b7ac1ac0f1dd2285a",
+      "new_semantic_hash": "sha256:96d579e969423d2817eb210ff48e813fabfe26c08cdca7167d0541cb7c2b5c47",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:e328387011d0267c1a06673982b0167c4ebd989c421ec2ab978b1fb7ba3b2e7b"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:0c64077ab1ea24542a8d6b488b4358dd3eda7325c7d846f7321a3ad161a1ac28"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:b97f338338afbe652c30d65b786f1c3384e7f0d51e2a3cc4373b208cce6eeaab"
+    },
+    {
+      "question_id": "M4_OP_039_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_OP_039_V3",
+      "candidate_record_hash": "sha256:d7db6d84a73cf88d34e42a5814c08964e2c5338e39b275b79beec0277fd9b810",
+      "new_semantic_hash": "sha256:0c789ee23ff50b79594e57196d4e2b414c520a499805fe52e9600036e9591b86",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:95debbbbfd7cf7aea0fdfc71717bb0efdc201470e08316d1e58999bb09d0456a"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:e98cb9463305b29073b468590a71d016cfe5f0ab27afb6f8dcca83216302da71"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:5329708eb04777c3d4fbf06be64383928b5ff21d1893788be836c1f5e85b4b44"
+    },
+    {
+      "question_id": "M4_OP_040_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_OP_040_V3",
+      "candidate_record_hash": "sha256:419c0d0cde476e1ba076ab83dd1c51803d045f7df1b93c8e56074d23bb3415da",
+      "new_semantic_hash": "sha256:b1b9d41ec7eabceb94ebcb2ff0e8cd41670e2f8dccff5022dcc62fe8aff0a097",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:0fac4cc4f527a21516515e65c653e830aee12389c993d8209371a0d4a4c3878e"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:7510d0fc1f5abbe71d9374e5ed80d64e1252ebba16e6fda43a50931bc84c6b00"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:7c5ff5a16689ffcaa14315eaa5122d88d69f578200d004c782eaa1ba5d5442ae"
+    },
+    {
+      "question_id": "M4_OP_041_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_OP_041_V3",
+      "candidate_record_hash": "sha256:5110990c4fb3364751a09720662aa6de6b3948416c18c7abe227045483aaad33",
+      "new_semantic_hash": "sha256:ada0fd15b4ca75e502a401382af6a5dd21e7f58e8e92642ccd7c9de1351776b9",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:65d6017b53acbd93695fe1b6cc608ae6189c4f685a488bc6aa8105e9a127a799"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:b8077842844cfea83112b56ef7c9fbaa609e27b9c036a9cc055df10633babd9f"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:6f568772f72ff3c5377992df0ad8e1a84e9ac17312f23ee22e9cab780a835d7b"
+    },
+    {
+      "question_id": "M4_OP_042_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_OP_042_V3",
+      "candidate_record_hash": "sha256:9974c4b0fb6992487e33a3907839924a0fd384c2b5ee465f98c51524ced42ecc",
+      "new_semantic_hash": "sha256:0547d00bbad9ce771ba09d29cdaa76e2e6d73c7665fa4d552fea5efef0c37691",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:31d50aca224ae1cae53ffd06754fd6dc947dba0c07f4354d918bc55d267a51a9"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:565762c4c4958db27d3b7ec58846b71eb38a25172fe34fdc5957fd7e7d6c374e"
+    },
+    {
+      "question_id": "M4_SC_002_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_SC_002_V3",
+      "candidate_record_hash": "sha256:54975a892151c3e16b987ea1a87656dc578890a8d6b665229e3c08d5c9a36b3e",
+      "new_semantic_hash": "sha256:a57542abd0d384b7588fee3a4a611eb0a55856c2f82a9e9d7f80358938d12db1",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:ca1eb2cd445f58b7c2903a89751bccaf644a1d3cea9ae84008343be1be7483fd"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:384635121b984d2d7f0a52579fcbbf41365e496791ed4f1fdd7fe88b9b2ffe4d"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:7b8dbbd4d26d8c5bdca9e97bbee33a344a98b0fc95d575833a16ed90cf184160"
+    },
+    {
+      "question_id": "M4_SC_012_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_SC_012_V3",
+      "candidate_record_hash": "sha256:5f8798ab94a23f11481c42bb49eab3c3f7a1923f40851e0af6815178be2d067c",
+      "new_semantic_hash": "sha256:7c4ad70e7fdc39a68ac406ff6d0745b417ae4831c50674d984adbbe7a5f365b5",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:3c5cfc5c08aa1ba71a698e7b884b74dabf59dbc84efe68e45097d7fe880c58bb"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:c08e6e9d7975861ce8d6fd6d19e97a3759a19fe012506de07512896da0cb154b"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:d11b18537f5852d3e432ddab4440ed2b2416344417e05310fefaba146647a313"
+    },
+    {
+      "question_id": "M4_TF_019_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_TF_019_V3",
+      "candidate_record_hash": "sha256:214cf1661cf8a31288d3f02650210770319cf22621cf5bd96b60d88873dfb9c6",
+      "new_semantic_hash": "sha256:ec946280f9ca9019f15b2dac465d301b27aae3722765858e866187c583972b15",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:87b154dfc899c0214587aa8909b75d78266ef65621c996205fde6dc0074f0389"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:fabb2198ae28919adae6f1314d0cbf86be1282564e0f5768107fb122b78ae594"
+        }
+      },
+      "video_contract_check": {
+        "status": "PASS",
+        "behavior_conforms": false,
+        "expected_answer": false
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:9c15071bad9c730a789b98683cf6e4c549af5b78a3c7a02906e0582a05bc74bf"
+    },
+    {
+      "question_id": "M4_TF_022_V4",
+      "question_version": 4,
+      "previous_question_id": "M4_TF_022_V3",
+      "candidate_record_hash": "sha256:126b8e048ddaa891bcd504d95dc995fb992f928955e31f1cc879ced0014935c4",
+      "new_semantic_hash": "sha256:f4e6a3aef7c1203bfe9236c029e3991853b310c7eac68370143678d5bd6db0f4",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:32daf39a9e385262bafbe74de376dfbb8936ee601b77c1769510441dc1490f01"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:a3543a1a9efff0db5df3373dcfb295a0d591b2c7ce94664c0ae00a279e74ad53"
+        }
+      },
+      "video_contract_check": {
+        "status": "PASS",
+        "behavior_conforms": true,
+        "expected_answer": true
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:9ebe8a47c438ea147e688f29585542acfab1c1b67554c62fd16165619ae51955"
+    },
+    {
+      "question_id": "M5_DG_033_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_DG_033_V3",
+      "candidate_record_hash": "sha256:053beb482f1bad6074a1aefc837beaaad20f36f5fa5d06f28547ece8eeb25fb6",
+      "new_semantic_hash": "sha256:5ad2f5a171c65ba4668153f7ec764772404a9bc29c97d23ab08df2ae720a778a",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:3b577cc8b4f1d0f81cff58295d4b0cab39ea1fc29aa6518f63b5c9943d92ab5d"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:da0450a57238b7de14a9324ecf10a236d56788f96026c76e077a4b5419ee4f77"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:db6e30a5080c4bcbfceaa758380b2c5a0ad37fc2bbe795ad6d9a3c1999baca97"
+    },
+    {
+      "question_id": "M5_DG_034_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_DG_034_V3",
+      "candidate_record_hash": "sha256:b0b3b27cb0ef443f0a2bd087bd3c0b683d15afe8e5aa1229718d4c98d9be4db2",
+      "new_semantic_hash": "sha256:aa8136cdaf35b3e82a17ebe7dc308635e7b778be78668246a9c3659013cd9259",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "review_note": "尚未关闭急救步骤的条件分支问题。题干只说明顾客倒地且无明显外伤，未说明其无反应或无正常呼吸；步骤i2只写呼叫顾客和发起求助，没有明确检查正常呼吸，步骤i3却固定要求取AED。这会把有正常呼吸的晕倒情形也带入AED流程，安全边界和唯一顺序仍不成立。最低修改要求：在题干中明确“检查后无反应且无正常呼吸”，或把反应/呼吸检查加入步骤，并将取AED限定为无正常呼吸时的条件分支。",
+          "source_record_hash": "sha256:e4eb502797d7ac718289f1f5b2fad73edc310d8694c6617a6b1f9f6b9429edb5"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:e5588fea273f6841bf59a95ef6f64e5c6e21a2d3106c0e131a094d2b708b3840"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT"
+      ],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [
+        "CONTENT"
+      ],
+      "next_question_id": "M5_DG_034_V5",
+      "merged_record_hash": "sha256:7d021a5b6a062d008a47443040ba8793c7c18f7b0a9a8327613157c223347374"
+    },
+    {
+      "question_id": "M5_DG_036_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_DG_036_V3",
+      "candidate_record_hash": "sha256:f61701bd8ee6f9cc795fe096181b860ae8b048bb387e1d88b3469afb5304715e",
+      "new_semantic_hash": "sha256:66b1264c101098fb5a757c418f34a8566b5f2c45eb39532c85e88c96f04d68a7",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:7d68dc6e48a6710399de6595135a4c94551a0e8fe16b418a4e6e404593d64d04"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:3aee9818e25de7f9f7ed74549befe4fc4971e50724fb612a3035af6ee0f4de66"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:aeac39c5cb5bb139421f50552deb0a763ab7c210cb40cecd3c113e0563254274"
+    },
+    {
+      "question_id": "M5_DG_037_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_DG_037_V3",
+      "candidate_record_hash": "sha256:a7c0255c81b4228ea49faa7118147f541d0e9d2f0fde4f4ba362ffecb17cdd81",
+      "new_semantic_hash": "sha256:d1b31c84dc033f42f96da973c8f6ca0a19a6f1b4e79f7626de9577e08a45dd69",
+      "required_review_tracks": [
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "NOT_REQUIRED"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:8be143a2730ac59a78606b7c4b0db93838bae07b0cb5ec882093006b20be91c5"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:f192cab3da7ad6535e184c953681cd75fd74f8eb2acc966bf3b68e31669b15d8"
+    },
+    {
+      "question_id": "M5_DG_038_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_DG_038_V3",
+      "candidate_record_hash": "sha256:c418b46284100ce91c7166dfb8a53f21dc9d6ee8e00ed5e5c27e76d1f3984b06",
+      "new_semantic_hash": "sha256:9731758a14fb376a5941f65f0f303b1b5faa3dc0fd5601c3a820c584e934b40c",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:0d1ae756e64fd9ab9500de8e9ff590bea2a26a32ada001740f296a7db07a631d"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:706c2a165fb0d48a76e51d1ea2d4c7db279063026412eead7a66a8aead93b1f8"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:b4e3eb89ebf5cc59acf187ac848a0de163c860a1e1ea11492b95953c4e5bc30b"
+    },
+    {
+      "question_id": "M5_OP_040_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_OP_040_V3",
+      "candidate_record_hash": "sha256:5fc35b1db6a02cc3feedd12b418d042de0ea79645878e70c0f6dfb6536219bc9",
+      "new_semantic_hash": "sha256:37f662cbc5995dd1f5da9cf9a5061e04a2648486b767afb3f7b99bfabe402b56",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:4da66c5991a7924656762c567b6d3791a8a448ae699b000ae12613460d03bd7b"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:c7b0c36308070d5d7ca328d6af4ced0971f5633e2a009f2fc2b5ac0d60766902"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:9a886a88d2ee0700e909caaa206d82e55b9d1f2ce1ce6e098bfbd1697afc537c"
+    },
+    {
+      "question_id": "M5_OP_041_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_OP_041_V3",
+      "candidate_record_hash": "sha256:513321f802d58998efc4e134c1c459748ec12c6ce50b863d4e5d3e5c3b11ac6a",
+      "new_semantic_hash": "sha256:0dcc57f44ab2d18fe6fba3a03bac6fac9d43d56646fb1e26de798fac673e053f",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:11a603a5d4d525841355194c79bd9851bbfa771939317353f152ab8196d11451"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:4ff47a810fdd8d0f6d7f7ac8bd5be75d793bc04f25998849d18376c3c5c6aa06"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:906989159d62459f4a0e8fb999c7f2503520a3ef976876a1f9660de1c975f8a7"
+    },
+    {
+      "question_id": "M5_OP_042_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_OP_042_V3",
+      "candidate_record_hash": "sha256:f58a36e5227ecd24c9914875a5c18bee41a063cf6694431f3bb339462ee33498",
+      "new_semantic_hash": "sha256:d3ad9b84af661b030b6eafc286375f0cdfa8dbfebbd9e498d712f81add353848",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:050c902d40937319ae8f9765deaeb5207f9e362eec0f4b6e9451613606bf367e"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:4ade19f0e816aa2103e5e162253a98eb5953676cb82f0d112dc815b96c8d6e1a"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:fbdec708228c2115c30f53da9b0997194ae07ffaa6dda29097cb9b7949dee5bc"
+    },
+    {
+      "question_id": "M5_OP_043_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_OP_043_V3",
+      "candidate_record_hash": "sha256:a370206ef6d08c0582d5d8241fa45a47bd8a28365f1136fcdb93f09da872e311",
+      "new_semantic_hash": "sha256:f48d8e97585eaaf4d58f1d37cac340d154ca70b4ef888f8da8ba4fa7934008a7",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:338f7675c32fe668bd5fc3e92fad3fe671c5a37805302541f0ca0de8360236ca"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:8c276fecfa78175b194b5a04a0f14d061899e803d834ed7564cf6cbdf0a9d63b"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:51b8aa30121c495439ada34af86b20c4952f6331f8ec6e356f60875571f718e7"
+    },
+    {
+      "question_id": "M5_OP_044_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_OP_044_V3",
+      "candidate_record_hash": "sha256:6cc5beb0645175eb939237554d99d44ca005359370196c9b49edabe3d58adde3",
+      "new_semantic_hash": "sha256:f6a96574606377da637cb37269e6fd9932ffe83fe80ccbd02966dc689805a527",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:c8ccdc7affbe7c670b0c53cc7cbc37108b50e3377b4bfe55adb479594f937346"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:f60990275c68c1cb3f2e455b00dcae9669fbc42e7ffcfe7b9802c4c50cc59b89"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:f2a59e447bf016fcb0fd35b072b1fc624c66e6a991b12db2e7410f5375710234"
+    },
+    {
+      "question_id": "M5_OP_045_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_OP_045_V3",
+      "candidate_record_hash": "sha256:67105aaeef8593867cde93c338a12024e6d43903c154a6a06c8f760878265825",
+      "new_semantic_hash": "sha256:ea6c724bdfb936c757601ddc4a94e01272a30101ac0a9cfd21c089c197cb777e",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:0b063b8f11ad6e4f9e6366f6d7ccd96295d7ff653622503c49ac8371fbadf9ca"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:d66ce72a3a9c0d8f29187e1c334b17eb3c7792e11daf5e4d8c56a6c8687e570f"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:a72a2d628a8c2eeae5f113898fe84cd5e7c9b6353d68a348926aa5605105e7a1"
+    },
+    {
+      "question_id": "M5_OP_046_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_OP_046_V3",
+      "candidate_record_hash": "sha256:55310fb4c3294c1281c6a1bd455acbff86d041bb369dc1aa438188b548bf0f2c",
+      "new_semantic_hash": "sha256:4e41dbdcc0b29bf5b90b200aa6864497da56327c5229e4557306f9febd48fcab",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:55accdc057dacf42687e887ef446d23a9a14c4dd747af204e3165b0124c3745a"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:1f17435dd9c35b4a28a41377775c64bef898a19e518adca468642f8938fa7b75"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:33b32264e1c3e252aca4cf1ea641b1bb00be792fb09d585fcab23c00e272d64c"
+    },
+    {
+      "question_id": "M5_OP_047_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_OP_047_V3",
+      "candidate_record_hash": "sha256:ccb1160fec01b7e7c42c7c39258937fd7bd9f74208507fbad38ab732b2b864b5",
+      "new_semantic_hash": "sha256:81cb194d930a29a85d59aac5f8789200c051a0e082f9aaa6191323f692792e5a",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:49c2e02af72d8c2c6fd58243c2dcf32cf1150061bd2c81178061e520352fca94"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:afd7c72a77f798ab2cbef1fdf8a30f9739428bcafd5ba57dbeb35edf61d46c75"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:da2e6cfeb22fb2e60262551027870870f2cf684adca5342c5ec90192a999d5d7"
+    },
+    {
+      "question_id": "M5_OP_049_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_OP_049_V3",
+      "candidate_record_hash": "sha256:eb3f052f2379772e9024ed68ae9ebd6b5e2fd56e205381407d54b4f491fabcf0",
+      "new_semantic_hash": "sha256:bbe435a75aa28d8109279ab361c9aff15c008df1252f6967d1d06db6caf9987a",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:66b763dc92d14bdc981d15719ac7ae7a198b064284aa2f415bc0df4ad629bc0a"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:4a4d61d8ec4d67bc0e49283fe42511325795c6cd963ba6c9f5dd3e0618d53365"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:8ae0278629957a4827c4132f43a5efa0d50f937e2bfac992efb89fa0be94a661"
+    },
+    {
+      "question_id": "M5_OP_050_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_OP_050_V3",
+      "candidate_record_hash": "sha256:dbdc74e10a7d51ff3b105d9262cebf3e17147ee04e24f4fcec951379c70dcab4",
+      "new_semantic_hash": "sha256:1138e61196bcc5d57e3dfd059d036e2326f3a5f11ceaf2ca79ab2b46b26d1f96",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:e3b2c5cf5d87581fe8e81a7e85017d145a13fd6c685d87e46b5bc16b711b8c41"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:73b9e07220f3fdbc7e6821c48304dbcba7870e2459f6200e6e0a48ed2c4cdd3c"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:4410462ec9ff958073b63297206925d76a916bc39a403a1227d655acbc6910a0"
+    },
+    {
+      "question_id": "M5_OP_051_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_OP_051_V3",
+      "candidate_record_hash": "sha256:d0897031000f337ab0c7919a6605bf04eb3e10900fc6e7dde830189a4b42aa05",
+      "new_semantic_hash": "sha256:5e8160717aac58f33a216117e592bea00ede48854d07e4bebca5fed2a82493e0",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:bd35ca24b6bbd7e40920906f881b7863e21accbff19fbcaffb602143f784e557"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:cb248fa2bf1636645fce6278edf178f244eafd1355daf6d6d6a66c4ddb8a8677"
+    },
+    {
+      "question_id": "M5_OP_052_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_OP_052_V3",
+      "candidate_record_hash": "sha256:e22bb309bb296bc3c43e33cf6ac64b1e7318fe3e4ac4bb27956669602ecf6dfb",
+      "new_semantic_hash": "sha256:4defc5cb5b2c29be9a3dd029da595a652cd82ab54867e6cbea7a591046425fdb",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:66e286eab54553d7cdf83310ff55f727145f01b9a0ba756ee97dd2f793d8648c"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:1758b7296c8fbda229011dda2b7666dc64e66db527699a2dd154e81cfaee67af"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:c765309bc6438bf712669435838ced47c7315033d6933b709e8044d05844c55e"
+    },
+    {
+      "question_id": "M5_OP_053_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_OP_053_V3",
+      "candidate_record_hash": "sha256:eb5ed7a591fca546d658b5cef69f69e678b6d3efc3029c242cab2701cc5e8e62",
+      "new_semantic_hash": "sha256:f914725fc7fb8766d7fcbd5caf162864f143b633c1faa6b53f0651d5a14e3581",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:8a141c84be56c1bd858ea17b41e491e396bb725e4bc147156fbf2995eec5b552"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:3c40fafa58d3dfa5c027dc4a0b9fdc741ae538c64f73467baa657ce61671f86f"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:4c2a44e2bd3ee1e94f5e7babf66e5cc7c80b347a449fe81cb70ea93a088219f6"
+    },
+    {
+      "question_id": "M5_OP_054_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_OP_054_V3",
+      "candidate_record_hash": "sha256:f7c295cc4402b76fe74326d4a743969cbdbbd1fae201d92fb34b6f654bcbccbe",
+      "new_semantic_hash": "sha256:0b808544ce2d4c1d07f9145052b8d7e7729907e420b41f06b3ec44fc2d87feb5",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:881b3b21cba9ceebf5f9a5beb1cfe3e07391b1390a800dbbfc37f9627b1d81bc"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:31a34ec1eac9875982da53900d6b169553b517bc3699a7ce79da659513b8cd74"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:90e4f8924c9b5d55a3822667b11079cee12e55be988ac641212678231feefc7f"
+    },
+    {
+      "question_id": "M5_SC_003_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_SC_003_V3",
+      "candidate_record_hash": "sha256:301f4451976f23318b740fc7480bbe76e3e17111bfdd2f8864c0ae8d449b5252",
+      "new_semantic_hash": "sha256:dfd7191c33b6314a16b02c680c23d04d1f8f26f170c65d3a67e0442d090697d1",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:3f4eff37afaf34e67e8c54d0f7a2faf87e4b71c861942b79298c8d34e3cee8f5"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:e00d583a625c46725b4212eb61598837a7d92ddf99f526a4502885fafa36f6f3"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:6b02ac962a617cbc239353b86083689f78616215e406db2fffbd95d9bfc70d1b"
+    },
+    {
+      "question_id": "M5_SC_005_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_SC_005_V3",
+      "candidate_record_hash": "sha256:38cf71d21c5c983552800fe9a343896c042af3be28795f2ecbb7cdd08c81bd68",
+      "new_semantic_hash": "sha256:81bdd531cd2e1c18705aeeeb421bb0971b2a762bd28ec6de62bbcbc96974c595",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:295ffc765ef020c616cbb7fd6965d795f28490e5cc7df601538e42263be1c603"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:e4ea9bccbd7c7d6feff0f21df122c9a9877cb07eb749810cbe5bf2f7b9663fd1"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:1e92fc524e74625a7459213d0fddbe8cea10e2b0c76fcb029d50f151c3009a84"
+    },
+    {
+      "question_id": "M5_SC_006_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_SC_006_V3",
+      "candidate_record_hash": "sha256:c3f44e67b2413c6b65ea59f4a362a5b5a2beb22ad0060d1a881dba4cdc258507",
+      "new_semantic_hash": "sha256:5f2f5099ad4184ac6ef4e21cc7a4a17ad5629641d5a0cecb5c7c2f6db9f870cb",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:3243a48fad9d2b6668a2a136d02cba797cb2d936406762c09b888144fc41762e"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:f110173b57f2316accd563489827a7529e75207301ec3396f8a9e7a58a5237a7"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:2f3d2173800ebe02305e1d37060c38b5601a63884111087422f842355b1a7905"
+    },
+    {
+      "question_id": "M5_SC_007_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_SC_007_V3",
+      "candidate_record_hash": "sha256:bb23406fff89e1f1457726c573cfbf6e46d599ebd4570242d9e0101a51a4ce65",
+      "new_semantic_hash": "sha256:7392a81a65435d3011294382cf25ee6c40b4bb5fb8b4fa9b5208562f8b1c0346",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:f01deb5a6f345add67b3f270f58c7982d64d524be5fc32a536c61ed64ff6c45d"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:91e0444afc1f708938c0b89c940896fabdcce6a5bd77acd2407ac654e473eca7"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:226bce4c1ddef67433e4d0b251329fbf54b10727fc49e36a891f27907d75da00"
+    },
+    {
+      "question_id": "M5_SC_013_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_SC_013_V3",
+      "candidate_record_hash": "sha256:2c6efbde322bc636a643086ca4fb8ccc8ea6aa0a00c780c82f1da387e03a5d74",
+      "new_semantic_hash": "sha256:cc207c5e4bab25d31f55d90b3546414e1ce6727122387d3d84eb4f90fa7e6c6d",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:5790e2cba1f3bd1792f02f00c7d760ef0f2924df1aa9edc8df0bc16b54c68f88"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:c8688556383706b544c7374671a7823b08bb45a69f9949b4c934135ce2ab13af"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:a90d541ed5c94772cd066e52d37de9f024068e531e654c139a232b815d09c8e5"
+    },
+    {
+      "question_id": "M5_SC_015_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_SC_015_V3",
+      "candidate_record_hash": "sha256:3e8603f83f7c2514e2594f2843fca1dc290f6025a467407a9f699d263c31fa63",
+      "new_semantic_hash": "sha256:9db7ae64befe8309ec6b39111768a6ccc6a690f7832c27badd946e51924fee9f",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:729c5994076c28643d25b0681301780ee28e63af38ada0940edde9083cfb3777"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:c15e338c9d4779a1836f4ae102158d44a6052e8f20cc44bb691194ed8d4b3230"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:4a6dbed15ac6cd85575a7cfbc62f0da5760d6a79b6916cbb3c9f1a49ab6ad81b"
+    },
+    {
+      "question_id": "M5_SC_017_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_SC_017_V3",
+      "candidate_record_hash": "sha256:7ed3a43ba167e2d266c92b0180bcd248e3e8bd1b833e73b37e9e21c9aa9cd1f4",
+      "new_semantic_hash": "sha256:0495ffde1ca701bc0675c63fad932908bb4d4e363f01cc41eacd1ce2a94ba8c9",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:7715dd5599e8f3848414d024f9234c6d38678b711e945a59845f26c149b87ced"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:b0c87d9c95f9f623d3b71a8e3946b1404b4bf68d669f268feeadf34b72ca9db6"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:ffd2948a7be31fe51a6b8659976be81230cf6afe139c461932ab4891eaebf61c"
+    },
+    {
+      "question_id": "M5_SC_018_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_SC_018_V3",
+      "candidate_record_hash": "sha256:b3efd684a807945313fc859b0066657a3d2f584d4a2f115d57932d8370e30fbb",
+      "new_semantic_hash": "sha256:2ac49a262d4928b9d04124a8cede6f4586e3aa8be3c51f3e23d22af6b381fa83",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:48ac85009231ab1343f211fe22e22cfaf1ae2a0078b7aad259903652d377b328"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:64204543a3a8dfbfd5146cfe918bcddf58f4ca9bbca68bb14256b1b592252850"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:e0b6aaa15d837c86b510451ace467e5161ce94653de3fe44e33e5d6fd31be782"
+    },
+    {
+      "question_id": "M5_SC_019_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_SC_019_V3",
+      "candidate_record_hash": "sha256:f1a6ceb32413cefb9c1be0378d98258df4f180d058f798e09f7cf589b337be99",
+      "new_semantic_hash": "sha256:ca42f55a0d8632fc284453f9de51cf91f549dda5102a83554a69572f7f21b714",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:ab24eea40f4612791b93c3ecb6becc9cfa279ee2710860193bc02e07b60e0003"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:a2a74608b41be8a194ec0cb2862b0669822151f5627b29e3ddad0c68893663c1"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:c983e3d701f6252d56344f5c085b914c40d7010991f2be8b736ffba2fa64a098"
+    },
+    {
+      "question_id": "M5_TF_023_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_TF_023_V3",
+      "candidate_record_hash": "sha256:038bf3bb0ef83acef08fa1aa23750c9f4c750d8e9ac87da5910470850838ca2b",
+      "new_semantic_hash": "sha256:ab96f4e35f4c64bf31204632506525bf05565632c00dbde0925c286afd8d8154",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:4eb5d1e3c2c17fd666b71cd6330d649c12e86cf9f8aa734e33ece91d6f319c52"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:f5e762acea232bed268df2a8a3127847393da6526289b6126e4714cc1352109d"
+        }
+      },
+      "video_contract_check": {
+        "status": "PASS",
+        "behavior_conforms": true,
+        "expected_answer": true
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:1a367db4fbfc7066015a7a93eb10abdf6192f44cf9e933db20725abd0a9d3a33"
+    },
+    {
+      "question_id": "M5_TF_027_V4",
+      "question_version": 4,
+      "previous_question_id": "M5_TF_027_V3",
+      "candidate_record_hash": "sha256:ec63fedec55cc0f5d8f2fe34464f9457c778048f29e35fbb14adcd118537ed7e",
+      "new_semantic_hash": "sha256:ee4c4afbcba48e7ed2d09b49d392aa30fad6703697306ac3990a29455181be33",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:7eb96180588922f74b6948fb1878e8f90f9f9c0ce14fb523eef290cb80a3c74b"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:f417985b41fd48ebc4c3ae283f48838b4635d791214c4709c64cfb12925b9471"
+        }
+      },
+      "video_contract_check": {
+        "status": "PASS",
+        "behavior_conforms": true,
+        "expected_answer": true
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:119649144b60ead12901ffb12e830a200fad03f5ca8225842285d8748ba04f42"
+    },
+    {
+      "question_id": "M6_DG_027_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_DG_027_V3",
+      "candidate_record_hash": "sha256:ac5b1a2a1f119f6463921b058f748d03403edcd1d057b7191c68f0e855d5c7a5",
+      "new_semantic_hash": "sha256:b0381081aa7c1e7012394ffe9639d5ad3f7d358ad4aaaa7bf99becf129492c00",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:a23c0674a3ec932c4744bbda34ae7003d0ec4306570dfbc94a082b04c8462dcf"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:7090105673d3115298b0233a1968d435fa7e7405ddb65565c1b92c280e53c65e"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:ce7573650599f3b9cf5695e8cee9168f04f9bd9a35497c35559382caf2deaba1"
+    },
+    {
+      "question_id": "M6_DG_030_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_DG_030_V3",
+      "candidate_record_hash": "sha256:bfc2b8708d3b359aa6f77f8d59b0874b668e8fc89f32232b8062fb92d3a0610c",
+      "new_semantic_hash": "sha256:7b26518218112ee21cf6446c7382f18808a271c65718ae6a38a6d2e51c8d24e1",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:32ca4430a6d53867999dd13d55ead1156e7834390e91e639a33530f1ed4ecf82"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:20e5da745f04e0c71f9d284c823353bc99edca884c47ffd6f8fcc189c22b6d90"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:db2f3b23a085897f94ed26eee7b7d8a93a7ca8ed1b621768e49e7aff94d7a876"
+    },
+    {
+      "question_id": "M6_DG_033_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_DG_033_V3",
+      "candidate_record_hash": "sha256:cf5920a5eaca0802cf0a874466da1f8ca1f6984cdb4847813f31126d2f574209",
+      "new_semantic_hash": "sha256:6cda61f2a4b34ea8e7597aa3d6f8cd7884520724aefa24bce2dc191261c06238",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:31c7e23a8599e1110ca8f6bcfe3d7afe4192fa991b2f71d7d1333a0844c1009c"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:71fdc20ff6eba5d92f551918626d1455f40f78b3f18f7092e08229396cf077db"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:0f8971cf9dbb60868bf23f02b05c14e5c878d6c34c04a7ae4b478f54e30a5804"
+    },
+    {
+      "question_id": "M6_OP_034_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_OP_034_V3",
+      "candidate_record_hash": "sha256:874b6bf76775c3e792501317d0df6b159705e03390cbf67bc5354e514b5d8f21",
+      "new_semantic_hash": "sha256:ca53ad35f0df4fd216d31fa942d2b5ff4a06ad96c65c8e1767d5c9e76b2c3421",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:5362c60cd2b950e651346f58ebf8c56eb22f101350191a0076ae20ab2f7bb63e"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:e26cd18f2963b3a097d6f8558f5533953977c646010d8db893986aa2d9fc5879"
+    },
+    {
+      "question_id": "M6_OP_036_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_OP_036_V3",
+      "candidate_record_hash": "sha256:85fd91467911e62180a605ade9c29a80b5295a0465640e7be2bd36aafeb38871",
+      "new_semantic_hash": "sha256:11c8c3265538f65831fce3d0a9bc5c49dac18d481a37ccbe728f7f3eb5e69dd2",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:762102ad47905aff570dd44711527ed43bd11428d92604cce8786aba28d10ef2"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:9745ab2b4edcfc5acb0682eeae458bc036b08e426d85775be9f71829c5e6d412"
+    },
+    {
+      "question_id": "M6_OP_037_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_OP_037_V3",
+      "candidate_record_hash": "sha256:16f259e4da080a683ed0be49ff40207a2f945599c7b25c904cfd89951bf45905",
+      "new_semantic_hash": "sha256:3a1ab579814ee1c0db332bef65b12624e0bd3592180ac54111681d851fa4e10e",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:a21c09d4fe02e39a0d546dbea674748981ed7aa8b817b967b35cc15450049188"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:72808bdd6e61e47d70dc135fe25ed549857f3e99066f2e19ac652cd2d124d95e"
+    },
+    {
+      "question_id": "M6_OP_038_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_OP_038_V3",
+      "candidate_record_hash": "sha256:e841e1d46f0adf5b153386fecfde04977ca3e6948c9319917563d194d365822f",
+      "new_semantic_hash": "sha256:446dd8542e0122dfb225f6a3076cb3b276fc10e114c063eb8fd6a5ab93dc5382",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:95561c60b494d5b0297f2f790681df1c0302b568d2f351b8a07c7e9b8cdd8baa"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:4aa3ced3e1fde46429e5bff4c2d0da378d5f6953d42edc925691c390b9145f3f"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:0d9edff0deec7f59bd372917c606fa3f186bbec0c9af2564d7ad06f179485712"
+    },
+    {
+      "question_id": "M6_OP_039_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_OP_039_V3",
+      "candidate_record_hash": "sha256:eb1c5bef1ca8cb4201e1bada9b1c0b7e28649eb2ec011fbec73d82f761fdb8c0",
+      "new_semantic_hash": "sha256:f0c8c5485c02a9275a159bdd32dcce106ed841774a38764604fa355e478d9feb",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:5837fd020d6652426ba3fa860ea9c4642c8f843c64793682fd67944c5526d42d"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:101ead51feeb4a13b6c4b4cde2ca1844ecb23858b556a95e97b20d14ce1b2b3d"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:7617ea0ed6d55f227e2b8ce1905bb6da327f8e4bcf746d0f09b4fdc34c711f38"
+    },
+    {
+      "question_id": "M6_OP_040_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_OP_040_V3",
+      "candidate_record_hash": "sha256:39fae243a48c847c5248407f758096adedc0d50ed1c3132e64529e9d9e684684",
+      "new_semantic_hash": "sha256:aa506bb803bb3c50d15f73da81dba8063a65f5537b05bf5c30ff0cbf4e9d0d07",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:4553bf0fbeab8e7476b7facc8df4b8a1432ff07037ff3394684bbe488fc61ec7"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:c3c8e566a2c31ffb701d4d7d946e91a536f50a90a5510941dafae0a99a5732fb"
+    },
+    {
+      "question_id": "M6_OP_041_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_OP_041_V3",
+      "candidate_record_hash": "sha256:dccf3c015735d9741e7a47dd1463c9f18e604e09551149b32993726713bbb545",
+      "new_semantic_hash": "sha256:53f0a87fec65dde771f3cb3520a0b5438050b183ed5c9a031a6aa0c40ee79374",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:cff526d533837cf165f66d988e68d834be1ddc2d0499b32a2aea705f9bb129dd"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:4896c187c7f1195e336403583801d4705c47e7ef38ef16c4d5c2c70c591b58b5"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:65c10490c0b21175a91cfad77e22221ca17b95b2dc7cb3f84cbc5a5bbed411db"
+    },
+    {
+      "question_id": "M6_OP_042_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_OP_042_V3",
+      "candidate_record_hash": "sha256:2973fa3cfe809a92833e0577f39976ef646a3e00b0b9053e98ac8c85c69fe0bd",
+      "new_semantic_hash": "sha256:c53c34b4bbb1603b794a33d64677365f41050c8dc213629caf1e1df12cf5a20f",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:9562fa9a93c4c59021fcafdfc1399b6bb5c35f4593b37ca438a8bb288d5470ac"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:85311694143770ee65856864d77e3f1c0da0138255d56e245ef385bc49c7eab8"
+    },
+    {
+      "question_id": "M6_OP_043_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_OP_043_V3",
+      "candidate_record_hash": "sha256:b24a32386a0000e342f9e62a43372c60193bc997914b642acc70febca1780094",
+      "new_semantic_hash": "sha256:32c4c5f1fc771ea94819744eca8b8c7283a93fdfaeb39f347b90aa4381cfb5c5",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:b3c05b807a29441c552aa722bf2eb2cfc08c6985993b33b87c5b1d61722ebdf3"
+        },
+        "safety_technical": {
+          "status": "NOT_REQUIRED"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:d9b123c01f545f9032cdb1f78e43e451fc9918d5f438f7fb2f210305d262af29"
+    },
+    {
+      "question_id": "M6_OP_044_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_OP_044_V3",
+      "candidate_record_hash": "sha256:653e36f018d6e271d5405be29adce9f305fe209077cbd102509df7aa19d51d49",
+      "new_semantic_hash": "sha256:7c34f66247e6d14f006b4f016f9c1140daff06194721ec8f1e2ce0350eb90911",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:d6bbef20f03acc9aebd5a17f45c8f9fa0d71b4778b3f7a6652d193e5f9c82104"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:1c013ffc44c303a80820b2344c18d0999de738f02b2fbb296064b0d76d3cf8a8"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:7d72b208836a29dd837d8a6564aa1cac3671edd163deb34823ecd7861ded4388"
+    },
+    {
+      "question_id": "M6_OP_045_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_OP_045_V3",
+      "candidate_record_hash": "sha256:5e296671a2dcc46ac0796a8323bf8e542468cd5c6abfb56116b43a4361ac826c",
+      "new_semantic_hash": "sha256:f370c24ebbe0b908dc1a1480c18ca18514d871531610b4900d8b373b97b44887",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:26466bf8f474e8392da462a6f4f1c726a25436a33e9c2bba261788e8ae32a772"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:f763b47bd3c49afa957198d831cb6b2d6cc0d2e78ddb8f5df52d01198ed86e06"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:fed7495fb773f397b468a2d3aa09ecdfe7b67947a79acfb5de37c9630260eedd"
+    },
+    {
+      "question_id": "M6_OP_046_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_OP_046_V3",
+      "candidate_record_hash": "sha256:96d176dc53ce25c6e1b7c831e646dcc9543b878d855465e37d79999c29de1c2c",
+      "new_semantic_hash": "sha256:bd1df67f03d43d8278a0deacd0dc2ec06b827a199e91c4c5149e37f99c0ec4ab",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:63a2697b3c16965738824f11dcc4825ca84519fd1474f23b3782ee2a740b5f99"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:550ea91a841b8cf993094c3793699bfbda3e1f0a5e2828f802b5aecc7ee8fc31"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:6eb7a5898b73e9b4fe1595b80d94ffca5d57d4c31dfd3b354f17288fa4ca39b9"
+    },
+    {
+      "question_id": "M6_OP_047_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_OP_047_V3",
+      "candidate_record_hash": "sha256:430fb786fea800d974d6e3112ac353f46d4cf9e6995a6ef8c47a62c53ed95762",
+      "new_semantic_hash": "sha256:c3380feab259373a9c4ba27604596362e658e731e04442db700522bec34bddfa",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:cd319d733920672e654ab90ed26f2186739e4b53f72e8c05d4f37c060a4d7a08"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:3335f6f712e503b2f7ccab109016d9907605c0baa9acd50e21d536bebdee8e8a"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:42a2f4489577f62ec923b5f77b0fe7e8ce1eb75b3e5b69f9469199527fe58518"
+    },
+    {
+      "question_id": "M6_OP_048_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_OP_048_V3",
+      "candidate_record_hash": "sha256:10f193c4066e635557b9a2d744549a489004c431077c7d65350b8fc1805e7010",
+      "new_semantic_hash": "sha256:e2e54a9dc04046d69b08105938ea5e7f7599afefd4d699adf6fc08eb0586165b",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:0abf3a5e937ea333abc6986799ca935b08fd12947b887a91fba1cf00041a1710"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:229d3eaa6243d1e4b2881c35112fc5f001b93758ab86858a3379648eba499a2c"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:c5f54e51032d3ebeaf437f9ccd028dfd73abd2378a743fe210568ffde777649a"
+    },
+    {
+      "question_id": "M6_SC_001_V3",
+      "question_version": 3,
+      "candidate_record_hash": "sha256:36296446cf598cfea855f5ab4c29c72b51dc843e37eb5501b265171998634507",
+      "new_semantic_hash": "sha256:5bf377f9438764b8fe89b7e278aaea46da769dc94487bd6a7bbd40694d7a442e",
+      "required_review_tracks": [],
+      "review_results": {
+        "content": {
+          "status": "PASSED_V3_REFERENCE"
+        },
+        "safety_technical": {
+          "status": "PASSED_V3_REFERENCE"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED_V3_REFERENCE",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:8b077f494f8269e879a7cadb4e3d8c3aada27c056978512d08a3545b9c945cf2"
+    },
+    {
+      "question_id": "M6_SC_002_V3",
+      "question_version": 3,
+      "candidate_record_hash": "sha256:89ee0553290ada50575870ea6a161f08158d1b4925c48f7b9739bd527607a120",
+      "new_semantic_hash": "sha256:2360ae0e7895d27d6b2ca98c5c15d2b44d1962407122d140e11f061e232b3d7d",
+      "required_review_tracks": [],
+      "review_results": {
+        "content": {
+          "status": "PASSED_V3_REFERENCE"
+        },
+        "safety_technical": {
+          "status": "PASSED_V3_REFERENCE"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED_V3_REFERENCE",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:8fc31d17c2420d62b02b793fb03fa998b757d8b2e21d61f1add18bfe445e049a"
+    },
+    {
+      "question_id": "M6_SC_004_V3",
+      "question_version": 3,
+      "candidate_record_hash": "sha256:04098739ed17ffd8a49b23b776824e3664a8157bf0009dbf493552daa2fe0bb4",
+      "new_semantic_hash": "sha256:b3f312db366caca90f3fcd26b3b4ad22c879514ff13cf9fa252db26c281740de",
+      "required_review_tracks": [],
+      "review_results": {
+        "content": {
+          "status": "PASSED_V3_REFERENCE"
+        },
+        "safety_technical": {
+          "status": "PASSED_V3_REFERENCE"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED_V3_REFERENCE",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:61cc72016f2d5fc860241d9e6d515f37c2ff7bcf74763f38ad4451103029a612"
+    },
+    {
+      "question_id": "M6_SC_006_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_SC_006_V3",
+      "candidate_record_hash": "sha256:35b8edd9dc68448b037b695c406db15943841c2fc7b32c5ca7f7bc99e627416a",
+      "new_semantic_hash": "sha256:d2426a0dfe16c7178f383adcb894fbb2cc73a661f8a850a5ed4d386f09768748",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:a60749e9c32df197c3293933ba51e2d8d3c6afbc764c52f26af21088853438fc"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:f5eab3bd3dc553838e37b8ed46fb8cbf73feb385aa174d2ea7268d02ba09fc46"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:096563d4d49de9433a649a6d419db249a6b7107c27c72e304d954530941a636a"
+    },
+    {
+      "question_id": "M6_SC_010_V3",
+      "question_version": 3,
+      "candidate_record_hash": "sha256:05bac70847ddfbe552edde6032ea83b5766832ceaa794a4a338650f5931c77d8",
+      "new_semantic_hash": "sha256:c89ea2099ceb59aca91ccca464f43e7a0b0a5b775ccfe1ca268832bb9a0121dd",
+      "required_review_tracks": [],
+      "review_results": {
+        "content": {
+          "status": "PASSED_V3_REFERENCE"
+        },
+        "safety_technical": {
+          "status": "PASSED_V3_REFERENCE"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED_V3_REFERENCE",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:bff423039df6215fe3e04051818b477bc4c46adf3785cc07cc54c27e8b52943a"
+    },
+    {
+      "question_id": "M6_SC_013_V4",
+      "question_version": 4,
+      "previous_question_id": "M6_SC_013_V3",
+      "candidate_record_hash": "sha256:3c950aa42e793e0cd47047e6e4deb524feb3834f3147040d3430fbcf97084a2f",
+      "new_semantic_hash": "sha256:280a7395cb73d72244282f5fe28121551d3ef849de91f3adcd104714572ac6c8",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_note": "",
+          "source_record_hash": "sha256:2e2f63de11516c0da95f0965f223507073da868269a85c460297cb0e59f98665"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "review_note": "通过",
+          "source_record_hash": "sha256:d26a276d6c1b61af0a1de841f1290a84b3ef009f8fd0f8b9f7e5fad59f46425e"
+        }
+      },
+      "video_contract_check": {
+        "status": "NOT_APPLICABLE"
+      },
+      "status": "PASSED",
+      "failed_review_tracks": [],
+      "contract_conflict": null,
+      "scope_anomaly": null,
+      "next_review_tracks": [],
+      "next_question_id": null,
+      "merged_record_hash": "sha256:90c6e5e5a036c00f90bc3fb823102aadb3f8b957d0fa891952dedbf6c36ca82b"
+    }
+  ],
+  "gate_hash": "sha256:9214e85a73a958a03f49351c1a87c040fcd4de6df2e671e2cd1eda683e34d6ed"
+}

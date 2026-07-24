@@ -308,10 +308,17 @@ export interface RubricCriterion {
   description: string
 }
 
+export interface OfflineSetupReference {
+  setup_id: string
+  item_ids: string[]
+  asset_ids: string[]
+}
+
 export interface ContentJsonOfflineOperation extends ContentJsonBase {
   question_type: 'OFFLINE_OPERATION'
   offline_tool_brief: string
   rubric_criteria: RubricCriterion[]
+  offline_setup?: OfflineSetupReference
 }
 
 export interface ContentJsonSoftwareTask extends ContentJsonBase {
@@ -837,6 +844,7 @@ export interface ValidateQuestionContractInput {
     job_code: string
     difficulty_level: number
     media_asset_id: string | null
+    tool_asset_ids_json?: string[] | null
   }
   contentJson: ContentJson
   scoringRuleJson: ScoringRuleJson

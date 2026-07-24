@@ -16,8 +16,8 @@
 | 事件载荷规范 | ✅ 已完成 |
 | Electron 脚手架 | ✅ 已就绪（typecheck + build 通过）|
 | 功能开发 | 🚧 进行中（已完成登录、学生档案、策略配置、基础能力测评、专业岗位固定卷/评分/观察/结果/报告核心链路、DRAG 渲染）|
-| 教学素材 | 🚧 进行中（237 条视觉资产合同已落地，当前 0 条 approved；待先制作 R1-R6）|
-| 题库审核 | 🚧 进行中（BASE_ABILITY 96题来自 v0.2 xlsx 已导入 DRAFT；JOB_SPECIFIC 298题已导入 DRAFT；待试测后升为 ACTIVE）|
+| 教学素材 | 🚧 进行中（270 项资产合同已落地，当前 0 条 approved；待先制作 R1-R6 并编译 Prompt）|
+| 题库审核 | 🚧 进行中（BASE_ABILITY 96题与 JOB_SPECIFIC 298题均为 DRAFT；基础能力 42+8 和专业岗位 Pilot 门禁均未授予激活权）|
 
 ---
 
@@ -83,9 +83,9 @@ npm run dev
 
 > 不要用 Git、OneDrive 或 Syncthing 同步正在使用的 `.db` / `-wal` / `-shm` 文件。`--reset` 会清除当前运行库和 action log，只能在 Electron 已关闭且确认无需保留本地业务数据时使用。完整 SOP 见 `doc/features/local-database-sync-sop.md`。
 
-> **题库来源：** `doc/reference/通用基础能力评估题库.xlsx`（旧版）和 `doc/features/archive/legacy-data/question-bank-import-base-ability.sql`（旧版产物）已归档，**不要使用**。BASE_ABILITY 唯一权威来源是 `doc/reference/通用基础能力正式测评候选题库_v0.2-软件优先版.xlsx`。
+> **题库来源：** `doc/reference/通用基础能力评估题库.xlsx`（旧版）和 `doc/features/archive/legacy-data/question-bank-import-base-ability.sql`（旧版产物）已归档，**不要使用**。BASE_ABILITY 当前入口是 `doc/features/base-ability-current-contracts.md`；唯一来源是 `doc/reference/通用基础能力正式测评候选题库_v0.2-软件优先版.xlsx`，当前门禁见 `doc/features/base-ability-42plus8-activation-gate-v1.json`。
 >
-> 视觉资产以 `doc/reference/visual-asset-master-plan.md` 为风格基线、`doc/assets/asset-manifest.json` 为机器合同。`db:sync` 只会把 `lifecycle_status='approved'` 且通过文件、版权和验收门校验的资产写成 `ACTIVE`；当前 237 条资产均为 `planned`，所以 approved 投影数为 0。
+> 视觉资产以 `doc/features/job-skill-shelver-current-contracts.md` 为当前入口、`doc/reference/visual-asset-master-plan.md` 为风格基线、`doc/assets/asset-manifest.json` 为机器合同。`db:sync` 只会把 `lifecycle_status='approved'` 且通过文件、版权和验收门校验的资产写成 `ACTIVE`；当前 270 项资产均为 `planned`，所以 approved 投影数为 0。
 
 | 用户名 | 密码 | 角色 |
 |---|---|---|
@@ -129,8 +129,10 @@ SVETS/
 | `doc/specs/xc-career-guide-json-field-schema-v1.0.0.md` | 各 JSON TEXT 字段的结构定义 |
 | `doc/specs/xc-career-guide-event-payload-schema-v1.0.0.md` | 领域事件载荷格式 + action_log.jsonl 规范 |
 | `doc/specs/题库分层架构说明.md` | 四层题库设计与 question_role 字段规划 |
+| `doc/features/base-ability-current-contracts.md` | 基础能力 96 道 DRAFT 候选题与 42+8 当前合同入口 |
+| `doc/features/job-skill-shelver-current-contracts.md` | 超市理货员 298 道 DRAFT 题与 270 项素材当前合同入口 |
 | `doc/reference/visual-asset-master-plan.md` | 视觉风格、资产范围、生产与审核规则唯一规划基线 |
-| `doc/assets/asset-manifest.json` | 231 个交付项 + 6 个参考资产的机器执行合同 |
+| `doc/assets/asset-manifest.json` | 270 项视觉、音频、脚本和工具卡生产机器合同 |
 | `doc/features/visual-asset-video-production-sop.md` | Seedance 视频生产、抽选和验收 SOP |
 | `doc/features/visual-asset-prompt-compilation-session-guide.md` | 逐资产 Prompt 编译的新会话启动与复核模板 |
 | `doc/index.md` | 文档入口索引，说明不同任务应先读哪些文档 |

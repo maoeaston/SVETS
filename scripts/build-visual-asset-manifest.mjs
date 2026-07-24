@@ -3,10 +3,15 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { mapImportRow } from './lib/question-bank-import.mjs'
+import { deliveryAssetSpecs, expectedAnswer, loadRetainedQuestions } from './lib/job-skill-delivery-contract.mjs'
 
 const projectRoot = fileURLToPath(new URL('..', import.meta.url))
 const planPath = join(projectRoot, 'doc', 'reference', 'visual-asset-master-plan.md')
 const manifestPath = join(projectRoot, 'doc', 'assets', 'asset-manifest.json')
+const runtimeAuthorityRelPath = 'doc/features/job-skill-shelver-runtime-authority-v1.json'
+const deliveryLockRelPath = 'doc/features/job-skill-shelver-question-delivery-lock-v1.json'
+const phase4GateRelPath = 'doc/features/job-skill-shelver-phase4-activation-gate-v1.json'
+const offlineToolkitRelPath = 'doc/assets/offline-toolkit-manifest-v1.json'
 const force = process.argv.slice(2).includes('--force')
 if (process.argv.slice(2).some((arg) => arg !== '--force')) {
   throw new Error('[manifest-build] supported arguments: --force')
@@ -21,6 +26,10 @@ if (existsSync(manifestPath) && !force) {
   }
 }
 const planText = readFileSync(planPath, 'utf8')
+const runtimeAuthority = JSON.parse(readFileSync(join(projectRoot, runtimeAuthorityRelPath), 'utf8'))
+const phase4Gate = JSON.parse(readFileSync(join(projectRoot, phase4GateRelPath), 'utf8'))
+const offlineToolkit = JSON.parse(readFileSync(join(projectRoot, offlineToolkitRelPath), 'utf8'))
+const { retained } = loadRetainedQuestions(projectRoot)
 const sourceRows = JSON.parse(
   readFileSync(
     join(projectRoot, 'doc', 'reference', '专业岗位能力测评题库-M1-M6-数据库导出-298条.json'),
@@ -31,6 +40,10 @@ const jobQuestions = new Map(sourceRows.map((row) => {
   const mapped = mapImportRow(row)
   return [mapped.question_id, mapped]
 }))
+const retainedBySourceQuestionId = new Map(retained.map((question) => [
+  question.source_question_id,
+  question
+]))
 
 const REF = {
   character: 'asset_ref_r1_character_sheet',
@@ -47,6 +60,9 @@ const IMAGE_ROUTE = '/v1/images/generations'
 const VIDEO_MODEL = 'doubao-seedance-2.0'
 const VIDEO_ROUTE = '/v1/videos/generations'
 const IMAGE_FALLBACK_REASONS = ['primary_unavailable', 'manual_override']
+const ASSET_MANIFEST_VERSION = '0.5.0'
+const ASSET_PLAN_VERSION = 'v1.3.0-298-runtime-authority+delivery-lock-v1'
+const GENERATED_AT = '2026-07-22T16:20:00+08:00'
 
 const gateNames = ['technical', 'visual', 'vocational', 'special_education', 'assessment']
 const aiParams = (size, resolution = '2k') => ({
@@ -100,9 +116,30 @@ function runtimePath(category, key, format) {
     E: 'software-task',
     F: 'ui',
     G: 'offline-video',
+    DELIVERY: 'delivery',
     REFERENCE: 'reference'
   }
   return `resources/assets/${folders[category]}/${key}.${format}`
+}
+
+function sourceQuestionId(questionId) {
+  return typeof questionId === 'string' ? questionId.replace(/_V\d+$/, '') : questionId
+}
+
+const runtimeBySourceQuestionId = new Map(runtimeAuthority.questions.map((question) => [
+  question.source_question_id,
+  question
+]))
+
+function unique(values) {
+  return [...new Set(values)]
+}
+
+function currentQuestionIdsFor(questionIds) {
+  return unique(questionIds.map((questionId) => {
+    const runtimeQuestion = runtimeBySourceQuestionId.get(sourceQuestionId(questionId))
+    return runtimeQuestion?.current_question_id ?? questionId
+  }))
 }
 
 function asset(input) {
@@ -110,13 +147,15 @@ function asset(input) {
   const isVideo = input.asset_type === 'video'
   const format = input.delivery_format ?? (input.asset_type === 'video' ? 'mp4' : 'png')
   const key = input.plan_key
+  const questionIds = input.question_ids ?? []
   return {
     asset_id: `asset_${key}`,
     plan_key: key,
     category: input.category,
     priority: input.priority,
     description: input.description,
-    question_ids: input.question_ids ?? [],
+    question_ids: questionIds,
+    current_question_ids: input.current_question_ids ?? currentQuestionIdsFor(questionIds),
     asset_type: input.asset_type,
     asset_role: input.asset_role ?? (input.usage_mode === 'system' ? 'UI_ASSET' : 'QUESTION_MEDIA'),
     usage_mode: input.usage_mode,
@@ -147,6 +186,8 @@ function asset(input) {
     height_px: input.height_px ?? null,
     duration_ms: input.duration_ms ?? null,
     expected_answer: input.expected_answer ?? null,
+    answer_contract_hash: input.answer_contract_hash ?? null,
+    production_contract: input.production_contract ?? null,
     text_handling: input.text_handling ?? 'none',
     construct: input.construct ?? null,
     target_cue: input.target_cue ?? null,
@@ -179,9 +220,16 @@ function parseVideoRows() {
 }
 
 function questionAnswer(questionId) {
+  const retainedQuestion = retainedBySourceQuestionId.get(sourceQuestionId(questionId))
+  if (retainedQuestion) return expectedAnswer(retainedQuestion)
   const question = jobQuestions.get(questionId)
   if (!question) throw new Error(`[manifest-build] question not found: ${questionId}`)
   return question.scoring_rule_json.correct_answer ?? null
+}
+
+function questionConstruct(questionId) {
+  const retainedQuestion = retainedBySourceQuestionId.get(sourceQuestionId(questionId))
+  return retainedQuestion?.content?.target_construct ?? jobQuestions.get(questionId)?.content_json?.target_construct ?? null
 }
 
 function videoAssets() {
@@ -221,7 +269,7 @@ function videoAssets() {
       generation_params: videoParams(),
       expected_answer: expectedAnswer,
       text_handling: isOverlay ? 'programmatic' : 'none',
-      construct: jobQuestions.get(questionId).content_json.target_construct,
+      construct: questionConstruct(questionId),
       target_cue: action,
       policy_basis: '题库 scoring_rule_json.correct_answer 与岗位操作规范',
       forbidden_visual_cues: ['高亮正确动作', '正确/错误文字', '勾叉符号', '答案暗示音效'],
@@ -471,6 +519,84 @@ assets.push(...toolCards.map((description, index) => asset({
   target_cue: description, required_gates: ['technical', 'visual', 'vocational', 'special_education']
 })))
 
+const deliverySpecs = deliveryAssetSpecs(retained)
+assets.push(...deliverySpecs.images.map((spec) => asset({
+  plan_key: spec.plan_key,
+  category: 'DELIVERY',
+  priority: 'P0',
+  description: spec.description,
+  question_ids: [spec.source_question_id],
+  asset_type: 'answer_image',
+  asset_role: 'QUESTION_MEDIA',
+  usage_mode: 'assessment',
+  production_method: 'composite',
+  review_level: 'assessment_critical',
+  complexity_level: 'L2',
+  reference_asset_ids: [REF.shelf, REF.product, REF.lighting],
+  prompt_template_id: 'scene-shelf',
+  generation_params: aiParams('16:9'),
+  expected_answer: spec.expected_answer,
+  answer_contract_hash: spec.answer_contract_hash,
+  text_handling: 'programmatic',
+  target_cue: spec.description,
+  forbidden_visual_cues: ['勾叉符号', '高亮正确区域', '答案文字', '与题干无关的装饰'],
+  required_overlay: ['固定商品编号', '固定位置与朝向', '必要且可读的包装文字'],
+  overlay_spec: { mode: 'programmatic', source: 'question delivery lock answer contract' },
+  production_contract: {
+    unique_per_question: true,
+    answer_first: true,
+    script_or_layout_must_follow_answer_contract_hash: true
+  },
+  required_gates: gateNames
+})))
+assets.push(...deliverySpecs.scripts.map((spec) => asset({
+  plan_key: spec.plan_key,
+  category: 'DELIVERY',
+  priority: 'P0',
+  description: spec.description,
+  question_ids: [spec.source_question_id],
+  asset_type: 'role_play_script',
+  asset_role: 'ROLE_PLAY_SCRIPT',
+  usage_mode: 'assessment',
+  delivery_format: 'json',
+  production_method: 'authored',
+  review_level: 'assessment_critical',
+  complexity_level: 'L1',
+  reference_asset_ids: [],
+  provider: 'manual',
+  answer_contract_hash: spec.answer_contract_hash,
+  production_contract: {
+    required_sections: ['verbatim_lines', 'allowed_responses', 'prompt_levels', 'stop_conditions', 'scoring_answer_key'],
+    unique_per_question: true,
+    answer_first: true
+  },
+  required_gates: ['technical', 'vocational', 'special_education', 'assessment']
+})))
+assets.push(...deliverySpecs.audios.map((spec) => asset({
+  plan_key: spec.plan_key,
+  category: 'DELIVERY',
+  priority: 'P0',
+  description: spec.description,
+  question_ids: [spec.source_question_id],
+  asset_type: 'audio',
+  asset_role: 'QUESTION_MEDIA',
+  usage_mode: 'assessment',
+  delivery_format: 'mp3',
+  production_method: 'authored',
+  review_level: 'safety_critical',
+  complexity_level: 'L1',
+  reference_asset_ids: [],
+  provider: 'manual',
+  duration_ms: spec.duration_ms,
+  production_contract: {
+    fixed_duration_ms: spec.duration_ms,
+    playback_count: 1,
+    volume_contract: spec.description.match(/\d+-\d+ dBA/)?.[0] ?? null,
+    speech_or_answer_cues_forbidden: true
+  },
+  required_gates: ['technical', 'vocational', 'special_education', 'assessment']
+})))
+
 const references = [
   ['ref_r1_character_sheet', '理货员角色设定图', 'character'],
   ['ref_r2_vest_standard', '绿色工作马甲标准图', 'product-photo'],
@@ -485,7 +611,7 @@ assets.push(...references.map(([key, description, prompt]) => asset({
   generation_params: aiParams('1:1'), target_cue: description, required_gates: ['technical', 'visual']
 })))
 
-const expectedCounts = { A: 68, B: 14, C: 32, D: 11, E: 30, F: 52, G: 24, REFERENCE: 6 }
+const expectedCounts = { A: 68, B: 14, C: 32, D: 11, E: 30, F: 52, G: 24, DELIVERY: 33, REFERENCE: 6 }
 for (const [category, expected] of Object.entries(expectedCounts)) {
   const actual = assets.filter((item) => item.category === category).length
   if (actual !== expected) throw new Error(`[manifest-build] ${category} expected ${expected}, found ${actual}`)
@@ -497,9 +623,21 @@ if (new Set(ids).size !== ids.length) throw new Error('[manifest-build] duplicat
 assets.sort((a, b) => a.category.localeCompare(b.category) || a.asset_id.localeCompare(b.asset_id))
 const manifest = {
   $schema: './asset-manifest.schema.json',
-  version: '0.3.1',
-  plan_version: 'v1.2.4-video-sop',
-  generated_at: '2026-07-14T16:30:00+08:00',
+  version: ASSET_MANIFEST_VERSION,
+  plan_version: ASSET_PLAN_VERSION,
+  generated_at: GENERATED_AT,
+  question_authority: {
+    job_skill_runtime_authority_path: runtimeAuthorityRelPath,
+    job_skill_runtime_status: runtimeAuthority.status,
+    job_skill_question_total: runtimeAuthority.questions.length,
+    phase4_gate_path: phase4GateRelPath,
+    phase4_gate_status: phase4Gate.status,
+    delivery_lock_path: deliveryLockRelPath,
+    offline_toolkit_manifest_path: offlineToolkitRelPath,
+    offline_toolkit_status: offlineToolkit.status,
+    binding_policy: 'question_ids 保留题库来源题号；current_question_ids 由当前 298 题运行时权威自动映射。BASE_ABILITY 与系统共用素材保持原题号。',
+    activation_policy: '素材批准只解除资产门禁；不会激活 DRAFT 题目、不会覆盖 Pilot 门禁、不会写入运行数据库。'
+  },
   assets
 }
 

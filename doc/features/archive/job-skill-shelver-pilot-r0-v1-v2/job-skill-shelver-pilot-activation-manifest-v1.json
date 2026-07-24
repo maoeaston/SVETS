@@ -1,0 +1,333 @@
+{
+  "manifest_schema_version": "pilot-fixed-set-activation-manifest-v1.0",
+  "manifest_id": "strategy_job_skill_shelver_v1@1-pilot-r0",
+  "manifest_version": 1,
+  "manifest_status": "PENDING",
+  "activation_authorized": false,
+  "review_assignment": {
+    "assigned_at": "2026-07-19T01:29:20+08:00",
+    "content_vocational_reviewer": "陈晓青",
+    "safety_reviewer": "赫东",
+    "technical_reviewer": "赫东",
+    "assignment_status": "ASSIGNED",
+    "review_completion_status": "NOT_REVIEWED"
+  },
+  "scope": {
+    "job_code": "SUPERMARKET_SHELVER",
+    "bank_domain": "JOB_SPECIFIC",
+    "online_count": 18,
+    "offline_count": 6,
+    "candidate_count": 24,
+    "excluded_job_question_count": 274
+  },
+  "strategy_binding": {
+    "strategy_id": "strategy_job_skill_shelver_v1",
+    "strategy_version": 1,
+    "strategy_contract_hash": "sha256:cc0c0988f10d6ff31c65c2c34be91031ae4f40ccf8c328a8f0b2a37fb09862ec",
+    "candidate_set_hash": "sha256:ff3637fdb87824a12d515453960dcf5d29497436940444ae5eb4c7ea2c4538be",
+    "hash_canonicalization": "UTF-8 JSON; object keys sorted recursively; arrays retain source order; question records sorted by question_id"
+  },
+  "release_binding": {
+    "status": "NOT_REVIEWED",
+    "design_base_commit": "95c9808bbbcb8c5c5c057e275a610a0ca2573824",
+    "release_commit": null,
+    "working_tree_state": "DIRTY",
+    "schema_version_required": "0.1.15-multi-device-m3-grant-assignment",
+    "schema_source": "src/main/db/schema.sql",
+    "schema_source_hash": "sha256:79ea5aee525e6c6be7673af777f3b7bc5a2f35b4be003ecb5f1a9dd72fd77870",
+    "question_source": "doc/reference/专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+    "question_source_hash": "sha256:7af29b8ab55edfa07f5931fce4721a6777fbf0f5d0f9d68e7028ac8228f4bc98",
+    "question_import_source": "doc/features/question-bank-import.sql",
+    "question_import_source_hash": "sha256:d9761a482e881cf0050297f8c020abc43b74ca4122629f32e359430c7b06e78d",
+    "content_pack_version_current": "2026.07.14.1",
+    "content_pack_schema_version_current": "0.1.13-multi-device-m1-identity",
+    "content_pack_schema_version_status": "MISMATCH",
+    "content_pack_source": "scripts/config/database-content-pack.json",
+    "content_pack_source_hash": "sha256:fc0236da1568441edc120cf03d0428e4e860c373f39a6ca65916eaf3bceadd73"
+  },
+  "gate": {
+    "status": "PENDING",
+    "fail_closed": true,
+    "required_overall_status": "APPROVED",
+    "required_question_count": 24,
+    "required_online_count": 18,
+    "required_offline_count": 6,
+    "current_source_status": { "DRAFT": 24, "ACTIVE": 0 },
+    "current_review_status": { "NOT_REVIEWED": 24, "APPROVED": 0 },
+    "blocking_reasons": [
+      "release commit is not bound",
+      "content-pack schema version does not match schema v0.1.15",
+      "24 candidate questions are DRAFT",
+      "24 answer keys are PENDING",
+      "6 offline rubric anchors are PENDING",
+      "18 online presentation asset lists are empty",
+      "renderer, materials, tools, safety and hash reviews are NOT_REVIEWED"
+    ]
+  },
+  "questions": [
+    {
+      "question_id": "M1_SC_001", "question_version": 1, "module": "M1", "question_type": "SINGLE_CHOICE", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:c109e88917b0e2693b7c01b47d329228d5ee5750dbffa851bc64c8c925d90d10",
+      "answer": { "candidate_key": "A", "source_status": "PENDING", "review_status": "NOT_REVIEWED" },
+      "rubric": { "required": false, "review_status": "NOT_APPLICABLE" },
+      "renderer": { "renderer_id": "student.AssessmentView:SINGLE_CHOICE", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": "摆放规范R1", "asset_ids": [], "asset_hashes": [], "review_status": "NOT_REVIEWED" },
+      "tools": { "tool_brief": null, "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M1_SC_004", "question_version": 1, "module": "M1", "question_type": "SINGLE_CHOICE", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:e744f295e8ffcf6dcdc01f7e7a1d019b604a09a988cdb826beddeae2f4c2689c",
+      "answer": { "candidate_key": "B", "source_status": "PENDING", "review_status": "NOT_REVIEWED" },
+      "rubric": { "required": false, "review_status": "NOT_APPLICABLE" },
+      "renderer": { "renderer_id": "student.AssessmentView:SINGLE_CHOICE", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": "分层摆放R5", "asset_ids": [], "asset_hashes": [], "review_status": "NOT_REVIEWED" },
+      "tools": { "tool_brief": null, "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M1_SC_007", "question_version": 1, "module": "M1", "question_type": "SINGLE_CHOICE", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:27e1995130642b207119bf54d49a1dbab531a2e235a2cb8ab9b7c89ca8a16825",
+      "answer": { "candidate_key": "A", "source_status": "PENDING", "review_status": "NOT_REVIEWED" },
+      "rubric": { "required": false, "review_status": "NOT_APPLICABLE" },
+      "renderer": { "renderer_id": "student.AssessmentView:SINGLE_CHOICE", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": "价签核对要点R3", "asset_ids": [], "asset_hashes": [], "review_status": "NOT_REVIEWED" },
+      "tools": { "tool_brief": null, "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M1_OP_033", "question_version": 1, "module": "M1", "question_type": "OFFLINE_OPERATION", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:d7b99fc4a3ea57c426bb319ff350d9685cd20033b4b7487b9f971ed8c920c1d2",
+      "answer": { "candidate_key": null, "source_status": "PENDING", "review_status": "NOT_APPLICABLE" },
+      "rubric": { "required": true, "source_status": "PENDING", "candidate_anchor": { "score_0": "未能完成", "score_1": "部分完成", "score_2": "完全达标" }, "review_status": "NOT_REVIEWED" },
+      "renderer": { "renderer_id": "teacher.JobSkillScoringView:OFFLINE_OPERATION", "known_gap": "question prompt, tools and rubric anchors are not rendered", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": null, "asset_ids": [], "asset_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "tools": { "tool_brief": "迷你货架1组；5件实物商品（大小不一）", "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_REVIEWED" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M2_SC_002", "question_version": 1, "module": "M2", "question_type": "SINGLE_CHOICE", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:e7340e010b96a8b91fa1970958976429725296d4874f38a1595f7dc3f7396b5a",
+      "answer": { "candidate_key": "A", "source_status": "PENDING", "review_status": "NOT_REVIEWED" },
+      "rubric": { "required": false, "review_status": "NOT_APPLICABLE" },
+      "renderer": { "renderer_id": "student.AssessmentView:SINGLE_CHOICE", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": "FIFO规则再认R6", "asset_ids": [], "asset_hashes": [], "review_status": "NOT_REVIEWED" },
+      "tools": { "tool_brief": null, "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M2_SC_003", "question_version": 1, "module": "M2", "question_type": "SINGLE_CHOICE", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:265a18fb3e06881d13f6b249f1c65aab804a77b0a01434df3e5be55c9c486d33",
+      "answer": { "candidate_key": "A", "source_status": "PENDING", "review_status": "NOT_REVIEWED" },
+      "rubric": { "required": false, "review_status": "NOT_APPLICABLE" },
+      "renderer": { "renderer_id": "student.AssessmentView:SINGLE_CHOICE", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": "安全拆箱操作", "asset_ids": [], "asset_hashes": [], "review_status": "NOT_REVIEWED" },
+      "tools": { "tool_brief": null, "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M2_SC_005", "question_version": 1, "module": "M2", "question_type": "SINGLE_CHOICE", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:b65e89ac336ed693c3cd9b2823f7626327211b79bf1213e13755e266a24e85da",
+      "answer": { "candidate_key": "A", "source_status": "PENDING", "review_status": "NOT_REVIEWED" },
+      "rubric": { "required": false, "review_status": "NOT_APPLICABLE" },
+      "renderer": { "renderer_id": "student.AssessmentView:SINGLE_CHOICE", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": "FIFO双批次应用R6", "asset_ids": [], "asset_hashes": [], "review_status": "NOT_REVIEWED" },
+      "tools": { "tool_brief": null, "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M2_OP_027", "question_version": 1, "module": "M2", "question_type": "OFFLINE_OPERATION", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:39fd7d9383ac4f42732b2fa7072bbbec2fa8dcd9bfd1ed315bd32e923171f9d6",
+      "answer": { "candidate_key": null, "source_status": "PENDING", "review_status": "NOT_APPLICABLE" },
+      "rubric": { "required": true, "source_status": "PENDING", "candidate_anchor": { "score_0": "未能完成", "score_1": "部分完成", "score_2": "完全达标" }, "review_status": "NOT_REVIEWED" },
+      "renderer": { "renderer_id": "teacher.JobSkillScoringView:OFFLINE_OPERATION", "known_gap": "question prompt, tools and rubric anchors are not rendered", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": null, "asset_ids": [], "asset_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "tools": { "tool_brief": "整箱商品1箱（胶带封装）", "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_REVIEWED" },
+      "safety": { "source_sensitive": true, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M3_SC_001", "question_version": 1, "module": "M3", "question_type": "SINGLE_CHOICE", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:8633ff8f0cb993a524c68dbbf023bc17170dae86bb808766842635d9795fb62e",
+      "answer": { "candidate_key": "A", "source_status": "PENDING", "review_status": "NOT_REVIEWED" },
+      "rubric": { "required": false, "review_status": "NOT_APPLICABLE" },
+      "renderer": { "renderer_id": "student.AssessmentView:SINGLE_CHOICE", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": "效期计算基础R7", "asset_ids": [], "asset_hashes": [], "review_status": "NOT_REVIEWED" },
+      "tools": { "tool_brief": null, "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M3_SC_005", "question_version": 1, "module": "M3", "question_type": "SINGLE_CHOICE", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:4394fb249f63ce9f1e208dd4f6cf6f3b4f7685dc48bfb7e33febc774c22d8a9a",
+      "answer": { "candidate_key": "B", "source_status": "PENDING", "review_status": "NOT_REVIEWED" },
+      "rubric": { "required": false, "review_status": "NOT_APPLICABLE" },
+      "renderer": { "renderer_id": "student.AssessmentView:SINGLE_CHOICE", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": "临期判别15天门槛R7", "asset_ids": [], "asset_hashes": [], "review_status": "NOT_REVIEWED" },
+      "tools": { "tool_brief": null, "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M3_SC_019", "question_version": 1, "module": "M3", "question_type": "SINGLE_CHOICE", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:689fb511285ee13b4cf6388d7287c7a01cc1fadedee18b63ab639e771f9df562",
+      "answer": { "candidate_key": "B", "source_status": "PENDING", "review_status": "NOT_REVIEWED" },
+      "rubric": { "required": false, "review_status": "NOT_APPLICABLE" },
+      "renderer": { "renderer_id": "student.AssessmentView:SINGLE_CHOICE", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": "临期商品处置R7", "asset_ids": [], "asset_hashes": [], "review_status": "NOT_REVIEWED" },
+      "tools": { "tool_brief": null, "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M3_OP_043", "question_version": 1, "module": "M3", "question_type": "OFFLINE_OPERATION", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:f1c77eb774cef2d100db56212405dc11d9bfb423713758605f9a13ef96151890",
+      "answer": { "candidate_key": null, "source_status": "PENDING", "review_status": "NOT_APPLICABLE" },
+      "rubric": { "required": true, "source_status": "PENDING", "candidate_anchor": { "score_0": "未能完成", "score_1": "部分完成", "score_2": "完全达标" }, "review_status": "NOT_REVIEWED" },
+      "renderer": { "renderer_id": "teacher.JobSkillScoringView:OFFLINE_OPERATION", "known_gap": "question prompt, tools and rubric anchors are not rendered", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": null, "asset_ids": [], "asset_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "tools": { "tool_brief": "迷你货架1组（5件商品含各种日期标签）；临期专区标识；报损区标识", "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_REVIEWED" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M4_SC_001", "question_version": 1, "module": "M4", "question_type": "SINGLE_CHOICE", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:714ac74a48b1b89f86b69a05b7824f40a921c6614f30d74ac9c38b9dbb404078",
+      "answer": { "candidate_key": "B", "source_status": "PENDING", "review_status": "NOT_REVIEWED" },
+      "rubric": { "required": false, "review_status": "NOT_APPLICABLE" },
+      "renderer": { "renderer_id": "student.AssessmentView:SINGLE_CHOICE", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": "入库基本规范R5", "asset_ids": [], "asset_hashes": [], "review_status": "NOT_REVIEWED" },
+      "tools": { "tool_brief": null, "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M4_SC_003", "question_version": 1, "module": "M4", "question_type": "SINGLE_CHOICE", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:e60fc3875e4ece2ddb8a75960d009f77fc53a75bdee258af861dac2d3d4a1a43",
+      "answer": { "candidate_key": "A", "source_status": "PENDING", "review_status": "NOT_REVIEWED" },
+      "rubric": { "required": false, "review_status": "NOT_APPLICABLE" },
+      "renderer": { "renderer_id": "student.AssessmentView:SINGLE_CHOICE", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": "收货核对R12", "asset_ids": [], "asset_hashes": [], "review_status": "NOT_REVIEWED" },
+      "tools": { "tool_brief": null, "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M4_SC_005", "question_version": 1, "module": "M4", "question_type": "SINGLE_CHOICE", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:ac08e25f39a9dd9dd9a3977b4dbeea98eb9fa9646ed71d05e92eaf954cab1223",
+      "answer": { "candidate_key": "B", "source_status": "PENDING", "review_status": "NOT_REVIEWED" },
+      "rubric": { "required": false, "review_status": "NOT_APPLICABLE" },
+      "renderer": { "renderer_id": "student.AssessmentView:SINGLE_CHOICE", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": "数量不符停收上报R12", "asset_ids": [], "asset_hashes": [], "review_status": "NOT_REVIEWED" },
+      "tools": { "tool_brief": null, "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M4_OP_029", "question_version": 1, "module": "M4", "question_type": "OFFLINE_OPERATION", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:78b9a9bc9e7035d18c0afcb9155814b620e9b35a13b6760ab0913fd9bd1babcf",
+      "answer": { "candidate_key": null, "source_status": "PENDING", "review_status": "NOT_APPLICABLE" },
+      "rubric": { "required": true, "source_status": "PENDING", "candidate_anchor": { "score_0": "未能完成", "score_1": "部分完成", "score_2": "完全达标" }, "review_status": "NOT_REVIEWED" },
+      "renderer": { "renderer_id": "teacher.JobSkillScoringView:OFFLINE_OPERATION", "known_gap": "question prompt, tools and rubric anchors are not rendered", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": null, "asset_ids": [], "asset_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "tools": { "tool_brief": "迷你货架1组（某类商品若干件分散放置）；记录本", "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_REVIEWED" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M5_SC_001", "question_version": 1, "module": "M5", "question_type": "SINGLE_CHOICE", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:2e7999af625e5210580e505513dfe7514057a235c3c106cd34ab69b194b9cc79",
+      "answer": { "candidate_key": "B", "source_status": "PENDING", "review_status": "NOT_REVIEWED" },
+      "rubric": { "required": false, "review_status": "NOT_APPLICABLE" },
+      "renderer": { "renderer_id": "student.AssessmentView:SINGLE_CHOICE", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": "地面水渍安全处置", "asset_ids": [], "asset_hashes": [], "review_status": "NOT_REVIEWED" },
+      "tools": { "tool_brief": null, "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M5_SC_002", "question_version": 1, "module": "M5", "question_type": "SINGLE_CHOICE", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:1c9ca58ff9d06fc7d244b02b9197462e440e7240dc08e151c6462437acc49d8b",
+      "answer": { "candidate_key": "B", "source_status": "PENDING", "review_status": "NOT_REVIEWED" },
+      "rubric": { "required": false, "review_status": "NOT_APPLICABLE" },
+      "renderer": { "renderer_id": "student.AssessmentView:SINGLE_CHOICE", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": "货架安全隐患应急", "asset_ids": [], "asset_hashes": [], "review_status": "NOT_REVIEWED" },
+      "tools": { "tool_brief": null, "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M5_SC_009", "question_version": 1, "module": "M5", "question_type": "SINGLE_CHOICE", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:a76f0177d52b6771e414b4551032e558bd9dc070f62a392f18326e07ace91789",
+      "answer": { "candidate_key": "B", "source_status": "PENDING", "review_status": "NOT_REVIEWED" },
+      "rubric": { "required": false, "review_status": "NOT_APPLICABLE" },
+      "renderer": { "renderer_id": "student.AssessmentView:SINGLE_CHOICE", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": "玻璃碎片安全处置", "asset_ids": [], "asset_hashes": [], "review_status": "NOT_REVIEWED" },
+      "tools": { "tool_brief": null, "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M5_OP_039", "question_version": 1, "module": "M5", "question_type": "OFFLINE_OPERATION", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:72849591ae2f8e0c67315eb19ab9ebaf437e5cd3715f616905c0410dbb2b1904",
+      "answer": { "candidate_key": null, "source_status": "PENDING", "review_status": "NOT_APPLICABLE" },
+      "rubric": { "required": true, "source_status": "PENDING", "candidate_anchor": { "score_0": "未能完成", "score_1": "部分完成", "score_2": "完全达标" }, "review_status": "NOT_REVIEWED" },
+      "renderer": { "renderer_id": "teacher.JobSkillScoringView:OFFLINE_OPERATION", "known_gap": "question prompt, tools and rubric anchors are not rendered", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": null, "asset_ids": [], "asset_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "tools": { "tool_brief": "小心地滑警示牌1个；地面预置水渍（少量着色水）；清洁工具在指定位置", "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_REVIEWED" },
+      "safety": { "source_sensitive": true, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M6_SC_003", "question_version": 1, "module": "M6", "question_type": "SINGLE_CHOICE", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:ce435dea2d58b09a12d661ef3c54b2c4bb0a271dbe70208f9bd41032a7f2b5df",
+      "answer": { "candidate_key": "B", "source_status": "PENDING", "review_status": "NOT_REVIEWED" },
+      "rubric": { "required": false, "review_status": "NOT_APPLICABLE" },
+      "renderer": { "renderer_id": "student.AssessmentView:SINGLE_CHOICE", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": "冷链商品识别A组", "asset_ids": [], "asset_hashes": [], "review_status": "NOT_REVIEWED" },
+      "tools": { "tool_brief": null, "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M6_SC_009", "question_version": 1, "module": "M6", "question_type": "SINGLE_CHOICE", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:aa0310c16783856d32454d226c5625ffa73b30c37136775a1bba4aedf21b51c6",
+      "answer": { "candidate_key": "B", "source_status": "PENDING", "review_status": "NOT_REVIEWED" },
+      "rubric": { "required": false, "review_status": "NOT_APPLICABLE" },
+      "renderer": { "renderer_id": "student.AssessmentView:SINGLE_CHOICE", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": "近邻商品区分原则B组", "asset_ids": [], "asset_hashes": [], "review_status": "NOT_REVIEWED" },
+      "tools": { "tool_brief": null, "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M6_SC_012", "question_version": 1, "module": "M6", "question_type": "SINGLE_CHOICE", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:445b250d706dd28ce616d1742540cb5f136a7d27a9d9f33cffa0af88c2a2a4d8",
+      "answer": { "candidate_key": "B", "source_status": "PENDING", "review_status": "NOT_REVIEWED" },
+      "rubric": { "required": false, "review_status": "NOT_APPLICABLE" },
+      "renderer": { "renderer_id": "student.AssessmentView:SINGLE_CHOICE", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": "条形码功能知识", "asset_ids": [], "asset_hashes": [], "review_status": "NOT_REVIEWED" },
+      "tools": { "tool_brief": null, "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    },
+    {
+      "question_id": "M6_OP_035", "question_version": 1, "module": "M6", "question_type": "OFFLINE_OPERATION", "source_status": "DRAFT", "overall_status": "PENDING",
+      "candidate_record_hash": "sha256:11f5afcabb6f268b5b7a7cc0ef737f7ef2aa9169d1322a47853c20f3c6f0a256",
+      "answer": { "candidate_key": null, "source_status": "PENDING", "review_status": "NOT_APPLICABLE" },
+      "rubric": { "required": true, "source_status": "PENDING", "candidate_anchor": { "score_0": "未能完成", "score_1": "部分完成", "score_2": "完全达标" }, "review_status": "NOT_REVIEWED" },
+      "renderer": { "renderer_id": "teacher.JobSkillScoringView:OFFLINE_OPERATION", "known_gap": "question prompt, tools and rubric anchors are not rendered", "review_status": "NOT_REVIEWED" },
+      "materials": { "media_brief": null, "asset_ids": [], "asset_hashes": [], "review_status": "NOT_APPLICABLE" },
+      "tools": { "tool_brief": "6件实物商品；迷你货架1组（贴有区域标识）", "tool_asset_ids": [], "tool_hashes": [], "review_status": "NOT_REVIEWED" },
+      "safety": { "source_sensitive": false, "review_status": "NOT_REVIEWED" },
+      "reviewer": { "reviewed_by": null, "reviewed_at": null, "review_note": null }
+    }
+  ]
+}

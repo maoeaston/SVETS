@@ -22,6 +22,7 @@ import type { DBAdapter } from '../../db/interface'
 import { SqliteAdapter } from '../../db/sqlite-adapter'
 import { getDatabase } from '../../db/connection'
 import { assertCaller, assertStudent, assertSessionOwner } from '../../utils/auth-context'
+import { resolveTrustedAuthSessionCaller } from '../../utils/auth-session'
 import { writeEvent } from '../../domain/event-writer'
 import { haltTrainingSessionSteps } from './training'
 import { applyAssessmentEvent } from '../../domain/assessment-reducer'
@@ -36,7 +37,11 @@ import type {
   AnswerSubmittedPayload,
   EmotionInterruptedPayload,
   EmotionResumedPayload,
+  SittingStartedPayload,
+  SittingEndedPayload,
+  EmotionCollapseRecordedPayload,
   EmotionCollapseThresholdReachedPayload,
+  SessionCompletedPayload,
   CollapseRecord,
   SessionAbortedPayload,
   RedlineTriggeredPayload,
@@ -45,6 +50,7 @@ import type {
   AbilityScorePayload,
   ModuleScore
 } from '@shared/types/event-payloads'
+
 import { judgeLevel, type ModuleScoreInput, type JudgeLevelInput } from '../../domain/level-judge'
 import {
   SAFETY_REASON_CODES as SAFETY_REASON_CODES_SRC,
@@ -80,6 +86,12 @@ import type {
   EmotionInterruptResult,
   EmotionResumeParams,
   EmotionResumeResult,
+  PauseSittingParams,
+  PauseSittingResult,
+  StartNextSittingParams,
+  StartNextSittingResult,
+  RecordEmotionCollapseParams,
+  RecordEmotionCollapseResult,
   AbortSessionParams,
   AbortSessionResult,
   TriggerRedlineParams,
@@ -90,6 +102,41 @@ import type {
   CalculateResultSuccess,
   AssessmentErrorCode
 } from '../../../shared/types/assessment'
+
+function collectRuntimeAssetIds(row: {
+  media_asset_id: string | null
+  tool_asset_ids_json: string | null
+  content_json: string
+}): string[] {
+  const ids = new Set<string>()
+  const add = (value: unknown, key = ''): void => {
+    if (typeof value === 'string' && (key === 'asset_id' || key.endsWith('_asset_id'))) {
+      ids.add(value)
+      return
+    }
+    if (Array.isArray(value)) {
+      if (key === 'asset_ids' || key.endsWith('_asset_ids')) {
+        for (const item of value) if (typeof item === 'string') ids.add(item)
+      } else {
+        for (const item of value) add(item)
+      }
+      return
+    }
+    if (value && typeof value === 'object') {
+      for (const [childKey, child] of Object.entries(value as Record<string, unknown>)) add(child, childKey)
+    }
+  }
+  if (row.media_asset_id) ids.add(row.media_asset_id)
+  try {
+    for (const assetId of JSON.parse(row.tool_asset_ids_json ?? '[]') as unknown[]) {
+      if (typeof assetId === 'string') ids.add(assetId)
+    }
+    add(JSON.parse(row.content_json) as unknown)
+  } catch {
+    ids.add('__INVALID_ASSET_REFERENCE_JSON__')
+  }
+  return [...ids].sort()
+}
 
 // MVP 固定 6 模块（AbilityTag 全集）。questionPolicy.required_modules 缺失时用此默认。
 // 5.3 题库未交付时不影响——seedQuestionBank 也按此 6 模块生成 mock。
@@ -443,12 +490,16 @@ export function createSession(db: DBAdapter, params: CreateSessionParams): Creat
       question_type: string
       item_usage: string
       job_module_code: string | null
+      media_asset_id: string | null
+      tool_asset_ids_json: string | null
+      content_json: string
     }
     const allCandidateIds = [...scoredIds, ...obsIds]
     const placeholders = allCandidateIds.map(() => '?').join(',')
     const fixedQbRows = db
       .prepare(
-        `SELECT question_id, status, question_type, item_usage, job_module_code
+        `SELECT question_id, status, question_type, item_usage, job_module_code,
+                media_asset_id, tool_asset_ids_json, content_json
            FROM question_bank
           WHERE question_id IN (${placeholders})`
       )
@@ -464,6 +515,25 @@ export function createSession(db: DBAdapter, params: CreateSessionParams): Creat
           strategyVersion: params.strategyVersion,
           questionId: qid,
           error: row ? `question status=${row.status}` : 'question not found in bank'
+        })
+        return { success: false, errorCode: 'QUESTION_BANK_INSUFFICIENT' }
+      }
+    }
+
+    const requiredAssetIds = [...new Set(fixedQbRows.flatMap(collectRuntimeAssetIds))]
+    if (requiredAssetIds.length > 0) {
+      const assetPlaceholders = requiredAssetIds.map(() => '?').join(',')
+      const activeAssetRows = db
+        .prepare(`SELECT asset_id FROM asset_resource WHERE status = 'ACTIVE' AND asset_id IN (${assetPlaceholders})`)
+        .all(...requiredAssetIds) as Array<{ asset_id: string }>
+      const activeAssetIds = new Set(activeAssetRows.map((asset) => asset.asset_id))
+      const unavailable = requiredAssetIds.filter((assetId) => !activeAssetIds.has(assetId))
+      if (unavailable.length > 0) {
+        logAssessmentEvent(db, 'QUESTION_BANK_INSUFFICIENT', 'ERROR', 'unknown', caller.row.user_id, {
+          operation: 'createSession',
+          strategyId: params.strategyId,
+          strategyVersion: params.strategyVersion,
+          error: `required assets unavailable: ${unavailable.join(', ')}`
         })
         return { success: false, errorCode: 'QUESTION_BANK_INSUFFICIENT' }
       }
@@ -960,7 +1030,7 @@ export function emotionInterrupt(db: DBAdapter, params: EmotionInterruptParams):
 // --- emotionResume ---
 
 /**
- * assessment:emotionResume 核心纯函数（TEACHER）。
+ * assessment:emotionResume 核心纯函数（学生或教师）。
  *
  * 教师安抚后恢复。仅 EMOTION_INTERRUPTED 态可恢复；其余 → SESSION_NOT_ACTIVE。
  * reducer applyEmotionResumed 承担 status=ACTIVE + 清 pause_started_at。
@@ -968,9 +1038,11 @@ export function emotionInterrupt(db: DBAdapter, params: EmotionInterruptParams):
  * 失败码：FORBIDDEN / NOT_FOUND / SESSION_NOT_ACTIVE / EMOTION_TRANSITION_FAILED
  */
 export function emotionResume(db: DBAdapter, params: EmotionResumeParams): EmotionResumeResult {
-  // 1. TEACHER 身份校验
-  const caller = assertCaller(db, params.callerUserId, params.callerRole)
-  if (!caller.ok) {
+  // 1. 身份与访问范围校验：学生仅可恢复自己的 session，教师可恢复本机构任意学生的 session。
+  const caller = params.callerRole === 'STUDENT'
+    ? assertStudent(db, params.callerUserId, params.callerRole)
+    : assertCaller(db, params.callerUserId, params.callerRole)
+  if (!caller.ok || !['STUDENT', 'TEACHER'].includes(caller.row.role)) {
     return { success: false, errorCode: 'FORBIDDEN' }
   }
 
@@ -983,6 +1055,10 @@ export function emotionResume(db: DBAdapter, params: EmotionResumeParams): Emoti
     .get(params.sessionId) as { status: string } | undefined
   if (!sess) {
     return { success: false, errorCode: 'NOT_FOUND' }
+  }
+  if (caller.row.role === 'STUDENT') {
+    const owner = assertSessionOwner(db, caller.row.user_id, params.sessionId)
+    if (!owner.ok) return { success: false, errorCode: owner.errorCode }
   }
 
   // 3. status 必须 EMOTION_INTERRUPTED（恢复非中断态无意义）
@@ -1004,7 +1080,7 @@ export function emotionResume(db: DBAdapter, params: EmotionResumeParams): Emoti
         eventType: 'EMOTION_RESUMED',
         payload: payload as unknown as Record<string, unknown>,
         actorId: caller.row.user_id,
-        actorRole: 'TEACHER'
+        actorRole: caller.row.role as 'STUDENT' | 'TEACHER'
       })
       applyAssessmentEvent(db, event)
     })
@@ -1017,6 +1093,169 @@ export function emotionResume(db: DBAdapter, params: EmotionResumeParams): Emoti
     return { success: false, errorCode: 'EMOTION_TRANSITION_FAILED' }
   }
   return { success: true }
+}
+
+function requireTeacherCaller(db: DBAdapter, callerUserId: unknown, callerRole: unknown) {
+  const caller = assertCaller(db, callerUserId, callerRole)
+  if (!caller.ok || caller.row.role !== 'TEACHER') return null
+  return caller.row
+}
+
+/** 教师按计划结束当前坐次。该路径不作废 session，下一坐次仍可继续。 */
+export function pauseSitting(db: DBAdapter, params: PauseSittingParams): PauseSittingResult {
+  const teacher = requireTeacherCaller(db, params.callerUserId, params.callerRole)
+  if (!teacher) return { success: false, errorCode: 'FORBIDDEN' }
+  const session = db
+    .prepare('SELECT status FROM assessment_session WHERE session_id = ?')
+    .get(params.sessionId) as { status: string } | undefined
+  if (!session) return { success: false, errorCode: 'NOT_FOUND' }
+  if (session.status === 'REDLINE_HALTED') return { success: false, errorCode: 'SESSION_HALTED' }
+  if (session.status !== 'ACTIVE') return { success: false, errorCode: 'SESSION_NOT_ACTIVE' }
+  const openSitting = db
+    .prepare('SELECT sitting_no FROM assessment_sitting WHERE session_id = ? AND ended_at IS NULL')
+    .get(params.sessionId) as { sitting_no: number } | undefined
+  if (!openSitting) return { success: false, errorCode: 'ASSESSMENT_FSM_VIOLATION' }
+  const endedAt = new Date().toISOString()
+  try {
+    db.transaction(() => {
+      const payload: SittingEndedPayload = {
+        session_id: params.sessionId,
+        sitting_no: openSitting.sitting_no,
+        ended_at: endedAt,
+        ended_by: teacher.user_id,
+        end_reason: 'PAUSED_BY_PLAN',
+        current_question_order: params.currentQuestionOrder ?? null
+      }
+      const event = writeEvent({
+        aggregateType: 'ASSESSMENT_SESSION', aggregateId: params.sessionId,
+        eventType: 'SITTING_ENDED', payload: payload as unknown as Record<string, unknown>,
+        actorId: teacher.user_id, actorRole: 'TEACHER'
+      })
+      applyAssessmentEvent(db, event)
+    })()
+  } catch (error) {
+    logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', params.sessionId, teacher.user_id, {
+      operation: 'pauseSitting', error: String(error)
+    })
+    return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
+  }
+  return { success: true, sittingNo: openSitting.sitting_no }
+}
+
+/** 教师开始下一坐次，只允许从计划暂停或崩溃待复核状态继续。 */
+export function startNextSitting(db: DBAdapter, params: StartNextSittingParams): StartNextSittingResult {
+  const teacher = requireTeacherCaller(db, params.callerUserId, params.callerRole)
+  if (!teacher) return { success: false, errorCode: 'FORBIDDEN' }
+  const session = db
+    .prepare('SELECT status FROM assessment_session WHERE session_id = ?')
+    .get(params.sessionId) as { status: string } | undefined
+  if (!session) return { success: false, errorCode: 'NOT_FOUND' }
+  if (session.status === 'REDLINE_HALTED') return { success: false, errorCode: 'SESSION_HALTED' }
+  if (session.status !== 'SUSPENDED_REVIEW_REQUIRED') return { success: false, errorCode: 'SESSION_NOT_ACTIVE' }
+  const nextSittingNo = (
+    db.prepare('SELECT COALESCE(MAX(sitting_no), 0) + 1 AS next_sitting_no FROM assessment_sitting WHERE session_id = ?')
+      .get(params.sessionId) as { next_sitting_no: number }
+  ).next_sitting_no
+  const startedAt = new Date().toISOString()
+  try {
+    db.transaction(() => {
+      const payload: SittingStartedPayload = {
+        session_id: params.sessionId, sitting_no: nextSittingNo,
+        started_at: startedAt, started_by: teacher.user_id
+      }
+      const event = writeEvent({
+        aggregateType: 'ASSESSMENT_SESSION', aggregateId: params.sessionId,
+        eventType: 'SITTING_STARTED', payload: payload as unknown as Record<string, unknown>,
+        actorId: teacher.user_id, actorRole: 'TEACHER'
+      })
+      applyAssessmentEvent(db, event)
+    })()
+  } catch (error) {
+    logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', params.sessionId, teacher.user_id, {
+      operation: 'startNextSitting', error: String(error)
+    })
+    return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
+  }
+  return { success: true, sittingNo: nextSittingNo }
+}
+
+/** 教师确认学生无法在当次恢复，结束本坐次而非直接作废整个测评。 */
+export function recordEmotionCollapse(
+  db: DBAdapter,
+  params: RecordEmotionCollapseParams
+): RecordEmotionCollapseResult {
+  const teacher = requireTeacherCaller(db, params.callerUserId, params.callerRole)
+  if (!teacher) return { success: false, errorCode: 'FORBIDDEN' }
+  const session = db.prepare(
+    'SELECT status, strategy_id, strategy_version FROM assessment_session WHERE session_id = ?'
+  ).get(params.sessionId) as { status: string; strategy_id: string; strategy_version: number } | undefined
+  if (!session) return { success: false, errorCode: 'NOT_FOUND' }
+  if (session.status === 'REDLINE_HALTED') return { success: false, errorCode: 'SESSION_HALTED' }
+  if (session.status !== 'EMOTION_INTERRUPTED') return { success: false, errorCode: 'SESSION_NOT_ACTIVE' }
+  const sitting = db.prepare(
+    'SELECT sitting_no FROM assessment_sitting WHERE session_id = ? AND ended_at IS NULL'
+  ).get(params.sessionId) as { sitting_no: number } | undefined
+  if (!sitting) return { success: false, errorCode: 'ASSESSMENT_FSM_VIOLATION' }
+  const thresholdRow = db.prepare(
+    'SELECT emotion_collapse_threshold FROM strategy_config WHERE strategy_id = ? AND version = ?'
+  ).get(session.strategy_id, session.strategy_version) as { emotion_collapse_threshold: number } | undefined
+  const threshold = thresholdRow?.emotion_collapse_threshold ?? 3
+  const existing = db.prepare(
+    "SELECT COUNT(*) AS count FROM domain_event_projection WHERE aggregate_id = ? AND event_type = 'EMOTION_COLLAPSE_RECORDED'"
+  ).get(params.sessionId) as { count: number }
+  const collapseCount = existing.count + 1
+  const thresholdReached = collapseCount >= threshold
+  const occurredAt = new Date().toISOString()
+  try {
+    db.transaction(() => {
+      const endedEvent = writeEvent({
+        aggregateType: 'ASSESSMENT_SESSION', aggregateId: params.sessionId, eventType: 'SITTING_ENDED',
+        payload: {
+          session_id: params.sessionId, sitting_no: sitting.sitting_no, ended_at: occurredAt,
+          ended_by: teacher.user_id, end_reason: 'ENDED_BY_COLLAPSE',
+          current_question_order: params.currentQuestionOrder ?? null
+        } as SittingEndedPayload as unknown as Record<string, unknown>,
+        actorId: teacher.user_id, actorRole: 'TEACHER'
+      })
+      applyAssessmentEvent(db, endedEvent)
+      const collapseEvent = writeEvent({
+        aggregateType: 'ASSESSMENT_SESSION', aggregateId: params.sessionId, eventType: 'EMOTION_COLLAPSE_RECORDED',
+        payload: {
+          session_id: params.sessionId, sitting_no: sitting.sitting_no, recorded_at: occurredAt,
+          current_question_order: params.currentQuestionOrder ?? null
+        } as EmotionCollapseRecordedPayload as unknown as Record<string, unknown>,
+        actorId: teacher.user_id, actorRole: 'TEACHER'
+      })
+      applyAssessmentEvent(db, collapseEvent)
+      if (thresholdReached) {
+        const thresholdEvent = writeEvent({
+          aggregateType: 'ASSESSMENT_SESSION', aggregateId: params.sessionId,
+          eventType: 'EMOTION_COLLAPSE_THRESHOLD_REACHED',
+          payload: {
+            session_id: params.sessionId, collapse_count: collapseCount, threshold,
+            collapse_history: buildCollapseHistory(db, params.sessionId, collapseCount), triggered_at: occurredAt
+          } as EmotionCollapseThresholdReachedPayload as unknown as Record<string, unknown>,
+          actorId: teacher.user_id, actorRole: 'TEACHER'
+        })
+        applyAssessmentEvent(db, thresholdEvent)
+        const completedEvent = writeEvent({
+          aggregateType: 'ASSESSMENT_SESSION', aggregateId: params.sessionId, eventType: 'SESSION_COMPLETED',
+          payload: {
+            session_id: params.sessionId, completed_at: occurredAt, total_online_answered: 0,
+            total_offline_scored: 0, has_pending_offline: true
+          } as SessionCompletedPayload as unknown as Record<string, unknown>,
+          actorId: teacher.user_id, actorRole: 'TEACHER'
+        })
+        applyAssessmentEvent(db, completedEvent)
+      }
+    })()
+  } catch (error) {
+    logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', params.sessionId, teacher.user_id, {
+      operation: 'recordEmotionCollapse', error: String(error)
+    })
+    return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
+  }
+  return { success: true, sittingNo: sitting.sitting_no, thresholdReached }
 }
 
 // --- abortSession ---
@@ -1186,6 +1425,7 @@ interface SessionForRedlineRow {
   job_code: string
   task_code: string
   strategy_id: string
+  strategy_type: AssessmentStrategyType
   strategy_version: number
   status: string
   redline_incident_id: string | null
@@ -1197,7 +1437,7 @@ interface SessionForRedlineRow {
 function readSessionForRedline(db: DBAdapter, sessionId: string): SessionForRedlineRow | undefined {
   return db
     .prepare(
-      `SELECT student_id, job_code, task_code, strategy_id, strategy_version,
+      `SELECT student_id, job_code, task_code, strategy_id, strategy_type, strategy_version,
               status, redline_incident_id
          FROM assessment_session
         WHERE session_id = ?`
@@ -1371,8 +1611,11 @@ function persistRedlineResult(
     source_type: 'ASSESSMENT_SESSION',
     source_id: sessionId,
     student_id: session.student_id,
+    strategy_id: session.strategy_id,
+    strategy_type: session.strategy_type,
     job_code: session.job_code,
     task_code: session.task_code,
+    module_type: null,
     raw_score: rawScore,
     max_score: 100,
     normalized_score: normalizedScore,
@@ -1466,10 +1709,12 @@ export function triggerRedline(db: DBAdapter, params: TriggerRedlineParams): Tri
   }
 
   // 3. reasonCode / contextPhase 枚举前置校验（schema CHECK 兜底；前置避免脏 jsonl）
-  if (!SAFETY_REASON_CODES.has(params.reasonCode)) {
+  const reasonCode = params.reasonCode ?? 'OTHER_SAFETY_RISK'
+  const contextPhase = params.contextPhase ?? 'OTHER'
+  if (!SAFETY_REASON_CODES.has(reasonCode)) {
     return { success: false, errorCode: 'VALIDATION_ERROR' }
   }
-  if (!SAFETY_CONTEXT_PHASES.has(params.contextPhase)) {
+  if (!SAFETY_CONTEXT_PHASES.has(contextPhase)) {
     return { success: false, errorCode: 'VALIDATION_ERROR' }
   }
 
@@ -1498,8 +1743,8 @@ export function triggerRedline(db: DBAdapter, params: TriggerRedlineParams): Tri
         student_id: session.student_id,
         job_code: session.job_code,
         task_code: session.task_code,
-        reason_code: params.reasonCode,
-        context_phase: params.contextPhase,
+        reason_code: reasonCode,
+        context_phase: contextPhase,
         occurred_at: occurredAt,
         reported_by: caller.row.user_id
       }
@@ -1525,9 +1770,9 @@ export function triggerRedline(db: DBAdapter, params: TriggerRedlineParams): Tri
         session.job_code,
         session.task_code,
         safetyEvent.event_id,
-        params.reasonCode,
+        reasonCode,
         caller.row.user_id,
-        params.contextPhase,
+        contextPhase,
         occurredAt
       )
 
@@ -1537,8 +1782,8 @@ export function triggerRedline(db: DBAdapter, params: TriggerRedlineParams): Tri
       const redlinePayload: RedlineTriggeredPayload = {
         session_id: params.sessionId,
         incident_id: incidentId,
-        reason_code: params.reasonCode,
-        context_phase: params.contextPhase,
+        reason_code: reasonCode,
+        context_phase: contextPhase,
         triggered_at: occurredAt
       }
       const redlineEvent = writeEvent({
@@ -1573,8 +1818,8 @@ export function triggerRedline(db: DBAdapter, params: TriggerRedlineParams): Tri
       operation: 'triggerRedline',
       error: String(e),
       incidentId,
-      reasonCode: params.reasonCode,
-      contextPhase: params.contextPhase
+      reasonCode,
+      contextPhase
     })
     return { success: false, errorCode: 'REDLINE_TRIGGER_SYSTEM_ERROR' }
   }
@@ -1586,8 +1831,8 @@ export function triggerRedline(db: DBAdapter, params: TriggerRedlineParams): Tri
   // 7. 审计 REDLINE_TRIGGERED（INFO，TEACHER/ADMIN 关键操作）
   logAssessmentEvent(db, 'REDLINE_TRIGGERED', 'INFO', params.sessionId, caller.row.user_id, {
     incidentId,
-    reasonCode: params.reasonCode,
-    contextPhase: params.contextPhase,
+    reasonCode,
+    contextPhase,
     studentId: session.student_id,
     taskCode: session.task_code
   })
@@ -2094,7 +2339,8 @@ export function startSession(db: DBAdapter, params: StartSessionParams): StartSe
     return { success: false, errorCode: 'STUDENT_CONFIRMATION_REQUIRED' }
   }
 
-  // 5. 幂等：current_question_id 已非 NULL → 直接返回，不写事件
+  // 5. 已有题目指针时通常幂等返回。F4 兼容旧会话：旧库中的 ACTIVE 会话
+  //    可能没有 sitting 投影，首次继续时补一条可追溯的坐次，再返回既有指针。
   if (pointer.current_question_id) {
     const q = db
       .prepare(
@@ -2104,6 +2350,34 @@ export function startSession(db: DBAdapter, params: StartSessionParams): StartSe
       .get(params.sessionId, pointer.current_question_id) as
       | { question_order: number }
       | undefined
+    const openSitting = db
+      .prepare('SELECT 1 AS present FROM assessment_sitting WHERE session_id = ? AND ended_at IS NULL')
+      .get(params.sessionId)
+    if (!openSitting) {
+      try {
+        db.transaction(() => {
+          const sittingNo = (
+            db.prepare('SELECT COALESCE(MAX(sitting_no), 0) + 1 AS next_sitting_no FROM assessment_sitting WHERE session_id = ?')
+              .get(params.sessionId) as { next_sitting_no: number }
+          ).next_sitting_no
+          const event = writeEvent({
+            aggregateType: 'ASSESSMENT_SESSION', aggregateId: params.sessionId,
+            eventType: 'SITTING_STARTED',
+            payload: {
+              session_id: params.sessionId, sitting_no: sittingNo,
+              started_at: new Date().toISOString(), started_by: caller.row.user_id
+            },
+            actorId: caller.row.user_id, actorRole: 'STUDENT'
+          })
+          applyAssessmentEvent(db, event)
+        })()
+      } catch (error) {
+        logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', params.sessionId, caller.row.user_id, {
+          operation: 'startSession.ensureSitting', error: String(error)
+        })
+        return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
+      }
+    }
     const result: StartSessionSuccess = {
       success: true,
       firstQuestionId: pointer.current_question_id,
@@ -2130,7 +2404,8 @@ export function startSession(db: DBAdapter, params: StartSessionParams): StartSe
     return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
   }
 
-  // 6. 事务：writeEvent(SESSION_FIRST_QUESTION_ACTIVATED) + applyAssessmentEvent
+  // 6. 事务：首次坐次 + SESSION_FIRST_QUESTION_ACTIVATED。坐次从学生真正开始
+  // 施测时起算，不在教师创建 session 时预先生成。
   const payload: SessionFirstQuestionActivatedPayload = {
     session_id: params.sessionId,
     first_question_id: first.question_id,
@@ -2139,6 +2414,29 @@ export function startSession(db: DBAdapter, params: StartSessionParams): StartSe
   }
   try {
     const tx = db.transaction(() => {
+      const openSitting = db
+        .prepare('SELECT sitting_no FROM assessment_sitting WHERE session_id = ? AND ended_at IS NULL')
+        .get(params.sessionId) as { sitting_no: number } | undefined
+      if (!openSitting) {
+        const sittingPayload: SittingStartedPayload = {
+          session_id: params.sessionId,
+          sitting_no: (
+            db.prepare('SELECT COALESCE(MAX(sitting_no), 0) + 1 AS next_sitting_no FROM assessment_sitting WHERE session_id = ?')
+              .get(params.sessionId) as { next_sitting_no: number }
+          ).next_sitting_no,
+          started_at: payload.activated_at,
+          started_by: caller.row.user_id
+        }
+        const sittingEvent = writeEvent({
+          aggregateType: 'ASSESSMENT_SESSION',
+          aggregateId: params.sessionId,
+          eventType: 'SITTING_STARTED',
+          payload: sittingPayload as unknown as Record<string, unknown>,
+          actorId: caller.row.user_id,
+          actorRole: 'STUDENT'
+        })
+        applyAssessmentEvent(db, sittingEvent)
+      }
       const event = writeEvent({
         aggregateType: 'ASSESSMENT_SESSION',
         aggregateId: params.sessionId,
@@ -2237,47 +2535,101 @@ export function registerAssessmentHandlers(getDb: () => DBAdapter = defaultGetDb
     return db
   }
 
-  ipcMain.handle('assessment:createSession', (_e, params: CreateSessionParams) => {
-    return createSession(ensureSeeded(), params)
+  ipcMain.handle('assessment:createSession', (event, params: CreateSessionParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return createSession(db, trusted.params)
   })
 
-  ipcMain.handle('assessment:submitAnswer', (_e, params: SubmitAnswerParams) => {
-    return submitAnswer(ensureSeeded(), params)
+  ipcMain.handle('assessment:submitAnswer', (event, params: SubmitAnswerParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return submitAnswer(db, trusted.params)
   })
 
-  ipcMain.handle('assessment:emotionInterrupt', (_e, params: EmotionInterruptParams) => {
-    return emotionInterrupt(ensureSeeded(), params)
+  ipcMain.handle('assessment:emotionInterrupt', (event, params: EmotionInterruptParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return emotionInterrupt(db, trusted.params)
   })
 
-  ipcMain.handle('assessment:emotionResume', (_e, params: EmotionResumeParams) => {
-    return emotionResume(ensureSeeded(), params)
+  ipcMain.handle('assessment:emotionResume', (event, params: EmotionResumeParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return emotionResume(db, trusted.params)
   })
 
-  ipcMain.handle('assessment:abortSession', (_e, params: AbortSessionParams) => {
-    return abortSession(ensureSeeded(), params)
+  ipcMain.handle('assessment:pauseSitting', (event, params: PauseSittingParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return pauseSitting(db, trusted.params)
   })
 
-  ipcMain.handle('assessment:triggerRedline', (_e, params: TriggerRedlineParams) => {
-    return triggerRedline(ensureSeeded(), params)
+  ipcMain.handle('assessment:startNextSitting', (event, params: StartNextSittingParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return startNextSitting(db, trusted.params)
   })
 
-  ipcMain.handle('assessment:calculateResult', (_e, params: CalculateResultParams) => {
-    return calculateResult(ensureSeeded(), params)
+  ipcMain.handle('assessment:recordEmotionCollapse', (event, params: RecordEmotionCollapseParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return recordEmotionCollapse(db, trusted.params)
   })
 
-  ipcMain.handle('assessment:getSession', (_e, params: GetSessionParams) => {
-    return getSession(ensureSeeded(), params)
+  ipcMain.handle('assessment:abortSession', (event, params: AbortSessionParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return abortSession(db, trusted.params)
   })
 
-  ipcMain.handle('assessment:listSessions', (_e, params: ListSessionsParams) => {
-    return listSessions(ensureSeeded(), params)
+  ipcMain.handle('assessment:triggerRedline', (event, params: TriggerRedlineParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return triggerRedline(db, trusted.params)
   })
 
-  ipcMain.handle('assessment:startSession', (_e, params: StartSessionParams) => {
-    return startSession(ensureSeeded(), params)
+  ipcMain.handle('assessment:calculateResult', (event, params: CalculateResultParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return calculateResult(db, trusted.params)
   })
 
-  ipcMain.handle('assessment:listMySessions', (_e, params: ListMySessionsParams) => {
-    return listMySessions(ensureSeeded(), params)
+  ipcMain.handle('assessment:getSession', (event, params: GetSessionParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return getSession(db, trusted.params)
+  })
+
+  ipcMain.handle('assessment:listSessions', (event, params: ListSessionsParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return listSessions(db, trusted.params)
+  })
+
+  ipcMain.handle('assessment:startSession', (event, params: StartSessionParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return startSession(db, trusted.params)
+  })
+
+  ipcMain.handle('assessment:listMySessions', (event, params: ListMySessionsParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return listMySessions(db, trusted.params)
   })
 }

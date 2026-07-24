@@ -1,7 +1,25 @@
 {
-  "version": "2026.07.14.1",
-  "schemaVersion": "0.1.13-multi-device-m1-identity",
-  "migrationId": "2026-07-14_mvp_schema_v0_1_13_multi_device_m1_identity",
+  "version": "2026.07.22.1",
+  "schemaVersion": "0.1.15-multi-device-m3-grant-assignment",
+  "migrationId": "2026-07-15_mvp_schema_v0_1_15_multi_device_m3_grant_assignment",
+  "requiredMigrationLedger": [
+    {
+      "migrationId": "2026-07-14_mvp_schema_v0_1_13_multi_device_m1_identity",
+      "schemaVersion": "0.1.13-multi-device-m1-identity"
+    },
+    {
+      "migrationId": "2026-07-15_mvp_schema_v0_1_14_multi_device_m2_session_foundation",
+      "schemaVersion": "0.1.14-multi-device-m2-session-foundation"
+    },
+    {
+      "migrationId": "2026-07-15_mvp_schema_v0_1_15_multi_device_m3_grant_assignment",
+      "schemaVersion": "0.1.15-multi-device-m3-grant-assignment"
+    },
+    {
+      "migrationId": "2026-07-20_job_skill_phase4_asset_roles",
+      "schemaVersion": "0.1.15-multi-device-m3-grant-assignment"
+    }
+  ],
   "questionContracts": [
     {
       "domain": "BASE_ABILITY",
@@ -14,5 +32,17 @@
       "expectedCount": 298
     }
   ],
-  "assetManifestPath": "doc/assets/asset-manifest.json"
+  "assetManifestPath": "doc/assets/asset-manifest.json",
+  "jobSkillRuntimeContract": {
+    "authorityPath": "doc/features/job-skill-shelver-runtime-authority-v1.json",
+    "authorityFileSha256": "sha256:bfb45baf9781e6a9d307c49be6412b456bb49c285597fca03409829f5a093dc2",
+    "authorityHash": "sha256:8fe7ee801122eaa30407d1d533c5827ce27cb6a68d7364370e5a911d22bd5519",
+    "semanticRootHash": "sha256:38ba2d9be5e4cbef61697a4a02af0650737122eafe3bf3e2b03524692700243f",
+    "deliveryLockPath": "doc/features/job-skill-shelver-question-delivery-lock-v1.json",
+    "deliveryLockFileSha256": "sha256:b0b6889a38340bc19e7527741182455fb52c27d635be917b9ec3dfb60c3be6b2",
+    "deliveryLockHash": "sha256:7342df1386e4d10a48939f9efb3e2a14c7172d5f58db4ad41c0e48b98d471dd6",
+    "activationGatePath": "doc/features/job-skill-shelver-phase4-activation-gate-v1.json",
+    "activationGateFileSha256": "sha256:14b1294ebfc526bb23d834ed2f434b6a0a23d3c9c2a7522734c31eeae91f2d2c",
+    "questionSqlSha256": "sha256:b97457baf79a4496453310df18c30d6781007c03bb14888fc1544fcbd7f6f890"
+  }
 }

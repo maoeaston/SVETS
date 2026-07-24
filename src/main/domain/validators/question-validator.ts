@@ -17,6 +17,21 @@ export function validateQuestionContract(input: ValidateQuestionContractInput): 
   const warnings: ValidationWarning[] = []
   const { questionRow: q, contentJson: c, scoringRuleJson: s, assetRegistry, rendererRegistry, strategyType } = input
 
+  const collectNestedAssetIds = (value: unknown, key = ''): string[] => {
+    if (typeof value === 'string' && (key === 'asset_id' || key.endsWith('_asset_id'))) return [value]
+    if (Array.isArray(value)) {
+      if (key === 'asset_ids' || key.endsWith('_asset_ids')) {
+        return value.filter((item): item is string => typeof item === 'string')
+      }
+      return value.flatMap((item) => collectNestedAssetIds(item))
+    }
+    if (value && typeof value === 'object') {
+      return Object.entries(value as Record<string, unknown>)
+        .flatMap(([childKey, child]) => collectNestedAssetIds(child, childKey))
+    }
+    return []
+  }
+
   // ══════════════════════════════════════════════
   // 规则 1: bank_domain 与 module_type/job_module_code 域配对
   // ══════════════════════════════════════════════
@@ -192,6 +207,22 @@ export function validateQuestionContract(input: ValidateQuestionContractInput): 
     else if (!assetRegistry.isActive(q.media_asset_id))
       errors.push({ code: 'ASSET_005', field: 'media_asset_id',
         message: `media_asset_id "${q.media_asset_id}" 状态非 ACTIVE` })
+  }
+  const allReferencedAssets = new Set([
+    ...(q.tool_asset_ids_json ?? []),
+    ...collectNestedAssetIds(c)
+  ])
+  if (q.media_asset_id) allReferencedAssets.add(q.media_asset_id)
+  for (const assetId of allReferencedAssets) {
+    if (!assetRegistry.exists(assetId))
+      errors.push({ code: 'ASSET_006', field: 'asset_references',
+        message: `引用资产 "${assetId}" 不存在` })
+    else if (!assetRegistry.isActive(assetId))
+      errors.push({ code: 'ASSET_007', field: 'asset_references',
+        message: `引用资产 "${assetId}" 状态非 ACTIVE` })
+    else if (!assetRegistry.hashMatch(assetId))
+      errors.push({ code: 'ASSET_008', field: 'asset_references',
+        message: `引用资产 "${assetId}" hash 不一致` })
   }
 
   // ══════════════════════════════════════════════

@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "job-skill-shelver-298-rejected-replacement-targeted-v3-content-rereview-result-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "package_id",
+    "candidate_set_id",
+    "candidate_set_hash",
+    "reviewer",
+    "submitted_at",
+    "summary",
+    "authority",
+    "questions"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "job-skill-shelver-298-rejected-replacement-targeted-v3-content-rereview-result-v1"
+    },
+    "package_id": {
+      "const": "job-skill-shelver-298-rejected-replacement-targeted-v3-content-rereview-packet-chen-xiaoqing-v1"
+    },
+    "candidate_set_id": {
+      "const": "job-skill-shelver-298-rejected-replacement-targeted-candidates-v3"
+    },
+    "candidate_set_hash": {
+      "const": "sha256:6066f243639237f898095b79ecd667d93bf54a1dc2ecf39a85852d7df96870f4"
+    },
+    "reviewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "track",
+        "role"
+      ],
+      "properties": {
+        "name": {
+          "const": "陈晓青"
+        },
+        "track": {
+          "const": "CONTENT_REREVIEW"
+        },
+        "role": {
+          "const": "内容定点复审"
+        }
+      }
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total",
+        "pass",
+        "return_for_revision"
+      ],
+      "properties": {
+        "total": {
+          "const": 8
+        },
+        "pass": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8
+        },
+        "return_for_revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8
+        }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "activation_authority_granted",
+        "can_activate_questions",
+        "runtime_database_change_allowed",
+        "activation_sql_generated"
+      ],
+      "properties": {
+        "activation_authority_granted": {
+          "const": false
+        },
+        "can_activate_questions": {
+          "const": false
+        },
+        "runtime_database_change_allowed": {
+          "const": false
+        },
+        "activation_sql_generated": {
+          "const": false
+        }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "question_id",
+          "previous_question_id",
+          "new_semantic_hash",
+          "candidate_record_hash",
+          "activation_authority",
+          "conclusion",
+          "review_fields"
+        ],
+        "properties": {
+          "question_id": {
+            "enum": [
+              "M1_OB_048_V3",
+              "M1_OP_042_V3",
+              "M3_OP_056_V3",
+              "M4_OP_045_V3",
+              "M4_OP_046_V3",
+              "M4_OP_048_V3",
+              "M5_OP_048_V3",
+              "M5_OP_055_V3"
+            ]
+          },
+          "previous_question_id": {
+            "type": "string",
+            "pattern": "^M[1-6]_[A-Z]+_\\d+_V2$"
+          },
+          "new_semantic_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "candidate_record_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "activation_authority": {
+            "const": "NONE"
+          },
+          "conclusion": {
+            "enum": [
+              "PASS",
+              "RETURN_FOR_REVISION"
+            ]
+          },
+          "review_fields": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "content_conclusion",
+              "occupational_authenticity",
+              "prompt_and_boundary",
+              "rubric_observability",
+              "material_feasibility",
+              "content_note",
+              "required_revision"
+            ],
+            "properties": {
+              "content_conclusion": {
+                "enum": [
+                  "PASS",
+                  "RETURN_FOR_REVISION"
+                ]
+              },
+              "occupational_authenticity": {
+                "enum": [
+                  "PASS",
+                  "RETURN_FOR_REVISION"
+                ]
+              },
+              "prompt_and_boundary": {
+                "enum": [
+                  "PASS",
+                  "RETURN_FOR_REVISION"
+                ]
+              },
+              "rubric_observability": {
+                "enum": [
+                  "PASS",
+                  "RETURN_FOR_REVISION"
+                ]
+              },
+              "material_feasibility": {
+                "enum": [
+                  "PASS",
+                  "RETURN_FOR_REVISION"
+                ]
+              },
+              "content_note": {
+                "type": "string",
+                "minLength": 1
+              },
+              "required_revision": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

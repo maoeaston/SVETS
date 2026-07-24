@@ -9,6 +9,7 @@ import type { DBAdapter } from '../../db/interface'
 import { SqliteAdapter } from '../../db/sqlite-adapter'
 import { getDatabase } from '../../db/connection'
 import { assertCaller, assertStudent, assertSessionOwner } from '../../utils/auth-context'
+import { resolveTrustedAuthSessionCaller } from '../../utils/auth-session'
 import { ensureLocalRuntimeContext } from '../../domain/local-runtime-context'
 import { writeEvent } from '../../domain/event-writer'
 import { applyAssignmentEvent } from '../../domain/assignment-reducer'
@@ -670,19 +671,34 @@ function defaultGetDb(): DBAdapter {
 }
 
 export function registerAssignmentHandlers(getDb: () => DBAdapter = defaultGetDb): void {
-  ipcMain.handle('assignment:create', (_e, params: CreateAssignmentParams) => {
-    return createAssignment(getDb(), params)
+  ipcMain.handle('assignment:create', (event, params: CreateAssignmentParams) => {
+    const db = getDb()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return createAssignment(db, trusted.params)
   })
-  ipcMain.handle('assignment:confirmStudent', (_e, params: ConfirmStudentAssignmentParams) => {
-    return confirmStudentAssignment(getDb(), params)
+  ipcMain.handle('assignment:confirmStudent', (event, params: ConfirmStudentAssignmentParams) => {
+    const db = getDb()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return confirmStudentAssignment(db, trusted.params)
   })
-  ipcMain.handle('assignment:startAssessment', (_e, params: StartAssignedAssessmentParams) => {
-    return startAssignedAssessment(getDb(), params)
+  ipcMain.handle('assignment:startAssessment', (event, params: StartAssignedAssessmentParams) => {
+    const db = getDb()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return startAssignedAssessment(db, trusted.params)
   })
-  ipcMain.handle('assignment:rebind', (_e, params: RebindAssignmentParams) => {
-    return rebindAssignment(getDb(), params)
+  ipcMain.handle('assignment:rebind', (event, params: RebindAssignmentParams) => {
+    const db = getDb()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return rebindAssignment(db, trusted.params)
   })
-  ipcMain.handle('assignment:release', (_e, params: ReleaseAssignmentParams) => {
-    return releaseAssignment(getDb(), params)
+  ipcMain.handle('assignment:release', (event, params: ReleaseAssignmentParams) => {
+    const db = getDb()
+    const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
+    if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    return releaseAssignment(db, trusted.params)
   })
 }

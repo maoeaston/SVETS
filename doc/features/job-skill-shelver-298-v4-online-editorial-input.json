@@ -1,0 +1,1180 @@
+{
+  "schema_version": "job-skill-shelver-298-v4-editorial-input-v1",
+  "section": "ONLINE",
+  "questions": [
+    {
+      "question_id": "M1_SC_005_V4",
+      "previous_question_id": "M1_SC_005_V3",
+      "source_question_id": "M1_SC_005",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "恢复价签模糊情境，明确核价、隔离和权限边界。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "你发现货架上一张价签字迹模糊，顾客无法看清价格。此时最合适的做法是？",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["RULE_EXECUTION"],
+          "media_brief": "纯文本情境：货架价签字迹模糊，系统价格可查询。",
+          "options": [
+            {"key": "A", "text": "先查系统价格，隔离模糊价签，再按权限补打或请负责人更换"},
+            {"key": "B", "text": "先取下模糊价签，等当天理货结束后再确认是否需要补打"},
+            {"key": "C", "text": "先保留模糊价签，顾客询问时口头告知自己记得的价格"}
+          ],
+          "expected_answer": "A"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M1_SC_012_V4",
+      "previous_question_id": "M1_SC_012_V3",
+      "source_question_id": "M1_SC_012",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "去除固定层位假设，锁定易碎品摆放与承重要求。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "按门店排面图上架一批玻璃瓶饮料时，哪种摆放方式符合安全要求？",
+          "assessment_point": "SAFETY_OPERATION",
+          "ability_tags": ["RULE_EXECUTION", "SAFETY_OPERATION"],
+          "media_brief": "纯文本情境：玻璃瓶饮料，货架层板承重合格且排面位置已确定。",
+          "options": [
+            {"key": "A", "text": "按排面图横放成排，瓶口伸出层板便于顾客拿取"},
+            {"key": "B", "text": "按排面图竖直放稳，不叠放、不超出层板边缘"},
+            {"key": "C", "text": "按排面图上下叠放，用纸板分隔以增加陈列数量"}
+          ],
+          "expected_answer": "B"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现玻璃瓶破裂、渗漏、货架不稳或层板超载时停止上架，隔离现场并上报负责人。"
+      }
+    },
+    {
+      "question_id": "M2_SC_001_V4",
+      "previous_question_id": "M2_SC_001_V3",
+      "source_question_id": "M2_SC_001",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "恢复未开箱前情境，明确拆箱补货的首步检查。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "一箱待补货商品刚从库房送到作业区，纸箱尚未打开。理货员第一步应做什么？",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["RULE_EXECUTION", "SAFETY_OPERATION"],
+          "media_brief": "纯文本情境：未开封补货纸箱、补货单和清洁作业区。",
+          "options": [
+            {"key": "A", "text": "先把纸箱搬到货架旁，边取商品边检查是否破损"},
+            {"key": "B", "text": "直接划开胶带，取出商品后再核对箱唛和数量"},
+            {"key": "C", "text": "核对箱唛和补货单，检查外箱及周边作业环境"}
+          ],
+          "expected_answer": "C"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现外箱渗漏、严重破损、异常气味或作业区存在绊倒风险时停止拆箱，隔离并上报。"
+      }
+    },
+    {
+      "question_id": "M2_SC_007_V4",
+      "previous_question_id": "M2_SC_007_V3",
+      "source_question_id": "M2_SC_007",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "限定为库房补货，统一单据和开箱检查口径。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "理货员根据库房补货单领取整箱商品。安全开箱后，首先应核对哪组内容？",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["RULE_EXECUTION"],
+          "media_brief": "纯文本情境：库房补货单与已安全打开的整箱商品。",
+          "options": [
+            {"key": "A", "text": "纸箱颜色是否符合货架风格，商品包装是否朝向一致"},
+            {"key": "B", "text": "品名和数量是否符合补货单，商品是否破损或效期异常"},
+            {"key": "C", "text": "供应商品牌是否更换标志，商品售价是否与上周相同"}
+          ],
+          "expected_answer": "B"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现破损、渗漏、过期商品或单据与实物严重不符时停止补货，隔离异常商品并上报。"
+      }
+    },
+    {
+      "question_id": "M3_SC_003_V4",
+      "previous_question_id": "M3_SC_003_V3",
+      "source_question_id": "M3_SC_003",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "明确按天计算的起算规则，消除到期日歧义。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "本题按门店训练规则计算：生产日次日为第1天。商品生产日期为2026年06月20日，保质期30天，到期日是哪一天？",
+          "assessment_point": "COGNITION",
+          "ability_tags": ["COGNITION"],
+          "media_brief": "纯文本日期计算，允许使用门店批准的日期计算工具。",
+          "options": [
+            {"key": "A", "text": "2026年07月21日"},
+            {"key": "B", "text": "2026年07月19日"},
+            {"key": "C", "text": "2026年07月20日"}
+          ],
+          "expected_answer": "C"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_SC_004_V4",
+      "previous_question_id": "M3_SC_004_V3",
+      "source_question_id": "M3_SC_004",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "锁定剩余天数为日期差且不含今天。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "今天是2026年07月04日。按“到期日减今天、不含今天”的规则，一件商品到2026年07月12日还有几天？",
+          "assessment_point": "COGNITION",
+          "ability_tags": ["COGNITION"],
+          "media_brief": "纯文本日期差计算。",
+          "options": [
+            {"key": "A", "text": "8天"},
+            {"key": "B", "text": "7天"},
+            {"key": "C", "text": "9天"}
+          ],
+          "expected_answer": "A"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_SC_006_V4",
+      "previous_question_id": "M3_SC_006_V3",
+      "source_question_id": "M3_SC_006",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "修正文案并明确日期差计算口径。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "今天是2026年07月04日。一瓶酱油到期日为2026年07月07日，按“到期日减今天、不含今天”的规则，还剩几天到期？",
+          "assessment_point": "COGNITION",
+          "ability_tags": ["COGNITION"],
+          "media_brief": "纯文本短日期差计算。",
+          "options": [
+            {"key": "A", "text": "2天"},
+            {"key": "B", "text": "3天"},
+            {"key": "C", "text": "4天"}
+          ],
+          "expected_answer": "B"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_SC_007_V4",
+      "previous_question_id": "M3_SC_007_V3",
+      "source_question_id": "M3_SC_007",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "明确按月到期日和当天是否过期。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "本题按门店训练规则计算：按月保质期在对应日期到期，到期日当天仍在保质期内。商品生产日期为2026年01月15日，保质期6个月。今天是2026年07月04日，判断正确的是？",
+          "assessment_point": "COGNITION",
+          "ability_tags": ["COGNITION"],
+          "media_brief": "纯文本按月效期判断。",
+          "options": [
+            {"key": "A", "text": "到期日是2026年07月04日，今天已经到期"},
+            {"key": "B", "text": "到期日是2026年06月15日，今天已经过期"},
+            {"key": "C", "text": "到期日是2026年07月15日，今天尚未过期"}
+          ],
+          "expected_answer": "C"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_SC_008_V4",
+      "previous_question_id": "M3_SC_008_V3",
+      "source_question_id": "M3_SC_008",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "明确长天数起算规则并允许批准工具。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "包装标注生产日期20251120、保质期270天。本题以生产日次日为第1天，可使用门店批准的日期计算工具。到期日是哪一天？",
+          "assessment_point": "COGNITION",
+          "ability_tags": ["COGNITION"],
+          "media_brief": "纯文本YYYYMMDD日期识别和长天数计算。",
+          "options": [
+            {"key": "A", "text": "2026年08月17日"},
+            {"key": "B", "text": "2026年08月16日"},
+            {"key": "C", "text": "2026年08月18日"}
+          ],
+          "expected_answer": "A"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_SC_009_V4",
+      "previous_question_id": "M3_SC_009_V3",
+      "source_question_id": "M3_SC_009",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "修正引号并锁定按月及剩余天数口径。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "商品生产日期为2025年09月01日，保质期12个月。本题按对应日期到期，剩余天数按到期日减今天且不含今天计算。今天是2026年07月04日，判断正确的是？",
+          "assessment_point": "COGNITION",
+          "ability_tags": ["COGNITION"],
+          "media_brief": "纯文本多步骤效期计算，允许使用门店批准的日期计算工具。",
+          "options": [
+            {"key": "A", "text": "到期日为2026年08月01日，还剩28天"},
+            {"key": "B", "text": "到期日为2026年09月01日，还剩59天"},
+            {"key": "C", "text": "到期日为2026年09月01日，还剩60天"}
+          ],
+          "expected_answer": "B"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_SC_010_V4",
+      "previous_question_id": "M3_SC_010_V3",
+      "source_question_id": "M3_SC_010",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "只比较明确到期日，移除无关计日口径。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "商品A到期日为2026年07月25日，商品B底盖标注到期日为2026年08月18日。哪件商品更早到期？",
+          "assessment_point": "COGNITION",
+          "ability_tags": ["COGNITION"],
+          "media_brief": "纯文本比较两个明确到期日。",
+          "options": [
+            {"key": "A", "text": "两件商品同一天到期"},
+            {"key": "B", "text": "商品B更早到期"},
+            {"key": "C", "text": "商品A更早到期"}
+          ],
+          "expected_answer": "C"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_SC_012_V4",
+      "previous_question_id": "M3_SC_012_V3",
+      "source_question_id": "M3_SC_012",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "明确凹陷位置和风险特征，形成唯一处置。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "巡检时发现一罐可乐在罐身接缝附近严重凹陷，罐体无法平稳直立。正确做法是？",
+          "assessment_point": "SAFETY_OPERATION",
+          "ability_tags": ["RULE_EXECUTION", "SAFETY_OPERATION"],
+          "media_brief": "纯文本情境：接缝附近严重凹陷且无法平稳直立的罐装饮料。",
+          "options": [
+            {"key": "A", "text": "隔离该商品并按问题品流程交负责人复核"},
+            {"key": "B", "text": "把凹陷面转向货架里面后继续正常销售"},
+            {"key": "C", "text": "贴上折扣标签后放入临期商品专区销售"}
+          ],
+          "expected_answer": "A"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现渗漏、异常鼓胀、尖锐破口或接缝受损时停止接触，隔离商品并上报负责人。"
+      }
+    },
+    {
+      "question_id": "M3_SC_014_V4",
+      "previous_question_id": "M3_SC_014_V3",
+      "source_question_id": "M3_SC_014",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "补齐轻微褶皱可售的可观察边界。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "一包饼干只有轻微包装褶皱，经检查无破口、无漏气、无污染、无异常鼓胀，并符合本门店外观标准。正确做法是？",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["RULE_EXECUTION"],
+          "media_brief": "纯文本情境：仅轻微褶皱且满足全部可售边界的饼干。",
+          "options": [
+            {"key": "A", "text": "按破损商品隔离并直接登记报损"},
+            {"key": "B", "text": "按正常商品上架并保持包装正面可见"},
+            {"key": "C", "text": "按临期商品移区并更换折扣价签"}
+          ],
+          "expected_answer": "B"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_SC_015_V4",
+      "previous_question_id": "M3_SC_015_V3",
+      "source_question_id": "M3_SC_015",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "用同款正常样锁定异常鼓胀判据。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "一袋奶粉与同批次正常样相比明显异常鼓胀，并伴有轻微异味。正确做法是？",
+          "assessment_point": "SAFETY_OPERATION",
+          "ability_tags": ["RULE_EXECUTION", "SAFETY_OPERATION"],
+          "media_brief": "纯文本情境：异常鼓胀奶粉与同款正常样对照。",
+          "options": [
+            {"key": "A", "text": "轻压包装排出气体，恢复外形后正常上架"},
+            {"key": "B", "text": "移到阴凉位置观察，闭店前未变化就上架"},
+            {"key": "C", "text": "隔离该商品，停止上架并立即上报负责人"}
+          ],
+          "expected_answer": "C"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现异常鼓胀、异味、渗漏或包装破裂时停止挤压和搬动，隔离并上报负责人。"
+      }
+    },
+    {
+      "question_id": "M3_SC_021_V4",
+      "previous_question_id": "M3_SC_021_V3",
+      "source_question_id": "M3_SC_021",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "将破损具体化为玻璃泄漏，锁定安全优先级。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "巡检时同时发现一件临期饼干和一瓶已破裂、正在渗漏的玻璃瓶饮料。应先做什么？",
+          "assessment_point": "SAFETY_OPERATION",
+          "ability_tags": ["RULE_EXECUTION", "SAFETY_OPERATION"],
+          "media_brief": "纯文本情境：临期商品与玻璃破裂渗漏同时出现。",
+          "options": [
+            {"key": "A", "text": "先警示并隔离玻璃渗漏区域，再上报处理"},
+            {"key": "B", "text": "先把临期饼干移到专区，再回来清理玻璃"},
+            {"key": "C", "text": "先徒手捡起玻璃瓶，再同时处理两件商品"}
+          ],
+          "expected_answer": "A"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现玻璃碎片或液体扩散时立即停止通行，警示隔离现场，禁止徒手接触并上报负责人。"
+      }
+    },
+    {
+      "question_id": "M3_SC_022_V4",
+      "previous_question_id": "M3_SC_022_V3",
+      "source_question_id": "M3_SC_022",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "补充原货位仍有正常库存的前提条件。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "某SKU的临期商品已移到临期专区，原货位仍有同SKU正常库存。原货位价签应如何处理？",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["RULE_EXECUTION"],
+          "media_brief": "纯文本情境：临期品移区后原货位仍有正常库存。",
+          "options": [
+            {"key": "A", "text": "撤下原货位价签，只在临期专区保留商品价格"},
+            {"key": "B", "text": "保留原货位价签，临期专区使用对应专区标识"},
+            {"key": "C", "text": "交换两处价签，让正常库存使用临期专区标识"}
+          ],
+          "expected_answer": "B"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_SC_023_V4",
+      "previous_question_id": "M3_SC_023_V3",
+      "source_question_id": "M3_SC_023",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "写明本门店当天到期商品的可售和下架规则。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "本门店模拟规则规定：当天到期商品开店前移入临期专区，当日闭店前下架，次日不得销售。理货员开店巡检时发现一件当天到期商品，应怎么做？",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["RULE_EXECUTION"],
+          "media_brief": "纯文本情境：门店当天到期商品处置规则已明确。",
+          "options": [
+            {"key": "A", "text": "立即登记报损，不允许在到期日当天继续销售"},
+            {"key": "B", "text": "留在原货位正常销售，第二天开店时再检查"},
+            {"key": "C", "text": "移入临期专区并按规则记录，闭店前完成下架"}
+          ],
+          "expected_answer": "C"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M4_SC_002_V4",
+      "previous_question_id": "M4_SC_002_V3",
+      "source_question_id": "M4_SC_002",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "以限高线、承重和稳定性替代肩高标准。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "库房货架设有清晰限高线，层板承重和纸箱堆码标识均可见。纸箱应如何码放？",
+          "assessment_point": "SAFETY_OPERATION",
+          "ability_tags": ["RULE_EXECUTION", "SAFETY_OPERATION"],
+          "media_brief": "纯文本情境：有限高线、承重标识和堆码标识的库房货架。",
+          "options": [
+            {"key": "A", "text": "不超过限高线和层板承重，按标识稳定码放"},
+            {"key": "B", "text": "不超过员工肩部高度，忽略限高线以方便搬取"},
+            {"key": "C", "text": "尽量堆满层板空间，箱体轻微倾斜也可以保留"}
+          ],
+          "expected_answer": "A"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现纸箱倾倒、货架晃动、层板超载或通道被占用时停止码放，隔离区域并上报。"
+      }
+    },
+    {
+      "question_id": "M4_SC_012_V4",
+      "previous_question_id": "M4_SC_012_V3",
+      "source_question_id": "M4_SC_012",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "收窄签字责任，强调核对和记录真实性。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "完成到货数量、外观状态和异常记录核对后，授权人员在收货单上签字。该签字主要表示什么？",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["RULE_EXECUTION"],
+          "media_brief": "纯文本情境：授权人员完成收货核对后签字。",
+          "options": [
+            {"key": "A", "text": "确认所有商品今后出现的质量问题都由签字人承担"},
+            {"key": "B", "text": "确认已按流程核对，并对本次记录的真实性负责"},
+            {"key": "C", "text": "确认无需保留异常记录，后续问题统一由供应商承担"}
+          ],
+          "expected_answer": "B"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M5_SC_003_V4",
+      "previous_question_id": "M5_SC_003_V3",
+      "source_question_id": "M5_SC_003",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "补齐仓库吸烟场景中的避险和消防上报顺序。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "你在仓库入口看到有人正在货物旁吸烟，附近有纸箱等可燃物。最合适的做法是？",
+          "assessment_point": "SAFETY_OPERATION",
+          "ability_tags": ["SAFETY_OPERATION"],
+          "media_brief": "纯文本情境：仓库货物旁有人吸烟，附近存在可燃物。",
+          "options": [
+            {"key": "A", "text": "走近对方取走香烟，再把烟头丢进附近垃圾桶"},
+            {"key": "B", "text": "先继续完成理货，等对方离开后再向负责人说明"},
+            {"key": "C", "text": "保持安全距离，立即通知负责人或安保按消防流程处置"}
+          ],
+          "expected_answer": "C"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现明火、烟雾或可燃物被点燃时立即远离并启动消防报警和疏散流程，不得自行冒险处置。"
+      }
+    },
+    {
+      "question_id": "M5_SC_005_V4",
+      "previous_question_id": "M5_SC_005_V3",
+      "source_question_id": "M5_SC_005",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "明确硬币遗失场景的警示和交接流程。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "收银机旁的通道上散落着几枚硬币，顾客仍在附近通行。正确做法是？",
+          "assessment_point": "SAFETY_OPERATION",
+          "ability_tags": ["RULE_EXECUTION", "SAFETY_OPERATION"],
+          "media_brief": "纯文本情境：收银区通道散落硬币且有人通行。",
+          "options": [
+            {"key": "A", "text": "先提醒行人避让，再通知收银员按现金遗失流程处理"},
+            {"key": "B", "text": "先把硬币收进口袋保管，闭店后再交给收银员"},
+            {"key": "C", "text": "先绕开硬币继续理货，等收银员自行发现并处理"}
+          ],
+          "expected_answer": "A"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "通道拥挤或有人即将踩到硬币时先警示并控制通行，不得私自占有或带离现金。"
+      }
+    },
+    {
+      "question_id": "M5_SC_006_V4",
+      "previous_question_id": "M5_SC_006_V3",
+      "source_question_id": "M5_SC_006",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "补齐晕倒场景的现场判断、呼救和移动边界。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "顾客突然倒在货架旁，现场没有持续危险。理货员首先应怎么做？",
+          "assessment_point": "SAFETY_OPERATION",
+          "ability_tags": ["SAFETY_OPERATION"],
+          "media_brief": "纯文本情境：顾客倒地，现场环境安全。",
+          "options": [
+            {"key": "A", "text": "立即扶顾客坐起并喂水，同时让同事继续观察现场"},
+            {"key": "B", "text": "检查反应和呼吸，呼叫急救电话及受训急救员，不随意移动顾客"},
+            {"key": "C", "text": "先通知负责人来判断，负责人到场前不检查也不呼救"}
+          ],
+          "expected_answer": "B"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现顾客无反应或无正常呼吸时立即呼叫急救并按门店预案请求AED和受训人员支援；仅在持续危险下按指引转移。"
+      }
+    },
+    {
+      "question_id": "M5_SC_007_V4",
+      "previous_question_id": "M5_SC_007_V3",
+      "source_question_id": "M5_SC_007",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "补齐召回对象核验、隔离、记录和上报闭环。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "门店收到召回通知，通知列明某品牌饮料的规格、条码和指定批次。理货员应如何处理？",
+          "assessment_point": "SAFETY_OPERATION",
+          "ability_tags": ["RULE_EXECUTION", "SAFETY_OPERATION"],
+          "media_brief": "纯文本情境：召回通知包含品牌、规格、条码和批次。",
+          "options": [
+            {"key": "A", "text": "下架该品牌全部商品，集中堆放后等待负责人重新筛选"},
+            {"key": "B", "text": "只在货架贴召回提示，顾客询问时再核对批次并取下"},
+            {"key": "C", "text": "核对通知对象，停售下架并隔离标识，清点记录后上报"}
+          ],
+          "expected_answer": "C"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现召回商品仍在销售区或召回对象无法确认时立即停止销售，隔离相关商品并上报负责人。"
+      }
+    },
+    {
+      "question_id": "M5_SC_013_V4",
+      "previous_question_id": "M5_SC_013_V3",
+      "source_question_id": "M5_SC_013",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "恢复具体求助情境并锁定负责人和信息要素。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "理货员发现货架价签与系统价格不一致，已暂停该排面销售，但自己没有改价权限。应如何求助？",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["RULE_EXECUTION"],
+          "media_brief": "纯文本情境：价签价格不一致，理货员已控制现场但无改价权限。",
+          "options": [
+            {"key": "A", "text": "找到有改价权限的负责人，说明差异、已采取措施和所需支持"},
+            {"key": "B", "text": "请附近同事代为更换价签，之后再向负责人补充说明"},
+            {"key": "C", "text": "在工作群发送“价格有问题”，等待任何看到消息的人处理"}
+          ],
+          "expected_answer": "A"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M5_SC_015_V4",
+      "previous_question_id": "M5_SC_015_V3",
+      "source_question_id": "M5_SC_015",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "补足重量评估、贴身搬运和协作边界。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "理货员准备把一箱饮料从地面搬到补货车上。哪种做法最安全？",
+          "assessment_point": "SAFETY_OPERATION",
+          "ability_tags": ["SAFETY_OPERATION"],
+          "media_brief": "纯文本情境：地面上的整箱饮料需要搬到补货车。",
+          "options": [
+            {"key": "A", "text": "先抱住货物，保持双腿伸直，依靠腰部快速抬起并转身"},
+            {"key": "B", "text": "先评估重量，货物贴近身体，屈膝起身且不扭转，必要时求助"},
+            {"key": "C", "text": "先把货物拖到车旁，再单手抬高并用身体顶住车沿"}
+          ],
+          "expected_answer": "B"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "重量不明、超出个人能力、货物不稳或通道受阻时停止搬运，改用工具或请求两人协作。"
+      }
+    },
+    {
+      "question_id": "M5_SC_017_V4",
+      "previous_question_id": "M5_SC_017_V3",
+      "source_question_id": "M5_SC_017",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "恢复顾客咨询情境，避免仅凭封口完好作质量承诺。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "顾客询问一包外袋有轻微褶皱、封口完好的饼干是否可以购买。理货员无法确认褶皱是否符合门店外观标准，应如何回应？",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["RULE_EXECUTION"],
+          "media_brief": "纯文本情境：顾客咨询轻微褶皱商品，理货员无法确认外观标准。",
+          "options": [
+            {"key": "A", "text": "说明封口完好就一定安全，建议顾客放心购买这包商品"},
+            {"key": "B", "text": "说明自己不能回答商品问题，请顾客自行判断是否购买"},
+            {"key": "C", "text": "说明检查到的外观情况，提供更换选择，并请负责人复核质量疑问"}
+          ],
+          "expected_answer": "C"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现破口、漏气、污染、异味或异常鼓胀时停止推荐销售，隔离商品并上报负责人。"
+      }
+    },
+    {
+      "question_id": "M5_SC_018_V4",
+      "previous_question_id": "M5_SC_018_V3",
+      "source_question_id": "M5_SC_018",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "补充超职责隐患的即时警示和隔离动作。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "理货员发现顾客通道上方有松动灯罩，维修不属于自己的职责。正确做法是？",
+          "assessment_point": "SAFETY_OPERATION",
+          "ability_tags": ["SAFETY_OPERATION"],
+          "media_brief": "纯文本情境：顾客通道上方灯罩松动，理货员无维修权限。",
+          "options": [
+            {"key": "A", "text": "在安全范围内警示并隔离下方区域，立即上报负责人处理"},
+            {"key": "B", "text": "只向负责人发送消息，保持通道开放并继续完成理货"},
+            {"key": "C", "text": "搬梯子自行拆下灯罩，处理完后再补报维修记录"}
+          ],
+          "expected_answer": "A"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "灯罩继续松动、出现坠落迹象或人员进入危险区时立即停止通行、扩大隔离并请求应急支援。"
+      }
+    },
+    {
+      "question_id": "M5_SC_019_V4",
+      "previous_question_id": "M5_SC_019_V3",
+      "source_question_id": "M5_SC_019",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "修复引号并区分包装产地与生产商地址。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "顾客询问一包薯片的产地。包装上“产地”一栏清楚标注为“上海市”，另有不同的生产商地址。理货员应如何回答？",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["RULE_EXECUTION"],
+          "media_brief": "纯文本情境：包装的产地和生产商地址分别清晰标注。",
+          "options": [
+            {"key": "A", "text": "按生产商地址回答，并说明地址就是商品产地"},
+            {"key": "B", "text": "按包装产地栏如实回答产地为上海市"},
+            {"key": "C", "text": "不读取包装信息，统一请顾客到收银台查询"}
+          ],
+          "expected_answer": "B"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M6_SC_006_V4",
+      "previous_question_id": "M6_SC_006_V3",
+      "source_question_id": "M6_SC_006",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "恢复条码读取任务并锁定模拟号码与画面合同。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "观察图片中模拟商品条码下方的数字。图片显示的完整号码是哪一项？",
+          "assessment_point": "COGNITION",
+          "ability_tags": ["COGNITION"],
+          "media_brief": "答案图必须清晰显示不可外部扫描的模拟条码数字6901234567890，完整号码处于可读区域，不出现商品A/B/C提示。",
+          "options": [
+            {"key": "A", "text": "6901234657890"},
+            {"key": "B", "text": "6901234567980"},
+            {"key": "C", "text": "6901234567890"}
+          ],
+          "expected_answer": "C"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M6_SC_013_V4",
+      "previous_question_id": "M6_SC_013_V3",
+      "source_question_id": "M6_SC_013",
+      "question_type": "SINGLE_CHOICE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "恢复近邻商品区分情境并明确设备故障分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "SINGLE_CHOICE",
+          "prompt": "两件饮料包装非常相似，货架旁有门店批准的扫码终端。怎样确认它们分别对应哪个SKU最可靠？",
+          "assessment_point": "COGNITION",
+          "ability_tags": ["COGNITION", "RULE_EXECUTION"],
+          "media_brief": "纯文本情境：近邻商品与可用的门店扫码终端。",
+          "options": [
+            {"key": "A", "text": "扫描条码核对系统品名和规格；设备故障时核对包装文字及条码数字"},
+            {"key": "B", "text": "比较包装主色和重量；外观更接近价签图片的就是对应商品"},
+            {"key": "C", "text": "拆开包装查看内容；内容相似时再询问附近顾客确认"}
+          ],
+          "expected_answer": "A"
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M1_TF_025_V4",
+      "previous_question_id": "M1_TF_025_V3",
+      "source_question_id": "M1_TF_025",
+      "question_type": "TRUE_FALSE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "锁定按排面图和价签归位的判断规则与正向视频。",
+      "proposed_question": {
+        "content": {
+          "question_type": "TRUE_FALSE",
+          "prompt": "本题门店规定：小件糖果必须按排面图、货位和价签归位。观看视频，判断理货员的做法是否符合规定。",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["RULE_EXECUTION"],
+          "media_brief": "视频展示理货员未查看排面图和价签，直接把小件糖果集中放到自己认为显眼的中层位置。",
+          "expected_answer": false
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M2_TF_018_V4",
+      "previous_question_id": "M2_TF_018_V3",
+      "source_question_id": "M2_TF_018",
+      "question_type": "TRUE_FALSE",
+      "required_review_tracks": ["CONTENT"],
+      "revision_rationale": "补齐轻微褶皱可上架的全部可观察条件。",
+      "proposed_question": {
+        "content": {
+          "question_type": "TRUE_FALSE",
+          "prompt": "本题门店规定：包装仅有轻微褶皱，且无破口、无漏气、无污染、无异常鼓胀并符合外观标准时，可以整理后上架。观看视频，判断做法是否符合规定。",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["RULE_EXECUTION"],
+          "media_brief": "视频逐项展示商品仅有轻微褶皱，封口及包装完整，无污染、漏气和异常鼓胀；理货员完成检查后抚平包装并上架。",
+          "expected_answer": true
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M2_TF_022_V4",
+      "previous_question_id": "M2_TF_022_V3",
+      "source_question_id": "M2_TF_022",
+      "question_type": "TRUE_FALSE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "锁定易开结构或批准工具的安全拆箱规则。",
+      "proposed_question": {
+        "content": {
+          "question_type": "TRUE_FALSE",
+          "prompt": "本题门店规定：纸箱应使用完好的易开结构，或使用批准的安全开箱工具，并始终让手部避开开启路径。观看视频，判断做法是否符合规定。",
+          "assessment_point": "SAFETY_OPERATION",
+          "ability_tags": ["FINE_MOTOR", "SAFETY_OPERATION"],
+          "media_brief": "视频展示普通胶带封箱且没有易开结构，理货员徒手用力撕扯，手指贴近纸箱锋利边缘。",
+          "expected_answer": false
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "易开结构破损、需要过度用力、箱体边缘锋利或手部进入开启路径时立即停止，改用批准工具或上报。"
+      }
+    },
+    {
+      "question_id": "M3_TF_025_V4",
+      "previous_question_id": "M3_TF_025_V3",
+      "source_question_id": "M3_TF_025",
+      "question_type": "TRUE_FALSE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "写明当天到期商品的门店模拟SOP并反推视频。",
+      "proposed_question": {
+        "content": {
+          "question_type": "TRUE_FALSE",
+          "prompt": "本题门店规定：当天到期商品开店前移入临期专区并记录，当日闭店前下架，次日不得销售。观看视频，判断做法是否符合规定。",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["RULE_EXECUTION"],
+          "media_brief": "视频展示开店巡检时，理货员核对酸奶到期日为当天，将其移入临期专区并完成记录。",
+          "expected_answer": true
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现已过期商品仍在销售区时立即停止销售，隔离商品并上报负责人。"
+      }
+    },
+    {
+      "question_id": "M3_TF_028_V4",
+      "previous_question_id": "M3_TF_028_V3",
+      "source_question_id": "M3_TF_028",
+      "question_type": "TRUE_FALSE",
+      "required_review_tracks": ["CONTENT"],
+      "revision_rationale": "用可观察包装边界锁定轻微褶皱判断。",
+      "proposed_question": {
+        "content": {
+          "question_type": "TRUE_FALSE",
+          "prompt": "本题门店规定：包装仅有轻微褶皱，且无破口、无漏气、无污染、无异常鼓胀并符合外观标准时，可以上架。观看视频，判断做法是否符合规定。",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["RULE_EXECUTION"],
+          "media_brief": "视频只展示饼干封口完好，理货员未检查污染、漏气和异常鼓胀便直接将商品上架。",
+          "expected_answer": false
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_TF_030_V4",
+      "previous_question_id": "M3_TF_030_V3",
+      "source_question_id": "M3_TF_030",
+      "question_type": "TRUE_FALSE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "解决个人手机与批准设备冲突，并提供正反双轨视频合同。",
+      "proposed_question": {
+        "content": {
+          "question_type": "TRUE_FALSE",
+          "prompt": "本题门店规定：效期计算只能使用门店批准的工作终端或计算器，不得使用个人手机。观看视频，判断做法是否符合规定。",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["COGNITION", "RULE_EXECUTION"],
+          "media_brief": "反向轨：理货员拿出个人手机计算剩余天数，并据此直接处理商品。",
+          "video_contract_tracks": [
+            {"track_id": "POSITIVE", "expected_answer": true, "media_brief": "理货员使用带门店资产标识的工作终端计算剩余天数，并按结果判断临期。"},
+            {"track_id": "NEGATIVE", "expected_answer": false, "media_brief": "理货员拿出个人手机计算剩余天数并据此直接处理商品。"}
+          ],
+          "expected_answer": false
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_TF_033_V4",
+      "previous_question_id": "M3_TF_033_V3",
+      "source_question_id": "M3_TF_033",
+      "question_type": "TRUE_FALSE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "解决封口完好与完整外观检查冲突，并提供正反双轨。",
+      "proposed_question": {
+        "content": {
+          "question_type": "TRUE_FALSE",
+          "prompt": "本题门店规定：轻微褶皱商品只有在无破口、无漏气、无污染、无异常鼓胀并符合外观标准时才可上架。观看视频，判断做法是否符合规定。",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["RULE_EXECUTION"],
+          "media_brief": "正向轨：视频逐项展示全部可售边界，理货员完成检查后上架，不以封口完好作为唯一依据。",
+          "video_contract_tracks": [
+            {"track_id": "POSITIVE", "expected_answer": true, "media_brief": "视频清晰展示无破口、无漏气、无污染、无异常鼓胀且符合外观标准，理货员检查后上架。"},
+            {"track_id": "NEGATIVE", "expected_answer": false, "media_brief": "视频只展示封口完好，理货员未检查污染、漏气和异常鼓胀便直接上架。"}
+          ],
+          "expected_answer": true
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_TF_034_V4",
+      "previous_question_id": "M3_TF_034_V3",
+      "source_question_id": "M3_TF_034",
+      "question_type": "TRUE_FALSE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "补齐临期判断后的记录移区闭环，并提供正反双轨。",
+      "proposed_question": {
+        "content": {
+          "question_type": "TRUE_FALSE",
+          "prompt": "本题门店规定：理货员确认商品达到临期阈值后，应完成记录并移入临期专区，无需等待负责人现场批准。观看视频，判断做法是否符合规定。",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["RULE_EXECUTION"],
+          "media_brief": "反向轨：理货员只计算出剩余9天，未填写临期记录便直接把商品移入临期专区。",
+          "video_contract_tracks": [
+            {"track_id": "POSITIVE", "expected_answer": true, "media_brief": "理货员确认剩余9天达到门店阈值，完成临期记录并将商品移入临期专区。"},
+            {"track_id": "NEGATIVE", "expected_answer": false, "media_brief": "理货员只计算出剩余9天，未记录便直接把商品移入临期专区。"}
+          ],
+          "expected_answer": false
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M4_TF_019_V4",
+      "previous_question_id": "M4_TF_019_V3",
+      "source_question_id": "M4_TF_019",
+      "question_type": "TRUE_FALSE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "锁定复核、标注和异常交接的完整行为。",
+      "proposed_question": {
+        "content": {
+          "question_type": "TRUE_FALSE",
+          "prompt": "本题门店规定：发现拣货数量差异后，理货员应重新清点、在清单标注，并按异常流程上报或交接。观看视频，判断做法是否符合规定。",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["RULE_EXECUTION"],
+          "media_brief": "视频展示理货员发现少1件后重新清点并在清单标注，但未上报或交接便继续作业。",
+          "expected_answer": false
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M4_TF_022_V4",
+      "previous_question_id": "M4_TF_022_V3",
+      "source_question_id": "M4_TF_022",
+      "question_type": "TRUE_FALSE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "解决缺货标注后未报告的冲突，并提供正反双轨。",
+      "proposed_question": {
+        "content": {
+          "question_type": "TRUE_FALSE",
+          "prompt": "本题门店规定：拣货发现缺货时，应在清单标注并按流程报告；完成记录后可继续拣取其他商品。观看视频，判断做法是否符合规定。",
+          "assessment_point": "RULE_EXECUTION",
+          "ability_tags": ["RULE_EXECUTION"],
+          "media_brief": "正向轨：理货员标注缺货，通过工作终端提交缺货报告，再继续拣取其他商品。",
+          "video_contract_tracks": [
+            {"track_id": "POSITIVE", "expected_answer": true, "media_brief": "理货员在清单标注缺货，通过工作终端提交报告后继续拣货。"},
+            {"track_id": "NEGATIVE", "expected_answer": false, "media_brief": "理货员只在清单标注缺货，未报告便继续拣取其他商品。"}
+          ],
+          "expected_answer": true
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M5_TF_023_V4",
+      "previous_question_id": "M5_TF_023_V3",
+      "source_question_id": "M5_TF_023",
+      "question_type": "TRUE_FALSE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "锁定晕倒应急判断、呼救、AED条件和移动边界。",
+      "proposed_question": {
+        "content": {
+          "question_type": "TRUE_FALSE",
+          "prompt": "本题门店规定：顾客倒地时先确认环境安全，检查反应和呼吸并呼叫急救；无正常呼吸时请求AED和受训人员支援，非持续危险不得随意移动。观看视频，判断做法是否符合规定。",
+          "assessment_point": "SAFETY_OPERATION",
+          "ability_tags": ["SAFETY_OPERATION"],
+          "media_brief": "视频展示理货员确认现场安全，检查顾客无反应且无正常呼吸，呼叫急救电话和受训急救员，请同事按程序取AED，并保持顾客原位。",
+          "expected_answer": true
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "发现顾客无反应或无正常呼吸时立即启动急救流程；仅在火灾、坍塌等持续危险下按应急指引转移。"
+      }
+    },
+    {
+      "question_id": "M5_TF_027_V4",
+      "previous_question_id": "M5_TF_027_V3",
+      "source_question_id": "M5_TF_027",
+      "question_type": "TRUE_FALSE",
+      "required_review_tracks": ["CONTENT", "SAFETY_TECHNICAL"],
+      "revision_rationale": "补齐玻璃碎片隔离、防护、收集、上报和复查闭环。",
+      "proposed_question": {
+        "content": {
+          "question_type": "TRUE_FALSE",
+          "prompt": "本题门店规定：玻璃破碎后应先隔离警示并上报，佩戴匹配防护用品，用专用工具将碎片装入硬质容器，最后复查残留；禁止徒手接触。观看视频，判断做法是否符合规定。",
+          "assessment_point": "SAFETY_OPERATION",
+          "ability_tags": ["SAFETY_OPERATION"],
+          "media_brief": "视频完整展示理货员隔离警示并上报，戴防割手套，用夹具和簸箕收集碎片至硬质容器，清洁液体后复查地面，全程不徒手接触。",
+          "expected_answer": true
+        },
+        "scoring_rule": {"scoring_type": "EXACT_MATCH", "max_score": 2, "correct_score": 2, "incorrect_score": 0},
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "有人进入隔离区、碎片扩散、缺少防护用品或发现徒手接触时立即停止，扩大隔离并请求负责人支援。"
+      }
+    }
+  ]
+}

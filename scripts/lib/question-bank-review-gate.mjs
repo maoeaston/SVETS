@@ -244,34 +244,35 @@ function validateOfflineContent(content, reasons) {
   }
 }
 
-function collectAssetIds(question, content) {
-  const ids = []
-
-  if (question.media_asset_id) {
-    ids.push(question.media_asset_id)
+export function collectAssetIds(question, content) {
+  const ids = new Set()
+  const add = (value) => {
+    if (typeof value === 'string' && value.length > 0) ids.add(value)
   }
+  const addImages = (values) => {
+    if (!Array.isArray(values)) return
+    for (const value of values) add(value?.image_asset_id ?? value?.asset_id)
+  }
+
+  add(question.media_asset_id)
+  addImages(content.presentation?.assets)
 
   if (Array.isArray(content.variants)) {
     for (const variant of content.variants) {
-      if (variant?.media_asset_id) ids.push(variant.media_asset_id)
+      add(variant?.media_asset_id)
+      add(variant?.image_asset_id)
+      addImages(variant?.assets)
     }
   }
 
   // options/items 优先读 interaction.config（v1.2 权威），顶层为测试兼容 fallback
   const cfg = interactionConfig(content)
   const optionList = Array.isArray(cfg.options) ? cfg.options : content.options
-  if (Array.isArray(optionList)) {
-    for (const option of optionList) {
-      if (option?.image_asset_id) ids.push(option.image_asset_id)
-    }
-  }
+  addImages(optionList)
 
   const itemList = Array.isArray(cfg.items) ? cfg.items : content.drag_items
-  if (Array.isArray(itemList)) {
-    for (const item of itemList) {
-      if (item?.image_asset_id) ids.push(item.image_asset_id)
-    }
-  }
+  addImages(itemList)
+  addImages(Array.isArray(cfg.zones) ? cfg.zones : content.drop_zones)
 
   let toolAssetIds = []
   if (question.tool_asset_ids_json) {
@@ -282,10 +283,14 @@ function collectAssetIds(question, content) {
     }
   }
   if (Array.isArray(toolAssetIds)) {
-    ids.push(...toolAssetIds.filter(Boolean))
+    for (const assetId of toolAssetIds) add(assetId)
   }
 
-  return ids
+  add(content.administration?.script_asset_id)
+  add(content.administration?.sealed_config_asset_id)
+  for (const assetId of content.offline_setup?.asset_ids ?? []) add(assetId)
+
+  return [...ids].sort()
 }
 
 function validateAssets(assetIds, assetsById, reasons) {

@@ -1,4 +1,16 @@
-## 实现目标
+## 当前状态（2026-07-22 / F2 第一子步）
+
+- 当前产品合同以 `doc/specs/MVP_PRD_v1.0.9-authoritative.md` 为准；本页下方早期“Step 1-4”内容保留作历史归档，不再直接作为实现输入。
+- 已完成 PASSWORD `auth_session` 登录底座：`auth:login` 登录成功即落库会话，`auth:getCurrentSession` 负责页面刷新恢复，`auth:logout` 负责撤销当前绑定会话。
+- 渲染进程 `useAuthStore` 当前只保存公开会话摘要：`authSessionId`、`userId`、`role`、`displayName`、`expiresAt`；不使用 `localStorage`。
+- 路由守卫改为先向主进程恢复可信会话，再按路由元数据进行页面跳转；页面刷新可恢复，整应用完全退出后仍需重新登录。
+- `student:create/get/list/update/archive` 的 IPC 包装层已改为从可信会话解析 TEACHER / ADMIN 身份，忽略渲染进程伪造的 `callerUserId/callerRole`。
+- `src/main/utils/auth-context.ts` 仍保留为过渡态软校验，继续服务尚未完成 F2 收口的纯函数和旧测试。
+- 当前测试已覆盖：登录成功、错误密码、停用账号、过期会话、退出撤销、刷新恢复，以及 student 包装层忽略伪造 caller 身份。
+
+---
+
+## 实现目标（历史归档）
 
 打通用户名密码登录的完整链路：主进程鉴权 → IPC → Pinia store → 路由守卫，使 TEACHER / STUDENT / ADMIN 三种角色均可登录并跳转到对应端布局。
 

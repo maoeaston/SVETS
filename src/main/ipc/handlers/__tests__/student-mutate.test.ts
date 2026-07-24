@@ -99,6 +99,30 @@ describe('student:update — 基本字段', () => {
     expect(before).toBeTruthy() // 静默引用，避免 unused
   })
 
+  it('修改姓名 → 同步更新 user_id 显式绑定账号的 display_name', () => {
+    const profileId = 'profile-name-sync'
+    const boundAccountId = 'account-name-sync'
+    db.prepare(
+      `INSERT INTO user_account
+         (user_id, username, password_hash, role, display_name, status)
+       VALUES (?, 'name_sync_user', 'hash', 'STUDENT', '旧账号名', 'ACTIVE')`
+    ).run(boundAccountId)
+    db.prepare(
+      `INSERT INTO student_profile (student_id, student_name, user_id, status)
+       VALUES (?, '旧档案名', ?, 'ACTIVE')`
+    ).run(profileId, boundAccountId)
+
+    const r = update(profileId, { studentName: '新统一姓名' })
+    expect(r).toEqual({ success: true })
+    expect(
+      (
+        db.prepare('SELECT display_name FROM user_account WHERE user_id = ?').get(boundAccountId) as {
+          display_name: string
+        }
+      ).display_name
+    ).toBe('新统一姓名')
+  })
+
   it('修改 sensoryProfile → JSON 字符串替换', () => {
     const id = mkStudent({ studentName: 's', username: 'u2' })
     update(id, {
@@ -159,6 +183,29 @@ describe('student:update — 基本字段', () => {
       } as never
     })
     expect(r).toEqual({ success: false, errorCode: 'INVALID_SENSORY_PROFILE' })
+  })
+
+  it('patch 后续字段校验失败 → 前面的合法字段也不写入', () => {
+    const id = mkStudent({ studentName: '事务前姓名', username: 'atomic_update' })
+    const r = update(id, {
+      studentName: '不应落库的姓名',
+      sensoryProfile: {
+        noise_sensitivity: 'EXTREME',
+        light_sensitivity: null,
+        tactile_sensitivity: null,
+        crowd_density_sensitivity: null,
+        avoid_tags: [],
+        notes: ''
+      } as never
+    })
+    expect(r).toEqual({ success: false, errorCode: 'INVALID_SENSORY_PROFILE' })
+    expect(
+      (
+        db.prepare('SELECT student_name FROM student_profile WHERE student_id = ?').get(id) as {
+          student_name: string
+        }
+      ).student_name
+    ).toBe('事务前姓名')
   })
 
   it('birthDate 未来 → VALIDATION_ERROR', () => {
@@ -298,6 +345,69 @@ describe('student:archive', () => {
       .prepare('SELECT role FROM user_account WHERE user_id = ?')
       .get(id) as { role: string }
     expect(ua.role).toBe('STUDENT')
+  })
+
+  it('档案 ID 与账号 ID 不同 → 只停用 user_id 显式绑定的学生账号', () => {
+    const profileId = 'profile-with-distinct-account'
+    const boundAccountId = 'bound-student-account'
+    const sameIdDecoyAccountId = profileId
+    db.prepare(
+      `INSERT INTO user_account
+         (user_id, username, password_hash, role, display_name, status)
+       VALUES (?, 'bound_student', 'hash', 'STUDENT', '绑定账号', 'ACTIVE')`
+    ).run(boundAccountId)
+    db.prepare(
+      `INSERT INTO user_account
+         (user_id, username, password_hash, role, display_name, status)
+       VALUES (?, 'same_id_decoy', 'hash', 'STUDENT', '同 ID 非绑定账号', 'ACTIVE')`
+    ).run(sameIdDecoyAccountId)
+    db.prepare(
+      `INSERT INTO student_profile
+         (student_id, student_name, user_id, status)
+       VALUES (?, '独立主键学生', ?, 'ACTIVE')`
+    ).run(profileId, boundAccountId)
+
+    const r = archiveStudent(db, {
+      callerUserId: callerId,
+      callerRole: 'TEACHER',
+      studentId: profileId
+    })
+    expect(r).toEqual({ success: true })
+
+    const accounts = db
+      .prepare('SELECT user_id, status FROM user_account WHERE user_id IN (?, ?) ORDER BY user_id')
+      .all(boundAccountId, sameIdDecoyAccountId) as Array<{ user_id: string; status: string }>
+    expect(accounts.find((row) => row.user_id === boundAccountId)?.status).toBe('DISABLED')
+    expect(accounts.find((row) => row.user_id === sameIdDecoyAccountId)?.status).toBe('ACTIVE')
+  })
+
+  it('无账号档案 → 仍可归档且不修改其他账号', () => {
+    const profileId = 'accountless-profile'
+    db.prepare(
+      `INSERT INTO student_profile (student_id, student_name, user_id, status)
+       VALUES (?, '无账号学生', NULL, 'ACTIVE')`
+    ).run(profileId)
+
+    const before = db.prepare('SELECT COUNT(*) AS c FROM user_account WHERE status = ?').get('DISABLED') as {
+      c: number
+    }
+    const r = archiveStudent(db, {
+      callerUserId: callerId,
+      callerRole: 'TEACHER',
+      studentId: profileId
+    })
+    expect(r).toEqual({ success: true })
+    const after = db.prepare('SELECT COUNT(*) AS c FROM user_account WHERE status = ?').get('DISABLED') as {
+      c: number
+    }
+    expect(after.c).toBe(before.c)
+    expect(
+      (
+        db.prepare('SELECT status FROM student_profile WHERE student_id = ?').get(profileId) as {
+          status: string
+        }
+      ).status
+    ).toBe('ARCHIVED')
   })
 
   it('归档后 user_account.status=DISABLED → 该账号登录会被拒绝（覆盖验收项 11）', () => {

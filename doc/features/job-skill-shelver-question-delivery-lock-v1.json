@@ -1,0 +1,4063 @@
+{
+  "$schema": "./job-skill-shelver-question-delivery-lock-v1.schema.json",
+  "schema_version": "job-skill-shelver-question-delivery-lock-v1",
+  "lock_id": "job-skill-shelver-delivery-lock-2026-07-22",
+  "status": "LOCKED_FOR_PRODUCTION_NOT_RELEASE",
+  "generated_at": "2026-07-22T14:50:00+08:00",
+  "authority": {
+    "authority_id": "job-skill-shelver-298-disposition-authority-v1",
+    "authority_hash": "sha256:dfdfabe672470a43c8ce2db39f4b581c327847c27c6f7902ecc9caa583fe12bb",
+    "semantic_root_hash": "sha256:f4eb1d4d64587e58044dee82a1609d77c93dd75bc4618a13f75f6f65fdefcee1"
+  },
+  "sources": [
+    {
+      "path": "doc/features/job-skill-shelver-298-disposition-authority-v1.json",
+      "sha256": "sha256:dcb41700a19a1a9de6345b52f902519843fd1ee00976d10ed2fba985db4fa7e8"
+    },
+    {
+      "path": "doc/assets/offline-toolkit-manifest-v1.json",
+      "sha256": "sha256:4f7f869cebca1f1f2909fa8f2a7a3d3ee5598facd236a447517aa55a248df955"
+    },
+    {
+      "path": "doc/assets/asset-manifest.json",
+      "sha256": "sha256:cf2ff17fb4899073c0cd9369ee926737ac6fe578f7f4d9c0a96b4cfa669a2628"
+    }
+  ],
+  "summary": {
+    "locked_question_total": 181,
+    "offline_setup_total": 100,
+    "video_answer_total": 68,
+    "image_requirement_total": 13,
+    "offline_example_image_total": 4,
+    "date_question_total": 20,
+    "script_question_total": 13
+  },
+  "release_gate": {
+    "releaseable": false,
+    "reason": "298道题仅编译为DRAFT；24道Pilot独立门禁和270项资产均未完成，禁止激活题目、创建测评或写入运行数据库。"
+  },
+  "questions": [
+    {
+      "source_question_id": "M1_DG_031",
+      "current_question_id": "M1_DG_031_V2",
+      "current_question_version": 2,
+      "module": "M1",
+      "question_type": "DRAG",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:57c75284e415fd70fd3a499cba48466b73b1147284de41647a0464dae620ee33",
+      "delivery": {
+        "types": [
+          "IMAGE_REQUIREMENT"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_delivery_answer_image_m1_dg_031"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:39af9a12efc831277016399cc57b665c45d9ca411647af42a0018063992daa00"
+      }
+    },
+    {
+      "source_question_id": "M1_OB_048",
+      "current_question_id": "M1_OB_048_V3",
+      "current_question_version": 3,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REPLACEMENT_REVIEW_PASSED_PENDING_ACTIVATION",
+      "semantic_hash": "sha256:1e641508132b4f09ff926596382b26685857bc5832aff4c4ca9647cbe66981e5",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m1_ob_048_v3",
+        "asset_ids": [
+          "asset_offline_tool_09"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:26a5f8b46f4d47e384589f21a3547f19c4e2fda783f82134144ceffca78dd21d"
+      }
+    },
+    {
+      "source_question_id": "M1_OP_033",
+      "current_question_id": "M1_OP_033_V2",
+      "current_question_version": 2,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "PILOT_PENDING_GATE",
+      "semantic_hash": "sha256:f8e9388bf064b1f23cd9cf06718005c12dcd9f0e026c9bc2c5228ce38271b7e7",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m1_op_033_v2",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:cbdc87d7b5dac06cc5d30a9fe2939017b95b373e2954729bcc5fbb78141f2623"
+      }
+    },
+    {
+      "source_question_id": "M1_OP_034",
+      "current_question_id": "M1_OP_034_V4",
+      "current_question_version": 4,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:5909aab96e42a707819c2b63f29bd3b912fa5db51a0af099b720aba4ed2edc4a",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m1_op_034_v4",
+        "asset_ids": [
+          "asset_offline_tool_05"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:b053d0a33706ad0d243007192d504672a6a6fcc0bbdf1ba1238558239afc3281"
+      }
+    },
+    {
+      "source_question_id": "M1_OP_035",
+      "current_question_id": "M1_OP_035_V4",
+      "current_question_version": 4,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:7f7c7b7adc913f7b465b7a11b40432833fa1ccaa9e71aabaed79b070915d14ab",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m1_op_035_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:9cec4d1933a04dd8751c3f84a945c8fef0826a60c89adc3a156e516de415e018"
+      }
+    },
+    {
+      "source_question_id": "M1_OP_036",
+      "current_question_id": "M1_OP_036_V4",
+      "current_question_version": 4,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:bb950a546177634c3443bc1fda0ca2ed8bcbf505dd57f3bc97cda4d2c9c1210b",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m1_op_036_v4",
+        "asset_ids": [
+          "asset_offline_tool_05"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:4a1b8edc5922a0ce1499581df799fe140f704056f6af8f08b5a174cc6ec42e20"
+      }
+    },
+    {
+      "source_question_id": "M1_OP_037",
+      "current_question_id": "M1_OP_037_V5",
+      "current_question_version": 5,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:4f5375fc90a5d2c9c35af89c9771652615c4a2e69a0bd9778b4a7735eb55a65b",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m1_op_037_v5",
+        "asset_ids": [
+          "asset_offline_tool_05"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:0555a714dabcb6cd1a776de1e5e777ef3ae7398005644e5b79fc756bba7d0172"
+      }
+    },
+    {
+      "source_question_id": "M1_OP_038",
+      "current_question_id": "M1_OP_038_V5",
+      "current_question_version": 5,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:5d0154bf9b8874e0b223d3c0df8e3bde7809ad984074c507ade6966331fb242c",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m1_op_038_v5",
+        "asset_ids": [
+          "asset_offline_tool_09",
+          "asset_offline_tool_10"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:606fa21f5e83cd0587a16e6ef1f03473a04240ed64e1ab3bcdb5ad17fe168e43"
+      }
+    },
+    {
+      "source_question_id": "M1_OP_039",
+      "current_question_id": "M1_OP_039_V4",
+      "current_question_version": 4,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:cf6e579ec2905fac4dfbf48176ec0dc50ddd5df8f5fa4073bfcb24d54681e2bd",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m1_op_039_v4",
+        "asset_ids": [
+          "asset_offline_tool_05"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:00d90a8caf4efe776aeb3756b972cf524b416e9b94af2c633e11c37f27420ab4"
+      }
+    },
+    {
+      "source_question_id": "M1_OP_040",
+      "current_question_id": "M1_OP_040_V4",
+      "current_question_version": 4,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:70fb682cc69307366c311d03c2f10d19414526d56467ec7936952932c8bb230c",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m1_op_040_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:787e85ae4e2c6f17ba523fda185186a676c8aab0381fde2b8d176a85783b5359"
+      }
+    },
+    {
+      "source_question_id": "M1_OP_041",
+      "current_question_id": "M1_OP_041_V4",
+      "current_question_version": 4,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:cfb15eb0282b175050b71863eb5c7f3255318418e47c4226046004e810770f6d",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m1_op_041_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:f9dc2bc414bee756fe9064279c0c5a63f94575a43035f72777d57a6f9bcb0152"
+      }
+    },
+    {
+      "source_question_id": "M1_OP_042",
+      "current_question_id": "M1_OP_042_V4",
+      "current_question_version": 4,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REPLACEMENT_REVIEW_PASSED_PENDING_ACTIVATION",
+      "semantic_hash": "sha256:89f1888d14191e356737bd8fcd58769e1a317bb9d2973ac745795b4c7efa5cfc",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m1_op_042_v4",
+        "asset_ids": [
+          "asset_offline_tool_05"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:29db549e086ab9b6df9d95e0c5570237a11c1c745c41f1774c6172a8480d277e"
+      }
+    },
+    {
+      "source_question_id": "M1_OP_043",
+      "current_question_id": "M1_OP_043_V4",
+      "current_question_version": 4,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:4600a1a4554696e2226c0275fc2b89b40eb84115e704f2055aec77e9cceb2609",
+      "delivery": {
+        "types": [
+          "OFFLINE_EXAMPLE_IMAGE",
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m1_op_043_v4",
+        "asset_ids": [
+          "asset_delivery_answer_image_m1_op_043",
+          "asset_offline_tool_05"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:69fd71e17ea4104723ede89fde0edb86c32b0903b032d556e9ec83ac941200f9"
+      }
+    },
+    {
+      "source_question_id": "M1_OP_044",
+      "current_question_id": "M1_OP_044_V4",
+      "current_question_version": 4,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:460689fb673ccbb0c99e03d082cd2c05ffc70e6683c72a6dd15f5d6e80844ddb",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m1_op_044_v4",
+        "asset_ids": [
+          "asset_offline_tool_05"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:4ecb5db25ebf87ee4d2bc022f1afb52d9f45d3d28831ddb2115637bbc0ec0f7d"
+      }
+    },
+    {
+      "source_question_id": "M1_OP_045",
+      "current_question_id": "M1_OP_045_V4",
+      "current_question_version": 4,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:f310ffb4bd11f4c25314d094db0b28678c8f225dd93ce225401b910fe275d4a4",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m1_op_045_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:36a21497282a19ed45bd1e8791427e444dd500171a05f0e2f1c7de76d34493da"
+      }
+    },
+    {
+      "source_question_id": "M1_OP_046",
+      "current_question_id": "M1_OP_046_V4",
+      "current_question_version": 4,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:ba2ed38b0c5777284ab7bf9b60c0eaed54bfb58d027fa4aa46fbeac47441c0df",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m1_op_046_v4",
+        "asset_ids": [
+          "asset_offline_tool_05"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:40aad83378d47fb902b34799d8c5d446b264612bde429e65eefb6949eb74ec6f"
+      }
+    },
+    {
+      "source_question_id": "M1_OP_047",
+      "current_question_id": "M1_OP_047_V4",
+      "current_question_version": 4,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:71ae520691e479d7433bee6db126cfcaa532fca3db9c8f06ca1c84d3481eb119",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m1_op_047_v4",
+        "asset_ids": [
+          "asset_offline_tool_05"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:84194cbcdb4dfe8d6ae2bdc297ef84a35a82d17811c3ef017164ba57debc1ce6"
+      }
+    },
+    {
+      "source_question_id": "M1_SC_014",
+      "current_question_id": "M1_SC_014_V2",
+      "current_question_version": 2,
+      "module": "M1",
+      "question_type": "SINGLE_CHOICE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:d837f0bccdae5efb3c2700714b5142f8b7cd8e5bdac25e8517bf8da05eb993f4",
+      "delivery": {
+        "types": [
+          "IMAGE_REQUIREMENT"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_delivery_answer_image_m1_sc_014"
+        ],
+        "expected_answer": "C",
+        "answer_contract_hash": "sha256:a74e45c6abd5a329733ce3a3879a0962fc78322a2f8de9184fe3b3dfd093714b"
+      }
+    },
+    {
+      "source_question_id": "M1_TF_015",
+      "current_question_id": "M1_TF_015_V2",
+      "current_question_version": 2,
+      "module": "M1",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:e5985632d7511aaa6e393ad5e8b6bbc38ffc8fcbdfc3406a023ad9955171a6bf",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_01_m1_tf_015"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:812272766ba3f748eacbc70517164d3d7b0d432ea3e69a91f6a0bc370e7cf09d"
+      }
+    },
+    {
+      "source_question_id": "M1_TF_016",
+      "current_question_id": "M1_TF_016_V2",
+      "current_question_version": 2,
+      "module": "M1",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:12673a1a93c7c2901a8894fb75266559d30d586e824ef0aee1fb900c85f052d8",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_02_m1_tf_016"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:016531a32b7578d6c38b358ced2ebcd6f60083e751e5f6e61402168643458c09"
+      }
+    },
+    {
+      "source_question_id": "M1_TF_017",
+      "current_question_id": "M1_TF_017_V2",
+      "current_question_version": 2,
+      "module": "M1",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:66342f374f87f39d8b4e5f1492a0a2e08274f0d28af5958017f1e58faa47ca18",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_03_m1_tf_017"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:20a7adaa7ff1a9e65467d88acbbd6eb302f59f52ee955928049d8d931420ed9a"
+      }
+    },
+    {
+      "source_question_id": "M1_TF_018",
+      "current_question_id": "M1_TF_018_V2",
+      "current_question_version": 2,
+      "module": "M1",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:f70a59f417270af6f0ccbfdbf5ae01c64f28a6c02a648392f6995a1d1052b100",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_04_m1_tf_018"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:4760a05cd98f283234023523546d73c50bf659f9708946156488b461617a18c1"
+      }
+    },
+    {
+      "source_question_id": "M1_TF_019",
+      "current_question_id": "M1_TF_019_V2",
+      "current_question_version": 2,
+      "module": "M1",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:480ea0bd9a5ae809e0af600b374c88cc45ab001654fd2852c94af769115f00d1",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_05_m1_tf_019"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:996755307d659d3a561ebe12dda7b5d61a326609ca3c72e19771296543841eab"
+      }
+    },
+    {
+      "source_question_id": "M1_TF_020",
+      "current_question_id": "M1_TF_020_V2",
+      "current_question_version": 2,
+      "module": "M1",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:bdf74e9615a4872d62536470eeab903340c3e7f3f79990a918da3e69ad84c305",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_06_m1_tf_020"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:f8d4486415d72c0a675bf81e932d05f8f79922fc44975f77a1d2c9e0ee05eafc"
+      }
+    },
+    {
+      "source_question_id": "M1_TF_021",
+      "current_question_id": "M1_TF_021_V2",
+      "current_question_version": 2,
+      "module": "M1",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:a09fb44397bcc653c115fdcc128c13f157956fb1b99793048f2b356f816bd5d1",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_07_m1_tf_021"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:abf9b188751f0672ab8bc19a60465458dada0dc6baec8012e75107d3f5336c5e"
+      }
+    },
+    {
+      "source_question_id": "M1_TF_022",
+      "current_question_id": "M1_TF_022_V2",
+      "current_question_version": 2,
+      "module": "M1",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:e18d18ef322e8bcd0e2a056520f979c498450b54d19c642c6fc9fceb8a1f4700",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_08_m1_tf_022"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:09d2d90571b7a0ba63b8f770084b78225373df21bb8f278dfb4e3b9495b4b4eb"
+      }
+    },
+    {
+      "source_question_id": "M1_TF_023",
+      "current_question_id": "M1_TF_023_V2",
+      "current_question_version": 2,
+      "module": "M1",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:81664a5cc64f5ea4a8dc20d4c2b7f9b226ce5464f19b0be2690a9be6cdfeeb0a",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_09_m1_tf_023"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:e027cb8cc1513d795d9b1257b9d3e591e79da4566e8bd15bb753a30d21a07d6c"
+      }
+    },
+    {
+      "source_question_id": "M1_TF_024",
+      "current_question_id": "M1_TF_024_V2",
+      "current_question_version": 2,
+      "module": "M1",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:52cbca49f04a2cad13bf0d7d32b22bad647c39c2012bc9d628879f8828850ff8",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_10_m1_tf_024"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:75e2fcc57f53722f0ab75a86307a2cdd8ed101859d6ef6a84f77270b6e2dbfdc"
+      }
+    },
+    {
+      "source_question_id": "M1_TF_025",
+      "current_question_id": "M1_TF_025_V4",
+      "current_question_version": 4,
+      "module": "M1",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:e1b4aad970878ba021cdfbfa7cb810710866fbcbcf8df36bae12d54cd14c426b",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_11_m1_tf_025"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:b1eb76a5e6c839ba345c6233701e99f8c1bb03a0486b1368d3ce97712f76f279"
+      }
+    },
+    {
+      "source_question_id": "M1_TF_026",
+      "current_question_id": "M1_TF_026_V2",
+      "current_question_version": 2,
+      "module": "M1",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:c1c13b11e170a4a2020b396f1ae8b06d1e13e284fceeeca4bebf1d22f84b4a37",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_12_m1_tf_026"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:af0576522960ece5037db393484f0ef8e0bc84b29c3569059f1880a354f66683"
+      }
+    },
+    {
+      "source_question_id": "M2_OP_027",
+      "current_question_id": "M2_OP_027_V2",
+      "current_question_version": 2,
+      "module": "M2",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "PILOT_PENDING_GATE",
+      "semantic_hash": "sha256:b59ec081f62e6a418b91c87df800e9f7ad381cde69225c62d29d06d0d1ce93da",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m2_op_027_v2",
+        "asset_ids": [
+          "asset_offline_tool_04"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:12b7cdd4e39df81419a0bb763c8d9c12e78ec0d40d3efda1e33ecc94cfe59ca2"
+      }
+    },
+    {
+      "source_question_id": "M2_OP_028",
+      "current_question_id": "M2_OP_028_V4",
+      "current_question_version": 4,
+      "module": "M2",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:ee71ce72f464135214aa02c4c6a30f3cd804ef73bf7d0612738a42c0235c330f",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m2_op_028_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:c363bac17ded61fb85bd118b43617fa43b615bb64d96ad88c6d3d86e800ffb32"
+      }
+    },
+    {
+      "source_question_id": "M2_OP_029",
+      "current_question_id": "M2_OP_029_V4",
+      "current_question_version": 4,
+      "module": "M2",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:878f466d698a4178f151648d67f5d26dd61708de3ccbca9bab96a87aaeb958cc",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m2_op_029_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:4863ecdf33b404ec06a28fda1ff5a6ffb2e1a7635e21173beb20e7b123532db2"
+      }
+    },
+    {
+      "source_question_id": "M2_OP_030",
+      "current_question_id": "M2_OP_030_V4",
+      "current_question_version": 4,
+      "module": "M2",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:4daf52b158260aae4e443dc861ee63b95a6f72a6b386b0d6a3e975b4c78b22f5",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m2_op_030_v4",
+        "asset_ids": [
+          "asset_offline_tool_04"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:2ef2446dee9f60ec5e9d56fb4f20c67cfc7ea0082cd0b8a5f2b5359192da4591"
+      }
+    },
+    {
+      "source_question_id": "M2_OP_031",
+      "current_question_id": "M2_OP_031_V6",
+      "current_question_version": 6,
+      "module": "M2",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:3e7de10bf361b2dc99f16fc000e277543273192784a1ace913e1dac06eb70de0",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m2_op_031_v6",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:c47f5c39d17d632d57ed23054f91c5a76a36764a5bc85b6db92eaabed3f3ec62"
+      }
+    },
+    {
+      "source_question_id": "M2_OP_032",
+      "current_question_id": "M2_OP_032_V4",
+      "current_question_version": 4,
+      "module": "M2",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:be75881556a4b1c36bbfb00732cdcf785cb3a9ed1aecba3c7eb25bdffbc6fa38",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m2_op_032_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:800d21070fa37b21e75921ce257a2b9b7c6048b3242575e9b66d1f04b1b4e543"
+      }
+    },
+    {
+      "source_question_id": "M2_OP_033",
+      "current_question_id": "M2_OP_033_V4",
+      "current_question_version": 4,
+      "module": "M2",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:6248f2ab11609f01676946ca99ff4228d42fd8f1ed4d1a545403e42d6b6d3e55",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m2_op_033_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:bce106275b8ed04438efb2ff4345ddf3923810e1e4c3e359af99fcbb808e186c"
+      }
+    },
+    {
+      "source_question_id": "M2_OP_034",
+      "current_question_id": "M2_OP_034_V4",
+      "current_question_version": 4,
+      "module": "M2",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:a4087c4bca7044363a7d65b6d1bb44871cd5afcf4e4aee6c06b58bf1a707cda3",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m2_op_034_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:55f06b120fc8253d3b463a9462fdedf78c028f91115cc9ad99cac49c98914301"
+      }
+    },
+    {
+      "source_question_id": "M2_OP_035",
+      "current_question_id": "M2_OP_035_V4",
+      "current_question_version": 4,
+      "module": "M2",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:400e8b8f639b67698fd534ff24cec79864bf85eb582ada1c48ab4e9553c9cb5f",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m2_op_035_v4",
+        "asset_ids": [
+          "asset_offline_tool_07"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:02bef5b2ed5a61abccbe50e92b4ef945c63fdbea1ebc7c323c11483f16ec6c41"
+      }
+    },
+    {
+      "source_question_id": "M2_OP_036",
+      "current_question_id": "M2_OP_036_V4",
+      "current_question_version": 4,
+      "module": "M2",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:74dd307a15634050cc51a7f17c3dae64d47700b855e44e9fd58feb6798fcb627",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m2_op_036_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:ea0ae67203c7c847d46bf0ba06317933b82d45549cbb8d463b82eeae138ed690"
+      }
+    },
+    {
+      "source_question_id": "M2_OP_037",
+      "current_question_id": "M2_OP_037_V4",
+      "current_question_version": 4,
+      "module": "M2",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:b8afe642e67997a27e876e09e87e6d6f50c813598c5c371f9e7b6b3a8fb9a33c",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m2_op_037_v4",
+        "asset_ids": [
+          "asset_offline_tool_01"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:0c8e1616509f03cd8d03019627be9be001ea743a74a18e8645d59bb674f6988b"
+      }
+    },
+    {
+      "source_question_id": "M2_OP_038",
+      "current_question_id": "M2_OP_038_V6",
+      "current_question_version": 6,
+      "module": "M2",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:5a5d9fd49650579fa055aafc9bef43582988c3639ce23a89cb6b9304acf4461e",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m2_op_038_v6",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:1db679574670785c3c55794fb3103ed66ba2bf9d71e433547e5e49131c67b5fe"
+      }
+    },
+    {
+      "source_question_id": "M2_OP_039",
+      "current_question_id": "M2_OP_039_V4",
+      "current_question_version": 4,
+      "module": "M2",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:e1e11e5b946b21a5d9d81376de4692335a700846c88e939b89610398c0dffa93",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m2_op_039_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:fec5efecf1e525d5ac4fe1bb4575bdfb0724b1231f7bfe79dd630e69a6e02995"
+      }
+    },
+    {
+      "source_question_id": "M2_OP_040",
+      "current_question_id": "M2_OP_040_V4",
+      "current_question_version": 4,
+      "module": "M2",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:73de3aa67b13592741f4edcd84564f48ea2eb9db150bb1da752da9203f1fa70c",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP",
+          "ROLE_PLAY_SCRIPT"
+        ],
+        "offline_setup_id": "setup_m2_op_040_v4",
+        "asset_ids": [
+          "asset_delivery_script_m2_op_040"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:c019491025bf1d78f5ab205c2895bf088b1e290f513b19e8e1fce9e536e1257b"
+      }
+    },
+    {
+      "source_question_id": "M2_OP_041",
+      "current_question_id": "M2_OP_041_V6",
+      "current_question_version": 6,
+      "module": "M2",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:23244edbec021c42b9edb4527992495a34cb30675be9052ea53636b08e1c754a",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP",
+          "ROLE_PLAY_SCRIPT"
+        ],
+        "offline_setup_id": "setup_m2_op_041_v6",
+        "asset_ids": [
+          "asset_delivery_script_m2_op_041"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:48186946d480d45f6630859be21210467e69890100cf5c0e1954422eb752e618"
+      }
+    },
+    {
+      "source_question_id": "M2_TF_013",
+      "current_question_id": "M2_TF_013_V2",
+      "current_question_version": 2,
+      "module": "M2",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:13f25b4cc23e34e3e28d522bf956449c7dc3fe67870d24e78ec24aeaf3ab38ea",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_b_01_m2_tf_013"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:95f6674be9ecefca28bf78d127f00cf725ab16dc8b9eba0027e74152193476c7"
+      }
+    },
+    {
+      "source_question_id": "M2_TF_014",
+      "current_question_id": "M2_TF_014_V2",
+      "current_question_version": 2,
+      "module": "M2",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:30bc8cee4cbb95cd0f9a472944f17b3dde1affcf51cc68e5f8933af0153c21b6",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_b_02_m2_tf_014"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:f6ab31b33a5a74115dc979ac37b6d638a34f4de8fecdc4fb07b84405e8d362f3"
+      }
+    },
+    {
+      "source_question_id": "M2_TF_015",
+      "current_question_id": "M2_TF_015_V2",
+      "current_question_version": 2,
+      "module": "M2",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:d582c4ba1f6a4b20225ce84f691d0346fa9cf1a095ce08641bed82bc480b76e1",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_13_m2_tf_015"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:8d2d260cde653d33593d20e66cc4dd59bbdb8efb7e00c1fd3a93e1cdbdd116a7"
+      }
+    },
+    {
+      "source_question_id": "M2_TF_016",
+      "current_question_id": "M2_TF_016_V2",
+      "current_question_version": 2,
+      "module": "M2",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:9ca0ea89c65c42eb5b187cfccedc729d8ddcadbaa054915ee8627c9438b764e5",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_14_m2_tf_016"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:1aa249a60d4321e88f5fa1df5782d4384c67ee7c5e62335974e46f6f44ef0822"
+      }
+    },
+    {
+      "source_question_id": "M2_TF_017",
+      "current_question_id": "M2_TF_017_V2",
+      "current_question_version": 2,
+      "module": "M2",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:dd683947566357401f051a15f8b1135d6cb31f83ecb38998669d0fa083a9731b",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_b_03_m2_tf_017"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:8397c5b6dae6f78226a6b8f37a06bfe8d9bb6a005b0b73de459a569910e6310d"
+      }
+    },
+    {
+      "source_question_id": "M2_TF_018",
+      "current_question_id": "M2_TF_018_V4",
+      "current_question_version": 4,
+      "module": "M2",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:115a37b0a7c99234b987976a2026eb6504331c5ada4542d4af24266fb0107fb3",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_b_04_m2_tf_018"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:4783a4763812d4c89c77e7e7090370000cecd92cc1ea6e893dc1f01683ebeeb0"
+      }
+    },
+    {
+      "source_question_id": "M2_TF_019",
+      "current_question_id": "M2_TF_019_V2",
+      "current_question_version": 2,
+      "module": "M2",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:91d27223894e0dc1051e3315b66665ad1b9e14a5a3b3ad61244faff98e717802",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_15_m2_tf_019"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:163278a9170906537ed0808e3b513ce1e6f8e79875cfd665974c1a00d809b787"
+      }
+    },
+    {
+      "source_question_id": "M2_TF_020",
+      "current_question_id": "M2_TF_020_V2",
+      "current_question_version": 2,
+      "module": "M2",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:0af20fd74f5004c1d07f58d9627810d135697b38f022aca52d537a6c04259051",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_b_05_m2_tf_020"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:c6fcbc05312b26e580d1f67be991e6bd72ffe8dd54f6b5481e68d4dc2db18245"
+      }
+    },
+    {
+      "source_question_id": "M2_TF_021",
+      "current_question_id": "M2_TF_021_V2",
+      "current_question_version": 2,
+      "module": "M2",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:acb4b3ca5c2c76504fce6add986749b83687d8b5a5592fead258be454b932dd2",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_d_01_m2_tf_021"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:1e966486cd7206458bacc331cdf1a270833bd47d6e55057ea2ca875b52b6ca69"
+      }
+    },
+    {
+      "source_question_id": "M2_TF_022",
+      "current_question_id": "M2_TF_022_V4",
+      "current_question_version": 4,
+      "module": "M2",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:a4e85109fd737bcadc9c5cb3ab34902d44da6fec1764f0ffd11b6bd73f3a6cc3",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_b_06_m2_tf_022"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:413932ec0eca8d031977d3f520165df91f08773b3e71b62de6fb46efa3c8a782"
+      }
+    },
+    {
+      "source_question_id": "M3_OP_043",
+      "current_question_id": "M3_OP_043_V2",
+      "current_question_version": 2,
+      "module": "M3",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "PILOT_PENDING_GATE",
+      "semantic_hash": "sha256:3d86ef1c033379fa420d8a80376dad9d721db0508f2a7ce6d0a5a00910f11754",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m3_op_043_v2",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:463daa5a75a54f1a4535fbc042fcb5104eddcfd5543d969f683b05c581b219ec"
+      }
+    },
+    {
+      "source_question_id": "M3_OP_044",
+      "current_question_id": "M3_OP_044_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:56ac4618ac7ed8717c82586c3ec584de8100f8677775107e600533888af2c35d",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m3_op_044_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:c40292c9312d9f51b8989ae7655cacf815eb7b449dbfc1f6b42968f2e67e0aa7"
+      }
+    },
+    {
+      "source_question_id": "M3_OP_045",
+      "current_question_id": "M3_OP_045_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:768e2708590dcdff841ab192d0831d36736637b1718d33b94e1be589480825d1",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m3_op_045_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:32c4bdec539639d03405f1c861c150196a6e57a4ced4a07270cb2abb5739651a"
+      }
+    },
+    {
+      "source_question_id": "M3_OP_046",
+      "current_question_id": "M3_OP_046_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:78fab1bd2f5d7621752b38f29dd045de455c70e275427934fdde04aba52ce0f9",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m3_op_046_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:21c98bd6499354eb381975f30163c63bd8d0a95c77621c23e1be446d85af0bee"
+      }
+    },
+    {
+      "source_question_id": "M3_OP_047",
+      "current_question_id": "M3_OP_047_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:68cea308d454718b60047d3293ff36dbb48b12f83a1bb09aa94dc41165439cd5",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m3_op_047_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:289c7491988ef482b02d257eee77cbc76e6632f26bbed12f52f10e3c98494bd3"
+      }
+    },
+    {
+      "source_question_id": "M3_OP_048",
+      "current_question_id": "M3_OP_048_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:5c5358282e66fd792eb79545ea3ce34983de12ae1d5116a4e02780fd75f5de72",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m3_op_048_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:e4921aba3f314240de185cd51fce801676c6f66008963cde3f96ed51f99a7bad"
+      }
+    },
+    {
+      "source_question_id": "M3_OP_049",
+      "current_question_id": "M3_OP_049_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:e7870eecf0d3bb6f21767026816a93ba6c5850de6e535d2d3961ff4738f261ee",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m3_op_049_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:0913465d23c89935e48a17f1816bbf10b29e61940ffecae568ffad9aa8078f5c"
+      }
+    },
+    {
+      "source_question_id": "M3_OP_050",
+      "current_question_id": "M3_OP_050_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:540b9ef6a0a9e8a11378e07180ca9abcab8153e65015b3ee8aa942f2a23b66b4",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m3_op_050_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:c2ca0b70ee8417381df3b6b97d36f8616119e7c03d1d98465ac65affc94a61c5"
+      }
+    },
+    {
+      "source_question_id": "M3_OP_051",
+      "current_question_id": "M3_OP_051_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:7293a6dd11cbd370634a828a430b2447c7f876380a23be27f1e97efee97bba0f",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m3_op_051_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:3b261d544d852b105d399eb469ee6a77136f5c45dc053ed3e74bc2ab8e65fa5a"
+      }
+    },
+    {
+      "source_question_id": "M3_OP_052",
+      "current_question_id": "M3_OP_052_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:cbe809ab93d6d4f2ea334661871634d501de8667eda7e1dcd24bc6bd655bfc6f",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m3_op_052_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:d397940f74483d99313fac9a21856bba8e8da73c29e545de83d41ffea9aff473"
+      }
+    },
+    {
+      "source_question_id": "M3_OP_053",
+      "current_question_id": "M3_OP_053_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:a2dcb2b53fba2b14a49d6761209914f7635b847c8782c898932d9dc4c6eb3916",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m3_op_053_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:1e28a509bce9e8038eeae3fc3cb425b1dfe2aa76d5619f8677aaf33761a5701e"
+      }
+    },
+    {
+      "source_question_id": "M3_OP_054",
+      "current_question_id": "M3_OP_054_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:10c683642ccd770c10ab0cc0e3bc3845e3b4d9fc9c18445433910b5da2c932fa",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m3_op_054_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:d8ab1a7952296db5f920fdea38b0ca677e9af70fd8c6509a8acffabced701aea"
+      }
+    },
+    {
+      "source_question_id": "M3_OP_055",
+      "current_question_id": "M3_OP_055_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:4571b5e43dd0ebf5fbaf14c5ccc6e668442db54f5b922ae377680a765caa2a65",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m3_op_055_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:4181825a1fb557915a8494454133d3c99caf0e60121a4c609852b09ed005cfe4"
+      }
+    },
+    {
+      "source_question_id": "M3_OP_056",
+      "current_question_id": "M3_OP_056_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REPLACEMENT_REVIEW_PASSED_PENDING_ACTIVATION",
+      "semantic_hash": "sha256:b6c5cdaf519121ced592a847837c32961a44b71bc8a6757e4256a784fadcb696",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m3_op_056_v4",
+        "asset_ids": [
+          "asset_offline_tool_05"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:62fb0fb37da395b02d8b08f3ad97d843a36b1180f41b9ac1bd01e4f3e244955c"
+      }
+    },
+    {
+      "source_question_id": "M3_OP_057",
+      "current_question_id": "M3_OP_057_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:b53282972a1d2ada1e4c0c789ac957fe97e2e3897179c073a7e3ff828faf426b",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m3_op_057_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:ba4ccd3cf9c1ab57f6c44cbe7c1bfce597ca8819dfca998bf1e611bb70e29d0e"
+      }
+    },
+    {
+      "source_question_id": "M3_OP_058",
+      "current_question_id": "M3_OP_058_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:c71bca3aad0f4d1b1d4b2849e905f53095f7b959b5c2ecf80d8a031ea4afa8ac",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m3_op_058_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:96625648ac3061040e9ffe896b9922e49da40a628cd83dca9a63829997095e39"
+      }
+    },
+    {
+      "source_question_id": "M3_TF_025",
+      "current_question_id": "M3_TF_025_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:017546d711230b2e4936d4ba5d717dc288b173c529e5979b81a435204ae6b10d",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_c_01_m3_tf_025"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:c66768bf328d015606c3cc48a066051f65fc4111fe213133c5176d912c796e4d"
+      }
+    },
+    {
+      "source_question_id": "M3_TF_026",
+      "current_question_id": "M3_TF_026_V2",
+      "current_question_version": 2,
+      "module": "M3",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:2880e4a04f9364145b694e3e7e64a852f3523d93822acd09396f57b2f260f8a3",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_c_02_m3_tf_026"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:706dd17af6227608fe12b700bce9935f4eafc99addd56b0d3b890bd9ea504848"
+      }
+    },
+    {
+      "source_question_id": "M3_TF_027",
+      "current_question_id": "M3_TF_027_V2",
+      "current_question_version": 2,
+      "module": "M3",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:c688010f7836c59c8724999e2d0379ab9f5b3ff39d6561655519d464cf1c8f7c",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_c_03_m3_tf_027"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:683a0fa9fbfff33ae6970b1d17ea831afb7710f72cfe016d56f054247eee6e31"
+      }
+    },
+    {
+      "source_question_id": "M3_TF_028",
+      "current_question_id": "M3_TF_028_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:b0c2bfff32cecbd6ab1ea1ee730aaeacc05d6eeb99e0cdb4be8a88f28c869aab",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_16_m3_tf_028"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:8e2cb2a48b5eaf803c734702dbbc56923566dd108cd760ddb99dc4d5afe35e0e"
+      }
+    },
+    {
+      "source_question_id": "M3_TF_029",
+      "current_question_id": "M3_TF_029_V2",
+      "current_question_version": 2,
+      "module": "M3",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:881ed7444442c6c989a0a65f490aff487cfdb057055acb6e9ce263bf7eb3d534",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_c_04_m3_tf_029"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:db4fe7ef08856c2df62882ed1ce6b2d6f53818637a0cfd4133146c196c4e45ac"
+      }
+    },
+    {
+      "source_question_id": "M3_TF_030",
+      "current_question_id": "M3_TF_030_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:8d86d5d57fc1707a8586694aac57266ee0b2e86dfddaa0b65c184d99a3a1cf9e",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_c_05_m3_tf_030"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:7d77d51e79f7aff60f75c5b72358e86fea90d4f96210422e6b489eb75e497be1"
+      }
+    },
+    {
+      "source_question_id": "M3_TF_031",
+      "current_question_id": "M3_TF_031_V2",
+      "current_question_version": 2,
+      "module": "M3",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:73d4f36bc5b93d86d9f8bf9f75347f0402f5e52641e015b64605b9d8b37516e9",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_c_06_m3_tf_031"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:5ea54f949ce50afd7e6e5aaa8793b6c2759b41359df0cd4ff9a4ce7b7e47126d"
+      }
+    },
+    {
+      "source_question_id": "M3_TF_032",
+      "current_question_id": "M3_TF_032_V2",
+      "current_question_version": 2,
+      "module": "M3",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:47c0d0872968c2e24c000fc3c384845de9de72a3f16f82b5d2612194952c944e",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_c_07_m3_tf_032"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:d4b1f58a78ca06ec0aec6c9bf863aca4f46c1f106324a4d2f5f8b9c46e646639"
+      }
+    },
+    {
+      "source_question_id": "M3_TF_033",
+      "current_question_id": "M3_TF_033_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:3927ce1ba6cd3ad4afb5a40f8e0a57f0456c2db68cc1f75f9a36d54c29613fc2",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_17_m3_tf_033"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:38fd5baca3b3ee932f5afae862df71845e0b243da1a8a38ba20de56a6609d7f6"
+      }
+    },
+    {
+      "source_question_id": "M3_TF_034",
+      "current_question_id": "M3_TF_034_V4",
+      "current_question_version": 4,
+      "module": "M3",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:5fbdae0d5f377aef14f2d11059e0065d54394095708508009ea073582e7bd8c3",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_c_08_m3_tf_034"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:56735416e3788d27d8fa9477067f9b656dcec860ca8403ae6543ed692d32df81"
+      }
+    },
+    {
+      "source_question_id": "M3_TF_035",
+      "current_question_id": "M3_TF_035_V2",
+      "current_question_version": 2,
+      "module": "M3",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:f8b7a648adad544b0f19c9c715672d39f68fc4276244bf2f9a60660edb6f00bc",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_18_m3_tf_035"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:4431cb76f9021f4f076d834aed80df501fb0fd0be7d3be2fa4ea2d53ac1688fe"
+      }
+    },
+    {
+      "source_question_id": "M3_TF_036",
+      "current_question_id": "M3_TF_036_V2",
+      "current_question_version": 2,
+      "module": "M3",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:5135f5bde4a4668976fd4af32a867acbb50b23a2dd05948ab549652762805373",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_c_09_m3_tf_036"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:bca0a5ad7693a61bf99e62997bd3b8c1f6221eb864898b133487e32d6fb42d70"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_028",
+      "current_question_id": "M4_OP_028_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:55cfc23764a348a41258d2543633d1b0e62bb2a939fa58672107f6b6e31feb34",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m4_op_028_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:38483ef3fc2e89cad261715519964d2c0a60dce78c2e142beba076d7cefdcbe4"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_029",
+      "current_question_id": "M4_OP_029_V2",
+      "current_question_version": 2,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "PILOT_PENDING_GATE",
+      "semantic_hash": "sha256:8dfb77aa23dda458c6c21ab3f3077d8ffad0d9f79174d57d2bb819375e14878b",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m4_op_029_v2",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:d3f0e59e0bfd502dd41109de3ed12a62d2f74adb55573ca55058a179735ce889"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_030",
+      "current_question_id": "M4_OP_030_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:dac805607f2c72b8e077dd56c5998a1876638e55e40f9ad969c774b65035dfc3",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m4_op_030_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:e1136acd15b602879882c37141a8dbdae3a3fb596f86af9ee9aaf5e6eaeaa9e1"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_031",
+      "current_question_id": "M4_OP_031_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:637d65a8fa34050bfc3c3ba5c0d975d4e599c4ffe62fc75a42e69165355ea50c",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m4_op_031_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:4a0d6d06a74311ed0d10db825cefb339daf6b59c277f95da8ec7c894f035159b"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_032",
+      "current_question_id": "M4_OP_032_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:892691bb94992f85691f8414d3f0081e7128d909334fc8b07b51910e68d16790",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m4_op_032_v4",
+        "asset_ids": [
+          "asset_offline_tool_09"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:b03d6925f174e4388df787927b8ab939fbd42388a1b6d8ac458a9f6ecc65ae71"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_033",
+      "current_question_id": "M4_OP_033_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:e34dfd626b69a5133dca9c544ddd6bbba84ec63422531c862076d01c1dff8408",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP",
+          "ROLE_PLAY_SCRIPT"
+        ],
+        "offline_setup_id": "setup_m4_op_033_v4",
+        "asset_ids": [
+          "asset_delivery_script_m4_op_033",
+          "asset_offline_tool_07"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:695ce395ff2ef9f583c6730fa226503bfd49ad5b34c97f7e976ea59f40da83f4"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_034",
+      "current_question_id": "M4_OP_034_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:fdfcea62905c307b196f1cd804adf0732e2e8991b800cd6b37b505fef60f2b52",
+      "delivery": {
+        "types": [
+          "OFFLINE_EXAMPLE_IMAGE",
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m4_op_034_v4",
+        "asset_ids": [
+          "asset_delivery_answer_image_m4_op_034"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:c03ce530765ae11c6e5a2ca8d4d8974c3c55497813291ae7599d112f69d22073"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_035",
+      "current_question_id": "M4_OP_035_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:c8c604fb8862d0fa8f406aecad85b081cf858e3f41909718335227c3b6289609",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m4_op_035_v4",
+        "asset_ids": [
+          "asset_offline_tool_07"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:1e6edcdae14bf1dacf5936e995d7a7d26b4a2f1d5db119e33d2f3d4925d8edf0"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_036",
+      "current_question_id": "M4_OP_036_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:39ed17e489b22b8c3f30c5668b418a2e8c2c496c4f33707212bdd98c1f83f516",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m4_op_036_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:849d1b813578daaf7b59d4226b7422954dbe24852377d73fec28392686e7b54e"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_037",
+      "current_question_id": "M4_OP_037_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:0df27f67694a5da5df9ea24599a5ad659354b8e9c09b00eb957e82c2e931fb84",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP",
+          "ROLE_PLAY_SCRIPT"
+        ],
+        "offline_setup_id": "setup_m4_op_037_v4",
+        "asset_ids": [
+          "asset_delivery_script_m4_op_037"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:8cf8a945d84815f5d1bf2e954fc8cb559d7ecab1de608579a60ef84d5c7d0a04"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_038",
+      "current_question_id": "M4_OP_038_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:96d579e969423d2817eb210ff48e813fabfe26c08cdca7167d0541cb7c2b5c47",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m4_op_038_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:2a10a22f999e6853bd182790df4f94049b1765375d93419a87dc7113d3ca066d"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_039",
+      "current_question_id": "M4_OP_039_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:0c789ee23ff50b79594e57196d4e2b414c520a499805fe52e9600036e9591b86",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m4_op_039_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:8650280fcc685b23439a629b39c8c51ad04c43b0597764c9cc155e79c5fe4153"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_040",
+      "current_question_id": "M4_OP_040_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:b1b9d41ec7eabceb94ebcb2ff0e8cd41670e2f8dccff5022dcc62fe8aff0a097",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m4_op_040_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:b34751d3aebd6c631916c7dbe6146d907ef4037eb71edd3afa19f27a5ebb9601"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_041",
+      "current_question_id": "M4_OP_041_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:ada0fd15b4ca75e502a401382af6a5dd21e7f58e8e92642ccd7c9de1351776b9",
+      "delivery": {
+        "types": [
+          "AUDIO_CUE",
+          "OFFLINE_SETUP",
+          "ROLE_PLAY_SCRIPT"
+        ],
+        "offline_setup_id": "setup_m4_op_041_v4",
+        "asset_ids": [
+          "asset_delivery_audio_inventory_interruption",
+          "asset_delivery_script_m4_op_041",
+          "asset_offline_tool_08"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:cc86c8b53f6640cdbe7f56220a9bdb715eec6e1be27047b4f743db1589bc3a56"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_042",
+      "current_question_id": "M4_OP_042_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:0547d00bbad9ce771ba09d29cdaa76e2e6d73c7665fa4d552fea5efef0c37691",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP",
+          "ROLE_PLAY_SCRIPT"
+        ],
+        "offline_setup_id": "setup_m4_op_042_v4",
+        "asset_ids": [
+          "asset_delivery_script_m4_op_042"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:d43cc63c0c86a4fbb0ea85f5cef25933567e0e9d7b3700e6f1ecd102273baf29"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_043",
+      "current_question_id": "M4_OP_043_V2",
+      "current_question_version": 2,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REPLACEMENT_REVIEW_PASSED_PENDING_ACTIVATION",
+      "semantic_hash": "sha256:7df37f5d3f61aeb8fce82e17493401713b3cb84a72dfc9e540b20bd25127a119",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m4_op_043_v2",
+        "asset_ids": [
+          "asset_offline_tool_04",
+          "asset_offline_tool_10",
+          "asset_offline_tool_12"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:6a34cb9e8cd30dc01ab5b1ae3eeb25d426ee2e5a879ab9730f4f024179572fd6"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_044",
+      "current_question_id": "M4_OP_044_V2",
+      "current_question_version": 2,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REPLACEMENT_REVIEW_PASSED_PENDING_ACTIVATION",
+      "semantic_hash": "sha256:d36525b4131dce063a73e55b7b661b6c076c36b96ceef5cef50acdbead3f4b82",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m4_op_044_v2",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:2d6a7bad66ea5c3bc90bfa6f49395386f9f05ece847c38b6dd03aaf19b18aa7f"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_045",
+      "current_question_id": "M4_OP_045_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REPLACEMENT_REVIEW_PASSED_PENDING_ACTIVATION",
+      "semantic_hash": "sha256:a127321c15a0f7f0b65719e001301688c25ae4248ed87ad4bd6739c613788f73",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m4_op_045_v4",
+        "asset_ids": [
+          "asset_offline_tool_10"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:c1e225c987a07a5544dda32ff2217624f4c3a1d9d50211f02120e4653197d64a"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_046",
+      "current_question_id": "M4_OP_046_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REPLACEMENT_REVIEW_PASSED_PENDING_ACTIVATION",
+      "semantic_hash": "sha256:aa0eecc3b2e9a3cfa64ad95fd017b7fdf9d65e96d465ce151f38b79b7ae73dc7",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m4_op_046_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:a68cd6623bf0baf9258066542d430d24c947e4bfadd72132776eb119205d69ef"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_047",
+      "current_question_id": "M4_OP_047_V3",
+      "current_question_version": 3,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REPLACEMENT_REVIEW_PASSED_PENDING_ACTIVATION",
+      "semantic_hash": "sha256:f42242e98260c906a30fc01361c35627463c328e7e388b5a1b38e5383504b6b1",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m4_op_047_v3",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:495778aba6fcbed8a9e11203171f1c6257f3caed3a37dcaf12de5ebeb1732315"
+      }
+    },
+    {
+      "source_question_id": "M4_OP_048",
+      "current_question_id": "M4_OP_048_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REPLACEMENT_REVIEW_PASSED_PENDING_ACTIVATION",
+      "semantic_hash": "sha256:9cbcf53c74aa4438503c239906f6032a3128fb76c6ee8dad50406268a62f9df3",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m4_op_048_v4",
+        "asset_ids": [
+          "asset_offline_tool_05"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:8ecfca46d824250a8e168ec0a1b4cc180c3ce2c138c94187aab4450b68db1eb9"
+      }
+    },
+    {
+      "source_question_id": "M4_TF_013",
+      "current_question_id": "M4_TF_013_V2",
+      "current_question_version": 2,
+      "module": "M4",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:b5eb637062c7ef80d6de110b4dfc5f2264292e84969f50e073f0bcb51cf26c37",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_19_m4_tf_013"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:5cddccbe13942e6479fbd02732c1b258dd5aff6fc88518a8279d66c24db7603e"
+      }
+    },
+    {
+      "source_question_id": "M4_TF_014",
+      "current_question_id": "M4_TF_014_V2",
+      "current_question_version": 2,
+      "module": "M4",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:d424a5a60aca6068487e981468f874a15ebb21cb333224be7462b1e22b07643f",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_d_02_m4_tf_014"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:0e327beb3b777ee6825ad6fc478abc840f8c0d2b5b51aba4ae9a3a5142b1f7a1"
+      }
+    },
+    {
+      "source_question_id": "M4_TF_015",
+      "current_question_id": "M4_TF_015_V2",
+      "current_question_version": 2,
+      "module": "M4",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:9510e180272a6cc2d9405305218a3b6fdd014b88b7ee942d7fd28269adf0309c",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_d_03_m4_tf_015"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:065855e69d5e60e87235c9a363073a759730868ad82ce2d5f80939a1697fff85"
+      }
+    },
+    {
+      "source_question_id": "M4_TF_016",
+      "current_question_id": "M4_TF_016_V2",
+      "current_question_version": 2,
+      "module": "M4",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:f040a1e708afc0c404a2976bb4470307407d59f7be5505a4855ceae0ed4553e6",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_d_04_m4_tf_016"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:90a0281cd29151af2d051e0179a0d89bbf67f0991bcd68872672346f4e1c974f"
+      }
+    },
+    {
+      "source_question_id": "M4_TF_017",
+      "current_question_id": "M4_TF_017_V2",
+      "current_question_version": 2,
+      "module": "M4",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:55cd73f3ee8947308f68d64089b4ae9e3a89aad24a98d52fbd15123fa324dad9",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_d_05_m4_tf_017"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:a74cd13a0e3e347816a0d59120154ba981738acb28211e4f446a347ee81e3edd"
+      }
+    },
+    {
+      "source_question_id": "M4_TF_018",
+      "current_question_id": "M4_TF_018_V2",
+      "current_question_version": 2,
+      "module": "M4",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:b73fbb9681d35737212b4f98d66f9ffcb94fb9ae9c9ec569090c34b1ddea1c18",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_20_m4_tf_018"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:658c26245d5484ed0b63c8220b2bb4d0bfc2aeb065fcb8d060048a9792fa1938"
+      }
+    },
+    {
+      "source_question_id": "M4_TF_019",
+      "current_question_id": "M4_TF_019_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:ec946280f9ca9019f15b2dac465d301b27aae3722765858e866187c583972b15",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_d_06_m4_tf_019"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:421b73c2aa29d557db2b619491c4cdda5defb6b6ea8909eedad43f8ee15c4869"
+      }
+    },
+    {
+      "source_question_id": "M4_TF_020",
+      "current_question_id": "M4_TF_020_V2",
+      "current_question_version": 2,
+      "module": "M4",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:a7e1d84765f9762216c25f8e00f780438c4d62c2fe76fd948793d369e4e923cc",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_d_07_m4_tf_020"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:444ef827c4aba190cb68bfc56bce41b11e5c2a44abe2ee263f9a36eb9a452a44"
+      }
+    },
+    {
+      "source_question_id": "M4_TF_021",
+      "current_question_id": "M4_TF_021_V2",
+      "current_question_version": 2,
+      "module": "M4",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:736212f82566b05b3da23c68b7d7ae1f240f1b556b086d777bb337be9707be5c",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_21_m4_tf_021"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:27739e08593661087175879e204fa03a4fa9e93f4e8d6b9f432840d92a53cbae"
+      }
+    },
+    {
+      "source_question_id": "M4_TF_022",
+      "current_question_id": "M4_TF_022_V4",
+      "current_question_version": 4,
+      "module": "M4",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:f4e6a3aef7c1203bfe9236c029e3991853b310c7eac68370143678d5bd6db0f4",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_d_08_m4_tf_022"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:f7d008e427701ff75364cd14b57fedabdf246e80d92eb2efd25c827157237924"
+      }
+    },
+    {
+      "source_question_id": "M5_OP_039",
+      "current_question_id": "M5_OP_039_V2",
+      "current_question_version": 2,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "PILOT_PENDING_GATE",
+      "semantic_hash": "sha256:056999e75f369ca54522c408a3586c2165cba297f7d0ff8c784fe6f8d9341c21",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m5_op_039_v2",
+        "asset_ids": [
+          "asset_offline_tool_09",
+          "asset_offline_tool_10"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:87c2255051146c5abb865e17d495db0fc114f9c6fb6dd18768812d865b01371a"
+      }
+    },
+    {
+      "source_question_id": "M5_OP_040",
+      "current_question_id": "M5_OP_040_V4",
+      "current_question_version": 4,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:37f662cbc5995dd1f5da9cf9a5061e04a2648486b767afb3f7b99bfabe402b56",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m5_op_040_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:68c0136aef78f28c6ef0e13781e7808a35d54c2579bd335efc5f425a0f1faf71"
+      }
+    },
+    {
+      "source_question_id": "M5_OP_041",
+      "current_question_id": "M5_OP_041_V4",
+      "current_question_version": 4,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:0dcc57f44ab2d18fe6fba3a03bac6fac9d43d56646fb1e26de798fac673e053f",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m5_op_041_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:d228a3af749683f2631383fa9b7e340dc81aed105b4a9b3d5eee37d76a476d26"
+      }
+    },
+    {
+      "source_question_id": "M5_OP_042",
+      "current_question_id": "M5_OP_042_V4",
+      "current_question_version": 4,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:d3ad9b84af661b030b6eafc286375f0cdfa8dbfebbd9e498d712f81add353848",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m5_op_042_v4",
+        "asset_ids": [
+          "asset_offline_tool_09"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:1bbca22178348470def476f7306bff19d2ac6b72a9fa0fec1af56a399f380d6f"
+      }
+    },
+    {
+      "source_question_id": "M5_OP_043",
+      "current_question_id": "M5_OP_043_V4",
+      "current_question_version": 4,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:f48d8e97585eaaf4d58f1d37cac340d154ca70b4ef888f8da8ba4fa7934008a7",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP",
+          "ROLE_PLAY_SCRIPT"
+        ],
+        "offline_setup_id": "setup_m5_op_043_v4",
+        "asset_ids": [
+          "asset_delivery_script_m5_op_043",
+          "asset_offline_tool_09"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:a55d3860bcbca1f520e38aef2ae4120caddc73ff26d410b9d9cea1ad997b18b1"
+      }
+    },
+    {
+      "source_question_id": "M5_OP_044",
+      "current_question_id": "M5_OP_044_V4",
+      "current_question_version": 4,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:f6a96574606377da637cb37269e6fd9932ffe83fe80ccbd02966dc689805a527",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP",
+          "ROLE_PLAY_SCRIPT"
+        ],
+        "offline_setup_id": "setup_m5_op_044_v4",
+        "asset_ids": [
+          "asset_delivery_script_m5_op_044"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:46b5f21dab92ee600f812314f1884490bf5a6558d4809715079528525099d6ed"
+      }
+    },
+    {
+      "source_question_id": "M5_OP_045",
+      "current_question_id": "M5_OP_045_V4",
+      "current_question_version": 4,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:ea6c724bdfb936c757601ddc4a94e01272a30101ac0a9cfd21c089c197cb777e",
+      "delivery": {
+        "types": [
+          "AUDIO_CUE",
+          "OFFLINE_SETUP",
+          "ROLE_PLAY_SCRIPT"
+        ],
+        "offline_setup_id": "setup_m5_op_045_v4",
+        "asset_ids": [
+          "asset_delivery_audio_evacuation_signal",
+          "asset_delivery_script_m5_op_045"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:8a3405f5a1812cc3f07dbe28e7b7618a4fe4a446da8d1b879291f12a10674a59"
+      }
+    },
+    {
+      "source_question_id": "M5_OP_046",
+      "current_question_id": "M5_OP_046_V4",
+      "current_question_version": 4,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:4e41dbdcc0b29bf5b90b200aa6864497da56327c5229e4557306f9febd48fcab",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m5_op_046_v4",
+        "asset_ids": [
+          "asset_offline_tool_09",
+          "asset_offline_tool_10"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:7e7c95a5e9cd25c5945490e1e6d4f825b979b9a4e9ab536a6cb1e5c1f7da158a"
+      }
+    },
+    {
+      "source_question_id": "M5_OP_047",
+      "current_question_id": "M5_OP_047_V4",
+      "current_question_version": 4,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:81cb194d930a29a85d59aac5f8789200c051a0e082f9aaa6191323f692792e5a",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m5_op_047_v4",
+        "asset_ids": [
+          "asset_offline_tool_09"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:602775133829a6c49c67528be4b86781452535dfc5b63c2b540da284989c06c8"
+      }
+    },
+    {
+      "source_question_id": "M5_OP_048",
+      "current_question_id": "M5_OP_048_V4",
+      "current_question_version": 4,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REPLACEMENT_REVIEW_PASSED_PENDING_ACTIVATION",
+      "semantic_hash": "sha256:c9a486ac865c44b3cee832299c8b877d5fa933b0783c95c2d4942165fbb9996a",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m5_op_048_v4",
+        "asset_ids": [
+          "asset_offline_tool_04",
+          "asset_offline_tool_09"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:fc865a286c3b4d943bc1d5cd27e38e6e1b0deea5f08302a6ce397039d62e7335"
+      }
+    },
+    {
+      "source_question_id": "M5_OP_049",
+      "current_question_id": "M5_OP_049_V4",
+      "current_question_version": 4,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:bbe435a75aa28d8109279ab361c9aff15c008df1252f6967d1d06db6caf9987a",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP",
+          "ROLE_PLAY_SCRIPT"
+        ],
+        "offline_setup_id": "setup_m5_op_049_v4",
+        "asset_ids": [
+          "asset_delivery_script_m5_op_049"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:19bef0361e377aea6d35a0e902bda3ed51743720eccc3d6da707cc97477648d2"
+      }
+    },
+    {
+      "source_question_id": "M5_OP_050",
+      "current_question_id": "M5_OP_050_V4",
+      "current_question_version": 4,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:1138e61196bcc5d57e3dfd059d036e2326f3a5f11ceaf2ca79ab2b46b26d1f96",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m5_op_050_v4",
+        "asset_ids": [
+          "asset_offline_tool_04",
+          "asset_offline_tool_09"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:3fdf30d649dca627c6727892d0593e3c3e7cf64e0f78242fee7891fe683cee14"
+      }
+    },
+    {
+      "source_question_id": "M5_OP_051",
+      "current_question_id": "M5_OP_051_V4",
+      "current_question_version": 4,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:5e8160717aac58f33a216117e592bea00ede48854d07e4bebca5fed2a82493e0",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP",
+          "ROLE_PLAY_SCRIPT"
+        ],
+        "offline_setup_id": "setup_m5_op_051_v4",
+        "asset_ids": [
+          "asset_delivery_script_m5_op_051"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:b69a9bbcd5bebe2d5c3eefe28daa6763035a70ec39f30e305f2ff565736ab404"
+      }
+    },
+    {
+      "source_question_id": "M5_OP_052",
+      "current_question_id": "M5_OP_052_V4",
+      "current_question_version": 4,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:4defc5cb5b2c29be9a3dd029da595a652cd82ab54867e6cbea7a591046425fdb",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP",
+          "ROLE_PLAY_SCRIPT"
+        ],
+        "offline_setup_id": "setup_m5_op_052_v4",
+        "asset_ids": [
+          "asset_delivery_script_m5_op_052",
+          "asset_offline_tool_09"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:701dcdedaa0cdbdba042c22639dc01a3f46ff590439adf8e254a5c97fe7c72ed"
+      }
+    },
+    {
+      "source_question_id": "M5_OP_053",
+      "current_question_id": "M5_OP_053_V4",
+      "current_question_version": 4,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:f914725fc7fb8766d7fcbd5caf162864f143b633c1faa6b53f0651d5a14e3581",
+      "delivery": {
+        "types": [
+          "AUDIO_CUE",
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m5_op_053_v4",
+        "asset_ids": [
+          "asset_delivery_audio_abnormal_equipment_noise",
+          "asset_offline_tool_09"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:5d4739a31d16b6ad2b8733d899000143130c6e05db85887dccc84526599fa5cf"
+      }
+    },
+    {
+      "source_question_id": "M5_OP_054",
+      "current_question_id": "M5_OP_054_V4",
+      "current_question_version": 4,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:0b808544ce2d4c1d07f9145052b8d7e7729907e420b41f06b3ec44fc2d87feb5",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP",
+          "ROLE_PLAY_SCRIPT"
+        ],
+        "offline_setup_id": "setup_m5_op_054_v4",
+        "asset_ids": [
+          "asset_delivery_script_m5_op_054"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:c9244615f8e6dbf65e2cb4588f487f6840087b9086fcbc141fdedf91ad3f0045"
+      }
+    },
+    {
+      "source_question_id": "M5_OP_055",
+      "current_question_id": "M5_OP_055_V3",
+      "current_question_version": 3,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REPLACEMENT_REVIEW_PASSED_PENDING_ACTIVATION",
+      "semantic_hash": "sha256:64b8778f81fbf40160e03ecc5b94543ca229919d70d38817bfd271d9ddc412e0",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m5_op_055_v3",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:fb2a7e01f87c49050cdd31809b341bccf689f5f6c42ed2e3838da8c6a5cea2ed"
+      }
+    },
+    {
+      "source_question_id": "M5_TF_021",
+      "current_question_id": "M5_TF_021_V2",
+      "current_question_version": 2,
+      "module": "M5",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:e728cd9f35ef89f1d8698a45a73a15396d445eb0f26aa7461f3aa467566d6880",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_e_01_m5_tf_021"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:3aa8371358fa97b10f0260f6877d494f4e36abd04a49e94bd665a526a64f832c"
+      }
+    },
+    {
+      "source_question_id": "M5_TF_022",
+      "current_question_id": "M5_TF_022_V2",
+      "current_question_version": 2,
+      "module": "M5",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:88ea10c472d3aa7a8631cc4ebb82d1685e3df25404156444f8f773567ccb8210",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_e_02_m5_tf_022"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:fb491637510e13d21ab80c864b218110bbd9ef478da7adec5ad7954ae8650645"
+      }
+    },
+    {
+      "source_question_id": "M5_TF_023",
+      "current_question_id": "M5_TF_023_V4",
+      "current_question_version": 4,
+      "module": "M5",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:ab96f4e35f4c64bf31204632506525bf05565632c00dbde0925c286afd8d8154",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_e_03_m5_tf_023"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:56ef3c546341422639775411f3ff167844a0c9930c317b4bf751d6f65154fa81"
+      }
+    },
+    {
+      "source_question_id": "M5_TF_024",
+      "current_question_id": "M5_TF_024_V2",
+      "current_question_version": 2,
+      "module": "M5",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:7f3d4c146d4fcc378df1c255fcd669fefbe6d8a6dfbfee8c026591b4af870f2e",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_f_01_m5_tf_024"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:5c660247f7ae627dfc1668fa38b8911c7f554299f136d73825f588eee1d80591"
+      }
+    },
+    {
+      "source_question_id": "M5_TF_025",
+      "current_question_id": "M5_TF_025_V2",
+      "current_question_version": 2,
+      "module": "M5",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:c62497be73b91d8d7f0a55a1144d877d431b6401d24c9a046a60f17845e94b99",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_e_04_m5_tf_025"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:03c1f32adfc406470e8e4e49c419b3273096b81eaa38f1eeb3db1f556acb0635"
+      }
+    },
+    {
+      "source_question_id": "M5_TF_026",
+      "current_question_id": "M5_TF_026_V2",
+      "current_question_version": 2,
+      "module": "M5",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:660ef8b9adb5ee21c7771a51cf327dc50e70f963951a21cadb13c98da643213b",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_e_05_m5_tf_026"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:89cfe5dae220ad8e73202160610000452b7584a333298ed8e70ef834a160d2e7"
+      }
+    },
+    {
+      "source_question_id": "M5_TF_027",
+      "current_question_id": "M5_TF_027_V4",
+      "current_question_version": 4,
+      "module": "M5",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:ee4c4afbcba48e7ed2d09b49d392aa30fad6703697306ac3990a29455181be33",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_e_06_m5_tf_027"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:5326407207de922285d395881773cfe4e3a7cac48d4d86619ed6c6ad16ede4a4"
+      }
+    },
+    {
+      "source_question_id": "M5_TF_028",
+      "current_question_id": "M5_TF_028_V2",
+      "current_question_version": 2,
+      "module": "M5",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:fce81a392671a82130a4b0586ee2a6b2accf27519a5765d75ce18907739bd143",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_f_02_m5_tf_028"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:4c1fe9a293482ddcb56178dee8855086cb6d30043a98cebf6bcf5f5dc7350bea"
+      }
+    },
+    {
+      "source_question_id": "M5_TF_029",
+      "current_question_id": "M5_TF_029_V2",
+      "current_question_version": 2,
+      "module": "M5",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:7daf86af20cba4ef98d4924d33b3016b78efde790e3bf049cc616ede6531a65b",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_e_07_m5_tf_029"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:1433aefd9e2cb1a398621b4c7cea5a6d6f53d0629e997be2f2e490124190f8c5"
+      }
+    },
+    {
+      "source_question_id": "M5_TF_030",
+      "current_question_id": "M5_TF_030_V2",
+      "current_question_version": 2,
+      "module": "M5",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:029c2e8a52068b0b2dbdf8f42e444e919382ab5707794518508d8a2b1dfea886",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_e_08_m5_tf_030"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:a179942727e4a1db22bbec6bd828fc999e8bc3fe2be27e21516390050717c13f"
+      }
+    },
+    {
+      "source_question_id": "M5_TF_031",
+      "current_question_id": "M5_TF_031_V2",
+      "current_question_version": 2,
+      "module": "M5",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:29fedce45e825a020e0a9634c1e8ae3d3af832e558cd195562aea39a53add835",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_f_03_m5_tf_031"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:9f478083e95d0882a5824aee3fc9a8697bdc0ea12a8d4642520cc611670ec8d4"
+      }
+    },
+    {
+      "source_question_id": "M5_TF_032",
+      "current_question_id": "M5_TF_032_V2",
+      "current_question_version": 2,
+      "module": "M5",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:e6990c688b23b4de98c82bd9821e63c77f1f4eaad8116f3fd1a476e97098d7fa",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_e_09_m5_tf_032"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:7cf4fb534731177eb6a842b1c651e4d6f6ce26beade1f80188312395b371569e"
+      }
+    },
+    {
+      "source_question_id": "M6_DG_028",
+      "current_question_id": "M6_DG_028_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "DRAG",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:c40973b372d27bf92ed3a889e50276d45ebee0614644836689da6ce511c11a22",
+      "delivery": {
+        "types": [
+          "IMAGE_REQUIREMENT"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_delivery_answer_image_m6_dg_028"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:a87bb6fef7e92722f86d49aed5577d5f279c72f863874308598aee788e386376"
+      }
+    },
+    {
+      "source_question_id": "M6_DG_029",
+      "current_question_id": "M6_DG_029_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "DRAG",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:452b5000ac1c19e21fd1a9add41e29b57f17caebb1ba08db033facbd01f0ec25",
+      "delivery": {
+        "types": [
+          "IMAGE_REQUIREMENT"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_delivery_answer_image_m6_dg_029"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:de23b378eb171aa6ded7ab8d540c168640746f2406242daa12a8856f161f9f94"
+      }
+    },
+    {
+      "source_question_id": "M6_DG_031",
+      "current_question_id": "M6_DG_031_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "DRAG",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:d79e76e9af8ad37cc4e657587a249f7b67f6d004a8f726866dd218836d876500",
+      "delivery": {
+        "types": [
+          "IMAGE_REQUIREMENT"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_delivery_answer_image_m6_dg_031"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:15f551b52021261741a93352e26b4eb479fd3b9970a66734ed0fa601b79bd71a"
+      }
+    },
+    {
+      "source_question_id": "M6_DG_032",
+      "current_question_id": "M6_DG_032_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "DRAG",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:29e6e341e8fe4aba1aa274f17fa543325b51b78d285ab45316d68650d912f0fa",
+      "delivery": {
+        "types": [
+          "IMAGE_REQUIREMENT"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_delivery_answer_image_m6_dg_032"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:596e4c7055f265067dec1b74035f45c46e35b1cdeb8ebfccd25006ef26025631"
+      }
+    },
+    {
+      "source_question_id": "M6_OP_034",
+      "current_question_id": "M6_OP_034_V4",
+      "current_question_version": 4,
+      "module": "M6",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:ca53ad35f0df4fd216d31fa942d2b5ff4a06ad96c65c8e1767d5c9e76b2c3421",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m6_op_034_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:b7f2707423e51bb0ab83e384fe994b01bea4d5d87292a51e9af4ead921254a29"
+      }
+    },
+    {
+      "source_question_id": "M6_OP_035",
+      "current_question_id": "M6_OP_035_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "PILOT_PENDING_GATE",
+      "semantic_hash": "sha256:83d16f7c0c442d5a560c8da46949729d239db762e48e3bfe1668e4c4cec9f9a1",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m6_op_035_v2",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:0a1c1b1159ec108254df599963273701e7ad6423df09475effef781cda62491a"
+      }
+    },
+    {
+      "source_question_id": "M6_OP_036",
+      "current_question_id": "M6_OP_036_V4",
+      "current_question_version": 4,
+      "module": "M6",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:11c8c3265538f65831fce3d0a9bc5c49dac18d481a37ccbe728f7f3eb5e69dd2",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m6_op_036_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:26d93722ad2b08bb02c828fd28a67a37842a1a5a0e3d220ba065bd5ca6b1d64b"
+      }
+    },
+    {
+      "source_question_id": "M6_OP_037",
+      "current_question_id": "M6_OP_037_V4",
+      "current_question_version": 4,
+      "module": "M6",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:3a1ab579814ee1c0db332bef65b12624e0bd3592180ac54111681d851fa4e10e",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m6_op_037_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:bdb14da9814996d0e7755f1711744f645449a066d55570a3660971dce7645ece"
+      }
+    },
+    {
+      "source_question_id": "M6_OP_038",
+      "current_question_id": "M6_OP_038_V4",
+      "current_question_version": 4,
+      "module": "M6",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:446dd8542e0122dfb225f6a3076cb3b276fc10e114c063eb8fd6a5ab93dc5382",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m6_op_038_v4",
+        "asset_ids": [
+          "asset_offline_tool_06"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:58f515f708966ca90926cf33e39966baeea922ee0c51b9360b6bd64078f07739"
+      }
+    },
+    {
+      "source_question_id": "M6_OP_039",
+      "current_question_id": "M6_OP_039_V4",
+      "current_question_version": 4,
+      "module": "M6",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:f0c8c5485c02a9275a159bdd32dcce106ed841774a38764604fa355e478d9feb",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m6_op_039_v4",
+        "asset_ids": [
+          "asset_offline_tool_06"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:cf3e61b326b965c878db683ca586b3574940001b8b2ab6438ccaf2a5829660b2"
+      }
+    },
+    {
+      "source_question_id": "M6_OP_040",
+      "current_question_id": "M6_OP_040_V4",
+      "current_question_version": 4,
+      "module": "M6",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:aa506bb803bb3c50d15f73da81dba8063a65f5537b05bf5c30ff0cbf4e9d0d07",
+      "delivery": {
+        "types": [
+          "OFFLINE_EXAMPLE_IMAGE",
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m6_op_040_v4",
+        "asset_ids": [
+          "asset_delivery_answer_image_m6_op_040"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:1de450c84e34bebc0848619d49bda19fd2df5b0333b1576449720819426545b6"
+      }
+    },
+    {
+      "source_question_id": "M6_OP_041",
+      "current_question_id": "M6_OP_041_V4",
+      "current_question_version": 4,
+      "module": "M6",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:53f0a87fec65dde771f3cb3520a0b5438050b183ed5c9a031a6aa0c40ee79374",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m6_op_041_v4",
+        "asset_ids": [
+          "asset_offline_tool_05"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:90b30b20a834f9c31dfba8c4e157ebe2b4220e5b956cc335791c7d82f7097d53"
+      }
+    },
+    {
+      "source_question_id": "M6_OP_042",
+      "current_question_id": "M6_OP_042_V4",
+      "current_question_version": 4,
+      "module": "M6",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:c53c34b4bbb1603b794a33d64677365f41050c8dc213629caf1e1df12cf5a20f",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m6_op_042_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:cd58583746311aa802dc9cb6e88a9e4b5b2c1cd0b47f71fbbfbc527d147342a8"
+      }
+    },
+    {
+      "source_question_id": "M6_OP_043",
+      "current_question_id": "M6_OP_043_V4",
+      "current_question_version": 4,
+      "module": "M6",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:32c4c5f1fc771ea94819744eca8b8c7283a93fdfaeb39f347b90aa4381cfb5c5",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m6_op_043_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:6b8e8c9be8f96037fdd242939207e6e53b455cb030935e616b2ef745c42cd838"
+      }
+    },
+    {
+      "source_question_id": "M6_OP_044",
+      "current_question_id": "M6_OP_044_V4",
+      "current_question_version": 4,
+      "module": "M6",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:7c34f66247e6d14f006b4f016f9c1140daff06194721ec8f1e2ce0350eb90911",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m6_op_044_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:9824e8f0697122241d49befebc4b0d1e8ec54f1e85f4e0093566a20d0a4e982c"
+      }
+    },
+    {
+      "source_question_id": "M6_OP_045",
+      "current_question_id": "M6_OP_045_V4",
+      "current_question_version": 4,
+      "module": "M6",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:f370c24ebbe0b908dc1a1480c18ca18514d871531610b4900d8b373b97b44887",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m6_op_045_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:36dd2faf8b484941483e613efe39c78b8269bfb68e08373678cd8c174d23fa36"
+      }
+    },
+    {
+      "source_question_id": "M6_OP_046",
+      "current_question_id": "M6_OP_046_V4",
+      "current_question_version": 4,
+      "module": "M6",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:bd1df67f03d43d8278a0deacd0dc2ec06b827a199e91c4c5149e37f99c0ec4ab",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m6_op_046_v4",
+        "asset_ids": [],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:7c5dadf5fe6273fa998bf42659941858fcdfa8bad3d09a3824226a1e4ecf768c"
+      }
+    },
+    {
+      "source_question_id": "M6_OP_047",
+      "current_question_id": "M6_OP_047_V4",
+      "current_question_version": 4,
+      "module": "M6",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:c3380feab259373a9c4ba27604596362e658e731e04442db700522bec34bddfa",
+      "delivery": {
+        "types": [
+          "OFFLINE_EXAMPLE_IMAGE",
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m6_op_047_v4",
+        "asset_ids": [
+          "asset_delivery_answer_image_m6_op_047"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:72907e73a8704c7208ab7a3f5860c5de5c11b3619d83fa1518e2828413c1604d"
+      }
+    },
+    {
+      "source_question_id": "M6_OP_048",
+      "current_question_id": "M6_OP_048_V4",
+      "current_question_version": 4,
+      "module": "M6",
+      "question_type": "OFFLINE_OPERATION",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:e2e54a9dc04046d69b08105938ea5e7f7599afefd4d699adf6fc08eb0586165b",
+      "delivery": {
+        "types": [
+          "OFFLINE_SETUP"
+        ],
+        "offline_setup_id": "setup_m6_op_048_v4",
+        "asset_ids": [
+          "asset_offline_tool_05"
+        ],
+        "expected_answer": null,
+        "answer_contract_hash": "sha256:cb2e77e52713cbd33ee59216c3660902bbfccf221748f5a15c4e7eec701ad2d7"
+      }
+    },
+    {
+      "source_question_id": "M6_SC_001",
+      "current_question_id": "M6_SC_001_V3",
+      "current_question_version": 3,
+      "module": "M6",
+      "question_type": "SINGLE_CHOICE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:5bf377f9438764b8fe89b7e278aaea46da769dc94487bd6a7bbd40694d7a442e",
+      "delivery": {
+        "types": [
+          "IMAGE_REQUIREMENT"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_delivery_answer_image_m6_sc_001"
+        ],
+        "expected_answer": "B",
+        "answer_contract_hash": "sha256:97625b4021f186ce37f8a5885e0df335a852468ded8cbf3d4b52e02fb026a7c3"
+      }
+    },
+    {
+      "source_question_id": "M6_SC_002",
+      "current_question_id": "M6_SC_002_V3",
+      "current_question_version": 3,
+      "module": "M6",
+      "question_type": "SINGLE_CHOICE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:2360ae0e7895d27d6b2ca98c5c15d2b44d1962407122d140e11f061e232b3d7d",
+      "delivery": {
+        "types": [
+          "IMAGE_REQUIREMENT"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_delivery_answer_image_m6_sc_002"
+        ],
+        "expected_answer": "C",
+        "answer_contract_hash": "sha256:73796bff98511293a69c7d332bcbf55684b335be28d50727edddf4e883f66e97"
+      }
+    },
+    {
+      "source_question_id": "M6_SC_004",
+      "current_question_id": "M6_SC_004_V3",
+      "current_question_version": 3,
+      "module": "M6",
+      "question_type": "SINGLE_CHOICE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:b3f312db366caca90f3fcd26b3b4ad22c879514ff13cf9fa252db26c281740de",
+      "delivery": {
+        "types": [
+          "IMAGE_REQUIREMENT"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_delivery_answer_image_m6_sc_004"
+        ],
+        "expected_answer": "C",
+        "answer_contract_hash": "sha256:cd5b95a5d29b9adbcf05b50ad3a264fa3e8865f4a07b905c218c8a3cb1d8f1b0"
+      }
+    },
+    {
+      "source_question_id": "M6_SC_006",
+      "current_question_id": "M6_SC_006_V4",
+      "current_question_version": 4,
+      "module": "M6",
+      "question_type": "SINGLE_CHOICE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:d2426a0dfe16c7178f383adcb894fbb2cc73a661f8a850a5ed4d386f09768748",
+      "delivery": {
+        "types": [
+          "IMAGE_REQUIREMENT"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_delivery_answer_image_m6_sc_006"
+        ],
+        "expected_answer": "C",
+        "answer_contract_hash": "sha256:62407616fc285b073115125aa0df101c4b4b8ce3d7a7cd8f7065e956552cd152"
+      }
+    },
+    {
+      "source_question_id": "M6_SC_007",
+      "current_question_id": "M6_SC_007_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "SINGLE_CHOICE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:9e641f0b1d2efe20c676d756cf8f2e028dd6013bd00968138a71fb06aad7cf9a",
+      "delivery": {
+        "types": [
+          "IMAGE_REQUIREMENT"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_delivery_answer_image_m6_sc_007"
+        ],
+        "expected_answer": "A",
+        "answer_contract_hash": "sha256:c98a980bf51ab548294af5baa736e55818e5398d8231fdcf0c30238cc1479181"
+      }
+    },
+    {
+      "source_question_id": "M6_SC_008",
+      "current_question_id": "M6_SC_008_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "SINGLE_CHOICE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:04775260e6ee2a94361caf9534b026ee453b45b8b4d3960adbf50a3d3b450f25",
+      "delivery": {
+        "types": [
+          "IMAGE_REQUIREMENT"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_delivery_answer_image_m6_sc_008"
+        ],
+        "expected_answer": "B",
+        "answer_contract_hash": "sha256:8c7e517463bcb2814f00f591c89253a081035768b46c98914435888a242f3c58"
+      }
+    },
+    {
+      "source_question_id": "M6_SC_011",
+      "current_question_id": "M6_SC_011_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "SINGLE_CHOICE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:01ba260ff6e6acbfb905f01698a01b64ff8b728bfd81f822ebe4750922d712d9",
+      "delivery": {
+        "types": [
+          "IMAGE_REQUIREMENT"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_delivery_answer_image_m6_sc_011"
+        ],
+        "expected_answer": "B",
+        "answer_contract_hash": "sha256:7808adf9d96135abb60c3a8ecdd31913f15c9423682007cc1f1af47d381d89df"
+      }
+    },
+    {
+      "source_question_id": "M6_TF_015",
+      "current_question_id": "M6_TF_015_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:25dff359480c55de8863f9ea24dc3cdbacca1fb468e06ee8fe833b801f943ef5",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_22_m6_tf_015"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:b4a5a10ba73e5e89f78ec08f8b6e1f9f1ed30214452d76b2aca6478087f40543"
+      }
+    },
+    {
+      "source_question_id": "M6_TF_016",
+      "current_question_id": "M6_TF_016_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:b251c232d03e82fe783e57d9611e7b153d1f08cb298a2945180e3dd8282dc7c2",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_23_m6_tf_016"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:8510cbe13611b02b28aadb17b93cce71150f6a81b479f0342655d62ab3d4b347"
+      }
+    },
+    {
+      "source_question_id": "M6_TF_017",
+      "current_question_id": "M6_TF_017_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:fb3d669eb5354a4576232ef5b3859e04d6438d2e33488e9028df45cc4602ea06",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_f_04_m6_tf_017"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:bdafe6e854e947b88d746603a87b270721f957b85b3d97387059c8988236af38"
+      }
+    },
+    {
+      "source_question_id": "M6_TF_018",
+      "current_question_id": "M6_TF_018_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:368feff6937ffd1a9fe71b696689793e92e123a9e8518d7860efeb7e7e705de6",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_24_m6_tf_018"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:e1ab8a69c76ee107c2f1a3b4e43a84b0564b71a55d1af271675924c4aa447f79"
+      }
+    },
+    {
+      "source_question_id": "M6_TF_019",
+      "current_question_id": "M6_TF_019_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:f3fd03fc4cd08e10da5b195a569a5c54d3ede32f7cd153d5995b2e50797bacc8",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_f_05_m6_tf_019"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:e39f7f2bf408cae16514f559bdc929edca2229322bc06762ef69578406d2132a"
+      }
+    },
+    {
+      "source_question_id": "M6_TF_020",
+      "current_question_id": "M6_TF_020_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:681515823f1ae87a1ad5f01397b5ed45be7fc4830696463a091052d9a127ae61",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_f_06_m6_tf_020"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:6be7f55fcf6d8f45b29fdcada65c1e09cde6ee6c320bd39241fc1be36e92bf24"
+      }
+    },
+    {
+      "source_question_id": "M6_TF_021",
+      "current_question_id": "M6_TF_021_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:d429323e9c1969681f33ebcc4483276e15b613a3c87d2156de15a826317a483c",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_f_07_m6_tf_021"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:0a443b693aba1bbb8928afdf6d5f7655117d09be220419365d0f4af0885dbbc3"
+      }
+    },
+    {
+      "source_question_id": "M6_TF_022",
+      "current_question_id": "M6_TF_022_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:4dbfbe7d700c278d40c616e701540364be8ee5de7c0cf5720786090c9ae8919d",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_f_08_m6_tf_022"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:915d0e2c4ac3062a77a0e2fc202607e132f7d750c8566cfa95deb66b83403ab8"
+      }
+    },
+    {
+      "source_question_id": "M6_TF_023",
+      "current_question_id": "M6_TF_023_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:faf9eb83dd6baa4c278ec6d74bc39b2f104990c57b8df58771a9ac0b756562db",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_25_m6_tf_023"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:43550e3f796f42169bc0ebbe5d09fe9c265253e483b7c959418e24f6b77400f6"
+      }
+    },
+    {
+      "source_question_id": "M6_TF_024",
+      "current_question_id": "M6_TF_024_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:cf78628e0a00673cdadbfac36a5d09dd5d4718b9b3d3e26c28e3927cc0218952",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_26_m6_tf_024"
+        ],
+        "expected_answer": false,
+        "answer_contract_hash": "sha256:a06ad158a226c7dc13b450460c862df6b2fa042a04b32c135d5570506de5299c"
+      }
+    },
+    {
+      "source_question_id": "M6_TF_025",
+      "current_question_id": "M6_TF_025_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:79893e5864b0e32fbe50a1c39937cde5fc4d5fc4b7e1bc0e1333296c4058578d",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_a_27_m6_tf_025"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:1141169bd2fe003dace7cefd6eefc877a0a376900b298e47a32961fe08df10a5"
+      }
+    },
+    {
+      "source_question_id": "M6_TF_026",
+      "current_question_id": "M6_TF_026_V2",
+      "current_question_version": 2,
+      "module": "M6",
+      "question_type": "TRUE_FALSE",
+      "disposition": "REVISED_RETURNED",
+      "semantic_hash": "sha256:36b327f2354ff744b2ee24421fe3af2a39d9c2f10cdd361e903dc12f9fc8c18a",
+      "delivery": {
+        "types": [
+          "VIDEO_ANSWER"
+        ],
+        "offline_setup_id": null,
+        "asset_ids": [
+          "asset_vid_f_09_m6_tf_026"
+        ],
+        "expected_answer": true,
+        "answer_contract_hash": "sha256:120678cdde9bf1583706587f9ec833e16864380799bae058c6234055d74cac5a"
+      }
+    }
+  ],
+  "reverse_index": {
+    "setup_to_question_id": {
+      "setup_m1_ob_048_v3": "M1_OB_048_V3",
+      "setup_m1_op_033_v2": "M1_OP_033_V2",
+      "setup_m1_op_034_v4": "M1_OP_034_V4",
+      "setup_m1_op_035_v4": "M1_OP_035_V4",
+      "setup_m1_op_036_v4": "M1_OP_036_V4",
+      "setup_m1_op_037_v5": "M1_OP_037_V5",
+      "setup_m1_op_038_v5": "M1_OP_038_V5",
+      "setup_m1_op_039_v4": "M1_OP_039_V4",
+      "setup_m1_op_040_v4": "M1_OP_040_V4",
+      "setup_m1_op_041_v4": "M1_OP_041_V4",
+      "setup_m1_op_042_v4": "M1_OP_042_V4",
+      "setup_m1_op_043_v4": "M1_OP_043_V4",
+      "setup_m1_op_044_v4": "M1_OP_044_V4",
+      "setup_m1_op_045_v4": "M1_OP_045_V4",
+      "setup_m1_op_046_v4": "M1_OP_046_V4",
+      "setup_m1_op_047_v4": "M1_OP_047_V4",
+      "setup_m2_op_027_v2": "M2_OP_027_V2",
+      "setup_m2_op_028_v4": "M2_OP_028_V4",
+      "setup_m2_op_029_v4": "M2_OP_029_V4",
+      "setup_m2_op_030_v4": "M2_OP_030_V4",
+      "setup_m2_op_031_v6": "M2_OP_031_V6",
+      "setup_m2_op_032_v4": "M2_OP_032_V4",
+      "setup_m2_op_033_v4": "M2_OP_033_V4",
+      "setup_m2_op_034_v4": "M2_OP_034_V4",
+      "setup_m2_op_035_v4": "M2_OP_035_V4",
+      "setup_m2_op_036_v4": "M2_OP_036_V4",
+      "setup_m2_op_037_v4": "M2_OP_037_V4",
+      "setup_m2_op_038_v6": "M2_OP_038_V6",
+      "setup_m2_op_039_v4": "M2_OP_039_V4",
+      "setup_m2_op_040_v4": "M2_OP_040_V4",
+      "setup_m2_op_041_v6": "M2_OP_041_V6",
+      "setup_m3_op_043_v2": "M3_OP_043_V2",
+      "setup_m3_op_044_v4": "M3_OP_044_V4",
+      "setup_m3_op_045_v4": "M3_OP_045_V4",
+      "setup_m3_op_046_v4": "M3_OP_046_V4",
+      "setup_m3_op_047_v4": "M3_OP_047_V4",
+      "setup_m3_op_048_v4": "M3_OP_048_V4",
+      "setup_m3_op_049_v4": "M3_OP_049_V4",
+      "setup_m3_op_050_v4": "M3_OP_050_V4",
+      "setup_m3_op_051_v4": "M3_OP_051_V4",
+      "setup_m3_op_052_v4": "M3_OP_052_V4",
+      "setup_m3_op_053_v4": "M3_OP_053_V4",
+      "setup_m3_op_054_v4": "M3_OP_054_V4",
+      "setup_m3_op_055_v4": "M3_OP_055_V4",
+      "setup_m3_op_056_v4": "M3_OP_056_V4",
+      "setup_m3_op_057_v4": "M3_OP_057_V4",
+      "setup_m3_op_058_v4": "M3_OP_058_V4",
+      "setup_m4_op_028_v4": "M4_OP_028_V4",
+      "setup_m4_op_029_v2": "M4_OP_029_V2",
+      "setup_m4_op_030_v4": "M4_OP_030_V4",
+      "setup_m4_op_031_v4": "M4_OP_031_V4",
+      "setup_m4_op_032_v4": "M4_OP_032_V4",
+      "setup_m4_op_033_v4": "M4_OP_033_V4",
+      "setup_m4_op_034_v4": "M4_OP_034_V4",
+      "setup_m4_op_035_v4": "M4_OP_035_V4",
+      "setup_m4_op_036_v4": "M4_OP_036_V4",
+      "setup_m4_op_037_v4": "M4_OP_037_V4",
+      "setup_m4_op_038_v4": "M4_OP_038_V4",
+      "setup_m4_op_039_v4": "M4_OP_039_V4",
+      "setup_m4_op_040_v4": "M4_OP_040_V4",
+      "setup_m4_op_041_v4": "M4_OP_041_V4",
+      "setup_m4_op_042_v4": "M4_OP_042_V4",
+      "setup_m4_op_043_v2": "M4_OP_043_V2",
+      "setup_m4_op_044_v2": "M4_OP_044_V2",
+      "setup_m4_op_045_v4": "M4_OP_045_V4",
+      "setup_m4_op_046_v4": "M4_OP_046_V4",
+      "setup_m4_op_047_v3": "M4_OP_047_V3",
+      "setup_m4_op_048_v4": "M4_OP_048_V4",
+      "setup_m5_op_039_v2": "M5_OP_039_V2",
+      "setup_m5_op_040_v4": "M5_OP_040_V4",
+      "setup_m5_op_041_v4": "M5_OP_041_V4",
+      "setup_m5_op_042_v4": "M5_OP_042_V4",
+      "setup_m5_op_043_v4": "M5_OP_043_V4",
+      "setup_m5_op_044_v4": "M5_OP_044_V4",
+      "setup_m5_op_045_v4": "M5_OP_045_V4",
+      "setup_m5_op_046_v4": "M5_OP_046_V4",
+      "setup_m5_op_047_v4": "M5_OP_047_V4",
+      "setup_m5_op_048_v4": "M5_OP_048_V4",
+      "setup_m5_op_049_v4": "M5_OP_049_V4",
+      "setup_m5_op_050_v4": "M5_OP_050_V4",
+      "setup_m5_op_051_v4": "M5_OP_051_V4",
+      "setup_m5_op_052_v4": "M5_OP_052_V4",
+      "setup_m5_op_053_v4": "M5_OP_053_V4",
+      "setup_m5_op_054_v4": "M5_OP_054_V4",
+      "setup_m5_op_055_v3": "M5_OP_055_V3",
+      "setup_m6_op_034_v4": "M6_OP_034_V4",
+      "setup_m6_op_035_v2": "M6_OP_035_V2",
+      "setup_m6_op_036_v4": "M6_OP_036_V4",
+      "setup_m6_op_037_v4": "M6_OP_037_V4",
+      "setup_m6_op_038_v4": "M6_OP_038_V4",
+      "setup_m6_op_039_v4": "M6_OP_039_V4",
+      "setup_m6_op_040_v4": "M6_OP_040_V4",
+      "setup_m6_op_041_v4": "M6_OP_041_V4",
+      "setup_m6_op_042_v4": "M6_OP_042_V4",
+      "setup_m6_op_043_v4": "M6_OP_043_V4",
+      "setup_m6_op_044_v4": "M6_OP_044_V4",
+      "setup_m6_op_045_v4": "M6_OP_045_V4",
+      "setup_m6_op_046_v4": "M6_OP_046_V4",
+      "setup_m6_op_047_v4": "M6_OP_047_V4",
+      "setup_m6_op_048_v4": "M6_OP_048_V4"
+    },
+    "asset_to_question_ids": {
+      "asset_delivery_answer_image_m1_dg_031": [
+        "M1_DG_031_V2"
+      ],
+      "asset_delivery_answer_image_m1_op_043": [
+        "M1_OP_043_V4"
+      ],
+      "asset_delivery_answer_image_m1_sc_014": [
+        "M1_SC_014_V2"
+      ],
+      "asset_delivery_answer_image_m4_op_034": [
+        "M4_OP_034_V4"
+      ],
+      "asset_delivery_answer_image_m6_dg_028": [
+        "M6_DG_028_V2"
+      ],
+      "asset_delivery_answer_image_m6_dg_029": [
+        "M6_DG_029_V2"
+      ],
+      "asset_delivery_answer_image_m6_dg_031": [
+        "M6_DG_031_V2"
+      ],
+      "asset_delivery_answer_image_m6_dg_032": [
+        "M6_DG_032_V2"
+      ],
+      "asset_delivery_answer_image_m6_op_040": [
+        "M6_OP_040_V4"
+      ],
+      "asset_delivery_answer_image_m6_op_047": [
+        "M6_OP_047_V4"
+      ],
+      "asset_delivery_answer_image_m6_sc_001": [
+        "M6_SC_001_V3"
+      ],
+      "asset_delivery_answer_image_m6_sc_002": [
+        "M6_SC_002_V3"
+      ],
+      "asset_delivery_answer_image_m6_sc_004": [
+        "M6_SC_004_V3"
+      ],
+      "asset_delivery_answer_image_m6_sc_006": [
+        "M6_SC_006_V4"
+      ],
+      "asset_delivery_answer_image_m6_sc_007": [
+        "M6_SC_007_V2"
+      ],
+      "asset_delivery_answer_image_m6_sc_008": [
+        "M6_SC_008_V2"
+      ],
+      "asset_delivery_answer_image_m6_sc_011": [
+        "M6_SC_011_V2"
+      ],
+      "asset_delivery_audio_abnormal_equipment_noise": [
+        "M5_OP_053_V4"
+      ],
+      "asset_delivery_audio_evacuation_signal": [
+        "M5_OP_045_V4"
+      ],
+      "asset_delivery_audio_inventory_interruption": [
+        "M4_OP_041_V4"
+      ],
+      "asset_delivery_script_m2_op_040": [
+        "M2_OP_040_V4"
+      ],
+      "asset_delivery_script_m2_op_041": [
+        "M2_OP_041_V6"
+      ],
+      "asset_delivery_script_m4_op_033": [
+        "M4_OP_033_V4"
+      ],
+      "asset_delivery_script_m4_op_037": [
+        "M4_OP_037_V4"
+      ],
+      "asset_delivery_script_m4_op_041": [
+        "M4_OP_041_V4"
+      ],
+      "asset_delivery_script_m4_op_042": [
+        "M4_OP_042_V4"
+      ],
+      "asset_delivery_script_m5_op_043": [
+        "M5_OP_043_V4"
+      ],
+      "asset_delivery_script_m5_op_044": [
+        "M5_OP_044_V4"
+      ],
+      "asset_delivery_script_m5_op_045": [
+        "M5_OP_045_V4"
+      ],
+      "asset_delivery_script_m5_op_049": [
+        "M5_OP_049_V4"
+      ],
+      "asset_delivery_script_m5_op_051": [
+        "M5_OP_051_V4"
+      ],
+      "asset_delivery_script_m5_op_052": [
+        "M5_OP_052_V4"
+      ],
+      "asset_delivery_script_m5_op_054": [
+        "M5_OP_054_V4"
+      ],
+      "asset_offline_tool_01": [
+        "M2_OP_037_V4"
+      ],
+      "asset_offline_tool_04": [
+        "M2_OP_027_V2",
+        "M2_OP_030_V4",
+        "M4_OP_043_V2",
+        "M5_OP_048_V4",
+        "M5_OP_050_V4"
+      ],
+      "asset_offline_tool_05": [
+        "M1_OP_034_V4",
+        "M1_OP_036_V4",
+        "M1_OP_037_V5",
+        "M1_OP_039_V4",
+        "M1_OP_042_V4",
+        "M1_OP_043_V4",
+        "M1_OP_044_V4",
+        "M1_OP_046_V4",
+        "M1_OP_047_V4",
+        "M3_OP_056_V4",
+        "M4_OP_048_V4",
+        "M6_OP_041_V4",
+        "M6_OP_048_V4"
+      ],
+      "asset_offline_tool_06": [
+        "M6_OP_038_V4",
+        "M6_OP_039_V4"
+      ],
+      "asset_offline_tool_07": [
+        "M2_OP_035_V4",
+        "M4_OP_033_V4",
+        "M4_OP_035_V4"
+      ],
+      "asset_offline_tool_08": [
+        "M4_OP_041_V4"
+      ],
+      "asset_offline_tool_09": [
+        "M1_OB_048_V3",
+        "M1_OP_038_V5",
+        "M4_OP_032_V4",
+        "M5_OP_039_V2",
+        "M5_OP_042_V4",
+        "M5_OP_043_V4",
+        "M5_OP_046_V4",
+        "M5_OP_047_V4",
+        "M5_OP_048_V4",
+        "M5_OP_050_V4",
+        "M5_OP_052_V4",
+        "M5_OP_053_V4"
+      ],
+      "asset_offline_tool_10": [
+        "M1_OP_038_V5",
+        "M4_OP_043_V2",
+        "M4_OP_045_V4",
+        "M5_OP_039_V2",
+        "M5_OP_046_V4"
+      ],
+      "asset_offline_tool_12": [
+        "M4_OP_043_V2"
+      ],
+      "asset_vid_a_01_m1_tf_015": [
+        "M1_TF_015_V2"
+      ],
+      "asset_vid_a_02_m1_tf_016": [
+        "M1_TF_016_V2"
+      ],
+      "asset_vid_a_03_m1_tf_017": [
+        "M1_TF_017_V2"
+      ],
+      "asset_vid_a_04_m1_tf_018": [
+        "M1_TF_018_V2"
+      ],
+      "asset_vid_a_05_m1_tf_019": [
+        "M1_TF_019_V2"
+      ],
+      "asset_vid_a_06_m1_tf_020": [
+        "M1_TF_020_V2"
+      ],
+      "asset_vid_a_07_m1_tf_021": [
+        "M1_TF_021_V2"
+      ],
+      "asset_vid_a_08_m1_tf_022": [
+        "M1_TF_022_V2"
+      ],
+      "asset_vid_a_09_m1_tf_023": [
+        "M1_TF_023_V2"
+      ],
+      "asset_vid_a_10_m1_tf_024": [
+        "M1_TF_024_V2"
+      ],
+      "asset_vid_a_11_m1_tf_025": [
+        "M1_TF_025_V4"
+      ],
+      "asset_vid_a_12_m1_tf_026": [
+        "M1_TF_026_V2"
+      ],
+      "asset_vid_a_13_m2_tf_015": [
+        "M2_TF_015_V2"
+      ],
+      "asset_vid_a_14_m2_tf_016": [
+        "M2_TF_016_V2"
+      ],
+      "asset_vid_a_15_m2_tf_019": [
+        "M2_TF_019_V2"
+      ],
+      "asset_vid_a_16_m3_tf_028": [
+        "M3_TF_028_V4"
+      ],
+      "asset_vid_a_17_m3_tf_033": [
+        "M3_TF_033_V4"
+      ],
+      "asset_vid_a_18_m3_tf_035": [
+        "M3_TF_035_V2"
+      ],
+      "asset_vid_a_19_m4_tf_013": [
+        "M4_TF_013_V2"
+      ],
+      "asset_vid_a_20_m4_tf_018": [
+        "M4_TF_018_V2"
+      ],
+      "asset_vid_a_21_m4_tf_021": [
+        "M4_TF_021_V2"
+      ],
+      "asset_vid_a_22_m6_tf_015": [
+        "M6_TF_015_V2"
+      ],
+      "asset_vid_a_23_m6_tf_016": [
+        "M6_TF_016_V2"
+      ],
+      "asset_vid_a_24_m6_tf_018": [
+        "M6_TF_018_V2"
+      ],
+      "asset_vid_a_25_m6_tf_023": [
+        "M6_TF_023_V2"
+      ],
+      "asset_vid_a_26_m6_tf_024": [
+        "M6_TF_024_V2"
+      ],
+      "asset_vid_a_27_m6_tf_025": [
+        "M6_TF_025_V2"
+      ],
+      "asset_vid_b_01_m2_tf_013": [
+        "M2_TF_013_V2"
+      ],
+      "asset_vid_b_02_m2_tf_014": [
+        "M2_TF_014_V2"
+      ],
+      "asset_vid_b_03_m2_tf_017": [
+        "M2_TF_017_V2"
+      ],
+      "asset_vid_b_04_m2_tf_018": [
+        "M2_TF_018_V4"
+      ],
+      "asset_vid_b_05_m2_tf_020": [
+        "M2_TF_020_V2"
+      ],
+      "asset_vid_b_06_m2_tf_022": [
+        "M2_TF_022_V4"
+      ],
+      "asset_vid_c_01_m3_tf_025": [
+        "M3_TF_025_V4"
+      ],
+      "asset_vid_c_02_m3_tf_026": [
+        "M3_TF_026_V2"
+      ],
+      "asset_vid_c_03_m3_tf_027": [
+        "M3_TF_027_V2"
+      ],
+      "asset_vid_c_04_m3_tf_029": [
+        "M3_TF_029_V2"
+      ],
+      "asset_vid_c_05_m3_tf_030": [
+        "M3_TF_030_V4"
+      ],
+      "asset_vid_c_06_m3_tf_031": [
+        "M3_TF_031_V2"
+      ],
+      "asset_vid_c_07_m3_tf_032": [
+        "M3_TF_032_V2"
+      ],
+      "asset_vid_c_08_m3_tf_034": [
+        "M3_TF_034_V4"
+      ],
+      "asset_vid_c_09_m3_tf_036": [
+        "M3_TF_036_V2"
+      ],
+      "asset_vid_d_01_m2_tf_021": [
+        "M2_TF_021_V2"
+      ],
+      "asset_vid_d_02_m4_tf_014": [
+        "M4_TF_014_V2"
+      ],
+      "asset_vid_d_03_m4_tf_015": [
+        "M4_TF_015_V2"
+      ],
+      "asset_vid_d_04_m4_tf_016": [
+        "M4_TF_016_V2"
+      ],
+      "asset_vid_d_05_m4_tf_017": [
+        "M4_TF_017_V2"
+      ],
+      "asset_vid_d_06_m4_tf_019": [
+        "M4_TF_019_V4"
+      ],
+      "asset_vid_d_07_m4_tf_020": [
+        "M4_TF_020_V2"
+      ],
+      "asset_vid_d_08_m4_tf_022": [
+        "M4_TF_022_V4"
+      ],
+      "asset_vid_e_01_m5_tf_021": [
+        "M5_TF_021_V2"
+      ],
+      "asset_vid_e_02_m5_tf_022": [
+        "M5_TF_022_V2"
+      ],
+      "asset_vid_e_03_m5_tf_023": [
+        "M5_TF_023_V4"
+      ],
+      "asset_vid_e_04_m5_tf_025": [
+        "M5_TF_025_V2"
+      ],
+      "asset_vid_e_05_m5_tf_026": [
+        "M5_TF_026_V2"
+      ],
+      "asset_vid_e_06_m5_tf_027": [
+        "M5_TF_027_V4"
+      ],
+      "asset_vid_e_07_m5_tf_029": [
+        "M5_TF_029_V2"
+      ],
+      "asset_vid_e_08_m5_tf_030": [
+        "M5_TF_030_V2"
+      ],
+      "asset_vid_e_09_m5_tf_032": [
+        "M5_TF_032_V2"
+      ],
+      "asset_vid_f_01_m5_tf_024": [
+        "M5_TF_024_V2"
+      ],
+      "asset_vid_f_02_m5_tf_028": [
+        "M5_TF_028_V2"
+      ],
+      "asset_vid_f_03_m5_tf_031": [
+        "M5_TF_031_V2"
+      ],
+      "asset_vid_f_04_m6_tf_017": [
+        "M6_TF_017_V2"
+      ],
+      "asset_vid_f_05_m6_tf_019": [
+        "M6_TF_019_V2"
+      ],
+      "asset_vid_f_06_m6_tf_020": [
+        "M6_TF_020_V2"
+      ],
+      "asset_vid_f_07_m6_tf_021": [
+        "M6_TF_021_V2"
+      ],
+      "asset_vid_f_08_m6_tf_022": [
+        "M6_TF_022_V2"
+      ],
+      "asset_vid_f_09_m6_tf_026": [
+        "M6_TF_026_V2"
+      ]
+    }
+  },
+  "lock_hash": "sha256:7342df1386e4d10a48939f9efb3e2a14c7172d5f58db4ad41c0e48b98d471dd6"
+}

@@ -1,0 +1,1584 @@
+{
+  "schema_version": "job-skill-shelver-298-targeted-v4-rereview-gate-v1",
+  "gate_id": "job-skill-shelver-298-targeted-v4-rereview-gate-v1",
+  "status": "PENDING_REVIEW",
+  "generated_at": "2026-07-20T17:00:00+08:00",
+  "candidate_set": {
+    "path": "doc/features/job-skill-shelver-298-question-revision-candidates-v4.json",
+    "candidate_set_hash": "sha256:309a399aed46d0a7f5ca257c74a30312bd3a2931f53e5c03422739602c8c0d5a"
+  },
+  "summary": {
+    "total": 145,
+    "pending_v4": 141,
+    "passed_v3_references": 4,
+    "passed": 4,
+    "return_for_revision": 0
+  },
+  "releaseable": false,
+  "authority": {
+    "phase_4_allowed": false,
+    "runtime_database_unchanged": true,
+    "activation_sql_generated": false,
+    "delivery_lock_unchanged": true
+  },
+  "questions": [
+    {
+      "question_id": "M1_DG_028_V4",
+      "previous_question_id": "M1_DG_028_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:ee2d6b47c48b749716b10b164e5458d671e39689f68f16251941537ae13f4825",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_DG_029_V4",
+      "previous_question_id": "M1_DG_029_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:0149982f97b7913f630dbf4dd20d45e497e7fe695d30f281374bad45a6d2233b",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_DG_032_V4",
+      "previous_question_id": "M1_DG_032_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:5d6e566a02d0ae4e3159d3b84cfbdbc880f3b58c682b59c95bb6b057a03e2f5c",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_034_V4",
+      "previous_question_id": "M1_OP_034_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:5909aab96e42a707819c2b63f29bd3b912fa5db51a0af099b720aba4ed2edc4a",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_035_V4",
+      "previous_question_id": "M1_OP_035_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:7f7c7b7adc913f7b465b7a11b40432833fa1ccaa9e71aabaed79b070915d14ab",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_036_V4",
+      "previous_question_id": "M1_OP_036_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:bb950a546177634c3443bc1fda0ca2ed8bcbf505dd57f3bc97cda4d2c9c1210b",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_037_V4",
+      "previous_question_id": "M1_OP_037_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:89ae022814d0b5e6feeb895e270120756175b75c307616f6f85f913be8712119",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_038_V4",
+      "previous_question_id": "M1_OP_038_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:6ad4488d8d8363cca02f4160ca46f43cfb6f91552b59373465eb731c67ebcc3c",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_039_V4",
+      "previous_question_id": "M1_OP_039_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:cf6e579ec2905fac4dfbf48176ec0dc50ddd5df8f5fa4073bfcb24d54681e2bd",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_040_V4",
+      "previous_question_id": "M1_OP_040_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:70fb682cc69307366c311d03c2f10d19414526d56467ec7936952932c8bb230c",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_041_V4",
+      "previous_question_id": "M1_OP_041_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:cfb15eb0282b175050b71863eb5c7f3255318418e47c4226046004e810770f6d",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_043_V4",
+      "previous_question_id": "M1_OP_043_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:4600a1a4554696e2226c0275fc2b89b40eb84115e704f2055aec77e9cceb2609",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_044_V4",
+      "previous_question_id": "M1_OP_044_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:460689fb673ccbb0c99e03d082cd2c05ffc70e6683c72a6dd15f5d6e80844ddb",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_045_V4",
+      "previous_question_id": "M1_OP_045_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:f310ffb4bd11f4c25314d094db0b28678c8f225dd93ce225401b910fe275d4a4",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_046_V4",
+      "previous_question_id": "M1_OP_046_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:ba2ed38b0c5777284ab7bf9b60c0eaed54bfb58d027fa4aa46fbeac47441c0df",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_047_V4",
+      "previous_question_id": "M1_OP_047_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:71ae520691e479d7433bee6db126cfcaa532fca3db9c8f06ca1c84d3481eb119",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_SC_005_V4",
+      "previous_question_id": "M1_SC_005_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:d45f7229ce6385d8ad4f397fdde0f57d38b9434349a28e7a6739da9977668db6",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_SC_012_V4",
+      "previous_question_id": "M1_SC_012_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:467d8f3884c21f1c5f033e3b99b3111b2f6407ce057d6ffac3aafda0c9ddfc8e",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_TF_025_V4",
+      "previous_question_id": "M1_TF_025_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:e1b4aad970878ba021cdfbfa7cb810710866fbcbcf8df36bae12d54cd14c426b",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_DG_026_V4",
+      "previous_question_id": "M2_DG_026_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:d44aaee2178589cd9584f41d3d1abae1048cfc23f61c2d833da8ae0138a28a37",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_028_V4",
+      "previous_question_id": "M2_OP_028_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:ee71ce72f464135214aa02c4c6a30f3cd804ef73bf7d0612738a42c0235c330f",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_029_V4",
+      "previous_question_id": "M2_OP_029_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:878f466d698a4178f151648d67f5d26dd61708de3ccbca9bab96a87aaeb958cc",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_030_V4",
+      "previous_question_id": "M2_OP_030_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:4daf52b158260aae4e443dc861ee63b95a6f72a6b386b0d6a3e975b4c78b22f5",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_031_V4",
+      "previous_question_id": "M2_OP_031_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:28f1f63e2d651d94b71986a56041586cecc3ed2a7c6ca35d336ab8c4d04f871e",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_032_V4",
+      "previous_question_id": "M2_OP_032_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:be75881556a4b1c36bbfb00732cdcf785cb3a9ed1aecba3c7eb25bdffbc6fa38",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_033_V4",
+      "previous_question_id": "M2_OP_033_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:6248f2ab11609f01676946ca99ff4228d42fd8f1ed4d1a545403e42d6b6d3e55",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_034_V4",
+      "previous_question_id": "M2_OP_034_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:a4087c4bca7044363a7d65b6d1bb44871cd5afcf4e4aee6c06b58bf1a707cda3",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_035_V4",
+      "previous_question_id": "M2_OP_035_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:400e8b8f639b67698fd534ff24cec79864bf85eb582ada1c48ab4e9553c9cb5f",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_036_V4",
+      "previous_question_id": "M2_OP_036_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:74dd307a15634050cc51a7f17c3dae64d47700b855e44e9fd58feb6798fcb627",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_037_V4",
+      "previous_question_id": "M2_OP_037_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:b8afe642e67997a27e876e09e87e6d6f50c813598c5c371f9e7b6b3a8fb9a33c",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_038_V4",
+      "previous_question_id": "M2_OP_038_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:9d6ff5e46b2191a23fe0a40d384204f6602699328a8cd1ad82714debc32ec7cb",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_039_V4",
+      "previous_question_id": "M2_OP_039_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:e1e11e5b946b21a5d9d81376de4692335a700846c88e939b89610398c0dffa93",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_040_V4",
+      "previous_question_id": "M2_OP_040_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:73de3aa67b13592741f4edcd84564f48ea2eb9db150bb1da752da9203f1fa70c",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_041_V4",
+      "previous_question_id": "M2_OP_041_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:7c4ec6606db75d5a2dfd39c54c6f693a00527fc614f03bc3563fba9fb0da3ced",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_SC_001_V4",
+      "previous_question_id": "M2_SC_001_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:37ed3d38305cf9150d776d544bb0b6c868a46203b9f78bba78207d504c9de516",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_SC_007_V4",
+      "previous_question_id": "M2_SC_007_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:ca9eedc7dc42f1a3fb8cfd492e230ce7f29ed5d98566eadcf5e3d299d4077efa",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_TF_018_V4",
+      "previous_question_id": "M2_TF_018_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:115a37b0a7c99234b987976a2026eb6504331c5ada4542d4af24266fb0107fb3",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_TF_022_V4",
+      "previous_question_id": "M2_TF_022_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:a4e85109fd737bcadc9c5cb3ab34902d44da6fec1764f0ffd11b6bd73f3a6cc3",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_DG_038_V4",
+      "previous_question_id": "M3_DG_038_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:e8b5855e8ddfac3efc0598532c4aa8fc1f625d20937ccbd8b88db123bd863a45",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_DG_041_V4",
+      "previous_question_id": "M3_DG_041_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:3362d31883e4079a06934754c90c66ac9991e1bd238c0b289d41115115d1f7b7",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_044_V4",
+      "previous_question_id": "M3_OP_044_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:56ac4618ac7ed8717c82586c3ec584de8100f8677775107e600533888af2c35d",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_045_V4",
+      "previous_question_id": "M3_OP_045_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:768e2708590dcdff841ab192d0831d36736637b1718d33b94e1be589480825d1",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_046_V4",
+      "previous_question_id": "M3_OP_046_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:78fab1bd2f5d7621752b38f29dd045de455c70e275427934fdde04aba52ce0f9",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_047_V4",
+      "previous_question_id": "M3_OP_047_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:68cea308d454718b60047d3293ff36dbb48b12f83a1bb09aa94dc41165439cd5",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_048_V4",
+      "previous_question_id": "M3_OP_048_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:5c5358282e66fd792eb79545ea3ce34983de12ae1d5116a4e02780fd75f5de72",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_049_V4",
+      "previous_question_id": "M3_OP_049_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:e7870eecf0d3bb6f21767026816a93ba6c5850de6e535d2d3961ff4738f261ee",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_050_V4",
+      "previous_question_id": "M3_OP_050_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:540b9ef6a0a9e8a11378e07180ca9abcab8153e65015b3ee8aa942f2a23b66b4",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_051_V4",
+      "previous_question_id": "M3_OP_051_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:7293a6dd11cbd370634a828a430b2447c7f876380a23be27f1e97efee97bba0f",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_052_V4",
+      "previous_question_id": "M3_OP_052_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:cbe809ab93d6d4f2ea334661871634d501de8667eda7e1dcd24bc6bd655bfc6f",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_053_V4",
+      "previous_question_id": "M3_OP_053_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:a2dcb2b53fba2b14a49d6761209914f7635b847c8782c898932d9dc4c6eb3916",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_054_V4",
+      "previous_question_id": "M3_OP_054_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:10c683642ccd770c10ab0cc0e3bc3845e3b4d9fc9c18445433910b5da2c932fa",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_055_V4",
+      "previous_question_id": "M3_OP_055_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:4571b5e43dd0ebf5fbaf14c5ccc6e668442db54f5b922ae377680a765caa2a65",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_057_V4",
+      "previous_question_id": "M3_OP_057_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:b53282972a1d2ada1e4c0c789ac957fe97e2e3897179c073a7e3ff828faf426b",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_058_V4",
+      "previous_question_id": "M3_OP_058_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:c71bca3aad0f4d1b1d4b2849e905f53095f7b959b5c2ecf80d8a031ea4afa8ac",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_003_V4",
+      "previous_question_id": "M3_SC_003_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:d8c1ed50ba004bf136636c00f2b1ecaf5b02e97d8fdb5b887266251c47a356b9",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_004_V4",
+      "previous_question_id": "M3_SC_004_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:80511a059ac8b3e6d1496fec9081ed438ca10aaaa093c9d62b6f94e7773b890b",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_006_V4",
+      "previous_question_id": "M3_SC_006_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:73446c3d2c283ecbec70c738a0621f56c22499322b32aeb9f3068025f7191a95",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_007_V4",
+      "previous_question_id": "M3_SC_007_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:26fb5e3cf3a902478dbfae9c8f356d026f1b22717658b6e6aec5988b2182e0d1",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_008_V4",
+      "previous_question_id": "M3_SC_008_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:4c7afd24655e4c9fb4f84379b41fd74ff6e2d11e9120e70560ab5ef20ddb5a38",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_009_V4",
+      "previous_question_id": "M3_SC_009_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:c926b2912aa31e413b1defd8562859c656be1066a6921fa7cd6b81a14485a2ef",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_010_V4",
+      "previous_question_id": "M3_SC_010_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:189a57916ed8486aae652de0430cb6b9ec1efcc5e614a52b3f3490daabb9e7bd",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_012_V4",
+      "previous_question_id": "M3_SC_012_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:b634c0df6573605dc46f428d2da7d047006c1945059ab5d2587fcb6e4b69e5ce",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_014_V4",
+      "previous_question_id": "M3_SC_014_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:5cb6cdfada6a0ac5652a2c41a8f3d83d9fbc0a34f3b84a50bc0417087eae4439",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_015_V4",
+      "previous_question_id": "M3_SC_015_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:a3ba428ba696af36061bf1a225225c1fa9c477068db6ec2dfb90af88370544dc",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_021_V4",
+      "previous_question_id": "M3_SC_021_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:eb81cc25dd473ed5a3b403f97a815c0fea13f0e296352616c1bf23a28b9b9dbc",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_022_V4",
+      "previous_question_id": "M3_SC_022_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:b250199243f23b9f6ff6582681968abecb18d00d4f712890c6ac4e8001c7fda5",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_023_V4",
+      "previous_question_id": "M3_SC_023_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:5cda0ed23ff937dc88c898b5cb149148cf198e6cc30ae0122820ef04ac0eff98",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_TF_025_V4",
+      "previous_question_id": "M3_TF_025_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:017546d711230b2e4936d4ba5d717dc288b173c529e5979b81a435204ae6b10d",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_TF_028_V4",
+      "previous_question_id": "M3_TF_028_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:b0c2bfff32cecbd6ab1ea1ee730aaeacc05d6eeb99e0cdb4be8a88f28c869aab",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_TF_030_V4",
+      "previous_question_id": "M3_TF_030_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:8d86d5d57fc1707a8586694aac57266ee0b2e86dfddaa0b65c184d99a3a1cf9e",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_TF_033_V4",
+      "previous_question_id": "M3_TF_033_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:3927ce1ba6cd3ad4afb5a40f8e0a57f0456c2db68cc1f75f9a36d54c29613fc2",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_TF_034_V4",
+      "previous_question_id": "M3_TF_034_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:5fbdae0d5f377aef14f2d11059e0065d54394095708508009ea073582e7bd8c3",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_DG_023_V4",
+      "previous_question_id": "M4_DG_023_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:5a8506b26c9b7beb42e8b5519e5a1dc9753510d75a5fdd5a0566a45edc9e01ef",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_DG_025_V4",
+      "previous_question_id": "M4_DG_025_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:3a0b0ee55d9cd3d6e4f4a9e732a272ded1dcb2fe2d7c65cd28cbc077eccc7722",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_028_V4",
+      "previous_question_id": "M4_OP_028_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:55cfc23764a348a41258d2543633d1b0e62bb2a939fa58672107f6b6e31feb34",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_030_V4",
+      "previous_question_id": "M4_OP_030_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:dac805607f2c72b8e077dd56c5998a1876638e55e40f9ad969c774b65035dfc3",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_031_V4",
+      "previous_question_id": "M4_OP_031_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:637d65a8fa34050bfc3c3ba5c0d975d4e599c4ffe62fc75a42e69165355ea50c",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_032_V4",
+      "previous_question_id": "M4_OP_032_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:892691bb94992f85691f8414d3f0081e7128d909334fc8b07b51910e68d16790",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_033_V4",
+      "previous_question_id": "M4_OP_033_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:e34dfd626b69a5133dca9c544ddd6bbba84ec63422531c862076d01c1dff8408",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_034_V4",
+      "previous_question_id": "M4_OP_034_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:fdfcea62905c307b196f1cd804adf0732e2e8991b800cd6b37b505fef60f2b52",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_035_V4",
+      "previous_question_id": "M4_OP_035_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:c8c604fb8862d0fa8f406aecad85b081cf858e3f41909718335227c3b6289609",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_036_V4",
+      "previous_question_id": "M4_OP_036_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:39ed17e489b22b8c3f30c5668b418a2e8c2c496c4f33707212bdd98c1f83f516",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_037_V4",
+      "previous_question_id": "M4_OP_037_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:0df27f67694a5da5df9ea24599a5ad659354b8e9c09b00eb957e82c2e931fb84",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_038_V4",
+      "previous_question_id": "M4_OP_038_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:96d579e969423d2817eb210ff48e813fabfe26c08cdca7167d0541cb7c2b5c47",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_039_V4",
+      "previous_question_id": "M4_OP_039_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:0c789ee23ff50b79594e57196d4e2b414c520a499805fe52e9600036e9591b86",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_040_V4",
+      "previous_question_id": "M4_OP_040_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:b1b9d41ec7eabceb94ebcb2ff0e8cd41670e2f8dccff5022dcc62fe8aff0a097",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_041_V4",
+      "previous_question_id": "M4_OP_041_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:ada0fd15b4ca75e502a401382af6a5dd21e7f58e8e92642ccd7c9de1351776b9",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_042_V4",
+      "previous_question_id": "M4_OP_042_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:0547d00bbad9ce771ba09d29cdaa76e2e6d73c7665fa4d552fea5efef0c37691",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_SC_002_V4",
+      "previous_question_id": "M4_SC_002_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:a57542abd0d384b7588fee3a4a611eb0a55856c2f82a9e9d7f80358938d12db1",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_SC_012_V4",
+      "previous_question_id": "M4_SC_012_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:7c4ad70e7fdc39a68ac406ff6d0745b417ae4831c50674d984adbbe7a5f365b5",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_TF_019_V4",
+      "previous_question_id": "M4_TF_019_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:ec946280f9ca9019f15b2dac465d301b27aae3722765858e866187c583972b15",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_TF_022_V4",
+      "previous_question_id": "M4_TF_022_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:f4e6a3aef7c1203bfe9236c029e3991853b310c7eac68370143678d5bd6db0f4",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_DG_033_V4",
+      "previous_question_id": "M5_DG_033_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:5ad2f5a171c65ba4668153f7ec764772404a9bc29c97d23ab08df2ae720a778a",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_DG_034_V4",
+      "previous_question_id": "M5_DG_034_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:aa8136cdaf35b3e82a17ebe7dc308635e7b778be78668246a9c3659013cd9259",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_DG_036_V4",
+      "previous_question_id": "M5_DG_036_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:66b1264c101098fb5a757c418f34a8566b5f2c45eb39532c85e88c96f04d68a7",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_DG_037_V4",
+      "previous_question_id": "M5_DG_037_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:d1b31c84dc033f42f96da973c8f6ca0a19a6f1b4e79f7626de9577e08a45dd69",
+      "required_review_tracks": [
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_DG_038_V4",
+      "previous_question_id": "M5_DG_038_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:9731758a14fb376a5941f65f0f303b1b5faa3dc0fd5601c3a820c584e934b40c",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_040_V4",
+      "previous_question_id": "M5_OP_040_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:37f662cbc5995dd1f5da9cf9a5061e04a2648486b767afb3f7b99bfabe402b56",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_041_V4",
+      "previous_question_id": "M5_OP_041_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:0dcc57f44ab2d18fe6fba3a03bac6fac9d43d56646fb1e26de798fac673e053f",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_042_V4",
+      "previous_question_id": "M5_OP_042_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:d3ad9b84af661b030b6eafc286375f0cdfa8dbfebbd9e498d712f81add353848",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_043_V4",
+      "previous_question_id": "M5_OP_043_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:f48d8e97585eaaf4d58f1d37cac340d154ca70b4ef888f8da8ba4fa7934008a7",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_044_V4",
+      "previous_question_id": "M5_OP_044_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:f6a96574606377da637cb37269e6fd9932ffe83fe80ccbd02966dc689805a527",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_045_V4",
+      "previous_question_id": "M5_OP_045_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:ea6c724bdfb936c757601ddc4a94e01272a30101ac0a9cfd21c089c197cb777e",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_046_V4",
+      "previous_question_id": "M5_OP_046_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:4e41dbdcc0b29bf5b90b200aa6864497da56327c5229e4557306f9febd48fcab",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_047_V4",
+      "previous_question_id": "M5_OP_047_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:81cb194d930a29a85d59aac5f8789200c051a0e082f9aaa6191323f692792e5a",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_049_V4",
+      "previous_question_id": "M5_OP_049_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:bbe435a75aa28d8109279ab361c9aff15c008df1252f6967d1d06db6caf9987a",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_050_V4",
+      "previous_question_id": "M5_OP_050_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:1138e61196bcc5d57e3dfd059d036e2326f3a5f11ceaf2ca79ab2b46b26d1f96",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_051_V4",
+      "previous_question_id": "M5_OP_051_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:5e8160717aac58f33a216117e592bea00ede48854d07e4bebca5fed2a82493e0",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_052_V4",
+      "previous_question_id": "M5_OP_052_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:4defc5cb5b2c29be9a3dd029da595a652cd82ab54867e6cbea7a591046425fdb",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_053_V4",
+      "previous_question_id": "M5_OP_053_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:f914725fc7fb8766d7fcbd5caf162864f143b633c1faa6b53f0651d5a14e3581",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_054_V4",
+      "previous_question_id": "M5_OP_054_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:0b808544ce2d4c1d07f9145052b8d7e7729907e420b41f06b3ec44fc2d87feb5",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_SC_003_V4",
+      "previous_question_id": "M5_SC_003_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:dfd7191c33b6314a16b02c680c23d04d1f8f26f170c65d3a67e0442d090697d1",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_SC_005_V4",
+      "previous_question_id": "M5_SC_005_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:81bdd531cd2e1c18705aeeeb421bb0971b2a762bd28ec6de62bbcbc96974c595",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_SC_006_V4",
+      "previous_question_id": "M5_SC_006_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:5f2f5099ad4184ac6ef4e21cc7a4a17ad5629641d5a0cecb5c7c2f6db9f870cb",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_SC_007_V4",
+      "previous_question_id": "M5_SC_007_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:7392a81a65435d3011294382cf25ee6c40b4bb5fb8b4fa9b5208562f8b1c0346",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_SC_013_V4",
+      "previous_question_id": "M5_SC_013_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:cc207c5e4bab25d31f55d90b3546414e1ce6727122387d3d84eb4f90fa7e6c6d",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_SC_015_V4",
+      "previous_question_id": "M5_SC_015_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:9db7ae64befe8309ec6b39111768a6ccc6a690f7832c27badd946e51924fee9f",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_SC_017_V4",
+      "previous_question_id": "M5_SC_017_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:0495ffde1ca701bc0675c63fad932908bb4d4e363f01cc41eacd1ce2a94ba8c9",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_SC_018_V4",
+      "previous_question_id": "M5_SC_018_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:2ac49a262d4928b9d04124a8cede6f4586e3aa8be3c51f3e23d22af6b381fa83",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_SC_019_V4",
+      "previous_question_id": "M5_SC_019_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:ca42f55a0d8632fc284453f9de51cf91f549dda5102a83554a69572f7f21b714",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_TF_023_V4",
+      "previous_question_id": "M5_TF_023_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:ab96f4e35f4c64bf31204632506525bf05565632c00dbde0925c286afd8d8154",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_TF_027_V4",
+      "previous_question_id": "M5_TF_027_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:ee4c4afbcba48e7ed2d09b49d392aa30fad6703697306ac3990a29455181be33",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_DG_027_V4",
+      "previous_question_id": "M6_DG_027_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:b0381081aa7c1e7012394ffe9639d5ad3f7d358ad4aaaa7bf99becf129492c00",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_DG_030_V4",
+      "previous_question_id": "M6_DG_030_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:7b26518218112ee21cf6446c7382f18808a271c65718ae6a38a6d2e51c8d24e1",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_DG_033_V4",
+      "previous_question_id": "M6_DG_033_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:6cda61f2a4b34ea8e7597aa3d6f8cd7884520724aefa24bce2dc191261c06238",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_034_V4",
+      "previous_question_id": "M6_OP_034_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:ca53ad35f0df4fd216d31fa942d2b5ff4a06ad96c65c8e1767d5c9e76b2c3421",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_036_V4",
+      "previous_question_id": "M6_OP_036_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:11c8c3265538f65831fce3d0a9bc5c49dac18d481a37ccbe728f7f3eb5e69dd2",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_037_V4",
+      "previous_question_id": "M6_OP_037_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:3a1ab579814ee1c0db332bef65b12624e0bd3592180ac54111681d851fa4e10e",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_038_V4",
+      "previous_question_id": "M6_OP_038_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:446dd8542e0122dfb225f6a3076cb3b276fc10e114c063eb8fd6a5ab93dc5382",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_039_V4",
+      "previous_question_id": "M6_OP_039_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:f0c8c5485c02a9275a159bdd32dcce106ed841774a38764604fa355e478d9feb",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_040_V4",
+      "previous_question_id": "M6_OP_040_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:aa506bb803bb3c50d15f73da81dba8063a65f5537b05bf5c30ff0cbf4e9d0d07",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_041_V4",
+      "previous_question_id": "M6_OP_041_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:53f0a87fec65dde771f3cb3520a0b5438050b183ed5c9a031a6aa0c40ee79374",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_042_V4",
+      "previous_question_id": "M6_OP_042_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:c53c34b4bbb1603b794a33d64677365f41050c8dc213629caf1e1df12cf5a20f",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_043_V4",
+      "previous_question_id": "M6_OP_043_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:32c4c5f1fc771ea94819744eca8b8c7283a93fdfaeb39f347b90aa4381cfb5c5",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_044_V4",
+      "previous_question_id": "M6_OP_044_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:7c34f66247e6d14f006b4f016f9c1140daff06194721ec8f1e2ce0350eb90911",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_045_V4",
+      "previous_question_id": "M6_OP_045_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:f370c24ebbe0b908dc1a1480c18ca18514d871531610b4900d8b373b97b44887",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_046_V4",
+      "previous_question_id": "M6_OP_046_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:bd1df67f03d43d8278a0deacd0dc2ec06b827a199e91c4c5149e37f99c0ec4ab",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_047_V4",
+      "previous_question_id": "M6_OP_047_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:c3380feab259373a9c4ba27604596362e658e731e04442db700522bec34bddfa",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_048_V4",
+      "previous_question_id": "M6_OP_048_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:e2e54a9dc04046d69b08105938ea5e7f7599afefd4d699adf6fc08eb0586165b",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_SC_001_V3",
+      "question_version": 3,
+      "semantic_hash": "sha256:5bf377f9438764b8fe89b7e278aaea46da769dc94487bd6a7bbd40694d7a442e",
+      "required_review_tracks": [],
+      "status": "PASSED_V3_REFERENCE"
+    },
+    {
+      "question_id": "M6_SC_002_V3",
+      "question_version": 3,
+      "semantic_hash": "sha256:2360ae0e7895d27d6b2ca98c5c15d2b44d1962407122d140e11f061e232b3d7d",
+      "required_review_tracks": [],
+      "status": "PASSED_V3_REFERENCE"
+    },
+    {
+      "question_id": "M6_SC_004_V3",
+      "question_version": 3,
+      "semantic_hash": "sha256:b3f312db366caca90f3fcd26b3b4ad22c879514ff13cf9fa252db26c281740de",
+      "required_review_tracks": [],
+      "status": "PASSED_V3_REFERENCE"
+    },
+    {
+      "question_id": "M6_SC_006_V4",
+      "previous_question_id": "M6_SC_006_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:d2426a0dfe16c7178f383adcb894fbb2cc73a661f8a850a5ed4d386f09768748",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_SC_010_V3",
+      "question_version": 3,
+      "semantic_hash": "sha256:c89ea2099ceb59aca91ccca464f43e7a0b0a5b775ccfe1ca268832bb9a0121dd",
+      "required_review_tracks": [],
+      "status": "PASSED_V3_REFERENCE"
+    },
+    {
+      "question_id": "M6_SC_013_V4",
+      "previous_question_id": "M6_SC_013_V3",
+      "question_version": 4,
+      "semantic_hash": "sha256:280a7395cb73d72244282f5fe28121551d3ef849de91f3adcd104714572ac6c8",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    }
+  ],
+  "gate_hash": "sha256:000f8a975f8d605fc2116647122fed1cdd70d6b66469546eea176e13cdbeca5b"
+}

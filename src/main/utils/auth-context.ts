@@ -1,7 +1,6 @@
-// 调用者身份校验（软校验）。
-// 应用层防御：当前无 session token，caller 身份由渲染进程从 Pinia auth store 读取后
-// 随 IPC 参数传入。主进程校验 callerRole 枚举 + caller 的 user_account 存在且 ACTIVE
-// 且 role 与传入值一致。无法防御「伪造 callerRole 的恶意渲染进程」（PRD 风险点已记录）。
+// 调用者身份校验（过渡态软校验）。
+// F2 起 student:* IPC 包装层已改为优先从 auth_session 解析真实身份；本文件仍服务于尚未
+// 完成 F2 收口的纯函数和旧 handler 测试，继续校验 callerRole 枚举 + user_account ACTIVE。
 // 接收 DBAdapter 而非具体实现，便于单元测试注入 MemoryAdapter，完全不触碰原生模块。
 
 import type { DBAdapter } from '../db/interface'
@@ -45,8 +44,8 @@ export function assertCaller(
 }
 
 /**
- * 校验 STUDENT 身份（测评答题路径专用）。
- * 与 assertCaller 同级风险：渲染进程可伪造 callerRole（PRD 风险点已记录，MVP 单进程可信）。
+ * 校验 STUDENT 身份（测评答题路径专用，当前仍为软校验）。
+ * 在对应 IPC 包装层完成 auth_session 收口前，仍存在渲染进程伪造 callerRole 的风险。
  * 逻辑同 assertCaller 的 user_account 校验，但 callerRole 必须 = 'STUDENT'。
  */
 export function assertStudent(

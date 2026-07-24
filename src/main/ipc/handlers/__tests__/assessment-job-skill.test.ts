@@ -236,6 +236,27 @@ describe('TC-N: JOB_SKILL_ASSESSMENT session 固定组卷', () => {
     expect(result.questions.every((q) => q.questionPhase === 'ONLINE')).toBe(true)
   })
 
+  it('TC-N01a 固定题引用的脚本资产缺失时禁止创建 session', () => {
+    const replacementId = 'M1_SC_MISSING_ASSET'
+    db.prepare(`INSERT INTO question_bank
+      (question_id, job_code, bank_domain, job_module_code, question_type, item_usage,
+       content_json, scoring_rule_json, status)
+      VALUES (?, 'SUPERMARKET_SHELVER', 'JOB_SPECIFIC', 'M1', 'SINGLE_CHOICE', 'SCORED_ITEM', ?, '{}', 'ACTIVE')`
+    ).run(replacementId, JSON.stringify({
+      administration: { script_asset_id: 'asset_missing_role_script' }
+    }))
+    db.prepare('DELETE FROM strategy_config WHERE strategy_id = ?').run(strategyId)
+    const scoredIds = bankIds.scoredIds.map((id) => id === bankIds.onlineIds[0] ? replacementId : id)
+    strategyId = seedJobSkillStrategy(db, { ...bankIds, scoredIds })
+
+    const result = createSession(db, baseParams())
+
+    expect(result).toEqual({ success: false, errorCode: 'QUESTION_BANK_INSUFFICIENT' })
+    expect(
+      db.prepare('SELECT COUNT(*) AS count FROM assessment_session').get()
+    ).toMatchObject({ count: 0 })
+  })
+
   // TC-N02: assessment_session 字段正确
   it('TC-N02 assessment_session strategy_type=JOB_SKILL_ASSESSMENT，counts正确', () => {
     const result = createSession(db, baseParams())

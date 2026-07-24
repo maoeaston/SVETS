@@ -1,15 +1,16 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "asset-manifest.schema.json",
-  "title": "SVETS Visual Asset Manifest",
-  "description": "视觉资产生产、审核与运行时登记合同 v0.3.1",
+  "title": "SVETS Asset Manifest",
+  "description": "视觉、音频与施测脚本生产、审核及运行时登记合同 v0.5.0",
   "type": "object",
-  "required": ["version", "plan_version", "generated_at", "assets"],
+  "required": ["version", "plan_version", "generated_at", "question_authority", "assets"],
   "properties": {
     "$schema": { "type": "string" },
-    "version": { "const": "0.3.1" },
+    "version": { "const": "0.5.0" },
     "plan_version": { "type": "string", "minLength": 1 },
     "generated_at": { "type": "string", "format": "date-time" },
+    "question_authority": { "$ref": "#/$defs/questionAuthority" },
     "assets": {
       "type": "array",
       "minItems": 1,
@@ -18,6 +19,34 @@
   },
   "additionalProperties": false,
   "$defs": {
+    "questionAuthority": {
+      "type": "object",
+      "required": [
+        "job_skill_runtime_authority_path",
+        "job_skill_runtime_status",
+        "job_skill_question_total",
+        "phase4_gate_path",
+        "phase4_gate_status",
+        "delivery_lock_path",
+        "offline_toolkit_manifest_path",
+        "offline_toolkit_status",
+        "binding_policy",
+        "activation_policy"
+      ],
+      "properties": {
+        "job_skill_runtime_authority_path": { "type": "string", "minLength": 1 },
+        "job_skill_runtime_status": { "const": "DRAFT_COMPILED_NOT_ACTIVATABLE" },
+        "job_skill_question_total": { "const": 298 },
+        "phase4_gate_path": { "type": "string", "minLength": 1 },
+        "phase4_gate_status": { "const": "BLOCKED_ASSET_DELIVERY_AND_PILOT_GATE" },
+        "delivery_lock_path": { "type": "string", "minLength": 1 },
+        "offline_toolkit_manifest_path": { "type": "string", "minLength": 1 },
+        "offline_toolkit_status": { "const": "LOCKED_FOR_PRODUCTION" },
+        "binding_policy": { "type": "string", "minLength": 1 },
+        "activation_policy": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
     "gateReview": {
       "type": "object",
       "required": ["required", "status", "reviewer_kind", "reviewer_name", "reviewed_at", "report_path", "notes"],
@@ -53,6 +82,7 @@
         "priority",
         "description",
         "question_ids",
+        "current_question_ids",
         "asset_type",
         "asset_role",
         "usage_mode",
@@ -80,6 +110,8 @@
         "runtime_path",
         "file_hash",
         "expected_answer",
+        "answer_contract_hash",
+        "production_contract",
         "text_handling",
         "construct",
         "target_cue",
@@ -104,10 +136,11 @@
           "pattern": "^[a-z][a-z0-9_]*$",
           "description": "visual-asset-master-plan.md 中的素材 ID"
         },
-        "category": { "enum": ["A", "B", "C", "D", "E", "F", "G", "REFERENCE"] },
+        "category": { "enum": ["A", "B", "C", "D", "E", "F", "G", "DELIVERY", "REFERENCE"] },
         "priority": { "enum": ["P0", "P1", "P2", "REFERENCE"] },
         "description": { "type": "string", "minLength": 1 },
         "question_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "current_question_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
         "asset_type": {
           "enum": [
             "product_photo",
@@ -126,12 +159,17 @@
             "software_task",
             "tool_card",
             "process_strip"
+            ,"answer_image"
+            ,"role_play_script"
+            ,"audio"
+            ,"offline_setup_guide"
+            ,"sealed_config"
           ]
         },
-        "asset_role": { "enum": ["QUESTION_MEDIA", "UI_ASSET", "TOOL_CHECKLIST", "OTHER"] },
+        "asset_role": { "enum": ["QUESTION_MEDIA", "UI_ASSET", "TOOL_CHECKLIST", "ROLE_PLAY_SCRIPT", "SEALED_ADMIN_CONFIG", "OFFLINE_SETUP_GUIDE", "OTHER"] },
         "usage_mode": { "enum": ["training", "assessment", "both", "system", "production"] },
-        "delivery_format": { "enum": ["png", "webp", "svg", "css", "mp4"] },
-        "production_method": { "enum": ["ai_direct", "ai_plus_overlay", "programmatic", "composite"] },
+        "delivery_format": { "enum": ["png", "webp", "svg", "css", "mp4", "mp3", "json", "pdf"] },
+        "production_method": { "enum": ["ai_direct", "ai_plus_overlay", "programmatic", "composite", "authored"] },
         "review_level": { "enum": ["standard", "assessment_critical", "safety_critical"] },
         "lifecycle_status": { "enum": ["planned", "generated", "composited", "reviewing", "approved", "retired"] },
         "complexity_level": { "type": ["string", "null"], "enum": ["L0", "L1", "L2", "L3", null] },
@@ -177,7 +215,9 @@
         "width_px": { "type": ["integer", "null"], "minimum": 1 },
         "height_px": { "type": ["integer", "null"], "minimum": 1 },
         "duration_ms": { "type": ["integer", "null"], "minimum": 1 },
-        "expected_answer": { "type": ["string", "boolean", "null"] },
+        "expected_answer": {},
+        "answer_contract_hash": { "type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$" },
+        "production_contract": { "type": ["object", "null"] },
         "text_handling": { "type": ["string", "null"], "enum": ["none", "ai_reviewed", "programmatic", "mixed", null] },
         "construct": { "type": ["string", "null"] },
         "target_cue": { "type": ["string", "null"] },

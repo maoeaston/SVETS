@@ -1,0 +1,340 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>定点 V6 内容失败轨道复审</title><style>body{font-family:system-ui,sans-serif;margin:0;color:#17202a;background:#f4f6f7}header{position:sticky;top:0;background:#fff;border-bottom:1px solid #ccd1d1;padding:16px;z-index:2}main{max-width:960px;margin:auto;padding:16px}article{background:#fff;border:1px solid #d5dbdb;border-radius:6px;padding:18px;margin-bottom:14px}h1{font-size:22px;margin:0 0 6px}h2{font-size:18px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f8f9f9;padding:12px}fieldset{border:0;padding:10px 0;display:flex;gap:24px}textarea{box-sizing:border-box;width:100%;margin-top:6px}button{padding:9px 14px;margin-right:8px}.error{color:#a93226}</style></head><body><header><h1>4 道定点 V6 内容失败轨道复审</h1><div>审核人：陈晓青。其余141道通过题不在本包中。</div><button id="export">校验并导出 JSON</button><span id="status"></span></header><main><article data-id="M2_OP_031_V6"><h2>1. M2_OP_031_V6</h2><p><b>上一版：</b>M2_OP_031_V5</p><p><b>本包范围：</b>只复审内容失败轨道，不重审已通过轨道。</p><p><b>修订说明：</b>将商品数量、状态和标签配置异常统一移出学员0、1、2分，明确为本次施测无效、由评估员复位后重测；评分只评价5件合格品场景中的日期比较、前置结果、材料权限和提示次数。</p><details open><summary>结构化编辑依据</summary><pre>{
+  "scenario_facts": [
+    "有效施测场景固定为5件同SKU、包装完好、未过期且非临期商品",
+    "商品数量、状态或标签配置不符属于评估设置异常，不评价学员表现"
+  ],
+  "answer": {
+    "expected_outcome": "在有效施测场景中找出固定到期日最早的2件并前置，其余3件按日期顺序后置",
+    "uniqueness_basis": "固定日期标签和唯一答案卡"
+  },
+  "permissions": [
+    "学员可比较日期并移动5件题目商品",
+    "不得改写日期标签或答案卡"
+  ],
+  "exception_branches": [
+    {
+      "condition": "商品数量不是5件，或出现过期、破损、临期、标签缺失或标签配置错误",
+      "action": "判定本次施测无效并暂停计分，由评估员复位为5件合格品后重测"
+    }
+  ],
+  "scoring_thresholds": {
+    "score_0": "有效施测时两件最早到期商品均未正确前置，或违规改写材料，或触发提示红线",
+    "score_1": "有效施测时独立正确前置1件最早到期商品，或恰好1次非指向性提示后全部完成",
+    "score_2": "有效施测时独立正确完成5件日期比较和排序且0次提示"
+  },
+  "safety_actions": [
+    "发现数量、状态或标签配置异常时暂停施测并报告评估员复位"
+  ]
+}</pre></details><details><summary>查看 V6 题目</summary><pre>{
+  "content": {
+    "question_type": "OFFLINE_OPERATION",
+    "prompt": "在5件同SKU不同批次的合格商品中，按固定到期日找出最早到期的2件并放到前排",
+    "assessment_point": "FIFO最早日期筛选R6",
+    "ability_tags": [
+      "COGNITION",
+      "RULE_EXECUTION"
+    ],
+    "note": "辅助工具（纸笔/计算器）使用情况单独编码（提示辅具接纳度）",
+    "source": {
+      "import_batch_id": "batch_20260704_001",
+      "source_file": "questions-m2.csv",
+      "source_ref": "原题34",
+      "imported_at": "2026-07-04T14:46:42.203433Z",
+      "imported_by": "system_import"
+    },
+    "offline_tool_brief": "迷你货架1组；5件同SKU、包装完好且未过期/非临期的商品；固定到期日标签；唯一答案卡；纸笔或计算器",
+    "rubric_criteria": [
+      {
+        "criterion_id": "r1",
+        "description": "确认5件商品为同SKU且均无过期、破损或临期异常"
+      },
+      {
+        "criterion_id": "r2",
+        "description": "正确读出并比较5个到期日"
+      },
+      {
+        "criterion_id": "r3",
+        "description": "找出最早到期的2件"
+      },
+      {
+        "criterion_id": "r4",
+        "description": "2件均前置且其余按日期顺序后置"
+      }
+    ]
+  },
+  "scoring_rule": {
+    "scoring_type": "RUBRIC_BASED",
+    "max_score": 2,
+    "score_0_description": "0分：在有效施测场景中，未达到1分的最低部分阈值（两件最早到期商品均未正确前置），或移动、改写日期标签或答案卡，或接受指向具体对象/步骤的提示，或累计接受2次及以上提示。",
+    "score_1_description": "1分：在有效施测场景中且未触发权限红线，独立正确找出并前置1件最早到期商品；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+    "score_2_description": "2分：在有效施测场景中独立完成全部要求且0次提示：确认5件商品均为同SKU合格品；正确读出并比较5个到期日；找出最早到期的2件；2件均前置且其余按日期顺序后置。"
+  },
+  "media_asset_id": null,
+  "tool_asset_ids": null,
+  "sensory_tags": null,
+  "safety_sensitive": false,
+  "safety_stop_conditions": null
+}</pre></details><fieldset><legend>复审结论 *</legend><label><input type="radio" name="M2_OP_031_V6" value="PASS"> 通过</label><label><input type="radio" name="M2_OP_031_V6" value="RETURN_FOR_REVISION"> 退回复修</label></fieldset><label>审核意见<textarea data-note="M2_OP_031_V6" rows="3"></textarea></label></article><article data-id="M2_OP_038_V6"><h2>2. M2_OP_038_V6</h2><p><b>上一版：</b>M2_OP_038_V5</p><p><b>本包范围：</b>只复审内容失败轨道，不重审已通过轨道。</p><p><b>修订说明：</b>将商品数量、状态和标签设置异常统一移出学员0、1、2分，明确为本次施测无效、由评估员复位后重测；评分只评价8件合格品的锁定排序、材料权限和提示次数。</p><details open><summary>结构化编辑依据</summary><pre>{
+  "scenario_facts": [
+    "有效施测场景固定为8件同SKU、包装完好、未过期且非临期商品",
+    "商品数量、状态或标签配置不符属于评估设置异常，不评价学员表现",
+    "日期标签包含三种固定格式"
+  ],
+  "answer": {
+    "expected_outcome": "在有效施测场景中将8件按到期日由早到晚从前排到后排排列，同日期按固定批次号由小到大",
+    "uniqueness_basis": "固定日期标签、批次号和唯一答案卡"
+  },
+  "permissions": [
+    "学员可读取标签并移动8件题目商品",
+    "不得改写日期、批次号或答案卡"
+  ],
+  "exception_branches": [
+    {
+      "condition": "商品总数不是8件，或出现异常品、缺失标签或标签配置错误",
+      "action": "判定本次施测无效并暂停计分，由评估员复位为8件合格品后重测"
+    }
+  ],
+  "scoring_thresholds": {
+    "score_0": "有效施测时按锁定顺序正确排列少于5件，或违规改写材料，或触发提示红线",
+    "score_1": "有效施测时独立正确排列5至7件，或恰好1次非指向性提示后全部完成",
+    "score_2": "有效施测时独立正确排列全部8件且0次提示"
+  },
+  "safety_actions": [
+    "发现数量、状态或标签配置异常时暂停施测并报告评估员复位"
+  ]
+}</pre></details><details><summary>查看 V6 题目</summary><pre>{
+  "content": {
+    "question_type": "OFFLINE_OPERATION",
+    "prompt": "将8件同SKU、不同批次的合格商品按到期日由早到晚从前排到后排排列",
+    "assessment_point": "FIFO日期排序实操R6",
+    "ability_tags": [
+      "COGNITION",
+      "RULE_EXECUTION"
+    ],
+    "note": "日期标签使用真实印刷版式（含三种格式混用）",
+    "source": {
+      "import_batch_id": "batch_20260704_001",
+      "source_file": "questions-m2.csv",
+      "source_ref": "原题41",
+      "imported_at": "2026-07-04T14:46:42.203433Z",
+      "imported_by": "system_import"
+    },
+    "offline_tool_brief": "8件同SKU且包装完好、未过期、非临期商品；三种固定到期日格式标签；唯一答案卡",
+    "rubric_criteria": [
+      {
+        "criterion_id": "r1",
+        "description": "确认8件均为同SKU且无异常品"
+      },
+      {
+        "criterion_id": "r2",
+        "description": "正确读取三种到期日格式"
+      },
+      {
+        "criterion_id": "r3",
+        "description": "8件按到期日由早到晚排列"
+      },
+      {
+        "criterion_id": "r4",
+        "description": "相同日期按固定批次号由小到大排列"
+      }
+    ]
+  },
+  "scoring_rule": {
+    "scoring_type": "RUBRIC_BASED",
+    "max_score": 2,
+    "score_0_description": "0分：在有效施测场景中，未达到1分的最低部分阈值（按锁定日期和批次顺序正确排列少于5件），或移动、改写日期标签、批次号或答案卡，或接受指向具体对象/步骤的提示，或累计接受2次及以上提示。",
+    "score_1_description": "1分：在有效施测场景中且未触发权限红线，独立按锁定日期和批次顺序正确排列5至7件；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+    "score_2_description": "2分：在有效施测场景中独立完成全部要求且0次提示：确认8件均为同SKU合格品；正确读取三种到期日格式；8件按到期日由早到晚排列；相同日期按固定批次号由小到大排列。"
+  },
+  "media_asset_id": null,
+  "tool_asset_ids": null,
+  "sensory_tags": null,
+  "safety_sensitive": false,
+  "safety_stop_conditions": null
+}</pre></details><fieldset><legend>复审结论 *</legend><label><input type="radio" name="M2_OP_038_V6" value="PASS"> 通过</label><label><input type="radio" name="M2_OP_038_V6" value="RETURN_FOR_REVISION"> 退回复修</label></fieldset><label>审核意见<textarea data-note="M2_OP_038_V6" rows="3"></textarea></label></article><article data-id="M2_OP_041_V6"><h2>3. M2_OP_041_V6</h2><p><b>上一版：</b>M2_OP_041_V5</p><p><b>本包范围：</b>只复审内容失败轨道，不重审已通过轨道。</p><p><b>修订说明：</b>将商品数量、状态、标签和中断脚本异常全部移出学员0、1、2分，明确为本次施测无效、由评估员复位后重测；0分只保留有效场景中的排序、接续、材料权限和提示红线。</p><details open><summary>结构化编辑依据</summary><pre>{
+  "scenario_facts": [
+    "有效施测场景固定为10件同SKU、包装完好、未过期且非临期商品",
+    "评估员按固定脚本执行一次约20秒的中断",
+    "商品设置或中断脚本异常属于评估执行错误，不评价学员表现"
+  ],
+  "answer": {
+    "expected_outcome": "在有效施测场景中按到期日早前晚后唯一排序，中断时标记并在恢复后从标记处接续",
+    "uniqueness_basis": "固定日期标签、唯一答案卡、进度标记牌和固定中断脚本"
+  },
+  "permissions": [
+    "学员可移动10件题目商品并放置进度标记",
+    "不得改写日期标签、答案卡或中断脚本"
+  ],
+  "exception_branches": [
+    {
+      "condition": "商品数量或状态异常、标签缺失，或评估员未按固定脚本执行中断",
+      "action": "判定本次施测无效并暂停计分，由评估员复位商品和中断脚本后重测"
+    }
+  ],
+  "scoring_thresholds": {
+    "score_0": "有效施测时正确排列少于7件、中断后未按标记接续，或违规改写材料，或触发提示红线",
+    "score_1": "有效施测时独立正确排列7至9件且按标记接续，或恰好1次非指向性提示后全部完成",
+    "score_2": "有效施测时独立正确排列10件、完成中断恢复且0次提示"
+  },
+  "safety_actions": [
+    "发现商品设置或中断脚本异常时暂停施测并报告评估员复位"
+  ]
+}</pre></details><details><summary>查看 V6 题目</summary><pre>{
+  "content": {
+    "question_type": "OFFLINE_OPERATION",
+    "prompt": "将10件同SKU不同批次的合格商品按到期日执行FIFO；中断时标记当前位置，恢复后接续，完成时间单独记录",
+    "assessment_point": "FIFO全排+中断恢复实操R6",
+    "ability_tags": [
+      "RULE_EXECUTION",
+      "COGNITION"
+    ],
+    "note": "中断版：排列中途评估员请暂停回答无关问题约20秒；记录恢复后是否接续；中断恢复单独编码",
+    "source": {
+      "import_batch_id": "batch_20260704_001",
+      "source_file": "questions-m2.csv",
+      "source_ref": "原题44",
+      "imported_at": "2026-07-04T14:46:42.203433Z",
+      "imported_by": "system_import"
+    },
+    "offline_tool_brief": "迷你货架1组；10件同SKU、包装完好且未过期/非临期商品；固定日期标签和唯一答案卡；进度标记牌；一次20秒中断脚本",
+    "rubric_criteria": [
+      {
+        "criterion_id": "r1",
+        "description": "开始前确认10件均为同SKU合格品"
+      },
+      {
+        "criterion_id": "r2",
+        "description": "按到期日早前晚后排列10件"
+      },
+      {
+        "criterion_id": "r3",
+        "description": "中断时放置进度标记并停止操作"
+      },
+      {
+        "criterion_id": "r4",
+        "description": "恢复后从标记处接续且最终顺序唯一正确"
+      },
+      {
+        "criterion_id": "r5",
+        "description": "中断恢复和总时长单独记录、不替代准确性"
+      }
+    ]
+  },
+  "scoring_rule": {
+    "scoring_type": "RUBRIC_BASED",
+    "max_score": 2,
+    "score_0_description": "0分：在有效施测场景中，未达到1分的最低部分阈值（按锁定日期顺序正确排列少于7件，或中断后未按进度标记接续），或移动、改写日期标签、答案卡或中断脚本，或接受指向具体对象/步骤的提示，或累计接受2次及以上提示。",
+    "score_1_description": "1分：在有效施测场景中且未触发权限红线，独立正确排列7至9件并在中断后按标记接续；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+    "score_2_description": "2分：在有效施测场景中独立完成全部要求且0次提示：确认10件均为同SKU合格品；按到期日早前晚后正确排列10件；中断时放置进度标记并停止操作；恢复后从标记处接续；中断恢复和总时长单独记录。"
+  },
+  "media_asset_id": null,
+  "tool_asset_ids": null,
+  "sensory_tags": null,
+  "safety_sensitive": false,
+  "safety_stop_conditions": null
+}</pre></details><fieldset><legend>复审结论 *</legend><label><input type="radio" name="M2_OP_041_V6" value="PASS"> 通过</label><label><input type="radio" name="M2_OP_041_V6" value="RETURN_FOR_REVISION"> 退回复修</label></fieldset><label>审核意见<textarea data-note="M2_OP_041_V6" rows="3"></textarea></label></article><article data-id="M5_DG_034_V6"><h2>4. M5_DG_034_V6</h2><p><b>上一版：</b>M5_DG_034_V5</p><p><b>本包范围：</b>只复审内容失败轨道，不重审已通过轨道。</p><p><b>修订说明：</b>选择完整四步方案：题干改为从发现顾客倒地开始，不再预先确认现场安全、反应或呼吸；四张拖拽卡继续唯一对应完整处置顺序，正常呼吸和持续危险例外分支保持不变。</p><details open><summary>结构化编辑依据</summary><pre>{
+  "scenario_facts": [
+    "题目从普通员工发现顾客倒地开始，不在题干中预先确认现场安全、反应或呼吸",
+    "四张拖拽卡覆盖确认现场安全、确认反应与呼吸、呼叫支援取AED、看护协助的完整顺序"
+  ],
+  "answer": {
+    "expected_outcome": "先确认现场安全，再呼叫顾客并观察呼吸；确认无反应且无正常呼吸后，指定同事拨打120、通知受训人员和负责人并取AED，最后看护并依指示协助",
+    "uniqueness_basis": "题干只给出发现顾客倒地的起点，四个待排序步骤各映射唯一顺序"
+  },
+  "permissions": [
+    "普通员工可呼救、指定同事联络120和受训人员、取AED并保持通道畅通",
+    "普通员工不得擅自实施未受训急救操作或随意移动顾客"
+  ],
+  "exception_branches": [
+    {
+      "condition": "顾客有反应或有正常呼吸",
+      "action": "不进入取AED的固定分支，继续看护并呼叫120、受训急救员和负责人"
+    },
+    {
+      "condition": "现场存在漏电、火情、坠物或其他持续危险",
+      "action": "停止接近，疏散警示并呼叫120和负责人"
+    }
+  ],
+  "scoring_thresholds": {
+    "score_0": "任一步骤顺序错误或遗漏均为0分",
+    "score_1": "本题不设部分得分",
+    "score_2": "四个步骤全部处于唯一正确顺序"
+  },
+  "safety_actions": [
+    "先确认现场安全再接近",
+    "只有确认无反应且无正常呼吸才进入取AED分支",
+    "除持续危险威胁生命外不得移动顾客，并由120调度或受训人员接管"
+  ]
+}</pre></details><details><summary>查看 V6 题目</summary><pre>{
+  "content": {
+    "question_type": "DRAG",
+    "prompt": "普通员工发现一名顾客倒地。请按门店应急预案，把从发现情况开始应采取的完整步骤按顺序排好。",
+    "assessment_point": "SAFETY_OPERATION",
+    "ability_tags": [
+      "1"
+    ],
+    "media_brief": "顾客晕倒应急流程 R13，评估员使用角色卡模拟",
+    "note": "ACTIVE",
+    "drag_items": [
+      {
+        "item_id": "i1",
+        "label": "停止周边作业，确认现场没有车辆、坠物、漏电等持续危险"
+      },
+      {
+        "item_id": "i2",
+        "label": "呼叫顾客并观察呼吸，确认无反应且无正常呼吸"
+      },
+      {
+        "item_id": "i3",
+        "label": "请指定同事拨打120、通知受训急救员和负责人，并取来AED交给受训人员"
+      },
+      {
+        "item_id": "i4",
+        "label": "保持通道畅通，在旁看护并按急救调度或受训人员指示协助，不随意移动顾客"
+      }
+    ],
+    "drop_zones": [
+      {
+        "zone_id": "z1",
+        "label": "第 1 步",
+        "accepts": [
+          "i1"
+        ]
+      },
+      {
+        "zone_id": "z2",
+        "label": "第 2 步",
+        "accepts": [
+          "i2"
+        ]
+      },
+      {
+        "zone_id": "z3",
+        "label": "第 3 步",
+        "accepts": [
+          "i3"
+        ]
+      },
+      {
+        "zone_id": "z4",
+        "label": "第 4 步",
+        "accepts": [
+          "i4"
+        ]
+      }
+    ],
+    "scoring_mode": "PARTIAL_CREDIT"
+  },
+  "scoring_rule": {
+    "scoring_type": "DRAG_PARTIAL",
+    "max_score": 2,
+    "all_correct_score": 2,
+    "partial_correct_score": 0,
+    "incorrect_score": 0
+  },
+  "media_asset_id": null,
+  "tool_asset_ids": null,
+  "sensory_tags": null,
+  "safety_sensitive": true,
+  "safety_stop_conditions": "若顾客有反应或有正常呼吸，不进入取AED的固定分支，继续看护并呼叫120、受训急救员和负责人；若现场存在漏电、火情、坠物或其他持续危险，立即停止接近并疏散警示，呼叫120和负责人；除非持续危险威胁生命，不得移动顾客，由急救调度或受训人员接管。"
+}</pre></details><fieldset><legend>复审结论 *</legend><label><input type="radio" name="M5_DG_034_V6" value="PASS"> 通过</label><label><input type="radio" name="M5_DG_034_V6" value="RETURN_FOR_REVISION"> 退回复修</label></fieldset><label>审核意见<textarea data-note="M5_DG_034_V6" rows="3"></textarea></label></article></main><script id="package-data" type="application/json">{"package_id":"job-skill-shelver-298-targeted-v6-content-rereview-packet-v1","reviewer":"陈晓青","track":"CONTENT","candidate_set_hash":"sha256:2c0f5d1a32414c8ad323f19ba72aba2e418f75e9b94bf1f1f61b150a525f211c","questions":[{"question_id":"M2_OP_031_V6","previous_question_id":"M2_OP_031_V5","question_version":6,"source_question_id":"M2_OP_031","module":"M2","question_type":"OFFLINE_OPERATION","status":"DRAFT_FAILED_TRACK_REREVIEW_REQUIRED","structured_edit":{"scenario_facts":["有效施测场景固定为5件同SKU、包装完好、未过期且非临期商品","商品数量、状态或标签配置不符属于评估设置异常，不评价学员表现"],"answer":{"expected_outcome":"在有效施测场景中找出固定到期日最早的2件并前置，其余3件按日期顺序后置","uniqueness_basis":"固定日期标签和唯一答案卡"},"permissions":["学员可比较日期并移动5件题目商品","不得改写日期标签或答案卡"],"exception_branches":[{"condition":"商品数量不是5件，或出现过期、破损、临期、标签缺失或标签配置错误","action":"判定本次施测无效并暂停计分，由评估员复位为5件合格品后重测"}],"scoring_thresholds":{"score_0":"有效施测时两件最早到期商品均未正确前置，或违规改写材料，或触发提示红线","score_1":"有效施测时独立正确前置1件最早到期商品，或恰好1次非指向性提示后全部完成","score_2":"有效施测时独立正确完成5件日期比较和排序且0次提示"},"safety_actions":["发现数量、状态或标签配置异常时暂停施测并报告评估员复位"]},"proposed_question":{"content":{"question_type":"OFFLINE_OPERATION","prompt":"在5件同SKU不同批次的合格商品中，按固定到期日找出最早到期的2件并放到前排","assessment_point":"FIFO最早日期筛选R6","ability_tags":["COGNITION","RULE_EXECUTION"],"note":"辅助工具（纸笔/计算器）使用情况单独编码（提示辅具接纳度）","source":{"import_batch_id":"batch_20260704_001","source_file":"questions-m2.csv","source_ref":"原题34","imported_at":"2026-07-04T14:46:42.203433Z","imported_by":"system_import"},"offline_tool_brief":"迷你货架1组；5件同SKU、包装完好且未过期/非临期的商品；固定到期日标签；唯一答案卡；纸笔或计算器","rubric_criteria":[{"criterion_id":"r1","description":"确认5件商品为同SKU且均无过期、破损或临期异常"},{"criterion_id":"r2","description":"正确读出并比较5个到期日"},{"criterion_id":"r3","description":"找出最早到期的2件"},{"criterion_id":"r4","description":"2件均前置且其余按日期顺序后置"}]},"scoring_rule":{"scoring_type":"RUBRIC_BASED","max_score":2,"score_0_description":"0分：在有效施测场景中，未达到1分的最低部分阈值（两件最早到期商品均未正确前置），或移动、改写日期标签或答案卡，或接受指向具体对象/步骤的提示，或累计接受2次及以上提示。","score_1_description":"1分：在有效施测场景中且未触发权限红线，独立正确找出并前置1件最早到期商品；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。","score_2_description":"2分：在有效施测场景中独立完成全部要求且0次提示：确认5件商品均为同SKU合格品；正确读出并比较5个到期日；找出最早到期的2件；2件均前置且其余按日期顺序后置。"},"media_asset_id":null,"tool_asset_ids":null,"sensory_tags":null,"safety_sensitive":false,"safety_stop_conditions":null},"revision_rationale":"将商品数量、状态和标签配置异常统一移出学员0、1、2分，明确为本次施测无效、由评估员复位后重测；评分只评价5件合格品场景中的日期比较、前置结果、材料权限和提示次数。","old_semantic_hash":"sha256:ac943aaa61ce519fc4f35500923ca91112ccb2914115e28e8e6f5702c002769d","new_semantic_hash":"sha256:3e7de10bf361b2dc99f16fc000e277543273192784a1ace913e1dac06eb70de0","source_candidate_record_hash":"sha256:92ebfa11f0e8d747f0726537282688c8dcf29f7d820146a22ff3535945d672c0","source_merged_record_hash":"sha256:cc86f1f85a7c7465a06c3ebde1de4e31943371230275988ca480bfa8376104aa","required_review_tracks":["CONTENT"],"activation_authority":"NONE","candidate_record_hash":"sha256:f1b3fa3ab750bad1b0ff0bd60542ef5c7608402fcc8b6bb2688160af7fc5e646"},{"question_id":"M2_OP_038_V6","previous_question_id":"M2_OP_038_V5","question_version":6,"source_question_id":"M2_OP_038","module":"M2","question_type":"OFFLINE_OPERATION","status":"DRAFT_FAILED_TRACK_REREVIEW_REQUIRED","structured_edit":{"scenario_facts":["有效施测场景固定为8件同SKU、包装完好、未过期且非临期商品","商品数量、状态或标签配置不符属于评估设置异常，不评价学员表现","日期标签包含三种固定格式"],"answer":{"expected_outcome":"在有效施测场景中将8件按到期日由早到晚从前排到后排排列，同日期按固定批次号由小到大","uniqueness_basis":"固定日期标签、批次号和唯一答案卡"},"permissions":["学员可读取标签并移动8件题目商品","不得改写日期、批次号或答案卡"],"exception_branches":[{"condition":"商品总数不是8件，或出现异常品、缺失标签或标签配置错误","action":"判定本次施测无效并暂停计分，由评估员复位为8件合格品后重测"}],"scoring_thresholds":{"score_0":"有效施测时按锁定顺序正确排列少于5件，或违规改写材料，或触发提示红线","score_1":"有效施测时独立正确排列5至7件，或恰好1次非指向性提示后全部完成","score_2":"有效施测时独立正确排列全部8件且0次提示"},"safety_actions":["发现数量、状态或标签配置异常时暂停施测并报告评估员复位"]},"proposed_question":{"content":{"question_type":"OFFLINE_OPERATION","prompt":"将8件同SKU、不同批次的合格商品按到期日由早到晚从前排到后排排列","assessment_point":"FIFO日期排序实操R6","ability_tags":["COGNITION","RULE_EXECUTION"],"note":"日期标签使用真实印刷版式（含三种格式混用）","source":{"import_batch_id":"batch_20260704_001","source_file":"questions-m2.csv","source_ref":"原题41","imported_at":"2026-07-04T14:46:42.203433Z","imported_by":"system_import"},"offline_tool_brief":"8件同SKU且包装完好、未过期、非临期商品；三种固定到期日格式标签；唯一答案卡","rubric_criteria":[{"criterion_id":"r1","description":"确认8件均为同SKU且无异常品"},{"criterion_id":"r2","description":"正确读取三种到期日格式"},{"criterion_id":"r3","description":"8件按到期日由早到晚排列"},{"criterion_id":"r4","description":"相同日期按固定批次号由小到大排列"}]},"scoring_rule":{"scoring_type":"RUBRIC_BASED","max_score":2,"score_0_description":"0分：在有效施测场景中，未达到1分的最低部分阈值（按锁定日期和批次顺序正确排列少于5件），或移动、改写日期标签、批次号或答案卡，或接受指向具体对象/步骤的提示，或累计接受2次及以上提示。","score_1_description":"1分：在有效施测场景中且未触发权限红线，独立按锁定日期和批次顺序正确排列5至7件；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。","score_2_description":"2分：在有效施测场景中独立完成全部要求且0次提示：确认8件均为同SKU合格品；正确读取三种到期日格式；8件按到期日由早到晚排列；相同日期按固定批次号由小到大排列。"},"media_asset_id":null,"tool_asset_ids":null,"sensory_tags":null,"safety_sensitive":false,"safety_stop_conditions":null},"revision_rationale":"将商品数量、状态和标签设置异常统一移出学员0、1、2分，明确为本次施测无效、由评估员复位后重测；评分只评价8件合格品的锁定排序、材料权限和提示次数。","old_semantic_hash":"sha256:413678c24399c10a8cfa08ebace8d8211fef63d6d063aa7169fc49f8b91e015b","new_semantic_hash":"sha256:5a5d9fd49650579fa055aafc9bef43582988c3639ce23a89cb6b9304acf4461e","source_candidate_record_hash":"sha256:799d7dd25c0773ad912673e5f7e5488a7887831cb5b64e8f7da8d94833040d85","source_merged_record_hash":"sha256:d69a7104a7ab67a7bbd23ba76a8af73eacdac9085773eaa5f0df33cde502ec2f","required_review_tracks":["CONTENT"],"activation_authority":"NONE","candidate_record_hash":"sha256:e9063ef9782b80bca4c769fc3074768352e05d405daa7db3829dc005198251cc"},{"question_id":"M2_OP_041_V6","previous_question_id":"M2_OP_041_V5","question_version":6,"source_question_id":"M2_OP_041","module":"M2","question_type":"OFFLINE_OPERATION","status":"DRAFT_FAILED_TRACK_REREVIEW_REQUIRED","structured_edit":{"scenario_facts":["有效施测场景固定为10件同SKU、包装完好、未过期且非临期商品","评估员按固定脚本执行一次约20秒的中断","商品设置或中断脚本异常属于评估执行错误，不评价学员表现"],"answer":{"expected_outcome":"在有效施测场景中按到期日早前晚后唯一排序，中断时标记并在恢复后从标记处接续","uniqueness_basis":"固定日期标签、唯一答案卡、进度标记牌和固定中断脚本"},"permissions":["学员可移动10件题目商品并放置进度标记","不得改写日期标签、答案卡或中断脚本"],"exception_branches":[{"condition":"商品数量或状态异常、标签缺失，或评估员未按固定脚本执行中断","action":"判定本次施测无效并暂停计分，由评估员复位商品和中断脚本后重测"}],"scoring_thresholds":{"score_0":"有效施测时正确排列少于7件、中断后未按标记接续，或违规改写材料，或触发提示红线","score_1":"有效施测时独立正确排列7至9件且按标记接续，或恰好1次非指向性提示后全部完成","score_2":"有效施测时独立正确排列10件、完成中断恢复且0次提示"},"safety_actions":["发现商品设置或中断脚本异常时暂停施测并报告评估员复位"]},"proposed_question":{"content":{"question_type":"OFFLINE_OPERATION","prompt":"将10件同SKU不同批次的合格商品按到期日执行FIFO；中断时标记当前位置，恢复后接续，完成时间单独记录","assessment_point":"FIFO全排+中断恢复实操R6","ability_tags":["RULE_EXECUTION","COGNITION"],"note":"中断版：排列中途评估员请暂停回答无关问题约20秒；记录恢复后是否接续；中断恢复单独编码","source":{"import_batch_id":"batch_20260704_001","source_file":"questions-m2.csv","source_ref":"原题44","imported_at":"2026-07-04T14:46:42.203433Z","imported_by":"system_import"},"offline_tool_brief":"迷你货架1组；10件同SKU、包装完好且未过期/非临期商品；固定日期标签和唯一答案卡；进度标记牌；一次20秒中断脚本","rubric_criteria":[{"criterion_id":"r1","description":"开始前确认10件均为同SKU合格品"},{"criterion_id":"r2","description":"按到期日早前晚后排列10件"},{"criterion_id":"r3","description":"中断时放置进度标记并停止操作"},{"criterion_id":"r4","description":"恢复后从标记处接续且最终顺序唯一正确"},{"criterion_id":"r5","description":"中断恢复和总时长单独记录、不替代准确性"}]},"scoring_rule":{"scoring_type":"RUBRIC_BASED","max_score":2,"score_0_description":"0分：在有效施测场景中，未达到1分的最低部分阈值（按锁定日期顺序正确排列少于7件，或中断后未按进度标记接续），或移动、改写日期标签、答案卡或中断脚本，或接受指向具体对象/步骤的提示，或累计接受2次及以上提示。","score_1_description":"1分：在有效施测场景中且未触发权限红线，独立正确排列7至9件并在中断后按标记接续；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。","score_2_description":"2分：在有效施测场景中独立完成全部要求且0次提示：确认10件均为同SKU合格品；按到期日早前晚后正确排列10件；中断时放置进度标记并停止操作；恢复后从标记处接续；中断恢复和总时长单独记录。"},"media_asset_id":null,"tool_asset_ids":null,"sensory_tags":null,"safety_sensitive":false,"safety_stop_conditions":null},"revision_rationale":"将商品数量、状态、标签和中断脚本异常全部移出学员0、1、2分，明确为本次施测无效、由评估员复位后重测；0分只保留有效场景中的排序、接续、材料权限和提示红线。","old_semantic_hash":"sha256:400d23d822bf48a968170b8b317795b994a1dd5fb3f6610bf15a05ba221787f5","new_semantic_hash":"sha256:23244edbec021c42b9edb4527992495a34cb30675be9052ea53636b08e1c754a","source_candidate_record_hash":"sha256:a98260f52794a2e79de3545690fc1d13a5e8fb8d3c6cef242d9f09253544536e","source_merged_record_hash":"sha256:253c43e9967dad54961e3367b351c4ad789a9b5da8e4ed31206e0d96775e68c0","required_review_tracks":["CONTENT"],"activation_authority":"NONE","candidate_record_hash":"sha256:cc4bd345d1062fc9cb19e9d7cb6e05a34cf2f70e4cd8d0c8fa42b7738ee7c2f3"},{"question_id":"M5_DG_034_V6","previous_question_id":"M5_DG_034_V5","question_version":6,"source_question_id":"M5_DG_034","module":"M5","question_type":"DRAG","status":"DRAFT_FAILED_TRACK_REREVIEW_REQUIRED","structured_edit":{"scenario_facts":["题目从普通员工发现顾客倒地开始，不在题干中预先确认现场安全、反应或呼吸","四张拖拽卡覆盖确认现场安全、确认反应与呼吸、呼叫支援取AED、看护协助的完整顺序"],"answer":{"expected_outcome":"先确认现场安全，再呼叫顾客并观察呼吸；确认无反应且无正常呼吸后，指定同事拨打120、通知受训人员和负责人并取AED，最后看护并依指示协助","uniqueness_basis":"题干只给出发现顾客倒地的起点，四个待排序步骤各映射唯一顺序"},"permissions":["普通员工可呼救、指定同事联络120和受训人员、取AED并保持通道畅通","普通员工不得擅自实施未受训急救操作或随意移动顾客"],"exception_branches":[{"condition":"顾客有反应或有正常呼吸","action":"不进入取AED的固定分支，继续看护并呼叫120、受训急救员和负责人"},{"condition":"现场存在漏电、火情、坠物或其他持续危险","action":"停止接近，疏散警示并呼叫120和负责人"}],"scoring_thresholds":{"score_0":"任一步骤顺序错误或遗漏均为0分","score_1":"本题不设部分得分","score_2":"四个步骤全部处于唯一正确顺序"},"safety_actions":["先确认现场安全再接近","只有确认无反应且无正常呼吸才进入取AED分支","除持续危险威胁生命外不得移动顾客，并由120调度或受训人员接管"]},"proposed_question":{"content":{"question_type":"DRAG","prompt":"普通员工发现一名顾客倒地。请按门店应急预案，把从发现情况开始应采取的完整步骤按顺序排好。","assessment_point":"SAFETY_OPERATION","ability_tags":["1"],"media_brief":"顾客晕倒应急流程 R13，评估员使用角色卡模拟","note":"ACTIVE","drag_items":[{"item_id":"i1","label":"停止周边作业，确认现场没有车辆、坠物、漏电等持续危险"},{"item_id":"i2","label":"呼叫顾客并观察呼吸，确认无反应且无正常呼吸"},{"item_id":"i3","label":"请指定同事拨打120、通知受训急救员和负责人，并取来AED交给受训人员"},{"item_id":"i4","label":"保持通道畅通，在旁看护并按急救调度或受训人员指示协助，不随意移动顾客"}],"drop_zones":[{"zone_id":"z1","label":"第 1 步","accepts":["i1"]},{"zone_id":"z2","label":"第 2 步","accepts":["i2"]},{"zone_id":"z3","label":"第 3 步","accepts":["i3"]},{"zone_id":"z4","label":"第 4 步","accepts":["i4"]}],"scoring_mode":"PARTIAL_CREDIT"},"scoring_rule":{"scoring_type":"DRAG_PARTIAL","max_score":2,"all_correct_score":2,"partial_correct_score":0,"incorrect_score":0},"media_asset_id":null,"tool_asset_ids":null,"sensory_tags":null,"safety_sensitive":true,"safety_stop_conditions":"若顾客有反应或有正常呼吸，不进入取AED的固定分支，继续看护并呼叫120、受训急救员和负责人；若现场存在漏电、火情、坠物或其他持续危险，立即停止接近并疏散警示，呼叫120和负责人；除非持续危险威胁生命，不得移动顾客，由急救调度或受训人员接管。"},"revision_rationale":"选择完整四步方案：题干改为从发现顾客倒地开始，不再预先确认现场安全、反应或呼吸；四张拖拽卡继续唯一对应完整处置顺序，正常呼吸和持续危险例外分支保持不变。","old_semantic_hash":"sha256:7f593cb626236846041f01369cdc8608af22047108c8ea19f9940ded4232a64b","new_semantic_hash":"sha256:2ff9ab3ae0c10b21ec3f24f547d4e9c6edf3f521bf24b8f259da54685650b7f1","source_candidate_record_hash":"sha256:d76a3a65fd6710d753cb3c1698de5f94479156a0ac58c775f5674e1731044e5d","source_merged_record_hash":"sha256:c12b1e1354247c3e303e6e5b24b71206b5b3bec1d254d092508e73137f8ccf28","required_review_tracks":["CONTENT"],"activation_authority":"NONE","candidate_record_hash":"sha256:900a61822f76485a8d1face53d99beac8a6080c4770310419a8a27cab6ca8d4d"}]}</script><script>(()=>{const p=JSON.parse(document.getElementById('package-data').textContent);const key=p.package_id+':draft';const saved=JSON.parse(localStorage.getItem(key)||'{}');for(const q of p.questions){const v=saved[q.question_id];if(v?.conclusion)document.querySelector('input[name="'+q.question_id+'"][value="'+v.conclusion+'"]').checked=true;document.querySelector('[data-note="'+q.question_id+'"]').value=v?.review_note||''}function collect(){return p.questions.map(q=>({question_id:q.question_id,previous_question_id:q.previous_question_id,new_semantic_hash:q.new_semantic_hash,candidate_record_hash:q.candidate_record_hash,conclusion:document.querySelector('input[name="'+q.question_id+'"]:checked')?.value||'',review_note:document.querySelector('[data-note="'+q.question_id+'"]').value.trim()}))}document.addEventListener('input',()=>localStorage.setItem(key,JSON.stringify(Object.fromEntries(collect().map(x=>[x.question_id,x])))));document.getElementById('export').onclick=()=>{const questions=collect();const missing=questions.filter(x=>!x.conclusion||(x.conclusion==='RETURN_FOR_REVISION'&&!x.review_note));const status=document.getElementById('status');if(missing.length){status.className='error';status.textContent=' 尚有 '+missing.length+' 题未完成';return}const pass=questions.filter(x=>x.conclusion==='PASS').length;const result={schema_version:'job-skill-shelver-298-targeted-v6-content-rereview-result-v1',package_id:p.package_id,candidate_set_hash:p.candidate_set_hash,reviewer:p.reviewer,submitted_at:new Date().toISOString(),summary:{total:questions.length,pass,return_for_revision:questions.length-pass},questions};const blob=new Blob([JSON.stringify(result,null,2)+'\n'],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=p.package_id+'-result.json';a.click();URL.revokeObjectURL(a.href);status.className='';status.textContent=' 已导出'};})();</script></body></html>

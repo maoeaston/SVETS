@@ -1,0 +1,120 @@
+{
+  "schema_version": "job-skill-shelver-298-rejected-replacement-targeted-v4-content-rereview-gate-v1",
+  "gate_id": "job-skill-shelver-298-rejected-replacement-targeted-v4-content-rereview-gate-v1",
+  "status": "PENDING_TARGETED_V4_CONTENT_REREVIEW_NO_ACTIVATION_AUTHORITY",
+  "generated_at": "2026-07-22T17:00:00+08:00",
+  "candidate_set": {
+    "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-candidates-v4.json",
+    "candidate_set_id": "job-skill-shelver-298-rejected-replacement-targeted-candidates-v4",
+    "candidate_set_hash": "sha256:6ec5020603b1e7989d384fd1b40236a574c208e00d9bc85255cd3fd56536bdcb"
+  },
+  "review_routing": {
+    "content": [
+      "M1_OP_042_V4",
+      "M3_OP_056_V4",
+      "M4_OP_045_V4",
+      "M4_OP_046_V4",
+      "M4_OP_048_V4",
+      "M5_OP_048_V4"
+    ],
+    "safety_technical": [],
+    "carried_forward_safety_technical_passes": [
+      {
+        "question_id": "M1_OP_042_V4",
+        "track": "SAFETY_TECHNICAL",
+        "status": "PASS",
+        "source_record_hash": "sha256:27d0ddf7e70b93d383d0b773ae791b38262650777550ca83d5f6c00218a420f7"
+      },
+      {
+        "question_id": "M3_OP_056_V4",
+        "track": "SAFETY_TECHNICAL",
+        "status": "PASS",
+        "source_record_hash": "sha256:3e7482520b61eea56c7eb57a776994461c3fbeb6452380252b4cce4bd193c502"
+      },
+      {
+        "question_id": "M4_OP_045_V4",
+        "track": "SAFETY_TECHNICAL",
+        "status": "PASS",
+        "source_record_hash": "sha256:1bf9c1f771c22c56ca756fa5296f94e20bc8dee33db35e9c0e73ee3d5cd40f06"
+      },
+      {
+        "question_id": "M4_OP_046_V4",
+        "track": "SAFETY_TECHNICAL",
+        "status": "PASS",
+        "source_record_hash": "sha256:33599dc6c9f7acd691070d6550fca77506ac635d82b9aa11fca975c9a2cf6eb5"
+      },
+      {
+        "question_id": "M4_OP_048_V4",
+        "track": "SAFETY_TECHNICAL",
+        "status": "PASS",
+        "source_record_hash": "sha256:824243fb7fbf98c5bddec15964dbf1770951f74814a7c334b04411fec9e8b02e"
+      },
+      {
+        "question_id": "M5_OP_048_V4",
+        "track": "SAFETY_TECHNICAL",
+        "status": "PASS",
+        "source_record_hash": "sha256:120adc58a2237e1b9527a3df5ea972bc034996d36e6d02c367de8764054d6d69"
+      }
+    ]
+  },
+  "cumulative_passed_references": [
+    {
+      "question_id": "M4_OP_043_V2",
+      "version": 2,
+      "semantic_hash": "sha256:7df37f5d3f61aeb8fce82e17493401713b3cb84a72dfc9e540b20bd25127a119",
+      "candidate_record_hash": "sha256:27068d7eef3394c3c5d77827da331c5267b9b9fbc43d88d2d3796ba451ac1418",
+      "activation_authority": "NONE",
+      "treatment": "PRESERVE_PASSED_REVIEW_ONLY_REFERENCE_NO_V4_NO_ACTIVATION"
+    },
+    {
+      "question_id": "M4_OP_044_V2",
+      "version": 2,
+      "semantic_hash": "sha256:d36525b4131dce063a73e55b7b661b6c076c36b96ceef5cef50acdbead3f4b82",
+      "candidate_record_hash": "sha256:5e3a6e7305b38d4ca5f0c11f97aa3590b9f8da731ebf725abb01a748b8632dff",
+      "activation_authority": "NONE",
+      "treatment": "PRESERVE_PASSED_REVIEW_ONLY_REFERENCE_NO_V4_NO_ACTIVATION"
+    },
+    {
+      "question_id": "M1_OB_048_V3",
+      "version": 3,
+      "semantic_hash": "sha256:1e641508132b4f09ff926596382b26685857bc5832aff4c4ca9647cbe66981e5",
+      "candidate_record_hash": "sha256:002747a15bb22cd2cd1134dd200ca0f0435cba3929321a249c08cb2dc681fda3",
+      "activation_authority": "NONE",
+      "treatment": "PRESERVE_PASSED_REVIEW_ONLY_REFERENCE_NO_V4_NO_ACTIVATION"
+    },
+    {
+      "question_id": "M4_OP_047_V3",
+      "version": 3,
+      "semantic_hash": "sha256:f42242e98260c906a30fc01361c35627463c328e7e388b5a1b38e5383504b6b1",
+      "candidate_record_hash": "sha256:c5163f8d6607553c0e45fcb4126ef89b0e2d0eace79991fb7c9938a27c68d28c",
+      "activation_authority": "NONE",
+      "treatment": "PRESERVE_PASSED_REVIEW_ONLY_REFERENCE_NO_V4_NO_ACTIVATION"
+    },
+    {
+      "question_id": "M5_OP_055_V3",
+      "version": 3,
+      "semantic_hash": "sha256:64b8778f81fbf40160e03ecc5b94543ca229919d70d38817bfd271d9ddc412e0",
+      "candidate_record_hash": "sha256:a111139bd3f5b0216e3deaf9329eaf8879f854d9c4be56c73fb86bc2fcb828ca",
+      "activation_authority": "NONE",
+      "treatment": "PRESERVE_PASSED_REVIEW_ONLY_REFERENCE_NO_V4_NO_ACTIVATION"
+    }
+  ],
+  "merge_rule": "Each V4 candidate must pass content rereview. Safety and technical passes remain carried by source record hash. No review result grants activation authority.",
+  "summary": {
+    "total_v4": 6,
+    "pending_v4": 6,
+    "content_pending": 6,
+    "safety_technical_pending": 0,
+    "cumulative_passed_reference_only": 5
+  },
+  "boundaries": {
+    "activation_authority_granted": false,
+    "can_activate_questions": false,
+    "existing_287_unchanged": true,
+    "rejected_originals_11_unchanged": true,
+    "runtime_database_unchanged": true,
+    "activation_sql_not_generated": true,
+    "delivery_lock_unchanged": true
+  },
+  "gate_hash": "sha256:77d5b77f94f00bdf56919669c586137222f54604737d46399e68d180f4330c03"
+}

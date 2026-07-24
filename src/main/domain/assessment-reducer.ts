@@ -32,6 +32,9 @@ import type {
   AnswerSubmittedPayload,
   EmotionInterruptedPayload,
   EmotionResumedPayload,
+  SittingStartedPayload,
+  SittingEndedPayload,
+  EmotionCollapseRecordedPayload,
   EmotionCollapseThresholdReachedPayload,
   OfflineScoreSubmittedPayload,
   SessionCompletedPayload,
@@ -252,6 +255,15 @@ export function applyAssessmentEvent(db: DBAdapter, event: ActionLogEntry): void
     case 'EMOTION_RESUMED':
       applyEmotionResumed(db, event)
       break
+    case 'SITTING_STARTED':
+      applySittingStarted(db, event)
+      break
+    case 'SITTING_ENDED':
+      applySittingEnded(db, event)
+      break
+    case 'EMOTION_COLLAPSE_RECORDED':
+      applyEmotionCollapseRecorded(db, event)
+      break
     case 'EMOTION_COLLAPSE_THRESHOLD_REACHED':
       applyEmotionCollapseThresholdReached(db, event)
       break
@@ -328,6 +340,19 @@ function applyEmotionCollapseThresholdReached(db: DBAdapter, event: ActionLogEnt
     .get(p.session_id) as { event_sequence_version: number } | undefined
   if (!row) return
   if (isStaleAssessmentEvent(row, event)) return
+  db.prepare(
+    `UPDATE assessment_session
+       SET level_result = 'LEVEL_NOT_COMPETENT', last_applied_event_id = ?,
+           event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END
+     WHERE session_id = ?`
+  ).run(event.event_id, event.event_sequence, event.event_sequence, p.session_id)
+}
+
+function applyEmotionCollapseRecorded(db: DBAdapter, event: ActionLogEntry): void {
+  const p = event.payload as unknown as EmotionCollapseRecordedPayload
+  const row = db.prepare('SELECT event_sequence_version FROM assessment_session WHERE session_id = ?')
+    .get(p.session_id) as { event_sequence_version: number } | undefined
+  if (!row || isStaleAssessmentEvent(row, event)) return
   markAssessmentEventApplied(db, p.session_id, event)
 }
 
@@ -617,6 +642,86 @@ function applyEmotionResumed(db: DBAdapter, event: ActionLogEntry): void {
   ).run(event.event_id, event.event_id, event.event_sequence, event.event_sequence, p.session_id)
 }
 
+// SITTING_STARTED → 新建一个连续施测坐次，并将 session 恢复到 ACTIVE。
+function applySittingStarted(db: DBAdapter, event: ActionLogEntry): void {
+  const p = event.payload as unknown as SittingStartedPayload
+  const existing = db
+    .prepare('SELECT started_event_id FROM assessment_sitting WHERE session_id = ? AND sitting_no = ?')
+    .get(p.session_id, p.sitting_no) as { started_event_id: string } | undefined
+  if (existing) {
+    if (existing.started_event_id !== event.event_id) {
+      throw new Error(`assessment sitting ${p.session_id}/${p.sitting_no} conflicts with event ${event.event_id}`)
+    }
+    return
+  }
+  const session = db
+    .prepare('SELECT event_sequence_version FROM assessment_session WHERE session_id = ?')
+    .get(p.session_id) as { event_sequence_version: number } | undefined
+  if (!session || isStaleAssessmentEvent(session, event)) return
+
+  db.prepare(
+    `INSERT INTO assessment_sitting
+       (sitting_id, session_id, sitting_no, started_at, started_by, started_event_id)
+     VALUES (?, ?, ?, ?, ?, ?)`
+  ).run(`${p.session_id}:${p.sitting_no}`, p.session_id, p.sitting_no, p.started_at, p.started_by, event.event_id)
+  db.prepare(
+    `UPDATE assessment_session
+       SET status = 'ACTIVE', pause_started_at = NULL,
+           last_status_event_id = ?, last_applied_event_id = ?,
+           event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END
+     WHERE session_id = ?`
+  ).run(event.event_id, event.event_id, event.event_sequence, event.event_sequence, p.session_id)
+}
+
+// SITTING_ENDED → 计划暂停或情绪崩溃结束当前坐次，session 待复核而不是直接作废。
+function applySittingEnded(db: DBAdapter, event: ActionLogEntry): void {
+  const p = event.payload as unknown as SittingEndedPayload
+  const sitting = db
+    .prepare('SELECT ended_event_id FROM assessment_sitting WHERE session_id = ? AND sitting_no = ?')
+    .get(p.session_id, p.sitting_no) as { ended_event_id: string | null } | undefined
+  if (!sitting) throw new Error(`assessment sitting ${p.session_id}/${p.sitting_no} is missing`)
+  if (sitting.ended_event_id) {
+    if (sitting.ended_event_id !== event.event_id) {
+      throw new Error(`assessment sitting ${p.session_id}/${p.sitting_no} already ended by another event`)
+    }
+    return
+  }
+  const session = db
+    .prepare('SELECT event_sequence_version FROM assessment_session WHERE session_id = ?')
+    .get(p.session_id) as { event_sequence_version: number } | undefined
+  if (!session || isStaleAssessmentEvent(session, event)) return
+
+  db.prepare(
+    `UPDATE assessment_sitting
+       SET ended_at = ?, ended_by = ?, end_reason = ?, current_question_order = ?,
+           ended_event_id = ?, updated_at = datetime('now')
+     WHERE session_id = ? AND sitting_no = ?`
+  ).run(
+    p.ended_at,
+    p.ended_by,
+    p.end_reason,
+    p.current_question_order ?? null,
+    event.event_id,
+    p.session_id,
+    p.sitting_no
+  )
+  db.prepare(
+    `UPDATE assessment_session
+       SET status = 'SUSPENDED_REVIEW_REQUIRED', pause_started_at = ?,
+           last_interruption_reason = ?, last_status_event_id = ?, last_applied_event_id = ?,
+           event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END
+     WHERE session_id = ?`
+  ).run(
+    p.ended_at,
+    p.end_reason === 'ENDED_BY_COLLAPSE' ? 'EMOTION' : 'TEACHER_INTERVENTION',
+    event.event_id,
+    event.event_id,
+    event.event_sequence,
+    event.event_sequence,
+    p.session_id
+  )
+}
+
 // SESSION_COMPLETED → status=COMPLETED
 // 幂等：last_status_event_id == event_id 则 skip。
 function applySessionCompleted(db: DBAdapter, event: ActionLogEntry): void {
@@ -806,17 +911,21 @@ function applyResultCalculated(db: DBAdapter, event: ActionLogEntry): void {
   db.prepare(
     `INSERT INTO result_record
        (result_id, student_id, result_type, source_aggregate_type, source_aggregate_id,
-        job_code, raw_score, max_score, normalized_score, completion_ratio, level_result,
+        strategy_id, strategy_type, job_code, module_type,
+        raw_score, max_score, normalized_score, completion_ratio, level_result,
         safety_overridden, redline_incident_id, result_payload_json,
         generated_event_id, generated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   ).run(
     p.result_id,
     p.student_id,
     p.result_type,
     p.source_type,
     p.source_id,
+    p.strategy_id ?? null,
+    p.strategy_type ?? null,
     p.job_code,
+    p.module_type ?? null,
     p.raw_score ?? null,
     p.max_score ?? null,
     p.normalized_score,

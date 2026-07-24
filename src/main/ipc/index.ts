@@ -9,15 +9,19 @@ import { registerOperationScoringHandlers } from './handlers/operation-scoring'
 import { registerJobSkillScoringHandlers } from './handlers/job-skill-scoring'
 import { registerObservationHandlers } from './handlers/observation'
 import { registerAssignmentHandlers } from './handlers/assignment'
+import { registerSafetyHandlers } from './handlers/safety'
+import { registerFoundationHandlers } from './handlers/foundation'
 
-registerAuthHandlers()
-registerStudentHandlers()
-registerStrategyHandlers()
-registerAssessmentHandlers()
-registerTrainingHandlers()
-registerOperationScoringHandlers()
-registerJobSkillScoringHandlers()
-registerObservationHandlers()
-registerAssignmentHandlers()
-
-export {}
+export function registerIpcHandlers(): void {
+  registerAuthHandlers()
+  registerStudentHandlers()
+  registerStrategyHandlers()
+  registerAssessmentHandlers()
+  registerTrainingHandlers()
+  registerOperationScoringHandlers()
+  registerJobSkillScoringHandlers()
+  registerObservationHandlers()
+  registerAssignmentHandlers()
+  registerSafetyHandlers()
+  registerFoundationHandlers()
+}

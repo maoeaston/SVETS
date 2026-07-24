@@ -1,0 +1,5005 @@
+{
+  "schema_version": "job-skill-shelver-298-v4-editorial-input-v1",
+  "section": "OFFLINE_OPERATION",
+  "questions": [
+    {
+      "question_id": "M1_OP_034_V4",
+      "previous_question_id": "M1_OP_034_V3",
+      "source_question_id": "M1_OP_034",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“把5张价签放到对应商品的正下方”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "把5张价签放到对应商品的正下方",
+          "assessment_point": "价签对应R3实操",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "note": "记录完成时长",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m1.csv",
+            "source_ref": "原题82",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组；5件有标识商品；5张对应价签",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "价签放在对应商品正下方"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "无错配（品名与价签一一对应）"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确放置且匹配少于3张价签），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（正确放置并匹配3至4张价签）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：价签放在对应商品正下方；无错配（品名与价签一一对应）。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M1_OP_035_V4",
+      "previous_question_id": "M1_OP_035_V3",
+      "source_question_id": "M1_OP_035",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“把3件歪倒的商品扶正摆好”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "把3件歪倒的商品扶正摆好",
+          "assessment_point": "扶正规整实操",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "FINE_MOTOR"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m1.csv",
+            "source_ref": "原题83",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组；3件歪斜摆放的商品",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "3件商品全部扶正"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "扶正后正面朝外"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（少于2件商品同时做到扶正和正面朝外），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（2件商品扶正且正面朝外）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：3件商品全部扶正；扶正后正面朝外。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M1_OP_036_V4",
+      "previous_question_id": "M1_OP_036_V3",
+      "source_question_id": "M1_OP_036",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“找出货架上被商品遮挡的价签，把它露出来”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "找出货架上被商品遮挡的价签，把它露出来",
+          "assessment_point": "价签可视R3实操",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m1.csv",
+            "source_ref": "原题84",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组（预设1张价签被商品遮挡）",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "找到被遮挡的价签"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "移开商品使价签完全可见"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（未找到该价签或价签仍完全被遮挡），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（找到被遮挡价签但只做到部分露出）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：找到被遮挡的价签；移开商品使价签完全可见。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M1_OP_037_V4",
+      "previous_question_id": "M1_OP_037_V3",
+      "source_question_id": "M1_OP_037",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“把货架上的商品从左到右按从大到小顺序排列好”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "依据排面图、SKU和价签，把5件商品归位并使同一SKU形成连续排面",
+          "assessment_point": "大小排序实操",
+          "ability_tags": [
+            "COGNITION",
+            "FINE_MOTOR"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m1.csv",
+            "source_ref": "原题85",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "固定牢靠的迷你货架1组；5件不同SKU/规格的轻质商品；唯一答案排面图1张；对应价签",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "逐件核对SKU、规格与价签"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "5件商品位置与排面图一致"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "同一SKU连续成面且正面朝外"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确归位少于3件商品），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（按排面图和价签正确归位3至4件商品）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：逐件核对SKU、规格与价签；5件商品位置与排面图一致；同一SKU连续成面且正面朝外。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M1_OP_038_V4",
+      "previous_question_id": "M1_OP_038_V3",
+      "source_question_id": "M1_OP_038",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“把货架的层板清洁干净”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "按“移货、警示隔离、清洁、干燥、复位、复查”顺序清洁1层货架层板",
+          "assessment_point": "清洁层板R11实操",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "FINE_MOTOR"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m1.csv",
+            "source_ref": "原题86",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "固定牢靠的迷你货架1组；1层预置纸屑和可水洗仿真污渍的层板；空商品盒；清洁布；清水喷壶；警示牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "先移开该层全部商品并放到周转区"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "放置警示牌并隔离清洁区域"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "清除纸屑和仿真污渍"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "确认层板干燥后再复位商品"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "复查层板、商品和通道无残留污渍或湿滑"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于4步，或未隔离湿区便让商品/人员进入），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完整执行移货、隔离、清洁、干燥、复位、复查中的4至5步）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：先移开该层全部商品并放到周转区；放置警示牌并隔离清洁区域；清除纸屑和仿真污渍；确认层板干燥后再复位商品；复查层板、商品和通道无残留污渍或湿滑。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：发现未知液体、刺激性气味、破损容器或地面/层板无法擦干；停止：立即停止清洁并退至安全位置；隔离/警示：保留警示牌，阻止商品复位和人员进入；上报：通知负责人及清洁责任人员，未经确认不得继续。"
+      }
+    },
+    {
+      "question_id": "M1_OP_039_V4",
+      "previous_question_id": "M1_OP_039_V3",
+      "source_question_id": "M1_OP_039",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“找出货架上错位的价签，把它放回对应商品下方”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "核对1张错位价签的条码、品名、规格和价格；四项一致且获授权时归位，不一致或无权限时隔离价签并上报",
+          "assessment_point": "错位价签归位R3实操",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m1.csv",
+            "source_ref": "原题87",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组；1张错位价签；商品与系统价核对卡；“可更换/仅上报”权限卡；问题价签袋；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "核对条码、品名、规格和价格四项"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "四项一致且权限卡允许时放到对应商品正下方"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "任一不一致或无权限时将价签放入问题袋并向负责人报告"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "处置后复查商品与有效价签对应"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（未完成四要素核对就移动价签，或核对后仍未作正确处置），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成四要素核对并按授权正确处置价签）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：核对条码、品名、规格和价格四项；四项一致且权限卡允许时放到对应商品正下方；任一不一致或无权限时将价签放入问题袋并向负责人报告；处置后复查商品与有效价签对应。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M1_OP_040_V4",
+      "previous_question_id": "M1_OP_040_V3",
+      "source_question_id": "M1_OP_040",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“把6件商品按重下轻上的规则放到货架的下层/中层/上层”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "把6件标明模拟重量的轻质空包装按“重下轻上”摆到已固定货架的下、中、上层",
+          "assessment_point": "分层归类R5实操",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "note": "记录完成时长",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m1.csv",
+            "source_ref": "原题88",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "经防倾倒固定且标明每层限载2kg的迷你货架1组；6件单件不超过300g的轻质空包装（模拟重/中/轻各2件）",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "2件模拟重货放下层"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "2件模拟中等货放中层"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "2件模拟轻货放上层"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "摆放后商品稳定且各层未超载"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确分层少于4件，或在货架晃动后继续摆放），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（正确分层4至5件轻质仿真商品）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：2件模拟重货放下层；2件模拟中等货放中层；2件模拟轻货放上层；摆放后商品稳定且各层未超载。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：货架晃动、固定件松脱、层板超载或商品出现滑落/倾倒趋势；停止：立即停止摆放并后退；隔离/警示：设置警示牌并禁止靠近或触碰货架；上报：通知负责人检查固定和载荷，确认安全前不得恢复。"
+      }
+    },
+    {
+      "question_id": "M1_OP_041_V4",
+      "previous_question_id": "M1_OP_041_V3",
+      "source_question_id": "M1_OP_041",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“货架上有2个空位，把备货区的对应商品补进去”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "为2个空位补货：逐件核对品名、规格/条码、包装和效期，同SKU旧货前置、新货后置；异常品隔离上报",
+          "assessment_point": "补货到空位实操",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "FINE_MOTOR"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m1.csv",
+            "source_ref": "原题89",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组（2个空位及价签、同SKU旧货）；2件合格新货；1件异常干扰品；问题商品区标识；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "2件待补商品均完成品名、规格/条码、包装和效期核验"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "合格新货放入对应空位且与价签一致"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "同SKU旧货前置、新货后置"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "异常干扰品未上架，已隔离并报告"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "补货后商品稳定并完成复查"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（两个空位均未正确补货，或异常商品被直接上架），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（2个空位中有1个完成核验、FIFO和稳定补货）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：2件待补商品均完成品名、规格/条码、包装和效期核验；合格新货放入对应空位且与价签一致；同SKU旧货前置、新货后置；异常干扰品未上架，已隔离并报告；补货后商品稳定并完成复查。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M1_OP_043_V4",
+      "previous_question_id": "M1_OP_043_V3",
+      "source_question_id": "M1_OP_043",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“按示例图把8件商品和对应价签还原到货架上”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "按示例图把8件商品和对应价签还原到货架上",
+          "assessment_point": "按图还原R1+R3实操",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "media_brief": "示例图1张",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m1.csv",
+            "source_ref": "原题91",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组；8件商品；8张价签；示例照片1张",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "商品位置与示例图一致"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "价签与商品一一对应"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确还原少于5组），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（8组商品/价签中正确还原5至7组）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：商品位置与示例图一致；价签与商品一一对应。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M1_OP_044_V4",
+      "previous_question_id": "M1_OP_044_V3",
+      "source_question_id": "M1_OP_044",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“把乱架按品类和大小重新整理好”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "依据排面图、SKU和规格价签整理乱架，使同SKU商品连续成面并正面朝外",
+          "assessment_point": "乱架重整R1+R2实操",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION",
+            "FINE_MOTOR"
+          ],
+          "note": "记录完成时长",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m1.csv",
+            "source_ref": "原题92",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组（预置SKU和规格混放）；轻质商品若干；唯一答案排面图；对应价签",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "逐件核对SKU、规格和价签"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "全部商品按排面图归位且同SKU连续成面"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "商品正面朝外并保持价签可见"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "整理后无跨SKU或跨规格混放"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确归位不足三分之二商品，或仍存在跨SKU混放），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（按排面图正确归位至少三分之二商品且无跨SKU混放）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：逐件核对SKU、规格和价签；全部商品按排面图归位且同SKU连续成面；商品正面朝外并保持价签可见；整理后无跨SKU或跨规格混放。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M1_OP_045_V4",
+      "previous_question_id": "M1_OP_045_V3",
+      "source_question_id": "M1_OP_045",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“找出货架上的3处问题并把它修正好”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "找出货架上的3处问题并把它修正好",
+          "assessment_point": "综合问题发现与修正",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "media_brief": "门店背景音频（55-60dB）",
+          "note": "干扰版与安静版分差=环境敏感度指标；两版间隔≥1天；顺序在被试间平衡",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m1.csv",
+            "source_ref": "原题93",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组（预置：1件侧放+1张价签被遮挡+1件错区）；干扰版：同时播放55-60dB门店背景音",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "找出全部3处问题"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "逐一修正所有问题"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（找出并正确修正少于2处），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（3处问题中找出并正确修正2处）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：找出全部3处问题；逐一修正所有问题。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M1_OP_046_V4",
+      "previous_question_id": "M1_OP_046_V3",
+      "source_question_id": "M1_OP_046",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“把4件新品插入现有排面，不影响原有商品的价签和位置”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "将4件同SKU新品补入已有排面：核对条码和效期，旧货前置、新货后置，保持原价签与货位不变",
+          "assessment_point": "新品插入R1+R3实操",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "FINE_MOTOR"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m1.csv",
+            "source_ref": "原题94",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组（已有3件同SKU旧货及价签）；4件同SKU合格新品；固定日期标签和答案键",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "核对4件新品与原货品名、规格/条码一致且包装效期合格"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "3件旧货全部前置"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "4件新品全部后置"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "原有价签、货位和排面未被遮挡或移位"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "补货后完成对应与稳定性复查"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确补入少于3件，或新品前置/遮挡价签），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（4件同SKU新品中有3件完成核验并后置，原排面不被破坏）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：核对4件新品与原货品名、规格/条码一致且包装效期合格；3件旧货全部前置；4件新品全部后置；原有价签、货位和排面未被遮挡或移位；补货后完成对应与稳定性复查。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M1_OP_047_V4",
+      "previous_question_id": "M1_OP_047_V3",
+      "source_question_id": "M1_OP_047",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“按照四步流程完整整理一个货架（清理→扶正→核签→复查）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "按“清理、扶正、核签、复查”整理货架；发现价签与系统价或商品不一致时，暂停该价签使用、隔离并报告，获授权后更换并复查",
+          "assessment_point": "全流程整理R11实操",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION",
+            "FINE_MOTOR"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m1.csv",
+            "source_ref": "原题95",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组（预置杂物、歪斜商品、1张错价签）；系统价核对卡；问题价签袋；权限卡；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "清除杂物并保持通道整洁"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "扶正商品、正面朝外且价签可见"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "核对商品条码、品名、规格、价签价和系统价"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "错价签暂停使用、隔离并向负责人报告，只有权限卡允许时更换"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "复查排面和有效价签无遗漏"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于3步，或发现错价后继续展示/擅自改价），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（四步中独立完成任意3步，并对错价签执行隔离上报）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：清除杂物并保持通道整洁；扶正商品、正面朝外且价签可见；核对商品条码、品名、规格、价签价和系统价；错价签暂停使用、隔离并向负责人报告，只有权限卡允许时更换；复查排面和有效价签无遗漏。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M2_OP_028_V4",
+      "previous_question_id": "M2_OP_028_V3",
+      "source_question_id": "M2_OP_028",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“检查箱内商品找出破损的那件放到问题区”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "检查5件安全模拟商品，找出1件破损品并完成停止接触、隔离标识、登记和上报交接",
+          "assessment_point": "破损检出分拣R8",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m2.csv",
+            "source_ref": "原题31",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "拆开的纸箱1箱；5件空包装/图片卡（1件无尖锐、无液体的仿真破损）；问题商品区；隔离袋；警示牌；记录表；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "找出唯一仿真破损品且不挤压、不继续上架"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "放入隔离袋和问题商品区并加警示标识"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "记录商品、破损类型和数量"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "向负责人报告并完成交接"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（未识别破损品或完成处置少于3项，或徒手接触危险破损），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（识别仿真破损品并完成隔离、标识、登记、上报中的3项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：找出唯一仿真破损品且不挤压、不继续上架；放入隔离袋和问题商品区并加警示标识；记录商品、破损类型和数量；向负责人报告并完成交接。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：发现真实泄漏、尖锐破口、污染、异味或割伤风险；停止：立即停止接触并后退；隔离/警示：封锁周边并设置警示，禁止徒手搬动；上报：立即通知负责人，由具备PPE和处置权限的人员处理。"
+      }
+    },
+    {
+      "question_id": "M2_OP_029_V4",
+      "previous_question_id": "M2_OP_029_V3",
+      "source_question_id": "M2_OP_029",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“把5件新商品按先进先出的规则摆上货架（日期早的放前排）”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "把5件新商品按先进先出的规则摆上货架（日期早的放前排）",
+          "assessment_point": "FIFO上架实操R6",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "note": "日期标签使用真实印刷版式（YYYY/MM/DD和YYYYMMDD喷码和生产日期见瓶身三种格式）",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m2.csv",
+            "source_ref": "原题32",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组（已有同款商品）；5件新商品（带真实印刷日期标签三种格式）",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "新商品放后排"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "旧商品（日期早）保留在前排"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确后置少于3件或把日期更晚商品放到旧货前方），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（5件新货中有3至4件正确后置且旧货保持前置）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：新商品放后排；旧商品（日期早）保留在前排。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M2_OP_030_V4",
+      "previous_question_id": "M2_OP_030_V3",
+      "source_question_id": "M2_OP_030",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“把用完的空纸箱折叠好放到指定回收位置”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "把用完的空纸箱折叠好放到指定回收位置",
+          "assessment_point": "空箱收尾整洁",
+          "ability_tags": [
+            "FINE_MOTOR"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m2.csv",
+            "source_ref": "原题33",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "空纸箱3个；指定回收位（地面标线或标识）",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "纸箱折叠压扁"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "放到指定回收位置"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确处理少于2个纸箱），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（3个纸箱中有2个折叠压扁并放入回收位）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：纸箱折叠压扁；放到指定回收位置。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M2_OP_031_V4",
+      "previous_question_id": "M2_OP_031_V3",
+      "source_question_id": "M2_OP_031",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“从货架商品中找出最早到期的2件放到前排”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "在5件同SKU不同批次的合格商品中，按固定到期日找出最早到期的2件并放到前排",
+          "assessment_point": "FIFO最早日期筛选R6",
+          "ability_tags": [
+            "COGNITION",
+            "RULE_EXECUTION"
+          ],
+          "note": "辅助工具（纸笔/计算器）使用情况单独编码（提示辅具接纳度）",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m2.csv",
+            "source_ref": "原题34",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组；5件同SKU、包装完好且未过期/非临期的商品；固定到期日标签；唯一答案卡；纸笔或计算器",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "确认5件商品为同SKU且均无过期、破损或临期异常"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "正确读出并比较5个到期日"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "找出最早到期的2件"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "2件均前置且其余按日期顺序后置"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（两件最早到期品均未正确前置，或选择过期/破损干扰品），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（同SKU 5件中正确找出并前置1件最早到期品）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：确认5件商品为同SKU且均无过期、破损或临期异常；正确读出并比较5个到期日；找出最早到期的2件；2件均前置且其余按日期顺序后置。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M2_OP_032_V4",
+      "previous_question_id": "M2_OP_032_V3",
+      "source_question_id": "M2_OP_032",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“把3件新品补到货架对应的空位上”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "将3件同SKU新品补到对应空位：核对品名、规格/条码、包装和效期，旧货前置、新货后置；异常时停止上架并隔离上报",
+          "assessment_point": "补货到空位",
+          "ability_tags": [
+            "FINE_MOTOR",
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m2.csv",
+            "source_ref": "原题35",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组（3个空位、价签和同SKU旧货）；3件合格新品；1件异常干扰品；问题商品区；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "3件新品均完成品名、规格/条码、包装和效期核验"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "合格新品与空位价签一一对应"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "同SKU旧货前置、新货后置"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "异常干扰品停止上架、隔离并报告"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "补货后复查无错位和不稳"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确补入少于2件，或异常品被上架），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（3件中有2件完成核验、对应和FIFO补货）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：3件新品均完成品名、规格/条码、包装和效期核验；合格新品与空位价签一一对应；同SKU旧货前置、新货后置；异常干扰品停止上架、隔离并报告；补货后复查无错位和不稳。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M2_OP_033_V4",
+      "previous_question_id": "M2_OP_033_V3",
+      "source_question_id": "M2_OP_033",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“按\"从后往前从下往上\"的顺序把5件商品依次摆入货架”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "依据现场“下层先补、同一层由里向外”的门店模拟SOP，将5件商品补入指定货位",
+          "assessment_point": "补货顺序操作R5",
+          "ability_tags": [
+            "FINE_MOTOR",
+            "RULE_EXECUTION"
+          ],
+          "note": "记录完成时长",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m2.csv",
+            "source_ref": "原题36",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "固定迷你货架1组；5件轻质商品；门店模拟补货SOP卡；5个指定货位标识",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "开始前读取并复述本场SOP顺序"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "先完成下层指定货位再补上层"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "同一层由里向外放置且不跨越已摆商品"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "5件商品均与货位标识对应"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确摆放少于3件），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（按门店补货SOP正确摆放3至4件商品）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：开始前读取并复述本场SOP顺序；先完成下层指定货位再补上层；同一层由里向外放置且不跨越已摆商品；5件商品均与货位标识对应。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M2_OP_034_V4",
+      "previous_question_id": "M2_OP_034_V3",
+      "source_question_id": "M2_OP_034",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“从商品中找出轻微破损品并单独放入问题区”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "对照同款正常样检查6件商品：找出1件真破损品隔离；褶皱样仅在无破口、无泄漏、无污染、无异常鼓胀且符合门店外观标准时判为可上架",
+          "assessment_point": "边界样品判别R9",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "note": "边界样品（封口完好仅褶皱1件+真破损1件混入）检验R9判据实操应用",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m2.csv",
+            "source_ref": "原题37",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "6件安全空包装（1件真破损、1件仅褶皱、4件完好）；同款正常样；门店外观标准卡；问题商品区；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "用同款正常样逐件对照包装状态"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "找出真破损品并放入问题区"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "对褶皱样核验无破口、无泄漏、无污染、无异常鼓胀和符合外观标准"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "仅在五项均满足时判褶皱样可上架"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "有疑问时隔离并报告复核"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（未找出真破损品，或未核验就把任一样品判为可上架），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（正确识别真破损品并对褶皱样完成全部五项可上架核验）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：用同款正常样逐件对照包装状态；找出真破损品并放入问题区；对褶皱样核验无破口、无泄漏、无污染、无异常鼓胀和符合外观标准；仅在五项均满足时判褶皱样可上架；有疑问时隔离并报告复核。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M2_OP_035_V4",
+      "previous_question_id": "M2_OP_035_V3",
+      "source_question_id": "M2_OP_035",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“清点货架商品数量并与送货单核对”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "核对本次尚未入库的到货实物与送货单，复核并记录1处数量差异后上报负责人",
+          "assessment_point": "差错检出收货核对R12",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "note": "送货单预埋1处数量不符；记录时长；观察是否发现差错（差错检出率）",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m2.csv",
+            "source_ref": "原题38",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "本次到货商品若干（与库存分区隔离）；送货单1张（预埋1处数量不符）；差异记录表；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "只清点“本次到货”标识区内实物"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "按送货单逐行核对品名、规格和数量"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "对不符项目重新清点一次"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "记录唯一数量差异"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "暂停该项目入库并向负责人报告"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（未正确完成2项，或把非本次到货商品计入），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成清点、逐行比对、差异复核中的2项并记录差异）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：只清点“本次到货”标识区内实物；按送货单逐行核对品名、规格和数量；对不符项目重新清点一次；记录唯一数量差异；暂停该项目入库并向负责人报告。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M2_OP_036_V4",
+      "previous_question_id": "M2_OP_036_V3",
+      "source_question_id": "M2_OP_036",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“把货架上的旧货全部移到前排再把新货放到后排”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "把货架上的旧货全部移到前排再把新货放到后排",
+          "assessment_point": "旧前新后FIFO实操R6",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "FINE_MOTOR"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m2.csv",
+            "source_ref": "原题39",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组（旧货在前）；4件新商品",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "旧货移至前排"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "新货放入后排"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确后置少于3件或旧货未前置），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（4件新货中有3件正确后置且旧货全部前置）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：旧货移至前排；新货放入后排。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M2_OP_037_V4",
+      "previous_question_id": "M2_OP_037_V3",
+      "source_question_id": "M2_OP_037",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“完成一次完整的拆箱补货（5个步骤全流程）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "使用批准的安全开箱器完成“查箱、开箱、查货、FIFO上架、空箱回收”五步补货",
+          "assessment_point": "完整拆箱补货全流程",
+          "ability_tags": [
+            "FINE_MOTOR",
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m2.csv",
+            "source_ref": "原题40",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "轻质整箱商品1箱；自动回弹安全开箱器（刀刃最大伸出3mm）；防割手套；固定工作台；迷你货架；问题商品区；回收区；记录表",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "检查外箱并把箱体放稳在工作台"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "佩戴防割手套，刀具向身体外侧移动，非持刀手离开切割线"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "逐件检查品名、条码、包装和效期，异常品隔离上报"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "同SKU旧货前置、新货后置"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "刀具闭合归位，空箱折叠放回收区并复查现场"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于3步，或刀具朝向身体/手部进入切割线），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（五步中完成3至4步且安全拆箱动作无红线）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：检查外箱并把箱体放稳在工作台；佩戴防割手套，刀具向身体外侧移动，非持刀手离开切割线；逐件检查品名、条码、包装和效期，异常品隔离上报；同SKU旧货前置、新货后置；刀具闭合归位，空箱折叠放回收区并复查现场。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：刀具失灵、箱体滑动、手部进入切割线、发现尖锐破损或泄漏；停止：立即停刀、闭合刀具并后退；隔离/警示：固定或隔离箱体和异常品，警示他人勿触；上报：通知负责人更换工具或安排具备权限人员处置。"
+      }
+    },
+    {
+      "question_id": "M2_OP_038_V4",
+      "previous_question_id": "M2_OP_038_V3",
+      "source_question_id": "M2_OP_038",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“把8件混放商品按生产日期从早到晚重新排列好”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "将8件同SKU、不同批次的合格商品按到期日由早到晚从前排到后排排列",
+          "assessment_point": "FIFO日期排序实操R6",
+          "ability_tags": [
+            "COGNITION",
+            "RULE_EXECUTION"
+          ],
+          "note": "日期标签使用真实印刷版式（含三种格式混用）",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m2.csv",
+            "source_ref": "原题41",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "8件同SKU且包装完好、未过期、非临期商品；三种固定到期日格式标签；唯一答案卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "确认8件均为同SKU且无异常品"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "正确读取三种到期日格式"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "8件按到期日由早到晚排列"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "相同日期按固定批次号由小到大排列"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确排列少于5件，或把异常干扰品纳入FIFO），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（同SKU 8件中有5至7件按锁定日期顺序正确排列）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：确认8件均为同SKU且无异常品；正确读取三种到期日格式；8件按到期日由早到晚排列；相同日期按固定批次号由小到大排列。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M2_OP_039_V4",
+      "previous_question_id": "M2_OP_039_V3",
+      "source_question_id": "M2_OP_039",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“把6件商品分拣到正常区/破损区/临期区三个位置”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "按本门店模拟规则“距到期日不超过15天为临期”，将6件安全模拟商品分到正常区、临期区和问题品区",
+          "assessment_point": "三分类实操R7/R8",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "note": "临期件去向按R7改为放入临期专区",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m2.csv",
+            "source_ref": "原题42",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "固定模拟工作日卡；6件空包装/图片卡（1件仿真破损、1件剩余15天、4件正常）；三色分区标识；唯一答案卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "依据固定工作日和≤15天规则识别临期品"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "破损仿真品放问题品区"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "临期品放临期区"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "4件正常品放正常区"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "分类后核对6件无漏项误放"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确分类少于4件，或破损品进入正常区），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（6件中正确分类4至5件，且破损品未进入正常区）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：依据固定工作日和≤15天规则识别临期品；破损仿真品放问题品区；临期品放临期区；4件正常品放正常区；分类后核对6件无漏项误放。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：出现真实泄漏、尖锐破口、污染或刺激性气味；停止：立即停止分拣并后退；隔离/警示：隔离异常品及周边区域并设置警示；上报：通知负责人安排有PPE和权限的人员处置。"
+      }
+    },
+    {
+      "question_id": "M2_OP_040_V4",
+      "previous_question_id": "M2_OP_040_V3",
+      "source_question_id": "M2_OP_040",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“完成一次完整的收货（5步流程含核对签收）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "模拟收货：核对数量和完好度；本轮预置1处数量异常，发现后暂停该项目入库，记录并提交负责人确认，学员不得自行改单或签收",
+          "assessment_point": "完整收货五步流程",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "FINE_MOTOR"
+          ],
+          "note": "签字确认环节配佩戴\"负责人\"胸牌的评估员（消除对象推断），ACTIVE",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m2.csv",
+            "source_ref": "原题43",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "送货单1张；安全模拟商品若干（预置1处数量差异）；差异记录表；“学员仅提交、负责人签收”权限卡；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "逐行核对品名、规格、条码和数量"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "检查包装完好和效期"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "复核并记录预置数量异常"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "暂停异常项目入库并向负责人报告"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "把单据提交负责人确认，未自行改写或签收"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于3项，或发现异常后仍入库/代负责人签字），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成核对、完好检查、差异记录、上报交接中的3项，且未越权签收）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：逐行核对品名、规格、条码和数量；检查包装完好和效期；复核并记录预置数量异常；暂停异常项目入库并向负责人报告；把单据提交负责人确认，未自行改写或签收。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：发现泄漏、尖锐破损、污染、货物失稳或人员受伤风险；停止：立即停止收货并退离危险货物；隔离/警示：隔离异常货物和通道并设置警示；上报：通知负责人，未经授权不得搬动、入库或签收。"
+      }
+    },
+    {
+      "question_id": "M2_OP_041_V4",
+      "previous_question_id": "M2_OP_041_V3",
+      "source_question_id": "M2_OP_041",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“把现有+新到共10件商品按先进先出全部重新排列好”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "将10件同SKU不同批次的合格商品按到期日执行FIFO；中断时标记当前位置，恢复后接续，完成时间单独记录",
+          "assessment_point": "FIFO全排+中断恢复实操R6",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "note": "中断版：排列中途评估员请暂停回答无关问题约20秒；记录恢复后是否接续；中断恢复单独编码",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m2.csv",
+            "source_ref": "原题44",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组；10件同SKU、包装完好且未过期/非临期商品；固定日期标签和唯一答案卡；进度标记牌；一次20秒中断脚本",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "开始前确认10件均为同SKU合格品"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "按到期日早前晚后排列10件"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "中断时放置进度标记并停止操作"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "恢复后从标记处接续且最终顺序唯一正确"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "中断恢复和总时长单独记录、不替代准确性"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确排列少于7件，或把过期/破损/临期干扰品上架），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（同SKU 10件中正确排列7至9件，中断后按标记接续）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：开始前确认10件均为同SKU合格品；按到期日早前晚后排列10件；中断时放置进度标记并停止操作；恢复后从标记处接续且最终顺序唯一正确；中断恢复和总时长单独记录、不替代准确性。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_OP_044_V4",
+      "previous_question_id": "M3_OP_044_V3",
+      "source_question_id": "M3_OP_044",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“把6件商品按保质期到期日从早到晚排列好（最快到期的放最前面）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "将6件同SKU不同批次的合格商品按到期日由早到晚排列，最早到期放最前",
+          "assessment_point": "日期排序实操R6",
+          "ability_tags": [
+            "COGNITION"
+          ],
+          "note": "日期标签使用真实印刷版式三种格式混用；记录完成时长",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m3.csv",
+            "source_ref": "原题44",
+            "imported_at": "2026-07-04T14:48:06.004017Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "6件同SKU、包装完好且未过期/非临期商品；三种固定到期日格式；唯一答案卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "确认6件商品为同SKU合格品"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "正确读取三种到期日格式"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "6件按到期日早前晚后排列"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "相同日期按固定批次号排序"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确排列少于4件），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（同SKU 6件中正确排列4至5件）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：确认6件商品为同SKU合格品；正确读取三种到期日格式；6件按到期日早前晚后排列；相同日期按固定批次号排序。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_OP_045_V4",
+      "previous_question_id": "M3_OP_045_V3",
+      "source_question_id": "M3_OP_045",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“从货架10件商品中找出所有保质期不足15天的临期商品并移入临期专区”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "按本门店模拟规则“距到期日不超过15天为临期”，从10件商品中找出3件临期品并移入临期专区",
+          "assessment_point": "临期巡检R7",
+          "ability_tags": [
+            "COGNITION",
+            "RULE_EXECUTION"
+          ],
+          "note": "记录完成时长（第Ⅳ类）",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m3.csv",
+            "source_ref": "原题45",
+            "imported_at": "2026-07-04T14:48:06.004017Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "固定模拟工作日卡；迷你货架1组；10件固定日期标签商品（3件临期）；临期专区标识；唯一答案卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "按固定工作日和≤15天规则逐件判断"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "找出全部3件临期商品"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "3件均移入临期专区"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "7件正常商品未被误移"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（找出并正确移区少于2件），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（10件中找出并移区2件临期品）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：按固定工作日和≤15天规则逐件判断；找出全部3件临期商品；3件均移入临期专区；7件正常商品未被误移。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_OP_046_V4",
+      "previous_question_id": "M3_OP_046_V3",
+      "source_question_id": "M3_OP_046",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“把5件商品分拣到正常区、临期区、报损区”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "按本门店模拟规则“剩余≤15天为临期”，将5件安全模拟商品分到正常区、临期区、待复核问题区；学员无权批准报损",
+          "assessment_point": "三分类实操R7/R8/R9",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "note": "边界样品（褶皱封口完好品）放入为R9甄别点",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m3.csv",
+            "source_ref": "原题46",
+            "imported_at": "2026-07-04T14:48:06.004017Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "固定模拟工作日卡；5件空包装/图片卡（完好、剩余9天、仿真破损、过期、仅褶皱各1件）；同款正常样；三色分区；权限卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "完好品放正常区"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "剩余9天商品放临期区"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "仿真破损品和过期品放待复核问题区并报告"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "褶皱样经无破口/泄漏/污染/鼓胀核验后放正常区"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "未自行批准报损或销毁"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确分类少于3件，或把过期/破损品直接记为已批准报损），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（5件中正确分类3至4件，且过期/破损品未进入正常区）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：完好品放正常区；剩余9天商品放临期区；仿真破损品和过期品放待复核问题区并报告；褶皱样经无破口/泄漏/污染/鼓胀核验后放正常区；未自行批准报损或销毁。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_OP_047_V4",
+      "previous_question_id": "M3_OP_047_V3",
+      "source_question_id": "M3_OP_047",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“用纸笔或计算器算出3件商品的剩余保质期天数并写下来”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "以模拟工作日2026-07-20为第0天，按“到期日减工作日、不含当天”计算3件商品剩余天数，可用纸笔或批准的日期计算器",
+          "assessment_point": "日期计算实操R7",
+          "ability_tags": [
+            "COGNITION"
+          ],
+          "note": "辅助工具（纸笔/计算器）使用情况单独编码（第Ⅴ类辅具接纳度）",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m3.csv",
+            "source_ref": "原题47",
+            "imported_at": "2026-07-04T14:48:06.004017Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "模拟工作日卡（2026-07-20）；3件固定到期日标签商品（三种格式）；纸笔；批准的离线日期计算器；标准答案卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "正确读取3种日期格式"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "按不含工作日当天的统一口径计算"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "3件剩余天数均与答案卡一致"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "使用计算器时正确录入日期并复核结果"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确完成少于2件），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（3件中正确读出并计算2件剩余天数）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：正确读取3种日期格式；按不含工作日当天的统一口径计算；3件剩余天数均与答案卡一致；使用计算器时正确录入日期并复核结果。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_OP_048_V4",
+      "previous_question_id": "M3_OP_048_V3",
+      "source_question_id": "M3_OP_048",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“从8件混装商品中找出所有破损品放入问题商品区”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "在8件安全模拟商品中找出2件明确问题品：罐体卷封处重度凹陷1件、无内容物漏气袋1件；隔离、标识并上报",
+          "assessment_point": "破损检出R8",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m3.csv",
+            "source_ref": "原题48",
+            "imported_at": "2026-07-04T14:48:06.004017Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "8件空包装/图片卡；同款正常样；1件卷封处重度凹陷罐模型；1件无内容物漏气袋；隔离袋；问题商品区；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "依据同款正常样识别2件明确问题品"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "2件均停止上架并分别放入隔离袋"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "标注问题类型和数量"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "向负责人报告并完成交接"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（两件均未正确识别隔离，或徒手挤压/开启问题包装），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（2件问题品中识别并隔离1件，且完成上报）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：依据同款正常样识别2件明确问题品；2件均停止上架并分别放入隔离袋；标注问题类型和数量；向负责人报告并完成交接。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：发现真实泄漏、尖锐边缘、污染、异味或压力异常；停止：立即停止触碰并后退；隔离/警示：封锁样品周边并设置警示，禁止挤压或开启；上报：通知负责人安排具备PPE和权限的人员处置。"
+      }
+    },
+    {
+      "question_id": "M3_OP_049_V4",
+      "previous_question_id": "M3_OP_049_V3",
+      "source_question_id": "M3_OP_049",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“对5件边界样品逐一判断：可上架还是不可上架”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "对照同款正常样和门店包装判据，判断5件安全模拟样品“可上架”或“隔离复核”",
+          "assessment_point": "边界样品判别R8/R9",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "note": "五件边界样品须预制且与题号一一对应",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m3.csv",
+            "source_ref": "原题49",
+            "imported_at": "2026-07-04T14:48:06.004017Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "5件空包装/图片卡（明确漏气、卷封处重度凹陷、松盖、仅表面褶皱且密封完好、相对正常样异常鼓胀）；5件同款正常样；门店判据卡；隔离区",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "明确漏气袋判为隔离复核"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "卷封处重度凹陷罐判为隔离复核"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "松盖瓶判为隔离复核"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "仅表面褶皱且无破口/泄漏/污染/鼓胀样判为可上架"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "相对正常样异常鼓胀品判为隔离复核"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确判断少于3件，或把泄漏/松盖/异常鼓胀品判可上架），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（5件中按固定判据正确判断3至4件，且危险异常品未判可上架）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：明确漏气袋判为隔离复核；卷封处重度凹陷罐判为隔离复核；松盖瓶判为隔离复核；仅表面褶皱且无破口/泄漏/污染/鼓胀样判为可上架；相对正常样异常鼓胀品判为隔离复核。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：发现真实泄漏、尖锐边缘、异味、污染或不明压力包装；停止：立即停止检查并后退；隔离/警示：隔离样品并警示他人不得挤压、开启或上架；上报：通知负责人按门店问题品流程处理。"
+      }
+    },
+    {
+      "question_id": "M3_OP_050_V4",
+      "previous_question_id": "M3_OP_050_V3",
+      "source_question_id": "M3_OP_050",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“按标准流程完整处置一件临期商品（3步：确认临期→移出原架→放入临期专区）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "按本门店模拟规则“剩余≤15天为临期”，处置1件临期商品：核对日期、移出原架、放入临期专区并记录",
+          "assessment_point": "临期处置全流程R7",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m3.csv",
+            "source_ref": "原题50",
+            "imported_at": "2026-07-04T14:48:06.004017Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "固定模拟工作日卡；迷你货架1组；1件剩余15天的商品；临期专区标识；记录表",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "按固定日期口径确认剩余天数≤15天"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "从原货架移出该商品"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "放入临期专区"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "记录商品、日期和移区结果"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于2步或临期品仍留在原排面），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成确认、移出、移区3步中的2步）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：按固定日期口径确认剩余天数≤15天；从原货架移出该商品；放入临期专区；记录商品、日期和移区结果。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_OP_051_V4",
+      "previous_question_id": "M3_OP_051_V3",
+      "source_question_id": "M3_OP_051",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“按标准流程完整处置一件破损商品（3步：确认破损→单独分拣→登记上报）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "处置1件无泄漏、无尖锐、无污染的安全模拟破损品：确认、隔离标识、登记、上报并交接",
+          "assessment_point": "破损处置全流程R8",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m3.csv",
+            "source_ref": "原题51",
+            "imported_at": "2026-07-04T14:48:06.004017Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "1件安全空包装仿真破损品；隔离袋；问题商品区；警示标签；记录表；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "确认破损类型且不继续上架"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "装入隔离袋并放问题商品区、贴警示标签"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "记录商品、破损类型和数量"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "向负责人报告并完成交接"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "未自行销毁或批准报损"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于3项，或徒手接触危险破损），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成识别、隔离标识、登记、上报交接中的3项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：确认破损类型且不继续上架；装入隔离袋并放问题商品区、贴警示标签；记录商品、破损类型和数量；向负责人报告并完成交接；未自行销毁或批准报损。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：发现真实泄漏、尖锐破口、污染、异味或割伤风险；停止：立即停止接触并退开；隔离/警示：封锁周边、设置警示且禁止徒手搬动；上报：通知负责人，由具备PPE和权限的人员处理。"
+      }
+    },
+    {
+      "question_id": "M3_OP_052_V4",
+      "previous_question_id": "M3_OP_052_V3",
+      "source_question_id": "M3_OP_052",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“从货架10件商品中找出所有问题商品（含临期+破损），分区放好”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "按固定工作日及“剩余≤15天为临期”规则巡检10件安全模拟商品，处置2件临期品和1件破损品并记录上报",
+          "assessment_point": "综合巡检检出R7/R8",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m3.csv",
+            "source_ref": "原题52",
+            "imported_at": "2026-07-04T14:48:06.004017Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "固定模拟工作日卡；10件空包装/图片卡（2件临期、1件无尖锐无泄漏仿真破损、7件正常）；临期区；隔离袋；问题区；记录表；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "找出2件临期品并移入临期区"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "找出1件破损品并隔离到问题区"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "7件正常品未被误移"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "记录3件问题品及处置结果"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "向负责人报告破损品并交接"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确处置少于2件问题品，或破损品被上架），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（3件问题品中正确识别并分区2件，且正常品无误移）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：找出2件临期品并移入临期区；找出1件破损品并隔离到问题区；7件正常品未被误移；记录3件问题品及处置结果；向负责人报告破损品并交接。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：发现真实泄漏、尖锐破口、污染或异味；停止：立即停止巡检并后退；隔离/警示：隔离异常商品和周边排面并设置警示；上报：通知负责人安排具备PPE和权限的人员处理。"
+      }
+    },
+    {
+      "question_id": "M3_OP_053_V4",
+      "previous_question_id": "M3_OP_053_V3",
+      "source_question_id": "M3_OP_053",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“在3分钟内对15件商品完成临期/破损/正常三分类”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "准确性优先，将15件安全模拟商品分为临期、问题品、正常三类；3分钟仅记录，不作为得分门槛",
+          "assessment_point": "限时三分类R7/R8",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "note": "限时题：开始前告知有3分钟；可放置可视沙漏；3分钟到即停；记录完成数量",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m3.csv",
+            "source_ref": "原题53",
+            "imported_at": "2026-07-04T14:48:06.004017Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "固定模拟工作日和临期阈值卡；15件空包装/图片卡（临期3、仿真破损2、正常10）；三色分区；可视计时器；答案卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "3件临期品全部识别"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "2件仿真破损品全部识别"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "10件正常品不误分"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "15件完成三分类后复查"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "完成时间单独记录，超时继续完成且不降低安全要求"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确分类少于10件，或任一类问题品零检出），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（15件中正确分类10至14件，且两类问题品均至少检出1件）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：3件临期品全部识别；2件仿真破损品全部识别；10件正常品不误分；15件完成三分类后复查；完成时间单独记录，超时继续完成且不降低安全要求。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_OP_054_V4",
+      "previous_question_id": "M3_OP_054_V3",
+      "source_question_id": "M3_OP_054",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“读出3件商品的到期日期并说出哪件最先到期”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "读取3件商品已直接标注的到期日，并指出最早到期的1件；本题不计算生产日期",
+          "assessment_point": "日期格式识别R6",
+          "ability_tags": [
+            "COGNITION"
+          ],
+          "note": "三种真实印刷版式",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m3.csv",
+            "source_ref": "原题54",
+            "imported_at": "2026-07-04T14:48:06.004017Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "3件商品（三种固定到期日格式各1件）；格式说明卡；唯一答案卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "正确读出第1件到期日"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "正确读出第2件到期日"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "正确读出第3件到期日"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "指出唯一最早到期商品"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确读出少于2个日期或最早到期判断错误），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（3件中正确读出2个到期日并选出最早1件）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：正确读出第1件到期日；正确读出第2件到期日；正确读出第3件到期日；指出唯一最早到期商品。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_OP_055_V4",
+      "previous_question_id": "M3_OP_055_V3",
+      "source_question_id": "M3_OP_055",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“把货架商品按FIFO+临期优先规则重新排列好（临期的最前排，其余按日期早晚排）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "先按本门店“剩余≤15天”规则把1件临期品移入临期专区，再将其余5件同SKU正常品按到期日早前晚后排列",
+          "assessment_point": "FIFO+临期处置综合R6/R7",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m3.csv",
+            "source_ref": "原题55",
+            "imported_at": "2026-07-04T14:48:06.004017Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "固定模拟工作日卡；迷你货架1组；6件同SKU商品（1件临期、5件正常）；临期专区；固定日期标签和答案卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "识别并移出唯一临期品"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "临期品放入临期专区并记录"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "确认余下5件均为同SKU正常品"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "5件按到期日早前晚后排列"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "复查原排面无临期品"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（未移出临期品，或余下正确排列少于3件），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（正确移出临期品，并将余下5件中的3至4件按FIFO排列）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：识别并移出唯一临期品；临期品放入临期专区并记录；确认余下5件均为同SKU正常品；5件按到期日早前晚后排列；复查原排面无临期品。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_OP_057_V4",
+      "previous_question_id": "M3_OP_057_V3",
+      "source_question_id": "M3_OP_057",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“完成一次完整的货架效期巡检（4步流程）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "按固定工作日和“剩余≤15天”规则完成10件商品效期巡检：核验、计算、移区、记录上报、复查",
+          "assessment_point": "效期巡检全流程R7",
+          "ability_tags": [
+            "COGNITION",
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m3.csv",
+            "source_ref": "原题57",
+            "imported_at": "2026-07-04T14:48:06.004017Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "固定模拟工作日及计日口径卡；迷你货架1组（10件固定日期商品，1件临期）；批准的日期计算器；临期专区；巡检记录表；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "逐件核验10个到期日"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "按统一口径计算剩余天数"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "找出唯一临期品并移入临期区"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "填写巡检记录并向负责人报告"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "复查9件正常品和原货位无遗漏"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于3项，或临期品仍留在原架），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成核验、计算、识别移区、记录上报、复查中的3至4项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：逐件核验10个到期日；按统一口径计算剩余天数；找出唯一临期品并移入临期区；填写巡检记录并向负责人报告；复查9件正常品和原货位无遗漏。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M3_OP_058_V4",
+      "previous_question_id": "M3_OP_058_V3",
+      "source_question_id": "M3_OP_058",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“逐一检查20件商品，找出其中隐藏的问题品（含临期和破损）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "逐一检查20件安全模拟商品，找出2件临期品和1件无内容物漏气袋；仅褶皱且密封完好的样品不是问题品",
+          "assessment_point": "持续警觉盘警觉衰减点R7/R8",
+          "ability_tags": [
+            "COGNITION",
+            "RULE_EXECUTION"
+          ],
+          "note": "警觉衰减盘：20件中问题品分散在各位置；记录前10件检出率vs后10件检出率；衰减点<10件→注意维持限制；R9褶皱完好品嵌入作为误判陷阱",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m3.csv",
+            "source_ref": "原题58",
+            "imported_at": "2026-07-04T14:48:06.004017Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "固定工作日及临期阈值卡；20件空包装/图片卡（临期2、无内容物漏气1、仅褶皱密封完好1、正常16）；同款正常样；三色分区；答案卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "20件均逐一检查"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "2件临期品全部检出"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "1件漏气仿真品检出并隔离"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "褶皱但密封完好样不误判"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "其余16件正常品不误分"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确判断少于15件，或漏掉任一真实问题品），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（20件中正确判断15至19件，检出全部3件真实问题品且不误判褶皱样）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：20件均逐一检查；2件临期品全部检出；1件漏气仿真品检出并隔离；褶皱但密封完好样不误判；其余16件正常品不误分。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：发现真实泄漏、尖锐边缘、污染或异味；停止：立即停止检查并后退；隔离/警示：隔离异常品及周边并设置警示；上报：通知负责人安排安全处置。"
+      }
+    },
+    {
+      "question_id": "M4_OP_028_V4",
+      "previous_question_id": "M4_OP_028_V3",
+      "source_question_id": "M4_OP_028",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“把6件货物按重下轻上规则摆放到库房货架正确的层”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "把6件标明模拟重量的轻质货物按“重下轻上”摆到已固定库房货架",
+          "assessment_point": "库房分层R5实操",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "note": "记录完成时长",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m4.csv",
+            "source_ref": "原题28",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "经防倾倒固定且标明每层限载2kg的迷你货架；6件单件≤300g轻质空包装（模拟重/中/轻各2件）",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "2件模拟重货放下层"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "2件模拟中等货放中层"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "2件模拟轻货放上层"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "各层不超载且货物稳定"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确分层少于4件，或货架晃动后继续操作），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（正确分层4至5件轻质仿真货物）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：2件模拟重货放下层；2件模拟中等货放中层；2件模拟轻货放上层；各层不超载且货物稳定。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：货架晃动、固定松脱、超载或货物失稳；停止：立即停止并后退；隔离/警示：警示隔离货架周边，禁止继续搬动；上报：通知负责人检查固定与载荷，确认安全前不得恢复。"
+      }
+    },
+    {
+      "question_id": "M4_OP_030_V4",
+      "previous_question_id": "M4_OP_030_V3",
+      "source_question_id": "M4_OP_030",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“把5件商品按先进先出规则在库存区摆好（日期早的放前方先出）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "将5件同SKU不同批次的合格库存按到期日早前晚后摆入同一货位",
+          "assessment_point": "库房FIFO摆放R6实操",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m4.csv",
+            "source_ref": "原题30",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "5件同SKU、包装完好且未过期/非临期商品；固定到期日标签；前后方向标识；唯一答案卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "确认5件均为同SKU合格品"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "正确读取到期日"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "5件按早前晚后排列"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "相同日期按固定批次号排序"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确排列少于3件或把异常品纳入FIFO），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（同SKU 5件中正确排列3至4件）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：确认5件均为同SKU合格品；正确读取到期日；5件按早前晚后排列；相同日期按固定批次号排序。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M4_OP_031_V4",
+      "previous_question_id": "M4_OP_031_V3",
+      "source_question_id": "M4_OP_031",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“按送货单拣出指定商品（送货单有3个品类各2件，共6件）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "按拣货指令单拣出3个品类各2件商品，逐件核对品名、规格、条码和数量；差异时暂停并上报",
+          "assessment_point": "按单拣货R12核心实操",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "note": "题31单题得分直接写入仓储分拣岗推荐意见",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m4.csv",
+            "source_ref": "原题31",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组；多品类商品；拣货指令单1张；条码核对卡；差异记录表；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "逐行读取拣货指令"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "逐件核对品名、规格和条码"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "3个品类各拣2件，共6件"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "无多拣、少拣或跨规格错拣"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "发现差异时暂停、记录并报告"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确拣出少于4件，或发现差异仍继续交付），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（6件拣货中正确拣出4至5件且无跨规格错拣）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：逐行读取拣货指令；逐件核对品名、规格和条码；3个品类各拣2件，共6件；无多拣、少拣或跨规格错拣；发现差异时暂停、记录并报告。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M4_OP_032_V4",
+      "previous_question_id": "M4_OP_032_V3",
+      "source_question_id": "M4_OP_032",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“检查库房通道，把所有阻挡通道的物品移到指定存放区”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "发现库房通道3件障碍物后，先停止通行并警示隔离；评估重量和性质，仅搬移可安全处理的轻质物，其余上报求助",
+          "assessment_point": "通道畅通安全实操",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m4.csv",
+            "source_ref": "原题32",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "通道模拟区；3件轻质安全道具（2件标记“可单人搬移”、1件标记“需协助”）；警示带；存放区；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "立即停止该通道通行并设置警示隔离"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "逐件查看重量/性质标识"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "2件可单人搬移物归入指定区"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "需协助物保持原位隔离并报告"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "处置后复查通道"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（安全处置少于2件，或未评估就搬动重/不明物品），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（3件障碍物中安全处置2件并完成通道警示）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：立即停止该通道通行并设置警示隔离；逐件查看重量/性质标识；2件可单人搬移物归入指定区；需协助物保持原位隔离并报告；处置后复查通道。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：物品无重量标识、过重、泄漏、尖锐、失稳或通道存在车辆；停止：立即停止靠近或搬移并后退；隔离/警示：封闭通道并设置清晰警示；上报：通知负责人安排工具或协作人员处理。"
+      }
+    },
+    {
+      "question_id": "M4_OP_033_V4",
+      "previous_question_id": "M4_OP_033_V3",
+      "source_question_id": "M4_OP_033",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“核对送货单与实物，发现数量不符后按规程处理”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "核对送货单与实物，发现数量不符后按规程处理",
+          "assessment_point": "收货差异R12实操",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "note": "佩戴负责人胸牌的评估员在场",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m4.csv",
+            "source_ref": "原题33",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "送货单1张（写10件）；实物商品8件；记录本",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "逐件清点与送货单核对"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "发现数量不符"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "停止收货上报（向扮演负责人的评估员）"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于2项，或发现差异仍签收入库），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成清点、发现差异、暂停上报中的2项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：逐件清点与送货单核对；发现数量不符；停止收货上报（向扮演负责人的评估员）。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M4_OP_034_V4",
+      "previous_question_id": "M4_OP_034_V3",
+      "source_question_id": "M4_OP_034",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“按示例照片把6件商品还原摆放到库房货架上”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "按示例照片把6件商品还原摆放到库房货架上",
+          "assessment_point": "按图还原库存摆放",
+          "ability_tags": [
+            "COGNITION",
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m4.csv",
+            "source_ref": "原题34",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组；6件商品；示例照片1张",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "商品位置与示例照片一致"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "标签朝外"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确还原少于4件），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（6件中正确还原4至5件且标签朝外）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：商品位置与示例照片一致；标签朝外。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M4_OP_035_V4",
+      "previous_question_id": "M4_OP_035_V3",
+      "source_question_id": "M4_OP_035",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“清点货物与送货单核对（送货单预埋1处数量不符）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "清点本次到货并与送货单逐行核对；发现1处数量差异后复核、记录、暂停流转并提交负责人确认",
+          "assessment_point": "预埋差错检出R12",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "note": "预埋1处数量不符；记录时长；观察逐行比对行为；差错检出编码：检出并指出/检出未报告/未检出",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m4.csv",
+            "source_ref": "原题35",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "本次到货商品若干；送货单1张（预埋1处数量不符）；差异记录表；“学员不得改单或签收”权限卡；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "逐件清点并逐行核对品名、规格和数量"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "对不符项目重新清点"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "准确记录唯一数量差异"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "暂停该项目入库或签收"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "向负责人报告并提交单据确认，未自行改单"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于3项，或自行改单/签收），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成复核、记录、暂停、上报确认中的3项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：逐件清点并逐行核对品名、规格和数量；对不符项目重新清点；准确记录唯一数量差异；暂停该项目入库或签收；向负责人报告并提交单据确认，未自行改单。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M4_OP_036_V4",
+      "previous_question_id": "M4_OP_036_V3",
+      "source_question_id": "M4_OP_036",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“把8件混放商品按品类分区摆好”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "把8件混放商品按品类分区摆好",
+          "assessment_point": "品类分区存放R2实操",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m4.csv",
+            "source_ref": "原题36",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "8件商品（饮品+零食+洗护各若干件混放）；三色区域标识",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "同品类商品全部归拢到对应区域"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "无错区"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确归区少于5件），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（8件中正确归区5至7件）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：同品类商品全部归拢到对应区域；无错区。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M4_OP_037_V4",
+      "previous_question_id": "M4_OP_037_V3",
+      "source_question_id": "M4_OP_037",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“完成一次货物入库（5步流程：核数→查破损→异常停收→登记→签收）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "完成含1件仿真破损品的入库检查：核数、查损、暂停异常项目、记录上报；学员只提交单据，由负责人决定签收",
+          "assessment_point": "完整入库5步R12实操",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m4.csv",
+            "source_ref": "原题37",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "安全模拟整箱商品；送货单；1件无尖锐无泄漏仿真破损品；隔离袋；记录表；权限卡；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "核对品名、规格、条码和数量"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "检查包装与效期并发现预置破损品"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "隔离破损品并暂停该项目入库"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "记录异常并向负责人报告"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "提交单据由负责人确认，未自行签收"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于3项，或发现异常仍登记入库/自行签收），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成核数、查损、异常停收记录、提交负责人中的3项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：核对品名、规格、条码和数量；检查包装与效期并发现预置破损品；隔离破损品并暂停该项目入库；记录异常并向负责人报告；提交单据由负责人确认，未自行签收。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：发现真实泄漏、尖锐破口、污染、货物失稳或人员受伤风险；停止：立即停止入库并后退；隔离/警示：隔离异常货物与通道并警示；上报：通知负责人，未经确认不得搬动、登记入库或签收。"
+      }
+    },
+    {
+      "question_id": "M4_OP_038_V4",
+      "previous_question_id": "M4_OP_038_V3",
+      "source_question_id": "M4_OP_038",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“按送货单拣货出库（送货单4品类各3件共12件）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "按出库拣货单拣取4个品类各3件，核对品名、规格、条码和数量，复核后交接；差异时停止出库并上报",
+          "assessment_point": "按单拣货出库R12实操",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "note": "记录完成时长",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m4.csv",
+            "source_ref": "原题38",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组；多品类商品；出库拣货单1张；条码核对卡；复核区；差异记录表；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "按出库单逐行核对品名、规格和条码"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "4个品类各拣3件，共12件"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "在复核区复核数量和品项"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "正确商品完成交接"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "差异时暂停出库、记录并报告"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确拣出少于8件，或发现差异仍出库），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（12件中正确拣出8至11件且无跨规格错拣）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：按出库单逐行核对品名、规格和条码；4个品类各拣3件，共12件；在复核区复核数量和品项；正确商品完成交接；差异时暂停出库、记录并报告。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M4_OP_039_V4",
+      "previous_question_id": "M4_OP_039_V3",
+      "source_question_id": "M4_OP_039",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“把一个乱架重新按品类分区、重下轻上整理好”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "整理已固定库房货架：按品类归区、轻质仿真重货下置轻货上置，并保持通道畅通",
+          "assessment_point": "库房整理综合实操",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m4.csv",
+            "source_ref": "原题39",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "防倾倒固定且标明限载的迷你货架；标明模拟重量的轻质空包装；品类区标；通道边界线；警示牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "按品类标识归区"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "模拟重货放下层、轻货放上层"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "各层未超载且货物稳定"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "通道边界内无物品"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于2项，或货架/货物失稳后继续整理），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成品类归区、重轻分层、通道清理3项中的2项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：按品类标识归区；模拟重货放下层、轻货放上层；各层未超载且货物稳定；通道边界内无物品。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：货架晃动、超载、货物失稳或通道出现车辆/不明障碍；停止：立即停止整理并后退；隔离/警示：隔离货架或通道并设置警示；上报：通知负责人检查后决定后续处置。"
+      }
+    },
+    {
+      "question_id": "M4_OP_040_V4",
+      "previous_question_id": "M4_OP_040_V3",
+      "source_question_id": "M4_OP_040",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“从库存商品中找出所有临期商品并移到临期专区”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "按本门店模拟规则“剩余≤15天为临期”，从库存中找出2件临期品，移入临期专区并记录",
+          "assessment_point": "库存效期巡检R7",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "note": "记录完成时长",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m4.csv",
+            "source_ref": "原题40",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "固定模拟工作日及临期阈值卡；迷你货架1组；固定日期商品（含2件临期）；临期专区；记录表；答案卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "按固定日期口径逐件判断"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "找出全部2件临期品"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "2件均移入临期专区"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "填写移区记录"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "正常库存未被误移"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（两件均未正确识别移区），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（正确找出并移区1件临期品）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：按固定日期口径逐件判断；找出全部2件临期品；2件均移入临期专区；填写移区记录；正常库存未被误移。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M4_OP_041_V4",
+      "previous_question_id": "M4_OP_041_V3",
+      "source_question_id": "M4_OP_041",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“完成一次完整库存盘点（4步流程含中断版）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "完成库存盘点四步：标识并冻结范围、逐件清点记录、与库存表比对、复核差异并上报；中断恢复单独观察",
+          "assessment_point": "盘点流程+中断恢复R12实操",
+          "ability_tags": [
+            "RULE_EXECUTION",
+            "COGNITION"
+          ],
+          "note": "中断版：盘点进行至约50%时评估员问无关问题20秒；记录恢复后接续/重做/需提示",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m4.csv",
+            "source_ref": "原题41",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组；明确SKU盘点范围标识；库存表（预置1件账实差异）；盘点记录表；进度标记牌；一次中断脚本；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "标识盘点范围并避免重复进出货"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "逐件清点并记录实物数量"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "与库存表比对并找出唯一差异"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "重新清点后记录并上报，未自行改账"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "中断时标记进度，恢复表现单独记录"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于3项，或未复核就改写账面数量），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成标识范围、清点记录、账实比对、差异复核上报中的3项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：标识盘点范围并避免重复进出货；逐件清点并记录实物数量；与库存表比对并找出唯一差异；重新清点后记录并上报，未自行改账；中断时标记进度，恢复表现单独记录。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M4_OP_042_V4",
+      "previous_question_id": "M4_OP_042_V3",
+      "source_question_id": "M4_OP_042",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“发现库存差异后完整处置（复核→确认→上报→记录）”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "发现库存差异后完整处置（复核→确认→上报→记录）",
+          "assessment_point": "差异处置全流程R12实操",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m4.csv",
+            "source_ref": "原题42",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架商品若干；库存记录表（与实物有1件差异）；记录本；佩戴负责人胸牌的评估员",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "重新清点复核"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "确认差异属实"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "上报负责人"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "在记录本填写差异"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于3步或自行改写库存账），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成复核、确认、上报、记录4步中的3步）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：重新清点复核；确认差异属实；上报负责人；在记录本填写差异。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M5_OP_040_V4",
+      "previous_question_id": "M5_OP_040_V3",
+      "source_question_id": "M5_OP_040",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“搬运一箱货物（正确使用腿部力量保持腰背挺直）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "先评估1箱8kg轻质模拟货物和路线；可单人搬运时屈膝、贴近身体、避免扭转，搬到指定位置；不能安全搬运时求助",
+          "assessment_point": "搬运安全姿势实操",
+          "ability_tags": [
+            "SAFETY_OPERATION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m5.csv",
+            "source_ref": "原题40",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "标明8kg的轻质配重箱；起点和终点标识；无障碍搬运路线；“单人上限10kg”模拟SOP卡；手推车和协助人员待命",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "核对重量并判断是否在单人上限内"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "检查并清空搬运路线"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "屈膝靠近货箱、双手稳握后起身"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "货箱贴近身体，转向用脚步而非扭腰"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "平稳放置；不适或条件不满足时停止求助"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于3项，或超重/疼痛/路线受阻仍继续搬运），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成重量评估、路线清理、贴身直线搬运、安全放置中的3项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：核对重量并判断是否在单人上限内；检查并清空搬运路线；屈膝靠近货箱、双手稳握后起身；货箱贴近身体，转向用脚步而非扭腰；平稳放置；不适或条件不满足时停止求助。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：重量不明或超10kg、握持不稳、路线受阻、出现疼痛眩晕或货箱破损；停止：立即停止起搬或安全放下并退开；隔离/警示：标识货物和受阻路线，防止他人误搬；上报：通知负责人并申请手推车或两人协作。"
+      }
+    },
+    {
+      "question_id": "M5_OP_041_V4",
+      "previous_question_id": "M5_OP_041_V3",
+      "source_question_id": "M5_OP_041",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“完成一次商品召回应急处置（全部找到并下架存放）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "依据固定召回通知核对批次，立即停售并隔离3件召回商品，清点记录后上报交接",
+          "assessment_point": "召回商品处置实操",
+          "ability_tags": [
+            "SAFETY_OPERATION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m5.csv",
+            "source_ref": "原题41",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组；3件召回批次商品及普通商品；固定召回通知；停售牌；封闭召回箱；清点表；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "核对通知中的品名、规格、条码和批次"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "全部3件召回品下架"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "放入封闭召回区并设置停售隔离标识"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "清点记录数量和货位"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "向负责人报告并完成交接"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确处置少于2件，或召回品仍可被顾客取用），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（3件召回品中正确核对并隔离2件，且完成记录上报）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：核对通知中的品名、规格、条码和批次；全部3件召回品下架；放入封闭召回区并设置停售隔离标识；清点记录数量和货位；向负责人报告并完成交接。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：发现召回品已泄漏、破损、被顾客拿取或批次无法确认；停止：立即停止继续处理并保持距离；隔离/警示：停售并扩大隔离范围、提醒他人勿取用；上报：立即通知负责人按召回预案处置。"
+      }
+    },
+    {
+      "question_id": "M5_OP_042_V4",
+      "previous_question_id": "M5_OP_042_V3",
+      "source_question_id": "M5_OP_042",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“完成玻璃碎片应急处置全流程（警示→隔离→清理→确认）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "按模拟碎玻璃SOP处置塑料安全碎片：停止通行、警示隔离、穿戴PPE用工具清理、检查残留、上报确认",
+          "assessment_point": "玻璃碎片应急实操",
+          "ability_tags": [
+            "SAFETY_OPERATION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m5.csv",
+            "source_ref": "原题42",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "受控塑料安全碎片；警示牌和隔离带；防割手套；扫把、铲子、硬质带盖收集盒；检查灯；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "立即停止通行并设置警示隔离"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "佩戴防割手套，只用扫把铲子收集"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "碎片放入硬质带盖收集盒"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "用检查灯复查无残留"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "向负责人报告并由其解除隔离"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于3项，或徒手接触/让他人进入模拟危险区），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成警示隔离、PPE工具清理、残留检查、上报中的3项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：立即停止通行并设置警示隔离；佩戴防割手套，只用扫把铲子收集；碎片放入硬质带盖收集盒；用检查灯复查无残留；向负责人报告并由其解除隔离。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：发现真实玻璃、人员受伤、碎片超出模拟区或PPE/工具缺失；停止：立即停止清理并后退；隔离/警示：扩大隔离并阻止通行；上报：通知负责人及受训清理/急救人员处理。"
+      }
+    },
+    {
+      "question_id": "M5_OP_043_V4",
+      "previous_question_id": "M5_OP_043_V3",
+      "source_question_id": "M5_OP_043",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“发现货架支架松动立即按规程响应（停止作业→隔离区域→上报）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "看到货架“支架松动”视觉缺陷标识后，立即停工远离、警示隔离并上报，禁止触碰或自行维修",
+          "assessment_point": "货架安全隐患应急实操否决项",
+          "ability_tags": [
+            "SAFETY_OPERATION"
+          ],
+          "note": "安全否决项",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m5.csv",
+            "source_ref": "原题43",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "固定牢靠的迷你货架；不可拆卸的“支架松动”视觉标识卡；警示牌和隔离带；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "识别视觉缺陷后立即停止该区域作业"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "退至安全位置且不触碰货架"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "设置警示牌和隔离带"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "通知负责人并说明位置与现象"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "未自行维修或移动货架"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于2项，或触碰/自行维修缺陷货架），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成停工远离、警示隔离、上报3项中的2项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：识别视觉缺陷后立即停止该区域作业；退至安全位置且不触碰货架；设置警示牌和隔离带；通知负责人并说明位置与现象；未自行维修或移动货架。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：看到松动标识或出现真实晃动、异响、倾斜；停止：立即停止并远离；隔离/警示：封锁货架周边，禁止任何人靠近；上报：通知负责人和设施维护人员，解除前不得恢复。"
+      }
+    },
+    {
+      "question_id": "M5_OP_044_V4",
+      "previous_question_id": "M5_OP_044_V3",
+      "source_question_id": "M5_OP_044",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“角色扮演：处理情绪激动的顾客投诉”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "角色扮演：顾客按固定台词激动投诉。理货员保持距离，不承诺退款赔偿，不争辩接触，说明将请负责人处理并实际呼叫；出现威胁时停止对话并请求安保",
+          "assessment_point": "激动顾客处置角色扮演R13",
+          "ability_tags": [
+            "SAFETY_OPERATION"
+          ],
+          "note": "评估员台词：按附录D脚本逐字宣读",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m5.csv",
+            "source_ref": "原题44",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "顾客标准台词卡；理货员允许回应卡；1.5米距离标线；负责人和安保角色牌；评估员终止卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "保持冷静并维持距离"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "使用固定边界话术，不承诺退款赔偿或专业结论"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "实际呼叫负责人并清楚交接诉求"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "出现逼近、威胁或肢体行为时停止对话并呼叫安保"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "收到终止卡立即结束情境"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于2项，或承诺退款赔偿/争辩接触顾客），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成保持距离、边界回应、呼叫负责人3项中的2项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：保持冷静并维持距离；使用固定边界话术，不承诺退款赔偿或专业结论；实际呼叫负责人并清楚交接诉求；出现逼近、威胁或肢体行为时停止对话并呼叫安保；收到终止卡立即结束情境。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：顾客逼近距离线、威胁、辱骂升级、肢体接触或评估员出示终止卡；停止：立即停止对话并退至安全位置；隔离/警示：提醒周边人员避让并保持通道；上报：呼叫负责人/安保，必要时按门店预案报警。"
+      }
+    },
+    {
+      "question_id": "M5_OP_045_V4",
+      "previous_question_id": "M5_OP_045_V3",
+      "source_question_id": "M5_OP_045",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“紧急疏散信号响起后按规程响应（停止工作→疏导顾客→走指定路线撤离）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "听到模拟疏散信号后，按张贴预案停止工作，经指定路线到集合点并向负责人报到；只提醒身边顾客跟随标识，不承担未授权疏导",
+          "assessment_point": "紧急疏散应急实操否决项",
+          "ability_tags": [
+            "SAFETY_OPERATION"
+          ],
+          "note": "安全否决项",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m5.csv",
+            "source_ref": "原题45",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "学校/门店固定模拟应急预案；模拟音频；疏散路线和集合点标识；顾客角色牌；负责人角色牌；评估员终止卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "立即停止工作并不返回取物"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "按指定路线有序撤离"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "仅提醒身边顾客跟随标识，不擅自组织或逆行搜寻"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "到集合点向负责人报到"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "收到终止卡或遇拥堵烟雾时服从现场指挥"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于2项，或逆行/返回取物/承担未授权疏导），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成停工、按预案撤离、到集合点报到3项中的2项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：立即停止工作并不返回取物；按指定路线有序撤离；仅提醒身边顾客跟随标识，不擅自组织或逆行搜寻；到集合点向负责人报到；收到终止卡或遇拥堵烟雾时服从现场指挥。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：路线出现烟雾、拥堵、倒地人员、真实警报或评估员终止指令；停止：停止进入受阻路线并退到安全点；隔离/警示：提醒身边人员避开危险方向；上报：向现场负责人/应急人员报告并服从替代路线指令。"
+      }
+    },
+    {
+      "question_id": "M5_OP_046_V4",
+      "previous_question_id": "M5_OP_046_V3",
+      "source_question_id": "M5_OP_046",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“在货架区域找出3处安全隐患并逐一处置或上报”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "识别水渍、未归位梯子、货架尖角3处隐患：水渍先警示并通知清洁；梯子仅在稳定且通道安全时归位；尖角隔离上报不得自行维修",
+          "assessment_point": "安全隐患综合识别处置",
+          "ability_tags": [
+            "SAFETY_OPERATION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m5.csv",
+            "source_ref": "原题46",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "安全仿真水渍标识垫；稳定轻质梯子道具；固定货架尖角视觉标识；警示牌；梯子存放位；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "找出全部3处隐患"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "水渍区域设置警示并通知清洁人员"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "确认梯子稳定、路线安全后归位；条件不满足则隔离上报"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "尖角区域隔离并上报，未自行维修"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "处置后复查通道"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（识别少于2处，或自行修理尖角/在未隔离水渍处继续作业），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（正确识别3处隐患，并对其中2处执行匹配处置）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：找出全部3处隐患；水渍区域设置警示并通知清洁人员；确认梯子稳定、路线安全后归位；条件不满足则隔离上报；尖角区域隔离并上报，未自行维修；处置后复查通道。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：真实液体、梯子失稳/过重、真实尖锐边缘或人员进入危险区；停止：立即停止处置并后退；隔离/警示：扩大警示隔离并阻止通行；上报：通知负责人及相应清洁/设施人员。"
+      }
+    },
+    {
+      "question_id": "M5_OP_047_V4",
+      "previous_question_id": "M5_OP_047_V3",
+      "source_question_id": "M5_OP_047",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“发现货物超高堆放将其按规定高度重新摆放”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "发现超高堆放后先停止靠近、警示隔离并观察稳定性；只有负责人确认稳定且轻质时才协助降高，否则保持隔离并求助",
+          "assessment_point": "超高堆放安全整改R5",
+          "ability_tags": [
+            "SAFETY_OPERATION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m5.csv",
+            "source_ref": "原题47",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "固定货架；轻质空包装搭建的受控超高视觉场景；防倒限位；高度线；警示带；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "发现超高堆放后停止靠近并退开"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "设置警示隔离"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "从安全距离观察是否倾斜、晃动或超出高度线"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "向负责人报告并请求协助"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "仅在负责人确认稳定且授权后处理，未直接拉取底层货物"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于3项，或直接搬动不稳定超高货物），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成远离、警示隔离、稳定性评估、求助4项中的3项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：发现超高堆放后停止靠近并退开；设置警示隔离；从安全距离观察是否倾斜、晃动或超出高度线；向负责人报告并请求协助；仅在负责人确认稳定且授权后处理，未直接拉取底层货物。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：货物倾斜、晃动、坠落、货架异响或防倒限位失效；停止：立即停止并远离坠落范围；隔离/警示：封锁周边通道并警示他人；上报：通知负责人安排专业人员或工具处理。"
+      }
+    },
+    {
+      "question_id": "M5_OP_049_V4",
+      "previous_question_id": "M5_OP_049_V3",
+      "source_question_id": "M5_OP_049",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“同事工作中受伤流血，按规程处置（不自行处理伤口→通知负责人→保护现场）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "角色扮演：普通员工发现同事流血，避免接触血液，立即呼叫负责人和受训急救员，保护现场并安抚等待；仅受训人员可在PPE下急救",
+          "assessment_point": "同事受伤应急实操R13",
+          "ability_tags": [
+            "SAFETY_OPERATION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m5.csv",
+            "source_ref": "原题49",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "无液体受伤情境卡；同事角色牌；一次性手套和急救箱（仅供受训急救员）；警示牌；负责人/急救员角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "普通员工不徒手接触伤口或血液"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "立即呼叫负责人和受训急救员"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "设置警示并保持通道供救援"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "安抚伤者且不擅自移动"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "能说明只有受训人员佩戴PPE后实施急救"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于2项，或无PPE徒手接触模拟伤口/血液），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成避免血液接触、呼救、保护现场3项中的2项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：普通员工不徒手接触伤口或血液；立即呼叫负责人和受训急救员；设置警示并保持通道供救援；安抚伤者且不擅自移动；能说明只有受训人员佩戴PPE后实施急救。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：真实出血、昏迷、呼吸异常、跌倒风险或模拟人员说“真实不适”；停止：立即终止演练并保持安全距离；隔离/警示：保护现场并为急救通道让行；上报：呼叫急救人员和负责人，按预案联系急救服务。"
+      }
+    },
+    {
+      "question_id": "M5_OP_050_V4",
+      "previous_question_id": "M5_OP_050_V3",
+      "source_question_id": "M5_OP_050",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“完成一次完整的安全隐患巡检（找出所有隐患+处置/上报）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "巡检4处固定隐患：仿真水渍、通道轻质纸箱、货架松动视觉标识、无泄漏破损空包装；逐处警示、隔离、处置或上报",
+          "assessment_point": "完整安全巡检",
+          "ability_tags": [
+            "SAFETY_OPERATION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m5.csv",
+            "source_ref": "原题50",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "仿真水渍垫；通道轻质纸箱；固定货架松动视觉卡；无泄漏无尖锐破损空包装；警示牌；问题品袋；记录表；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "水渍先警示隔离并通知清洁"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "确认安全后将轻质纸箱移出通道"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "货架松动标识处停工隔离上报且不维修"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "破损空包装隔离标识、记录并上报"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "复查4处并填写巡检结果"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（找出并正确处置少于3处，或自行维修货架/徒手接触问题品），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（找出4处具体隐患中的3处并分别执行正确边界处置）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：水渍先警示隔离并通知清洁；确认安全后将轻质纸箱移出通道；货架松动标识处停工隔离上报且不维修；破损空包装隔离标识、记录并上报；复查4处并填写巡检结果。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：出现真实液体、货架晃动、尖锐/泄漏包装或物品过重；停止：立即停止处置并后退；隔离/警示：隔离对应区域并阻止他人进入；上报：通知负责人及专业处置人员。"
+      }
+    },
+    {
+      "question_id": "M5_OP_051_V4",
+      "previous_question_id": "M5_OP_051_V3",
+      "source_question_id": "M5_OP_051",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“角色扮演：顾客问专业医疗问题（这种奶粉适合乳糖不耐受的人吗？）”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "角色扮演：顾客问专业医疗问题（这种奶粉适合乳糖不耐受的人吗？）",
+          "assessment_point": "专业问题边界识别R13",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "note": "评估员台词（附录D）：「你好，请问这款奶粉，乳糖不耐受的人能喝吗？」；若受测者开始编造回答任其说完不打断如实编码",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m5.csv",
+            "source_ref": "原题51",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "佩戴顾客牌的评估员按标准台词提问",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "未自行编造回答（识别超出职权范围的专业问题）"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "表示自己不清楚"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "建议顾客咨询专业人员或找负责人"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于2项，或给出医疗适用性结论/建议顾客试用），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成权限说明、避免给医疗结论、转介3项中的2项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：未自行编造回答（识别超出职权范围的专业问题）；表示自己不清楚；建议顾客咨询专业人员或找负责人。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：顾客出现真实不适、要求现场试食试用或要求理货员作医疗判断；停止：立即停止商品推荐和试用安排；隔离/警示：保持商品封闭并提醒顾客不要现场尝试；上报：联系负责人，真实不适时按门店急救预案求助。"
+      }
+    },
+    {
+      "question_id": "M5_OP_052_V4",
+      "previous_question_id": "M5_OP_052_V3",
+      "source_question_id": "M5_OP_052",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“角色扮演：模拟工作中遇到自己无法处理的问题，完整执行求助三步脚本”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "听到货架区域持续异响后，执行求助流程：停止作业并远离、警示隔离、向负责人说明位置和现象、完成交接，禁止自行检查",
+          "assessment_point": "完整求助脚本三步R13",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "note": "三步逐级计分：话术1/找人2/交接2=满分5分；≤3分→脚本演练强化",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m5.csv",
+            "source_ref": "原题52",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "固定音频播放设备模拟异响；牢固货架；警示牌和隔离带；负责人角色牌；标准报告要点卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "听到异响立即停止作业并远离"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "设置警示和隔离带"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "向负责人说明具体位置、异响特征和发现时间"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "完成现场交接并服从后续安排"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "未触碰、拆卸或自行维修"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于3项，或靠近/拆看发出异响的货架设备），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成停工远离、警示隔离、清楚报告交接4项中的3项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：听到异响立即停止作业并远离；设置警示和隔离带；向负责人说明具体位置、异响特征和发现时间；完成现场交接并服从后续安排；未触碰、拆卸或自行维修。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：持续异响、货架晃动、焦糊味、冒烟或设备裸露；停止：立即停工并远离；隔离/警示：封锁区域并阻止他人靠近；上报：立即通知负责人，涉及烟火时按应急预案报警疏散。"
+      }
+    },
+    {
+      "question_id": "M5_OP_053_V4",
+      "previous_question_id": "M5_OP_053_V3",
+      "source_question_id": "M5_OP_053",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“在陌生情境中识别出安全风险并采取正确行动（模拟库房新增设备）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "看到“新增设备运行中、未经培训禁止操作”模拟图卡后，保持安全距离、警示隔离并报告负责人，禁止触碰",
+          "assessment_point": "陌生情境安全判断",
+          "ability_tags": [
+            "SAFETY_OPERATION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m5.csv",
+            "source_ref": "原题53",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "设备运行图片/视频卡（不使用真实运行设备）；2米距离线；“未经培训禁止操作”标识；警示牌；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "在距离线外识别未知运行设备"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "未触碰、跨线或尝试操作"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "设置警示并提醒他人不要靠近"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "向负责人报告位置、状态和无说明情况"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "等待授权人员处理"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于3项，或触碰/操作未知设备），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成不靠近、识别未知、警示隔离、报告4项中的3项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：在距离线外识别未知运行设备；未触碰、跨线或尝试操作；设置警示并提醒他人不要靠近；向负责人报告位置、状态和无说明情况；等待授权人员处理。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：发现真实未知设备、裸露线路、异常声光、焦糊味或人员越过距离线；停止：立即停止靠近并后退；隔离/警示：设置隔离和禁止操作警示；上报：通知负责人及设备管理人员。"
+      }
+    },
+    {
+      "question_id": "M5_OP_054_V4",
+      "previous_question_id": "M5_OP_054_V3",
+      "source_question_id": "M5_OP_054",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“角色扮演：诱发求助脚本（顾客投诉商品问题要求退款）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "角色扮演：顾客按固定台词要求退款。理货员说明无退款权限，不作承诺，联系负责人并交接商品问题和顾客诉求",
+          "assessment_point": "诱发求助脚本R13",
+          "ability_tags": [
+            "RULE_EXECUTION"
+          ],
+          "note": "三步逐级计分同OP_052；求助脚本执行质量写入第Ⅴ类编码",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m5.csv",
+            "source_ref": "原题54",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "顾客固定台词卡；理货员允许回应卡；负责人角色牌；商品问题卡；交接记录卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "使用固定话术说明自己无退款决定权限"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "未承诺退款、赔偿或改价"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "实际找到负责人"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "准确交接商品问题和顾客诉求"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "由负责人接手后结束对话"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于2项，或自行承诺退款/改价/赔偿），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成权限边界回应、找到负责人、清楚交接3项中的2项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：使用固定话术说明自己无退款决定权限；未承诺退款、赔偿或改价；实际找到负责人；准确交接商品问题和顾客诉求；由负责人接手后结束对话。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M6_OP_034_V4",
+      "previous_question_id": "M6_OP_034_V3",
+      "source_question_id": "M6_OP_034",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“把5件商品图片卡与对应的货架区域标签配对”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "把5件商品图片卡与对应的货架区域标签配对",
+          "assessment_point": "商品归区配对A组R2",
+          "ability_tags": [
+            "COGNITION"
+          ],
+          "note": "记录完成时长",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m6.csv",
+            "source_ref": "原题34",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "5张商品图片卡；5个货架区域标签（零食/饮品/洗护/调味品/冷冻）",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "5件商品全部与正确区域配对"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确配对少于3张），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（5张卡中正确配对3至4张）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：5件商品全部与正确区域配对。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M6_OP_036_V4",
+      "previous_question_id": "M6_OP_036_V3",
+      "source_question_id": "M6_OP_036",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“从8件商品中找出所有被放错区域的商品并归位”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "从8件商品中找出所有被放错区域的商品并归位",
+          "assessment_point": "错放检出归位R2",
+          "ability_tags": [
+            "COGNITION",
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m6.csv",
+            "source_ref": "原题36",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组（8件商品中有2件放错区域）",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "找出全部2件错放商品"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "放回正确区域"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（两件均未正确找出归位），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（2件错放商品中找出并归位1件）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：找出全部2件错放商品；放回正确区域。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M6_OP_037_V4",
+      "previous_question_id": "M6_OP_037_V3",
+      "source_question_id": "M6_OP_037",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“把4对近邻商品（外包装相似）逐一区分并放到正确位置”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "把4对近邻商品（外包装相似）逐一区分并放到正确位置",
+          "assessment_point": "近邻商品区分B组实操",
+          "ability_tags": [
+            "COGNITION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m6.csv",
+            "source_ref": "原题37",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "4对近邻商品（薯片vs虾片、绿茶vs乌龙茶各2件×2对，加大号vs小号规格2对）；迷你货架1组",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "4对商品全部正确区分"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "放入正确货架位置"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确区分归位少于3对），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（4对近邻商品中正确区分并归位3对）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：4对商品全部正确区分；放入正确货架位置。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M6_OP_038_V4",
+      "previous_question_id": "M6_OP_038_V3",
+      "source_question_id": "M6_OP_038",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“扫描5件商品的条形码，说出或写出每件商品的品名”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "用离线扫码设备识别5件商品品名；扫码失败时改用条码数字与离线对照表核验并记录失败，不得猜测",
+          "assessment_point": "条形码扫读识别B组",
+          "ability_tags": [
+            "COGNITION"
+          ],
+          "note": "考察利用条形码辅助识别的能力",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m6.csv",
+            "source_ref": "原题38",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "5件固定条码商品；返回固定品名的离线扫码设备及数据库；纸质条码-品名对照表；扫码失败情境卡；记录表",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "逐件扫描5个条码"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "扫描成功时核对屏幕品名与实物"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "扫码失败时按条码数字查纸质对照表"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "记录扫码失败的商品"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "5件品名判断与答案卡一致"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确识别少于3件，或扫码失败后猜测品名），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（5件中通过扫码或替代核验正确识别3至4件）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：逐件扫描5个条码；扫描成功时核对屏幕品名与实物；扫码失败时按条码数字查纸质对照表；记录扫码失败的商品；5件品名判断与答案卡一致。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M6_OP_039_V4",
+      "previous_question_id": "M6_OP_039_V3",
+      "source_question_id": "M6_OP_039",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“把5件商品归到正确区域（不限表达方式：可说出/指出/写出/扫码）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "把5件实物商品放到对应货架区域；可用说出、指出、写出或扫码辅助判断，但最终必须完成实物归位",
+          "assessment_point": "表达通道适配编码实操",
+          "ability_tags": [
+            "COGNITION"
+          ],
+          "note": "表达通道适配编码：单独记录受测者使用的通道（口述/指向/书写/扫码/组合）；写入第Ⅴ类编码",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m6.csv",
+            "source_ref": "原题39",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "5件轻质商品；迷你货架1组；区域标签；可选离线扫码设备和纸笔；答案卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "使用任一允许方式完成分类判断"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "5件实物均被移动到对应区域"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "商品与区域/价签一致"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "口头或书面判断未替代实物归位"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确归位少于3件；仅说出/指出/写出分类但未移动实物不计完成），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（5件实物中正确归位3至4件）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：使用任一允许方式完成分类判断；5件实物均被移动到对应区域；商品与区域/价签一致；口头或书面判断未替代实物归位。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M6_OP_040_V4",
+      "previous_question_id": "M6_OP_040_V3",
+      "source_question_id": "M6_OP_040",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“按示例图把8件商品还原摆放到货架上”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "按示例图把8件商品还原摆放到货架上",
+          "assessment_point": "按图还原摆放R1+R2",
+          "ability_tags": [
+            "COGNITION",
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m6.csv",
+            "source_ref": "原题40",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组；8件商品；示例照片1张",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "商品位置与示例照片一致"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "标签朝外"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确还原少于5件），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（8件中正确还原5至7件且标签朝外）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：商品位置与示例照片一致；标签朝外。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M6_OP_041_V4",
+      "previous_question_id": "M6_OP_041_V3",
+      "source_question_id": "M6_OP_041",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“找出货架上的所有错放商品和错位价签，逐一修正”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "找出2件错放商品和2张错位价签；商品按SKU归位，价签先核对条码、品名、规格和价格，再按权限归位或隔离上报",
+          "assessment_point": "综合纠错识别R2+R3",
+          "ability_tags": [
+            "COGNITION",
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m6.csv",
+            "source_ref": "原题41",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组；2件错放商品；2张错位价签；系统价核对卡；权限卡；问题价签袋；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "找出并归位2件错放商品"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "找出2张错位价签"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "逐张核对条码、品名、规格和价格"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "四项一致且有权限时归位；不一致或无权限时隔离上报"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "处置后复查商品、价签和系统价"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确处置少于3个，或未核验就移动价签），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（4个异常对象中正确核验处置3个）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：找出并归位2件错放商品；找出2张错位价签；逐张核对条码、品名、规格和价格；四项一致且有权限时归位；不一致或无权限时隔离上报；处置后复查商品、价签和系统价。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M6_OP_042_V4",
+      "previous_question_id": "M6_OP_042_V3",
+      "source_question_id": "M6_OP_042",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“从10件商品中找出所有不应该放在当前区域的商品”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "从10件商品中找出所有不应该放在当前区域的商品",
+          "assessment_point": "错放巡检B组R2",
+          "ability_tags": [
+            "COGNITION",
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m6.csv",
+            "source_ref": "原题42",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组（10件商品中有3件放错区域）",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "全部3件错放商品找出（无漏检）"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "放回正确区域"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确找出归位少于2件），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（3件错放商品中找出并归位2件）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：全部3件错放商品找出（无漏检）；放回正确区域。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M6_OP_043_V4",
+      "previous_question_id": "M6_OP_043_V3",
+      "source_question_id": "M6_OP_043",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "revision_rationale": "保持“把6件外包装仅有细微差别的商品按规格（大/中/小）分别归位”的任务目标，按本题对象数量明确互斥的0/1/2分阈值和提示次数。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "把6件外包装仅有细微差别的商品按规格（大/中/小）分别归位",
+          "assessment_point": "近邻规格区分B组实操",
+          "ability_tags": [
+            "COGNITION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m6.csv",
+            "source_ref": "原题43",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "6件商品（同品牌不同规格：大/中/小各2件）；迷你货架1组（各规格均有对应价签）",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "大规格2件放入大规格对应位置"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "中规格2件放入中规格对应位置"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "小规格2件放入小规格对应位置"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确归位少于4件），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（6件中正确按规格归位4至5件）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：大规格2件放入大规格对应位置；中规格2件放入中规格对应位置；小规格2件放入小规格对应位置。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M6_OP_044_V4",
+      "previous_question_id": "M6_OP_044_V3",
+      "source_question_id": "M6_OP_044",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“在限时内（2分钟）把10件商品全部归到对应区域”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "准确性优先，把10件商品归到5个固定区域并复查；2分钟只记录，不作为得分门槛，超时继续完成",
+          "assessment_point": "限时归区速度R2",
+          "ability_tags": [
+            "COGNITION"
+          ],
+          "note": "记录完成时长及完成件数（第Ⅳ类）",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m6.csv",
+            "source_ref": "原题44",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "10件商品（5品类各2件）；迷你货架及固定区域标识；唯一答案卡；可视计时器",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "依据固定区域标识归类"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "10件全部完成实物归位"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "10件归区全部正确"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "完成后逐区复查"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "2分钟耗时单独记录，超时不停止且不降低准确性"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确归区少于7件，或为赶时间跳过复查），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（10件中正确归区7至9件并完成复查；时间只记录）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：依据固定区域标识归类；10件全部完成实物归位；10件归区全部正确；完成后逐区复查；2分钟耗时单独记录，超时不停止且不降低准确性。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M6_OP_045_V4",
+      "previous_question_id": "M6_OP_045_V3",
+      "source_question_id": "M6_OP_045",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“识别8件商品的到期日并找出最快到期的3件（含三种日期格式）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "读取8件商品已直接标注的到期日，从中找出最早到期的3件；本题不进行生产日期换算，可用格式说明卡",
+          "assessment_point": "商品识别+日期识别综合",
+          "ability_tags": [
+            "COGNITION"
+          ],
+          "note": "记录完成时长（第Ⅳ类）",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m6.csv",
+            "source_ref": "原题45",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "8件固定到期日标签商品（三种格式）；格式说明卡；纸笔；唯一答案卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "正确读出8个到期日"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "按日期先后比较"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "找出唯一最早到期的3件"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "答案顺序与答案卡一致"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确读出少于5个，或最早3件中正确少于2件），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（8个到期日中正确读出5至7个，并正确选出2个最早到期品）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：正确读出8个到期日；按日期先后比较；找出唯一最早到期的3件；答案顺序与答案卡一致。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": false,
+        "safety_stop_conditions": null
+      }
+    },
+    {
+      "question_id": "M6_OP_046_V4",
+      "previous_question_id": "M6_OP_046_V3",
+      "source_question_id": "M6_OP_046",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“从混放商品中找出所有应该放冷链区的商品并归位”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "使用空包装/图片卡，从12件商品中找出2件冷藏品和1件冷冻品，分别归入冷藏区、冷冻区，常温品不移动",
+          "assessment_point": "冷链商品识别B组",
+          "ability_tags": [
+            "COGNITION"
+          ],
+          "note": "近邻识别轮次通过=可承担精细归位与纠错巡架",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m6.csv",
+            "source_ref": "原题46",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "12件空包装/图片卡（冷藏2、冷冻1、常温9）；冷藏区和冷冻区独立标识；储存条件卡；答案卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "依据储存条件找出2件冷藏品"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "找出1件冷冻品"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "冷藏品归冷藏区、冷冻品归冷冻区"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "9件常温品未被误移"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "复查3件冷链模拟品无遗漏"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（正确归区少于2件，或把冷藏与冷冻混为同一区），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（3件冷链模拟品中正确找出并归区2件，且常温品无误移）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：依据储存条件找出2件冷藏品；找出1件冷冻品；冷藏品归冷藏区、冷冻品归冷冻区；9件常温品未被误移；复查3件冷链模拟品无遗漏。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：现场出现真实需温控食品、包装泄漏、冷柜故障或储存条件无法确认；停止：立即停止模拟归位并不拆封商品；隔离/警示：隔离异常商品或故障区域并设置警示；上报：通知负责人按冷链异常流程处理。"
+      }
+    },
+    {
+      "question_id": "M6_OP_047_V4",
+      "previous_question_id": "M6_OP_047_V3",
+      "source_question_id": "M6_OP_047",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“按照图片示例把乱架货架完整整理好（含分区+分层+标签朝外）”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "参照示例图整理已固定货架：商品按品类归区、标明模拟重货下置轻货上置、标签朝外",
+          "assessment_point": "商品识别综合整理R1+R2+R5",
+          "ability_tags": [
+            "COGNITION",
+            "RULE_EXECUTION"
+          ],
+          "note": "记录完成时长",
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m6.csv",
+            "source_ref": "原题47",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "防倾倒固定且标明限载的迷你货架；轻质空包装商品；模拟重量标签；唯一示例图和答案卡",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "全部商品按示例图和品类归区"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "模拟重货下置、轻货上置"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "全部标签朝外"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "各层未超载且商品稳定"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于2项，或货架晃动/商品失稳后继续），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（完成品类归区、重轻分层、标签朝外3项中的2项）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：全部商品按示例图和品类归区；模拟重货下置、轻货上置；全部标签朝外；各层未超载且商品稳定。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：货架晃动、固定松脱、超载或商品有坠落趋势；停止：立即停止整理并后退；隔离/警示：隔离货架周边并警示他人；上报：通知负责人检查固定和载荷，确认前不得恢复。"
+      }
+    },
+    {
+      "question_id": "M6_OP_048_V4",
+      "previous_question_id": "M6_OP_048_V3",
+      "source_question_id": "M6_OP_048",
+      "question_type": "OFFLINE_OPERATION",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "revision_rationale": "把“完成一次完整的货架巡检：找出错放+找出错位价签+找出破损+修正”改写为可执行的岗位步骤，并按本题对象数量明确部分完成阈值、权限或异常分支。",
+      "proposed_question": {
+        "content": {
+          "question_type": "OFFLINE_OPERATION",
+          "prompt": "巡检货架的1件错放商品、1张错位价签和1件安全模拟破损品：分别归位、核签处置、隔离登记上报",
+          "assessment_point": "识别综合巡检全流程R1+R2+R3+R8",
+          "ability_tags": [
+            "COGNITION",
+            "RULE_EXECUTION"
+          ],
+          "source": {
+            "import_batch_id": "batch_20260704_001",
+            "source_file": "questions-m6.csv",
+            "source_ref": "原题48",
+            "imported_at": "2026-07-04T14:46:42.203433Z",
+            "imported_by": "system_import"
+          },
+          "offline_tool_brief": "迷你货架1组；1件错放商品；1张错位价签；1件无尖锐无泄漏破损空包装；系统价核对卡；权限卡；隔离袋；问题区；记录表；负责人角色牌",
+          "rubric_criteria": [
+            {
+              "criterion_id": "r1",
+              "description": "错放商品按SKU和货位归位"
+            },
+            {
+              "criterion_id": "r2",
+              "description": "价签核对条码、品名、规格、价格后按权限归位或隔离上报"
+            },
+            {
+              "criterion_id": "r3",
+              "description": "破损品停止上架、装袋隔离并标识"
+            },
+            {
+              "criterion_id": "r4",
+              "description": "记录破损和价签异常"
+            },
+            {
+              "criterion_id": "r5",
+              "description": "向负责人报告并完成交接"
+            }
+          ]
+        },
+        "scoring_rule": {
+          "scoring_type": "RUBRIC_BASED",
+          "max_score": 2,
+          "score_0_description": "0分：未达到1分的最低部分阈值（完成少于2类，或徒手接触危险破损/未核验就移动价签），或接受指向具体对象/步骤的提示，或累计接受2次及以上提示，或触发任一安全、权限或异常处置红线。",
+          "score_1_description": "1分：在未触发任何红线的前提下，独立达到最低部分阈值（正确完成错放归位、价签核验处置、破损隔离上报3类任务中的2类）；或者仅接受恰好1次不指向具体对象/步骤的提示后完成全部要求。",
+          "score_2_description": "2分：独立完成全部要求且0次提示：错放商品按SKU和货位归位；价签核对条码、品名、规格、价格后按权限归位或隔离上报；破损品停止上架、装袋隔离并标识；记录破损和价签异常；向负责人报告并完成交接。"
+        },
+        "media_asset_id": null,
+        "tool_asset_ids": null,
+        "sensory_tags": null,
+        "safety_sensitive": true,
+        "safety_stop_conditions": "触发：发现真实泄漏、尖锐破口、污染、异味或货架失稳；停止：立即停止巡检并后退；隔离/警示：隔离异常商品和周边排面并设置警示；上报：通知负责人安排具备PPE和权限的人员处理。"
+      }
+    }
+  ]
+}

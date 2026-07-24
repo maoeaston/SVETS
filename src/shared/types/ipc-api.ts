@@ -2,6 +2,18 @@
 // 每个功能模块在 src/main/ipc/handlers/ 中实现，此处同步声明类型
 
 import type {
+  LoginParams,
+  LoginResult,
+  CurrentSessionResult,
+  LogoutResult,
+  ListAccountsParams,
+  ListAccountsResult,
+  CreateTeacherAccountParams,
+  CreateTeacherAccountResult,
+  SetTeacherAccountStatusParams,
+  SetTeacherAccountStatusResult
+} from './auth'
+import type {
   CreateStudentParams,
   CreateStudentResult,
   UpdateStudentParams,
@@ -40,6 +52,12 @@ import type {
   EmotionInterruptResult,
   EmotionResumeParams,
   EmotionResumeResult,
+  PauseSittingParams,
+  PauseSittingResult,
+  StartNextSittingParams,
+  StartNextSittingResult,
+  RecordEmotionCollapseParams,
+  RecordEmotionCollapseResult,
   AbortSessionParams,
   AbortSessionResult,
   TriggerRedlineParams,
@@ -48,6 +66,17 @@ import type {
   CalculateResultResult
 } from './assessment'
 import type {
+  ConfirmSafetyIncidentParams,
+  ResolveSafetyIncidentParams,
+  VoidSafetyIncidentParams,
+  ReplaceSafetyIncidentParams,
+  SafetyIncidentMutationResult,
+  ListSafetyIncidentsParams,
+  ListSafetyIncidentsResult,
+  GetSafetyIncidentParams,
+  GetSafetyIncidentResult
+} from './safety-incident'
+import type {
   CreateTrainingSessionParams,
   CreateTrainingSessionResult,
   ListTrainingSessionsParams,
@@ -55,8 +84,18 @@ import type {
   GetTrainingSessionParams,
   GetTrainingSessionResult,
   TrainingStepActionParams,
-  TrainingStepActionResult
+  TrainingStepActionResult,
+  ListMyTrainingSessionsParams,
+  ListMyTrainingSessionsResult
 } from './training'
+import type {
+  TrustedCallerParams,
+  GetWorkspaceOverviewResult,
+  ListExceptionsParams,
+  ListExceptionsResult,
+  GetExceptionParams,
+  GetExceptionResult
+} from './foundation'
 import type {
   SubmitOperationScoresParams,
   SubmitOperationScoresResult,
@@ -90,23 +129,14 @@ import type {
   ReleaseAssignmentResult
 } from './assignment'
 
-export interface LoginSuccess {
-  success: true
-  userId: string
-  role: 'STUDENT' | 'TEACHER' | 'ADMIN'
-  displayName: string
-}
-
-export interface LoginError {
-  success: false
-  errorCode: 'INVALID_CREDENTIALS' | 'ACCOUNT_DISABLED' | 'SYSTEM_ERROR'
-}
-
-export type LoginResult = LoginSuccess | LoginError
-
 export interface IpcApi {
   auth: {
-    login: (params: { username: string; password: string }) => Promise<LoginResult>
+    login: (params: LoginParams) => Promise<LoginResult>
+    getCurrentSession: () => Promise<CurrentSessionResult>
+    logout: () => Promise<LogoutResult>
+    listAccounts: (params: ListAccountsParams) => Promise<ListAccountsResult>
+    createTeacherAccount: (params: CreateTeacherAccountParams) => Promise<CreateTeacherAccountResult>
+    setTeacherAccountStatus: (params: SetTeacherAccountStatusParams) => Promise<SetTeacherAccountStatusResult>
   }
   student: {
     list: (params: StudentListParams) => Promise<StudentListResult>
@@ -153,6 +183,9 @@ export interface IpcApi {
       params: EmotionInterruptParams
     ) => Promise<EmotionInterruptResult>
     emotionResume: (params: EmotionResumeParams) => Promise<EmotionResumeResult>
+    pauseSitting: (params: PauseSittingParams) => Promise<PauseSittingResult>
+    startNextSitting: (params: StartNextSittingParams) => Promise<StartNextSittingResult>
+    recordEmotionCollapse: (params: RecordEmotionCollapseParams) => Promise<RecordEmotionCollapseResult>
     abortSession: (params: AbortSessionParams) => Promise<AbortSessionResult>
     triggerRedline: (params: TriggerRedlineParams) => Promise<TriggerRedlineResult>
     calculateResult: (
@@ -176,6 +209,14 @@ export interface IpcApi {
       params: GetTeacherObservationsParams
     ) => Promise<GetTeacherObservationsResult>
   }
+  safety: {
+    list: (params: ListSafetyIncidentsParams) => Promise<ListSafetyIncidentsResult>
+    get: (params: GetSafetyIncidentParams) => Promise<GetSafetyIncidentResult>
+    confirm: (params: ConfirmSafetyIncidentParams) => Promise<SafetyIncidentMutationResult>
+    resolve: (params: ResolveSafetyIncidentParams) => Promise<SafetyIncidentMutationResult>
+    void: (params: VoidSafetyIncidentParams) => Promise<SafetyIncidentMutationResult>
+    replaceForFactualCorrection: (params: ReplaceSafetyIncidentParams) => Promise<SafetyIncidentMutationResult>
+  }
   assignment: {
     create: (params: CreateAssignmentParams) => Promise<CreateAssignmentResult>
     confirmStudent: (
@@ -190,11 +231,17 @@ export interface IpcApi {
   training: {
     createSession: (params: CreateTrainingSessionParams) => Promise<CreateTrainingSessionResult>
     listSessions: (params: ListTrainingSessionsParams) => Promise<ListTrainingSessionsResult>
+    listMySessions: (params: ListMyTrainingSessionsParams) => Promise<ListMyTrainingSessionsResult>
     getSession: (params: GetTrainingSessionParams) => Promise<GetTrainingSessionResult>
     startStep: (params: TrainingStepActionParams) => Promise<TrainingStepActionResult>
     completeStep: (params: TrainingStepActionParams) => Promise<TrainingStepActionResult>
     skipStep: (params: TrainingStepActionParams) => Promise<TrainingStepActionResult>
     failStep: (params: TrainingStepActionParams) => Promise<TrainingStepActionResult>
     retryStep: (params: TrainingStepActionParams) => Promise<TrainingStepActionResult>
+  }
+  foundation: {
+    getOverview: (params: TrustedCallerParams) => Promise<GetWorkspaceOverviewResult>
+    listExceptions: (params: ListExceptionsParams) => Promise<ListExceptionsResult>
+    getException: (params: GetExceptionParams) => Promise<GetExceptionResult>
   }
 }

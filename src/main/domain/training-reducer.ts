@@ -276,10 +276,11 @@ function applyTrainingCompleted(db: DBAdapter, entry: ActionLogEntry): void {
     p.training_session_id
   )
 
-  // 读 training_session 以获取 student_id / job_code / task_code / strategy_id / strategy_version
+  // 读 training_session 以获取 result_record 投影字段
   const ts = db
     .prepare(
-      `SELECT student_id, job_code, task_code, strategy_id, strategy_version, created_by
+      `SELECT student_id, job_code, task_code, strategy_id, strategy_type,
+              strategy_version, module_type, created_by
          FROM training_session WHERE training_session_id = ?`
     )
     .get(p.training_session_id) as {
@@ -287,7 +288,9 @@ function applyTrainingCompleted(db: DBAdapter, entry: ActionLogEntry): void {
     job_code: string
     task_code: string
     strategy_id: string
+    strategy_type: string
     strategy_version: number
+    module_type: string | null
     created_by: string
   } | undefined
   if (!ts) return
@@ -320,16 +323,19 @@ function applyTrainingCompleted(db: DBAdapter, entry: ActionLogEntry): void {
   db.prepare(
     `INSERT OR IGNORE INTO result_record (
        result_id, result_type, source_aggregate_type, source_aggregate_id,
-       student_id, job_code,
+       student_id, strategy_id, strategy_type, job_code, module_type,
        normalized_score, level_result, completion_ratio,
        generated_event_id, generated_at, safety_overridden
      ) VALUES (?, 'TRAINING_COMPLETION', 'TRAINING_SESSION', ?,
-               ?, ?, ?, ?, ?, ?, ?, 0)`
+               ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`
   ).run(
     resultId,
     p.training_session_id,
     ts.student_id,
+    ts.strategy_id,
+    ts.strategy_type,
     ts.job_code,
+    ts.module_type,
     p.completion_rate,
     levelResult,
     p.completion_rate / 100,

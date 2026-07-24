@@ -16,8 +16,8 @@ doc/reference/visual-asset-master-plan.md
 
 ### 生产合同
 
-- `doc/assets/asset-manifest.schema.json`：v0.3.1 结构合同。
-- `doc/assets/asset-manifest.json`：237 条逐资产记录。
+- `doc/assets/asset-manifest.schema.json`：v0.5.0 结构合同。
+- `doc/assets/asset-manifest.json`：270 条逐资产记录，包含来源题号和当前运行时题号绑定。
 - `doc/assets/prompt-templates/`：按资产类型拆分的 Prompt 模板；测评视频与训练视频使用独立模板。
 - `doc/assets/reference-assets/`：R1-R6 参考资产包落位说明。
 - `doc/assets/qa-results/`：审核批次记录目录。
@@ -30,6 +30,7 @@ doc/reference/visual-asset-master-plan.md
 
 - ID、路径、生命周期与生产方法约束
 - 参考资产、Prompt 模板和题目 ID 存在性
+- `question_ids` 到 `current_question_ids` 的当前 298 题权威映射
 - `expected_answer` 与当前 298 题清洗结果一致性
 - approved 资产的文件、SHA-256、版权和五道门状态
 - approved Manifest 到 `asset_resource` 行和 SQL 的投影
@@ -67,7 +68,7 @@ node scripts/seed-question-bank-image-assets.mjs --db /absolute/path/to/xc-caree
 
 ## 当前状态
 
-- 231 个交付资产和 6 个参考资产均已登记。
+- 231 个 A-G 资产、33 个 DELIVERY 资产和 6 个参考资产均已登记。
 - 所有记录当前为 `planned`。
 - approved 数量为 0，因此不会向 SQLite 写入 ACTIVE 视觉资产。
 - 下一生产动作是先编译并复核 R1-R6 的逐资产 Prompt，再生成和批准 R1-R6；R1-R6 批准后才开始 P0 批次。

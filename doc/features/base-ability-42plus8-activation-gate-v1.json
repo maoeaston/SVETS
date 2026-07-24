@@ -1,0 +1,159 @@
+{
+  "$schema": "./base-ability-42plus8-activation-gate-v1.schema.json",
+  "schema_version": "base-ability-42plus8-activation-gate-v1",
+  "gate_id": "base-ability-42plus8-activation-gate-2026-07-22",
+  "status": "BLOCKED_DRAFT_REVIEW_RENDERER_MATERIAL_AND_TRIAL_GATE",
+  "generated_at": "2026-07-22T17:30:00+08:00",
+  "authority": {
+    "product_contract_path": "doc/specs/MVP_PRD_v1.0.9-authoritative.md",
+    "source_path": "doc/reference/通用基础能力正式测评候选题库_v0.2-软件优先版.xlsx",
+    "source_sha256": "sha256:ceb5e5615e10b0c0b5b6d1711e1efe21dd6248cc8ebc50ca82d30e308256ebec",
+    "import_sql_path": "doc/features/question-bank-import-base-ability-v02.sql",
+    "import_sql_sha256": "sha256:db905216cd6735bdf90c44036cf675747dc859a97d894f110d1d959211fe649f",
+    "content_pack_path": "scripts/config/database-content-pack.json"
+  },
+  "summary": {
+    "source_question_total": 96,
+    "draft_total": 96,
+    "active_total": 0,
+    "online_candidate_total": 87,
+    "offline_candidate_total": 8,
+    "observation_only_total": 1,
+    "no_score_total": 96,
+    "media_asset_bound_total": 0,
+    "tool_asset_bound_total": 0,
+    "question_type_counts": {
+      "DRAG": 17,
+      "OFFLINE_OPERATION": 8,
+      "SINGLE_CHOICE": 21,
+      "SOFTWARE_TASK": 50
+    },
+    "status_counts": {
+      "DRAFT": 96
+    },
+    "modules": {
+      "FINE_MOTOR": {
+        "total": 16,
+        "online_candidates": 9,
+        "offline_candidates": 7,
+        "observation_only": 0,
+        "active_online": 0,
+        "active_offline": 0
+      },
+      "COGNITION": {
+        "total": 20,
+        "online_candidates": 20,
+        "offline_candidates": 0,
+        "observation_only": 0,
+        "active_online": 0,
+        "active_offline": 0
+      },
+      "RULE_EXECUTION": {
+        "total": 16,
+        "online_candidates": 16,
+        "offline_candidates": 0,
+        "observation_only": 0,
+        "active_online": 0,
+        "active_offline": 0
+      },
+      "EMOTION_REGULATION": {
+        "total": 14,
+        "online_candidates": 13,
+        "offline_candidates": 0,
+        "observation_only": 1,
+        "active_online": 0,
+        "active_offline": 0
+      },
+      "BASIC_SOCIAL": {
+        "total": 14,
+        "online_candidates": 14,
+        "offline_candidates": 0,
+        "observation_only": 0,
+        "active_online": 0,
+        "active_offline": 0
+      },
+      "SAFETY_OPERATION": {
+        "total": 16,
+        "online_candidates": 15,
+        "offline_candidates": 1,
+        "observation_only": 0,
+        "active_online": 0,
+        "active_offline": 0
+      }
+    }
+  },
+  "gates": [
+    {
+      "gate_id": "source_and_import_contract",
+      "status": "PASSED",
+      "details": {
+        "expected_total": 96,
+        "actual_total": 96,
+        "import_sql_path": "doc/features/question-bank-import-base-ability-v02.sql",
+        "source_path": "doc/reference/通用基础能力正式测评候选题库_v0.2-软件优先版.xlsx"
+      }
+    },
+    {
+      "gate_id": "bank_domain_isolation",
+      "status": "PASSED",
+      "details": {
+        "required_bank_domain": "BASE_ABILITY",
+        "issues": []
+      }
+    },
+    {
+      "gate_id": "candidate_supply_42plus8",
+      "status": "PASSED",
+      "details": {
+        "required_online_total": 42,
+        "online_candidate_total": 87,
+        "required_offline_total": 8,
+        "offline_candidate_total": 8,
+        "observation_only_total": 1,
+        "required_online_per_module": 7
+      }
+    },
+    {
+      "gate_id": "active_question_status",
+      "status": "BLOCKED",
+      "details": {
+        "active_total": 0,
+        "draft_total": 96,
+        "rule": "96 条候选题当前保持 DRAFT；未完成审核、素材、评分和试测前不得批量 ACTIVE"
+      }
+    },
+    {
+      "gate_id": "scoring_contract",
+      "status": "BLOCKED",
+      "details": {
+        "no_score_total": 96,
+        "rule": "当前 SQL 仍为 NO_SCORE 占位；正式施测前需补线上答案键和线下 0/1/2 评分锚点"
+      }
+    },
+    {
+      "gate_id": "renderer_asset_material_gate",
+      "status": "PENDING",
+      "details": {
+        "media_asset_bound_total": 0,
+        "tool_asset_bound_total": 0,
+        "rule": "DRAG / SOFTWARE_TASK 需要 renderer 或交互资源；8 道 OFFLINE_OPERATION 需要标准教具和教师评分说明"
+      }
+    },
+    {
+      "gate_id": "professional_review_gate",
+      "status": "PENDING",
+      "details": {
+        "rule": "需要专业人员确认构念、权重、线下评分锚点、安全与感官适配"
+      }
+    },
+    {
+      "gate_id": "classroom_trial_gate",
+      "status": "PENDING",
+      "details": {
+        "rule": "基础能力结果当前定位为教学诊断试测；正式解释阈值前需要课堂试测证据"
+      }
+    }
+  ],
+  "activation_authority_granted": false,
+  "activation_policy": "本文件只证明 96 条候选池和 42+8 供给关系；不得激活题目、不得写运行数据库、不得把结果解释为已验证标准化诊断量表。"
+}

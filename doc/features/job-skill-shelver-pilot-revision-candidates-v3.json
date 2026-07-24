@@ -1,0 +1,1801 @@
+{
+  "schema_version": "job-skill-shelver-revision-candidates-v3",
+  "candidate_set_id": "strategy_job_skill_shelver_v1@3-pilot-r2-candidates",
+  "generated_at": "2026-07-19T12:00:00+08:00",
+  "based_on_manifest_id": "strategy_job_skill_shelver_v1@2-pilot-r1",
+  "based_on_safety_technical_result_id": "job-skill-safety-tech-review-20260719031839",
+  "revision_spec": "doc/features/job-skill-shelver-pilot-13-question-revision-and-renderer-fix-v1.0.md",
+  "authority": {
+    "status": "CURRENT_PILOT_CANDIDATE",
+    "usage": "题目内容、图片和视频素材生产均以本文件为当前唯一候选输入；历史审核文件仅作追溯。"
+  },
+  "strategy_candidate": {
+    "strategy_id": "strategy_job_skill_shelver_v1",
+    "strategy_version": 3,
+    "strategy_name": "理货员专业岗位示范测评 v3 修复候选",
+    "strategy_type": "JOB_SKILL_ASSESSMENT",
+    "job_code": "SUPERMARKET_SHELVER",
+    "online_question_count": 18,
+    "offline_question_count": 6,
+    "max_score": 48,
+    "competent_threshold": 80,
+    "conditional_threshold": 60,
+    "module_veto_threshold": 0.5,
+    "question_policy": {
+      "schema_version": "question-policy-v1.2",
+      "bank_domain": "JOB_SPECIFIC",
+      "selection_mode": "FIXED_SET",
+      "job_module_quotas": {
+        "M1": {
+          "online": 3,
+          "offline": 1
+        },
+        "M2": {
+          "online": 3,
+          "offline": 1
+        },
+        "M3": {
+          "online": 3,
+          "offline": 1
+        },
+        "M4": {
+          "online": 3,
+          "offline": 1
+        },
+        "M5": {
+          "online": 3,
+          "offline": 1
+        },
+        "M6": {
+          "online": 3,
+          "offline": 1
+        }
+      },
+      "fixed_scored_question_ids": [
+        "M1_SC_001",
+        "M1_SC_004",
+        "M1_SC_007_V2",
+        "M1_OP_033_V2",
+        "M2_SC_002_V2",
+        "M2_SC_003_V2",
+        "M2_SC_005_V3",
+        "M2_OP_027_V2",
+        "M3_SC_001_V2",
+        "M3_SC_005",
+        "M3_SC_019_V2",
+        "M3_OP_043_V2",
+        "M4_SC_001",
+        "M4_SC_003",
+        "M4_SC_005_V2",
+        "M4_OP_029_V2",
+        "M5_SC_001_V2",
+        "M5_SC_002_V2",
+        "M5_SC_009_V2",
+        "M5_OP_039_V2",
+        "M6_SC_003_V2",
+        "M6_SC_009_V2",
+        "M6_SC_012_V2",
+        "M6_OP_035_V2"
+      ],
+      "embedded_observation_question_ids": [],
+      "fallback_strategy": "BLOCK"
+    },
+    "scoring_policy": {
+      "schema_version": "scoring-policy-v1.2",
+      "assessment_scope": "JOB_SKILL",
+      "online_score_values": [
+        0,
+        2
+      ],
+      "offline_score_values": [
+        0,
+        1,
+        2
+      ],
+      "normalization": "raw_score/max_score*100",
+      "module_veto_mode": "DISABLED_RECORD_ONLY",
+      "training_focus_threshold": 0.6,
+      "safety_override_enabled": true,
+      "placement_advice_enabled": false
+    },
+    "supports_redline_halt": true,
+    "allows_emotion_interrupt": true,
+    "requires_offline_scoring": true,
+    "runtime_seed_status": "NOT_INSERTED",
+    "activation_authorized": false
+  },
+  "strategy_contract_hash": "sha256:3b3ff4e8409805f7e2d333fcced60952c185dea7f827e659b184b207d9c13a53",
+  "summary": {
+    "total": 24,
+    "unchanged_from_v2": 17,
+    "revised_online_new_versions": 7,
+    "offline_content_hash_preserved": 6,
+    "content_reconfirmation_pending": 19,
+    "online_total": 18,
+    "offline_total": 6
+  },
+  "hash_canonicalization": "UTF-8 JSON; object keys sorted recursively; arrays retain source order; candidate_record_hash excludes itself",
+  "supersession_map": {
+    "M2_SC_003": "M2_SC_003_V2",
+    "M2_SC_005_V2": "M2_SC_005_V3",
+    "M5_SC_001": "M5_SC_001_V2",
+    "M5_SC_002": "M5_SC_002_V2",
+    "M5_SC_009": "M5_SC_009_V2",
+    "M6_SC_003": "M6_SC_003_V2",
+    "M6_SC_009": "M6_SC_009_V2"
+  },
+  "official_review_sources": [
+    {
+      "source_id": "GS1_GTIN",
+      "title": "GS1 System Architecture Document",
+      "url": "https://www.gs1.org/standards/gs1-system-architecture-document/current-standard",
+      "applies_to": [
+        "M6_SC_012_V2"
+      ],
+      "note": "GTIN用于识别贸易项目，扫描后关联和调取商品信息。"
+    },
+    {
+      "source_id": "OSHA_WALKING_SURFACES",
+      "title": "OSHA 29 CFR 1910.22 General requirements",
+      "url": "https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.22",
+      "applies_to": [
+        "M5_SC_001_V2",
+        "M5_OP_039_V2"
+      ],
+      "note": "湿滑或有溢洒的行走表面应及时纠正，无法立即纠正时应防止人员进入。"
+    },
+    {
+      "source_id": "HSE_RETAIL_SLIPS",
+      "title": "HSE Slips and trips in retail",
+      "url": "https://www.hse.gov.uk/retail/slips-and-trips.htm",
+      "applies_to": [
+        "M5_SC_001_V2",
+        "M5_OP_039_V2"
+      ],
+      "note": "标志只能警告，必要时还应使用屏障或分区阻止人员进入湿滑区域。"
+    },
+    {
+      "source_id": "OSHA_GROCERY_PACKAGING",
+      "title": "OSHA Grocery Warehousing Packaging",
+      "url": "https://www.osha.gov/etools/grocery-warehousing/packaging",
+      "applies_to": [
+        "M2_SC_003_V2",
+        "M2_OP_027_V2"
+      ],
+      "note": "开箱刀具和包装操作存在割伤及人体工学风险，工具与箱体条件需受控。"
+    },
+    {
+      "source_id": "OSHA_GROCERY_STORAGE",
+      "title": "OSHA Grocery Warehousing Storage",
+      "url": "https://www.osha.gov/etools/grocery-warehousing/storage",
+      "applies_to": [
+        "M1_OP_033_V2",
+        "M4_OP_029_V2",
+        "M6_OP_035_V2"
+      ],
+      "note": "货架取放应控制触达高度、稳定性和搬运姿势。"
+    }
+  ],
+  "questions": [
+    {
+      "question_id": "M1_SC_001",
+      "previous_question_id": null,
+      "question_version": 1,
+      "module": "M1",
+      "question_type": "SINGLE_CHOICE",
+      "source_status": "DRAFT",
+      "revision_status": "CONTENT_APPROVED_V1_REUSED",
+      "prompt": "超市货架上摆放商品，正确的做法是？",
+      "target_construct": "RULE_EXECUTION",
+      "options": [
+        {
+          "key": "A",
+          "text": "商品正面朝外，竖直摆正，前后对齐"
+        },
+        {
+          "key": "B",
+          "text": "商品侧面朝外，斜靠在一起，节省空间"
+        },
+        {
+          "key": "C",
+          "text": "商品躺倒平放，标签朝下，堆成两层"
+        }
+      ],
+      "candidate_answer": "A",
+      "presentation": {
+        "type": "IMAGE_CARD",
+        "media_brief": "摆放规范R1",
+        "asset_ids": []
+      },
+      "tools": {
+        "brief": null
+      },
+      "rubric": {
+        "criteria": [],
+        "anchors": null,
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": false,
+        "content_reviewer_recommendation": "REVIEW_REQUIRED",
+        "content_reviewer_note": "基础陈列姿态明确，A为唯一最佳答案。后续图片素材应呈现正面朝客、竖直、同排前沿基本齐平，避免只画出朝向而漏掉整齐度。",
+        "proposed_stop_conditions": ""
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "APPROVED",
+        "current_status": "APPROVED",
+        "review_note": "基础陈列姿态明确，A为唯一最佳答案。后续图片素材应呈现正面朝客、竖直、同排前沿基本齐平，避免只画出朝向而漏掉整齐度。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 23,
+        "source_ref": null,
+        "based_on_question_id": "M1_SC_001",
+        "based_on_candidate_record_hash": "sha256:c109e88917b0e2693b7c01b47d329228d5ee5750dbffa851bc64c8c925d90d10",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039"
+      },
+      "known_technical_gap": null,
+      "candidate_record_hash": "sha256:94a9c099f685859ed54827ed349861ed9558faa46ee0f273580597cd0a320f0f"
+    },
+    {
+      "question_id": "M1_SC_004",
+      "previous_question_id": null,
+      "question_version": 1,
+      "module": "M1",
+      "question_type": "SINGLE_CHOICE",
+      "source_status": "DRAFT",
+      "revision_status": "CONTENT_APPROVED_V1_REUSED",
+      "prompt": "5升装大桶水和小袋糖果，应该分别放在货架的哪一层？",
+      "target_construct": "RULE_EXECUTION",
+      "options": [
+        {
+          "key": "A",
+          "text": "大桶水放上层，糖果放下层"
+        },
+        {
+          "key": "B",
+          "text": "大桶水放下层，糖果放上层"
+        },
+        {
+          "key": "C",
+          "text": "大桶水和糖果都放在中间层"
+        }
+      ],
+      "candidate_answer": "B",
+      "presentation": {
+        "type": "IMAGE_CARD",
+        "media_brief": "分层摆放R5",
+        "asset_ids": []
+      },
+      "tools": {
+        "brief": null
+      },
+      "rubric": {
+        "criteria": [],
+        "anchors": null,
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": false,
+        "content_reviewer_recommendation": "REVIEW_REQUIRED",
+        "content_reviewer_note": "作为重下轻上的基础规则题可以通过；培训时应说明实际层位仍以门店货架承重、品类区位和陈列图为准。",
+        "proposed_stop_conditions": ""
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "APPROVED",
+        "current_status": "APPROVED",
+        "review_note": "作为重下轻上的基础规则题可以通过；培训时应说明实际层位仍以门店货架承重、品类区位和陈列图为准。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 26,
+        "source_ref": null,
+        "based_on_question_id": "M1_SC_004",
+        "based_on_candidate_record_hash": "sha256:e744f295e8ffcf6dcdc01f7e7a1d019b604a09a988cdb826beddeae2f4c2689c",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039"
+      },
+      "known_technical_gap": null,
+      "candidate_record_hash": "sha256:8a8faba96ee9a7c2579f1f050b6df68317cce5ed82686173edb70ff555688f44"
+    },
+    {
+      "question_id": "M1_SC_007_V2",
+      "previous_question_id": "M1_SC_007",
+      "question_version": 2,
+      "module": "M1",
+      "question_type": "SINGLE_CHOICE",
+      "source_status": "DRAFT",
+      "revision_status": "REVISION_APPLIED_AWAITING_CONTENT_RECONFIRMATION",
+      "prompt": "核对商品与价签时，以下哪项检查最完整？",
+      "target_construct": "RULE_EXECUTION",
+      "options": [
+        {
+          "key": "A",
+          "text": "核对品名、规格或条码是否对应，并确认销售价格及促销有效期"
+        },
+        {
+          "key": "B",
+          "text": "只核对商品名称和当前价格，不看规格、条码和促销日期"
+        },
+        {
+          "key": "C",
+          "text": "只核对价签颜色、字体和边角是否整齐"
+        }
+      ],
+      "candidate_answer": "A",
+      "presentation": {
+        "type": "IMAGE_CARD",
+        "media_brief": "价签核对要点 R3，需同时呈现商品标识、价格和促销日期",
+        "asset_ids": []
+      },
+      "tools": {
+        "brief": null
+      },
+      "rubric": {
+        "criteria": [],
+        "anchors": null,
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": false,
+        "content_reviewer_recommendation": "REVIEW_REQUIRED",
+        "content_reviewer_note": "价签核对不能只概括为名称和价格。建议改为核对商品与价签是否一一对应（品名、规格/条码）以及销售价格/促销有效期是否正确，并重新设计选项。",
+        "proposed_stop_conditions": ""
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "RETURN_FOR_REVISION",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "价签核对不能只概括为名称和价格。建议改为核对商品与价签是否一一对应（品名、规格/条码）以及销售价格/促销有效期是否正确，并重新设计选项。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 29,
+        "source_ref": null,
+        "based_on_question_id": "M1_SC_007",
+        "based_on_candidate_record_hash": "sha256:27e1995130642b207119bf54d49a1dbab531a2e235a2cb8ab9b7c89ca8a16825",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039"
+      },
+      "known_technical_gap": null,
+      "candidate_record_hash": "sha256:869a6be7300ed814de50f1a227d0874ce02a1a23f6d78ee8b92421de0f2faa8b"
+    },
+    {
+      "question_id": "M1_OP_033_V2",
+      "previous_question_id": "M1_OP_033",
+      "question_version": 2,
+      "module": "M1",
+      "question_type": "OFFLINE_OPERATION",
+      "source_status": "DRAFT",
+      "revision_status": "REVISION_APPLIED_AWAITING_CONTENT_RECONFIRMATION",
+      "prompt": "将5件轻型训练商品摆到货架中层，做到正面朝外、竖直稳定并使同排前沿基本对齐。",
+      "target_construct": "摆放规范R1实操",
+      "options": [],
+      "candidate_answer": null,
+      "presentation": {
+        "type": "OFFLINE_MATERIALS",
+        "media_brief": null,
+        "asset_ids": []
+      },
+      "tools": {
+        "brief": "稳定的迷你货架1组；5件轻型、无尖锐边角的训练商品"
+      },
+      "rubric": {
+        "criteria": [
+          {
+            "criterion_id": "r1",
+            "description": "5件商品全部放在中层"
+          },
+          {
+            "criterion_id": "r2",
+            "description": "5件商品全部正面朝外"
+          },
+          {
+            "criterion_id": "r3",
+            "description": "商品竖直稳定，无倾倒风险"
+          },
+          {
+            "criterion_id": "r4",
+            "description": "同排商品前沿基本对齐"
+          }
+        ],
+        "anchors": {
+          "0": "5件中有3件及以上未放在中层，或有3件及以上未正面朝外/倒放，任务整体未形成合格陈列。",
+          "1": "5件均放到中层，但有1至2件未正面朝外、倾斜不稳或前沿明显未对齐；经一次口头提示后完成也记1分。",
+          "2": "5件全部放在中层，均正面朝外、竖直稳定，同排商品前沿基本对齐，且全程无需提示。"
+        },
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": false,
+        "content_reviewer_recommendation": "REVIEW_REQUIRED",
+        "content_reviewer_note": "商品应为轻型、无尖锐边角的训练道具；货架稳定，禁止攀爬或踩踏取放。",
+        "proposed_stop_conditions": "商品应为轻型、无尖锐边角的训练道具；货架稳定，禁止攀爬或踩踏取放。"
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "RETURN_FOR_REVISION",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "任务可实施、材料基本够用，但当前指标漏掉同排前沿整齐和5件全数达标的判分边界；建议采用本次锚点后重建候选记录。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 8,
+        "source_ref": "原题81",
+        "based_on_question_id": "M1_OP_033",
+        "based_on_candidate_record_hash": "sha256:d7b99fc4a3ea57c426bb319ff350d9685cd20033b4b7487b9f971ed8c920c1d2",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039"
+      },
+      "known_technical_gap": "question prompt, tools and rubric anchors are not rendered",
+      "candidate_record_hash": "sha256:8334119d703c2da13812f110025ba185346df22a4cc9466edf6986fedbf543f4"
+    },
+    {
+      "question_id": "M2_SC_002_V2",
+      "previous_question_id": "M2_SC_002",
+      "question_version": 2,
+      "module": "M2",
+      "question_type": "SINGLE_CHOICE",
+      "source_status": "DRAFT",
+      "revision_status": "REVISION_APPLIED_AWAITING_CONTENT_RECONFIRMATION",
+      "prompt": "本课程对标有到期日的食品采用“先到期先出（FEFO）”。补货时正确的做法是？",
+      "target_construct": "RULE_EXECUTION",
+      "options": [
+        {
+          "key": "A",
+          "text": "较早到期的商品前移，较晚到期的新批次放在后面"
+        },
+        {
+          "key": "B",
+          "text": "较晚到期的新批次前移，较早到期的商品放在后面"
+        },
+        {
+          "key": "C",
+          "text": "不核对到期日，把两个批次混合摆放"
+        }
+      ],
+      "candidate_answer": "A",
+      "presentation": {
+        "type": "IMAGE_CARD",
+        "media_brief": "FEFO 批次轮转规则 R6",
+        "asset_ids": []
+      },
+      "tools": {
+        "brief": null
+      },
+      "rubric": {
+        "criteria": [],
+        "anchors": null,
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": false,
+        "content_reviewer_recommendation": "REVIEW_REQUIRED",
+        "content_reviewer_note": "A中“早到货日期早”语病且把到货顺序与效期顺序混为一谈。建议明确本课程采用FIFO还是食品零售更常用的先到期先出（FEFO），再分别描述旧批前移、新批后置。",
+        "proposed_stop_conditions": ""
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "RETURN_FOR_REVISION",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "A中“早到货日期早”语病且把到货顺序与效期顺序混为一谈。建议明确本课程采用FIFO还是食品零售更常用的先到期先出（FEFO），再分别描述旧批前移、新批后置。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 69,
+        "source_ref": null,
+        "based_on_question_id": "M2_SC_002",
+        "based_on_candidate_record_hash": "sha256:e7340e010b96a8b91fa1970958976429725296d4874f38a1595f7dc3f7396b5a",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039"
+      },
+      "known_technical_gap": null,
+      "candidate_record_hash": "sha256:9595043891dc4a322e92d429e0bb6f916112ccc2e44f99ea9c7680eb28743add"
+    },
+    {
+      "question_id": "M2_SC_003_V2",
+      "previous_question_id": "M2_SC_003",
+      "question_version": 2,
+      "module": "M2",
+      "question_type": "SINGLE_CHOICE",
+      "source_status": "DRAFT",
+      "revision_status": "SAFETY_TECHNICAL_REVISION_APPLIED_AWAITING_FULL_REVIEW",
+      "prompt": "使用安全开箱刀拆纸箱时，最优先要避免的是什么？",
+      "target_construct": "FINE_MOTOR | SAFETY_OPERATION",
+      "options": [
+        {
+          "key": "A",
+          "text": "刀刃伤到自己或旁边的人"
+        },
+        {
+          "key": "B",
+          "text": "下刀太深划伤箱内商品"
+        },
+        {
+          "key": "C",
+          "text": "拆箱速度较慢影响补货进度"
+        }
+      ],
+      "candidate_answer": "A",
+      "presentation": {
+        "type": "IMAGE_CARD",
+        "media_brief": "安全开箱刀、刀路与手部位置规范场景；刀具结构和安全动作必须清晰可核验",
+        "asset_ids": [],
+        "asset_status": "ASSET_REQUIRED",
+        "asset_requirements": [
+          "实拍或可信3D场景加程序化标注，禁止只靠AI生成模糊刀具结构",
+          "显示安全开箱刀、刀刃朝身体外侧、非持刀手不在刀路、纸箱位于稳定台面",
+          "不得显示朝身体切割、手压切割线、刀刃过度伸出或儿童接触刀具"
+        ]
+      },
+      "tools": {
+        "brief": null
+      },
+      "rubric": {
+        "criteria": [],
+        "anchors": null,
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": true,
+        "content_reviewer_recommendation": "SENSITIVE",
+        "content_reviewer_note": "内容可通过。技术/安全复核时应把本题标记为安全敏感，并在培训材料中加入刀刃方向、下刀深度、手部位置和停用破损刀具。",
+        "proposed_stop_conditions": "发现刀具破损/松动、刀刃无法回缩、受试者朝身体或他人方向切割、非持刀手进入刀路时立即停止。"
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "APPROVED",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "题目已按赫东安全与技术审核结论及修复稿 v1.0 重写，须重新完成内容审核。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 70,
+        "source_ref": null,
+        "based_on_question_id": "M2_SC_003",
+        "based_on_candidate_record_hash": "sha256:49a332636566da4710b9924d9bafc452f3ffbfa0b972aa6dc303618768abe0a1",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039",
+        "safety_technical_review_result_id": "job-skill-safety-tech-review-20260719031839",
+        "revision_spec": "doc/features/job-skill-shelver-pilot-13-question-revision-and-renderer-fix-v1.0.md"
+      },
+      "known_technical_gap": "required visual asset is not produced or bound; full content, safety and technical re-review required",
+      "review_level": "safety_critical",
+      "candidate_record_hash": "sha256:7064166ce026e140abd48af01e020a4341002af4aef72aedac3b631fb0ba2b9e"
+    },
+    {
+      "question_id": "M2_SC_005_V3",
+      "previous_question_id": "M2_SC_005_V2",
+      "question_version": 3,
+      "module": "M2",
+      "question_type": "SINGLE_CHOICE",
+      "source_status": "DRAFT",
+      "revision_status": "SAFETY_TECHNICAL_REVISION_APPLIED_AWAITING_FULL_REVIEW",
+      "prompt": "模拟工作日是2026年09月10日。同款商品有两个仍可正常销售的批次：批次A标注“保质期至2026年09月25日”，批次B标注“保质期至2026年10月10日”。上架时应怎样摆放？",
+      "target_construct": "RULE_EXECUTION",
+      "options": [
+        {
+          "key": "A",
+          "text": "批次A放在顾客先拿取的位置，批次B放在后面"
+        },
+        {
+          "key": "B",
+          "text": "批次B放在顾客先拿取的位置，批次A放在后面"
+        },
+        {
+          "key": "C",
+          "text": "两个批次混在一起，不核对到期日"
+        }
+      ],
+      "candidate_answer": "A",
+      "presentation": {
+        "type": "IMAGE_CARD",
+        "media_brief": "固定模拟工作日、同款商品双批次日期标签和顾客取货前后关系",
+        "asset_ids": [],
+        "asset_status": "ASSET_REQUIRED",
+        "asset_requirements": [
+          "程序化叠加模拟工作日与两件同款商品的“保质期至”日期",
+          "两个批次外观相同、日期清楚、均无过期或报损标记",
+          "明确顾客正常取货方向的前排和后排，不用含糊的上下或左右代替"
+        ]
+      },
+      "tools": {
+        "brief": null
+      },
+      "rubric": {
+        "criteria": [],
+        "anchors": null,
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": true,
+        "content_reviewer_recommendation": "SENSITIVE",
+        "content_reviewer_note": "“日期早/晚”没有说明是到货日期、生产日期还是到期日。建议给出两个清晰批次标签，并规定先核对到期日；旧批/较早到期批前移，新批后置。",
+        "proposed_stop_conditions": "模拟工作日与题干不一致、任一日期标签模糊、或任一批次在模拟工作日已过期时停止施测并更换候选数据/素材。"
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "AWAITING_RECONFIRMATION",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "题目已按赫东安全与技术审核结论及修复稿 v1.0 重写，须重新完成内容审核。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 72,
+        "source_ref": null,
+        "based_on_question_id": "M2_SC_005_V2",
+        "based_on_candidate_record_hash": "sha256:cd1284933c518e8175dcddf5d2160e4ef94e8ccef9a805f5f6aa9517e8c47c62",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039",
+        "safety_technical_review_result_id": "job-skill-safety-tech-review-20260719031839",
+        "revision_spec": "doc/features/job-skill-shelver-pilot-13-question-revision-and-renderer-fix-v1.0.md"
+      },
+      "known_technical_gap": "required visual asset is not produced or bound; full content, safety and technical re-review required",
+      "review_level": "safety_critical",
+      "candidate_record_hash": "sha256:c7e82d7b18835b9268cf472fbb50014387bb4c7543f889b7440f17a8bac5cf6a"
+    },
+    {
+      "question_id": "M2_OP_027_V2",
+      "previous_question_id": "M2_OP_027",
+      "question_version": 2,
+      "module": "M2",
+      "question_type": "OFFLINE_OPERATION",
+      "source_status": "DRAFT",
+      "revision_status": "REVISION_APPLIED_AWAITING_CONTENT_RECONFIRMATION",
+      "prompt": "在稳定台面上，徒手沿预设易撕开口安全拆开标准训练纸箱，平稳取出全部商品并整理纸箱。",
+      "target_construct": "安全拆箱实操",
+      "options": [],
+      "candidate_answer": null,
+      "presentation": {
+        "type": "OFFLINE_MATERIALS",
+        "media_brief": null,
+        "asset_ids": []
+      },
+      "tools": {
+        "brief": "统一规格轻型训练纸箱1箱；纸胶带或预设易撕开口；轻型、无玻璃内装训练商品；稳定台面"
+      },
+      "rubric": {
+        "criteria": [
+          {
+            "criterion_id": "r1",
+            "description": "徒手沿胶带端或预设开口安全打开纸箱"
+          },
+          {
+            "criterion_id": "r2",
+            "description": "商品全部平稳取出，无破损、跌落和遗漏"
+          },
+          {
+            "criterion_id": "r3",
+            "description": "不抛掷、不踩箱、不朝身体方向猛拉"
+          },
+          {
+            "criterion_id": "r4",
+            "description": "完成后整理纸箱和商品"
+          }
+        ],
+        "anchors": {
+          "0": "无法在规定方式下打开纸箱，或出现踩箱、抛掷、强拉导致商品跌落/破损等不安全行为；触发停止条件直接记0分。",
+          "1": "能打开纸箱并取出商品，但有漏取、商品跌落、箱体严重撕裂，或需一次以上动作提示；未触发安全停止条件。",
+          "2": "在稳定台面上徒手沿胶带或预设开口安全拆箱，商品全部平稳取出且无破损、无遗漏，过程无需提示。"
+        },
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": true,
+        "content_reviewer_recommendation": "REVIEW_REQUIRED",
+        "content_reviewer_note": "本题不得提供刀具。出现用牙咬、踩踏纸箱、猛拉朝向身体、商品泄漏或玻璃破裂时立即停止；箱体和内装物重量须预先限定。",
+        "proposed_stop_conditions": "本题不得提供刀具。出现用牙咬、踩踏纸箱、猛拉朝向身体、商品泄漏或玻璃破裂时立即停止；箱体和内装物重量须预先限定。"
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "RETURN_FOR_REVISION",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "可作为徒手拆箱题，但应统一箱型、胶带强度和内装物，补充不抛掷、不踩箱、不撕坏内装商品及整理纸箱等可观察动作。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 53,
+        "source_ref": "原题30",
+        "based_on_question_id": "M2_OP_027",
+        "based_on_candidate_record_hash": "sha256:39fd7d9383ac4f42732b2fa7072bbbec2fa8dcd9bfd1ed315bd32e923171f9d6",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039"
+      },
+      "known_technical_gap": "question prompt, tools and rubric anchors are not rendered",
+      "candidate_record_hash": "sha256:b8ad484b15ab1ab1b8161cba94d093fff6bd818def9376784fa32c0676614ae5"
+    },
+    {
+      "question_id": "M3_SC_001_V2",
+      "previous_question_id": "M3_SC_001",
+      "question_version": 2,
+      "module": "M3",
+      "question_type": "SINGLE_CHOICE",
+      "source_status": "DRAFT",
+      "revision_status": "REVISION_APPLIED_AWAITING_CONTENT_RECONFIRMATION",
+      "prompt": "某商品包装明确标注“保质期至2026年06月01日”。施测日期为2026年06月02日，正确判断是？",
+      "target_construct": "COGNITION",
+      "options": [
+        {
+          "key": "A",
+          "text": "商品已超过包装标注日期，应停止正常销售并按门店流程隔离处理"
+        },
+        {
+          "key": "B",
+          "text": "商品还可以正常销售到2026年06月30日"
+        },
+        {
+          "key": "C",
+          "text": "只要包装完好，就不需要核对日期"
+        }
+      ],
+      "candidate_answer": "A",
+      "presentation": {
+        "type": "IMAGE_CARD",
+        "media_brief": "明确到期日识别 R7",
+        "asset_ids": []
+      },
+      "tools": {
+        "brief": null
+      },
+      "rubric": {
+        "criteria": [],
+        "anchors": null,
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": false,
+        "content_reviewer_recommendation": "REVIEW_REQUIRED",
+        "content_reviewer_note": "存在异常引号，且“生产日期+12个月”并不能在未声明门店/标签计算口径时唯一推出A或B。“必须卖出”也不等同于保质期截止。建议直接给出“保质期至YYYY-MM-DD”再考判断。",
+        "proposed_stop_conditions": ""
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "RETURN_FOR_REVISION",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "存在异常引号，且“生产日期+12个月”并不能在未声明门店/标签计算口径时唯一推出A或B。“必须卖出”也不等同于保质期截止。建议直接给出“保质期至YYYY-MM-DD”再考判断。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 112,
+        "source_ref": null,
+        "based_on_question_id": "M3_SC_001",
+        "based_on_candidate_record_hash": "sha256:8633ff8f0cb993a524c68dbbf023bc17170dae86bb808766842635d9795fb62e",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039"
+      },
+      "known_technical_gap": null,
+      "candidate_record_hash": "sha256:9d71f2fc33b797912d86b7dc71cd996fc29b71c993fffaf860ada5a589a05e11"
+    },
+    {
+      "question_id": "M3_SC_005",
+      "previous_question_id": null,
+      "question_version": 1,
+      "module": "M3",
+      "question_type": "SINGLE_CHOICE",
+      "source_status": "DRAFT",
+      "revision_status": "CONTENT_APPROVED_V1_REUSED",
+      "prompt": "超市规定保质期不足15天属于临期商品。今天是2026年07月04日，以下哪件商品属于临期？",
+      "target_construct": "COGNITION",
+      "options": [
+        {
+          "key": "A",
+          "text": "保质期到2026年07月20日的饼干（还有16天）"
+        },
+        {
+          "key": "B",
+          "text": "保质期到2026年07月15日的酸奶（还有11天）"
+        },
+        {
+          "key": "C",
+          "text": "保质期到2026年08月10日的牛奶（还有37天）"
+        }
+      ],
+      "candidate_answer": "B",
+      "presentation": {
+        "type": "IMAGE_CARD",
+        "media_brief": "临期判别15天门槛R7",
+        "asset_ids": []
+      },
+      "tools": {
+        "brief": null
+      },
+      "rubric": {
+        "criteria": [],
+        "anchors": null,
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": false,
+        "content_reviewer_recommendation": "REVIEW_REQUIRED",
+        "content_reviewer_note": "题目自带临期门槛和基准日期，B为唯一答案。应把基准日期固定为测评环境日期或题干日期，避免随系统当天变化。",
+        "proposed_stop_conditions": ""
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "APPROVED",
+        "current_status": "APPROVED",
+        "review_note": "题目自带临期门槛和基准日期，B为唯一答案。应把基准日期固定为测评环境日期或题干日期，避免随系统当天变化。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 116,
+        "source_ref": null,
+        "based_on_question_id": "M3_SC_005",
+        "based_on_candidate_record_hash": "sha256:4394fb249f63ce9f1e208dd4f6cf6f3b4f7685dc48bfb7e33febc774c22d8a9a",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039"
+      },
+      "known_technical_gap": null,
+      "candidate_record_hash": "sha256:7e503aa45a1d3acb55e9c6d5d7885a97fa3948a860586b6146a80ca8c80b0b17"
+    },
+    {
+      "question_id": "M3_SC_019_V2",
+      "previous_question_id": "M3_SC_019",
+      "question_version": 2,
+      "module": "M3",
+      "question_type": "SINGLE_CHOICE",
+      "source_status": "DRAFT",
+      "revision_status": "REVISION_APPLIED_AWAITING_CONTENT_RECONFIRMATION",
+      "prompt": "发现达到门店临期标准的商品后，以下哪项处理最合适？",
+      "target_construct": "RULE_EXECUTION",
+      "options": [
+        {
+          "key": "A",
+          "text": "停止正常补货，隔离或醒目标识，登记并按门店流程报告处理"
+        },
+        {
+          "key": "B",
+          "text": "直接丢弃，不登记也不报告"
+        },
+        {
+          "key": "C",
+          "text": "继续留在正常货架，等下次补货时再处理"
+        }
+      ],
+      "candidate_answer": "A",
+      "presentation": {
+        "type": "IMAGE_CARD",
+        "media_brief": "临期商品识别、隔离、登记和报告流程 R7",
+        "asset_ids": []
+      },
+      "tools": {
+        "brief": null
+      },
+      "rubric": {
+        "criteria": [],
+        "anchors": null,
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": false,
+        "content_reviewer_recommendation": "REVIEW_REQUIRED",
+        "content_reviewer_note": "临期商品并非一律“移入临期专区等候上级处理”。建议改成“停止正常补货，隔离/醒目标识，登记并按门店流程报告处理”，且区分临期销售区与后台待处理区。",
+        "proposed_stop_conditions": ""
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "RETURN_FOR_REVISION",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "临期商品并非一律“移入临期专区等候上级处理”。建议改成“停止正常补货，隔离/醒目标识，登记并按门店流程报告处理”，且区分临期销售区与后台待处理区。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 130,
+        "source_ref": null,
+        "based_on_question_id": "M3_SC_019",
+        "based_on_candidate_record_hash": "sha256:689fb511285ee13b4cf6388d7287c7a01cc1fadedee18b63ab639e771f9df562",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039"
+      },
+      "known_technical_gap": null,
+      "candidate_record_hash": "sha256:7569ef8e80b9f14a316dde59717569fee35f5e930bedae85bc27e6caf9b7cb21"
+    },
+    {
+      "question_id": "M3_OP_043_V2",
+      "previous_question_id": "M3_OP_043",
+      "question_version": 2,
+      "module": "M3",
+      "question_type": "OFFLINE_OPERATION",
+      "source_status": "DRAFT",
+      "revision_status": "REVISION_APPLIED_AWAITING_CONTENT_RECONFIRMATION",
+      "prompt": "以模拟工作日2026年09月10日为准，从5件训练商品中找出1件当天到期品和1件已过期品，分别放入临期待处理区和报损隔离区。",
+      "target_construct": "临期/过期区分R7",
+      "options": [],
+      "candidate_answer": null,
+      "presentation": {
+        "type": "OFFLINE_MATERIALS",
+        "media_brief": null,
+        "asset_ids": []
+      },
+      "tools": {
+        "brief": "稳定迷你货架1组；5件标明“教具/不可食用”的训练商品；清晰的“保质期至”标签；临期待处理区标识；报损隔离区标识；密封标准答案卡"
+      },
+      "rubric": {
+        "criteria": [
+          {
+            "criterion_id": "r1",
+            "description": "独立识别保质期至2026年09月10日的当天到期训练品"
+          },
+          {
+            "criterion_id": "r2",
+            "description": "独立识别保质期至2026年09月09日的已过期训练品"
+          },
+          {
+            "criterion_id": "r3",
+            "description": "当天到期品放入临期待处理区，已过期品放入报损隔离区"
+          },
+          {
+            "criterion_id": "r4",
+            "description": "其余3件训练品不误判"
+          }
+        ],
+        "anchors": {
+          "0": "未找出当天到期品或已过期品，任一过期品仍留在正常货架/被放入可售临期区，或两类商品均放错区域。",
+          "1": "正确识别两件目标商品，但其中1件分区错误，或需一次日期判断提示后才完成；不得把过期品放入可售区域。",
+          "2": "依据固定模拟日期独立找出当天到期品和已过期品，分别放入预先定义的临期待处理区与报损隔离区，且其余3件不误判。"
+        },
+        "sealed_admin_config": {
+          "simulated_date": "2026-09-10",
+          "standard_mapping": {
+            "训练品A（保质期至2026-09-10）": "临期待处理区",
+            "训练品B（保质期至2026-09-09）": "报损隔离区",
+            "训练品C（保质期至2026-09-25）": "保持原位",
+            "训练品D（保质期至2026-10-10）": "保持原位",
+            "训练品E（保质期至2026-12-31）": "保持原位"
+          }
+        }
+      },
+      "safety": {
+        "source_sensitive": false,
+        "content_reviewer_recommendation": "REVIEW_REQUIRED",
+        "content_reviewer_note": "训练品必须明显标注“教具/不可食用”，真实过期食品不得再次进入销售或食用链；日期标签脱落、模糊时停止评分并更换材料。",
+        "proposed_stop_conditions": "训练品必须明显标注“教具/不可食用”，真实过期食品不得再次进入销售或食用链；日期标签脱落、模糊时停止评分并更换材料。"
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "RETURN_FOR_REVISION",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "“今天到期即放临期区”需先锁定门店口径；材料还缺固定模拟日期、清晰日期类型和5件商品的标准答案清单。建议把临期销售区改为后台临期待处理区以免混淆。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 96,
+        "source_ref": "原题43",
+        "based_on_question_id": "M3_OP_043",
+        "based_on_candidate_record_hash": "sha256:f1c77eb774cef2d100db56212405dc11d9bfb423713758605f9a13ef96151890",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039"
+      },
+      "known_technical_gap": "question prompt, tools and rubric anchors are not rendered",
+      "candidate_record_hash": "sha256:3d65d282352fe7d7aa9d69d65fad13be3fb21d075512933782444af657cd6eec"
+    },
+    {
+      "question_id": "M4_SC_001",
+      "previous_question_id": null,
+      "question_version": 1,
+      "module": "M4",
+      "question_type": "SINGLE_CHOICE",
+      "source_status": "DRAFT",
+      "revision_status": "CONTENT_APPROVED_V1_REUSED",
+      "prompt": "货物入库时，标准做法是？",
+      "target_construct": "RULE_EXECUTION",
+      "options": [
+        {
+          "key": "A",
+          "text": "随意堆放节省时间"
+        },
+        {
+          "key": "B",
+          "text": "按品类分区摆放重物下层轻物上层"
+        },
+        {
+          "key": "C",
+          "text": "按照到货顺序依次堆放"
+        }
+      ],
+      "candidate_answer": "B",
+      "presentation": {
+        "type": "IMAGE_CARD",
+        "media_brief": "入库基本规范R5",
+        "asset_ids": []
+      },
+      "tools": {
+        "brief": null
+      },
+      "rubric": {
+        "criteria": [],
+        "anchors": null,
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": false,
+        "content_reviewer_recommendation": "REVIEW_REQUIRED",
+        "content_reviewer_note": "可作为基础库位和重下轻上规则题通过；正式培训再补充批次、效期、离地离墙和通道要求。",
+        "proposed_stop_conditions": ""
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "APPROVED",
+        "current_status": "APPROVED",
+        "review_note": "可作为基础库位和重下轻上规则题通过；正式培训再补充批次、效期、离地离墙和通道要求。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 174,
+        "source_ref": null,
+        "based_on_question_id": "M4_SC_001",
+        "based_on_candidate_record_hash": "sha256:714ac74a48b1b89f86b69a05b7824f40a921c6614f30d74ac9c38b9dbb404078",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039"
+      },
+      "known_technical_gap": null,
+      "candidate_record_hash": "sha256:bcdb9930be256fd640cae22008801a2466c2edf3c594aacf962a266f093cf076"
+    },
+    {
+      "question_id": "M4_SC_003",
+      "previous_question_id": null,
+      "question_version": 1,
+      "module": "M4",
+      "question_type": "SINGLE_CHOICE",
+      "source_status": "DRAFT",
+      "revision_status": "CONTENT_APPROVED_V1_REUSED",
+      "prompt": "货物入库时必须核对哪两项？",
+      "target_construct": "RULE_EXECUTION",
+      "options": [
+        {
+          "key": "A",
+          "text": "商品数量是否与送货单一致+有无破损"
+        },
+        {
+          "key": "B",
+          "text": "商品价格是否正确+包装是否好看"
+        },
+        {
+          "key": "C",
+          "text": "品牌是否知名+颜色是否统一"
+        }
+      ],
+      "candidate_answer": "A",
+      "presentation": {
+        "type": "IMAGE_CARD",
+        "media_brief": "收货核对R12",
+        "asset_ids": []
+      },
+      "tools": {
+        "brief": null
+      },
+      "rubric": {
+        "criteria": [],
+        "anchors": null,
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": false,
+        "content_reviewer_recommendation": "REVIEW_REQUIRED",
+        "content_reviewer_note": "A覆盖数量一致性与外观完好两项核心基础核对。后续课程可另设品项/规格、批次效期和温控题，不必全部塞入本题。",
+        "proposed_stop_conditions": ""
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "APPROVED",
+        "current_status": "APPROVED",
+        "review_note": "A覆盖数量一致性与外观完好两项核心基础核对。后续课程可另设品项/规格、批次效期和温控题，不必全部塞入本题。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 176,
+        "source_ref": null,
+        "based_on_question_id": "M4_SC_003",
+        "based_on_candidate_record_hash": "sha256:e60fc3875e4ece2ddb8a75960d009f77fc53a75bdee258af861dac2d3d4a1a43",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039"
+      },
+      "known_technical_gap": null,
+      "candidate_record_hash": "sha256:dae1d91beb7387735d3816248d538ba44313bca6854a37388496065cb8e9fbf6"
+    },
+    {
+      "question_id": "M4_SC_005_V2",
+      "previous_question_id": "M4_SC_005",
+      "question_version": 2,
+      "module": "M4",
+      "question_type": "SINGLE_CHOICE",
+      "source_status": "DRAFT",
+      "revision_status": "REVISION_APPLIED_AWAITING_CONTENT_RECONFIRMATION",
+      "prompt": "收货时发现送货单写10箱，但某品项实际只到9箱，正确做法是？",
+      "target_construct": "RULE_EXECUTION",
+      "options": [
+        {
+          "key": "A",
+          "text": "暂停该品项核验并复点，在单据记录差异、报告负责人，再按授权处理"
+        },
+        {
+          "key": "B",
+          "text": "不记录差异，先签收9箱，月底再统一核对"
+        },
+        {
+          "key": "C",
+          "text": "默认停止整批所有品项收货，不再核验其他货物"
+        }
+      ],
+      "candidate_answer": "A",
+      "presentation": {
+        "type": "IMAGE_CARD",
+        "media_brief": "收货数量差异复核、留痕和授权处理 R12",
+        "asset_ids": []
+      },
+      "tools": {
+        "brief": null
+      },
+      "rubric": {
+        "criteria": [],
+        "anchors": null,
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": false,
+        "content_reviewer_recommendation": "REVIEW_REQUIRED",
+        "content_reviewer_note": "B的“停止收货”过度绝对。建议改为暂停该品项核验、复点、在单据上记录差异并报告负责人，按授权决定差异签收、拒收或补送；不要默认停止整批收货。",
+        "proposed_stop_conditions": ""
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "RETURN_FOR_REVISION",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "B的“停止收货”过度绝对。建议改为暂停该品项核验、复点、在单据上记录差异并报告负责人，按授权决定差异签收、拒收或补送；不要默认停止整批收货。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 178,
+        "source_ref": null,
+        "based_on_question_id": "M4_SC_005",
+        "based_on_candidate_record_hash": "sha256:ac08e25f39a9dd9dd9a3977b4dbeea98eb9fa9646ed71d05e92eaf954cab1223",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039"
+      },
+      "known_technical_gap": null,
+      "candidate_record_hash": "sha256:97169aefe9afee92571d0a7342a9fed4d45592be31f1fe95351bbd328f0e8317"
+    },
+    {
+      "question_id": "M4_OP_029_V2",
+      "previous_question_id": "M4_OP_029",
+      "question_version": 2,
+      "module": "M4",
+      "question_type": "OFFLINE_OPERATION",
+      "source_status": "DRAFT",
+      "revision_status": "REVISION_APPLIED_AWAITING_CONTENT_RECONFIRMATION",
+      "prompt": "按固定库位顺序清点货架上的12件目标商品，并把品类和总数量清楚地写在记录表上。",
+      "target_construct": "库房盘点基础实操",
+      "options": [],
+      "candidate_answer": null,
+      "presentation": {
+        "type": "OFFLINE_MATERIALS",
+        "media_brief": null,
+        "asset_ids": []
+      },
+      "tools": {
+        "brief": "稳定迷你货架1组；分散在固定库位的同类轻型训练商品12件；记录表；笔；密封标准答案卡"
+      },
+      "rubric": {
+        "criteria": [
+          {
+            "criterion_id": "r1",
+            "description": "按固定库位顺序逐件清点"
+          },
+          {
+            "criterion_id": "r2",
+            "description": "无漏数、无重复计数"
+          },
+          {
+            "criterion_id": "r3",
+            "description": "记录表中的品类和数量清楚可识别"
+          },
+          {
+            "criterion_id": "r4",
+            "description": "记录总数与标准答案12件一致"
+          }
+        ],
+        "anchors": {
+          "0": "记录数量与标准答案相差2件及以上，或未形成可识别记录；存在明显漏区、重复计数且未自查。",
+          "1": "完成清点和记录，但数量与标准答案相差1件，或经一次提示复点后才得到正确数量。",
+          "2": "按固定顺序逐件清点所有目标商品，无漏数、无重复，记录本上的品类/数量清楚且与标准答案一致，全程无需提示。"
+        },
+        "sealed_admin_config": {
+          "expected_count": 12,
+          "count_scope": "全部固定库位中的目标训练商品"
+        }
+      },
+      "safety": {
+        "source_sensitive": false,
+        "content_reviewer_recommendation": "REVIEW_REQUIRED",
+        "content_reviewer_note": "货架和商品需稳定、轻量且位于安全触达高度；禁止攀爬、钻入货架或搬动超出个人能力的箱件。",
+        "proposed_stop_conditions": "货架和商品需稳定、轻量且位于安全触达高度；禁止攀爬、钻入货架或搬动超出个人能力的箱件。"
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "RETURN_FOR_REVISION",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "任务可实施，但材料应补笔、固定商品数量与标准答案；指标要覆盖按库位顺序清点、避免重复/漏数以及记录可识别。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 154,
+        "source_ref": "原题29",
+        "based_on_question_id": "M4_OP_029",
+        "based_on_candidate_record_hash": "sha256:78b9a9bc9e7035d18c0afcb9155814b620e9b35a13b6760ab0913fd9bd1babcf",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039"
+      },
+      "known_technical_gap": "question prompt, tools and rubric anchors are not rendered",
+      "candidate_record_hash": "sha256:edc0db091a37c0f670a9129e65022d66f44042f9626027d5f786e5ce53a86c75"
+    },
+    {
+      "question_id": "M5_SC_001_V2",
+      "previous_question_id": "M5_SC_001",
+      "question_version": 2,
+      "module": "M5",
+      "question_type": "SINGLE_CHOICE",
+      "source_status": "DRAFT",
+      "revision_status": "SAFETY_TECHNICAL_REVISION_APPLIED_AWAITING_FULL_REVIEW",
+      "prompt": "发现货架旁地面有水渍，暂时不能马上清除，正确的完整做法是？",
+      "target_construct": "RULE_EXECUTION | SAFETY_OPERATION",
+      "options": [
+        {
+          "key": "A",
+          "text": "先守护并隔离水渍区域，阻止人员进入；再设置警示并通知清洁，确认地面干燥后复检撤除隔离"
+        },
+        {
+          "key": "B",
+          "text": "放一块“小心地滑”警示牌后离开，等清洁人员自己发现"
+        },
+        {
+          "key": "C",
+          "text": "自己绕开水渍继续理货，不处理也不报告"
+        }
+      ],
+      "candidate_answer": "A",
+      "presentation": {
+        "type": "IMAGE_CARD",
+        "media_brief": "水渍区域守护、顾客绕行、警示牌和隔离设施共同控制场景",
+        "asset_ids": [],
+        "asset_status": "ASSET_REQUIRED",
+        "asset_requirements": [
+          "显示工作人员在水渍外侧守护、顾客绕行、警示牌和隔离带或围挡",
+          "不得把只放警示牌后离开表现为正确操作",
+          "清楚显示水渍位置和人物动线"
+        ]
+      },
+      "tools": {
+        "brief": null
+      },
+      "rubric": {
+        "criteria": [],
+        "anchors": null,
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": true,
+        "content_reviewer_recommendation": "SENSITIVE",
+        "content_reviewer_note": "内容通过。技术/安全复核应将本题标记为安全敏感；现场口径可补充先守护/隔离区域，再取警示牌，避免离开时无人看守。",
+        "proposed_stop_conditions": "危险区域无法隔离、有人即将进入湿滑区、或清洁后仍未干燥时不得撤除警示和隔离。"
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "APPROVED",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "题目已按赫东安全与技术审核结论及修复稿 v1.0 重写，须重新完成内容审核。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 219,
+        "source_ref": null,
+        "based_on_question_id": "M5_SC_001",
+        "based_on_candidate_record_hash": "sha256:41cb5c998b05290728770438d549c4b075d41b5afb63d72bdf56224a7a18197a",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039",
+        "safety_technical_review_result_id": "job-skill-safety-tech-review-20260719031839",
+        "revision_spec": "doc/features/job-skill-shelver-pilot-13-question-revision-and-renderer-fix-v1.0.md"
+      },
+      "known_technical_gap": "required visual asset is not produced or bound; full content, safety and technical re-review required",
+      "review_level": "safety_critical",
+      "candidate_record_hash": "sha256:f6a8627976bcc32591c17dfcfe87f1674dd0e63af678946b0b4694884d6107f7"
+    },
+    {
+      "question_id": "M5_SC_002_V2",
+      "previous_question_id": "M5_SC_002",
+      "question_version": 2,
+      "module": "M5",
+      "question_type": "SINGLE_CHOICE",
+      "source_status": "DRAFT",
+      "revision_status": "SAFETY_TECHNICAL_REVISION_APPLIED_AWAITING_FULL_REVIEW",
+      "prompt": "发现货架支架松动，货架可能倒塌，正确的完整做法是？",
+      "target_construct": "SAFETY_OPERATION",
+      "options": [
+        {
+          "key": "A",
+          "text": "立即停止作业，疏离周围人员并封控危险区域，禁止自行扶正或取货，通知负责人处理"
+        },
+        {
+          "key": "B",
+          "text": "自己停止理货并通知负责人，但不阻止顾客进入该区域"
+        },
+        {
+          "key": "C",
+          "text": "先把货架上的商品取下来，再找东西临时支撑货架"
+        }
+      ],
+      "candidate_answer": "A",
+      "presentation": {
+        "type": "IMAGE_CARD",
+        "media_brief": "松动货架安全距离外封控、顾客绕行与通知负责人场景",
+        "asset_ids": [],
+        "asset_status": "ASSET_REQUIRED",
+        "asset_requirements": [
+          "显示人员在安全距离外封控通道、引导顾客绕行并通知负责人",
+          "只表现支架松动或明显倾斜风险，不制作真实倒塌",
+          "错误图不得成为可模仿的危险动作教程"
+        ]
+      },
+      "tools": {
+        "brief": null
+      },
+      "rubric": {
+        "criteria": [],
+        "anchors": null,
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": true,
+        "content_reviewer_recommendation": "SENSITIVE",
+        "content_reviewer_note": "内容通过。安全复核应标为安全敏感；现场还应封控危险区域，未经授权不得自行扶正或继续取货。",
+        "proposed_stop_conditions": "真实货架存在晃动或倾斜时不得用于施测；任何人试图进入危险区、扶正货架或取下商品时立即停止。"
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "APPROVED",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "题目已按赫东安全与技术审核结论及修复稿 v1.0 重写，须重新完成内容审核。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 220,
+        "source_ref": null,
+        "based_on_question_id": "M5_SC_002",
+        "based_on_candidate_record_hash": "sha256:f8249fe25a9479fbad00673c92619ecdaaf0a54399e094e30e1d52991a723218",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039",
+        "safety_technical_review_result_id": "job-skill-safety-tech-review-20260719031839",
+        "revision_spec": "doc/features/job-skill-shelver-pilot-13-question-revision-and-renderer-fix-v1.0.md"
+      },
+      "known_technical_gap": "required visual asset is not produced or bound; full content, safety and technical re-review required",
+      "review_level": "safety_critical",
+      "candidate_record_hash": "sha256:be30eb0d920892b1358c8afc6dfff981d2f2b11b4e5cd64702e76f69bcc8b01f"
+    },
+    {
+      "question_id": "M5_SC_009_V2",
+      "previous_question_id": "M5_SC_009",
+      "question_version": 2,
+      "module": "M5",
+      "question_type": "SINGLE_CHOICE",
+      "source_status": "DRAFT",
+      "revision_status": "SAFETY_TECHNICAL_REVISION_APPLIED_AWAITING_FULL_REVIEW",
+      "prompt": "独自工作时发现玻璃瓶打碎在顾客通道上，正确的完整做法是？",
+      "target_construct": "SAFETY_OPERATION",
+      "options": [
+        {
+          "key": "A",
+          "text": "先守护并封控区域、通知支援；按要求佩戴防护，用扫帚簸箕或夹具清理，放入防穿刺容器，检查无残片和泄漏后再解封"
+        },
+        {
+          "key": "B",
+          "text": "放一块警示牌后，用普通垃圾袋装碎玻璃并马上离开"
+        },
+        {
+          "key": "C",
+          "text": "徒手捡起大块玻璃，小碎片踢到货架下面"
+        }
+      ],
+      "candidate_answer": "A",
+      "presentation": {
+        "type": "IMAGE_CARD",
+        "media_brief": "仿真碎片封控、工具清理、防穿刺容器和清场复检场景",
+        "asset_ids": [],
+        "asset_status": "ASSET_REQUIRED",
+        "asset_requirements": [
+          "使用仿真透明塑料碎片，不使用真实碎玻璃",
+          "显示封控、扫帚簸箕或夹具、防穿刺硬质容器、防护用品和清场复检",
+          "错误图不出现血液、伤口或刺激性细节"
+        ]
+      },
+      "tools": {
+        "brief": null
+      },
+      "rubric": {
+        "criteria": [],
+        "anchors": null,
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": true,
+        "content_reviewer_recommendation": "SENSITIVE",
+        "content_reviewer_note": "内容通过。安全复核应标为安全敏感；专用工具建议明确为扫帚、簸箕/夹取工具及防割容器，并检查是否有遗漏碎片。",
+        "proposed_stop_conditions": "施测不得使用真实玻璃；受试者徒手接触仿真碎片、进入未封控区域，或现场出现真实破碎/泄漏时立即停止。"
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "APPROVED",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "题目已按赫东安全与技术审核结论及修复稿 v1.0 重写，须重新完成内容审核。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 227,
+        "source_ref": null,
+        "based_on_question_id": "M5_SC_009",
+        "based_on_candidate_record_hash": "sha256:0749a7b2bfd6bf8775eba6e33baad8263dd0d91351e75eb3d0e60ddbcaa73373",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039",
+        "safety_technical_review_result_id": "job-skill-safety-tech-review-20260719031839",
+        "revision_spec": "doc/features/job-skill-shelver-pilot-13-question-revision-and-renderer-fix-v1.0.md"
+      },
+      "known_technical_gap": "required visual asset is not produced or bound; full content, safety and technical re-review required",
+      "review_level": "safety_critical",
+      "candidate_record_hash": "sha256:4d5fa10b16f809dc060177e00a5447305c057ddd75e6645436fe601d63a1b297"
+    },
+    {
+      "question_id": "M5_OP_039_V2",
+      "previous_question_id": "M5_OP_039",
+      "question_version": 2,
+      "module": "M5",
+      "question_type": "OFFLINE_OPERATION",
+      "source_status": "DRAFT",
+      "revision_status": "REVISION_APPLIED_AWAITING_CONTENT_RECONFIRMATION",
+      "prompt": "发现模拟水渍后，依次完成警示隔离、通知指定人员、确认清洁干燥和复检撤牌。",
+      "target_construct": "安全隐患处置实操否决项",
+      "options": [],
+      "candidate_answer": null,
+      "presentation": {
+        "type": "OFFLINE_MATERIALS",
+        "media_brief": null,
+        "asset_ids": []
+      },
+      "tools": {
+        "brief": "防滑仿真水渍垫1张；小心地滑警示牌1个；可封闭的小型施测区域；通知对象卡；清洁完成确认卡"
+      },
+      "rubric": {
+        "criteria": [
+          {
+            "criterion_id": "r1",
+            "description": "立即警示并隔离模拟危险区域"
+          },
+          {
+            "criterion_id": "r2",
+            "description": "准确通知施测者指定的清洁人员或负责人"
+          },
+          {
+            "criterion_id": "r3",
+            "description": "保持警示直至收到清洁完成确认"
+          },
+          {
+            "criterion_id": "r4",
+            "description": "复检确认区域安全后撤牌"
+          }
+        ],
+        "anchors": {
+          "0": "未先警示隔离危险区域，直接跨越/踩入水渍，或在地面仍湿滑时撤牌；任一安全停止条件触发即记0分。",
+          "1": "完成警示、通知、确认、撤牌4步中的2至3步，或顺序基本正确但需一次提示；全过程未触发安全停止条件。",
+          "2": "发现后立即警示并隔离，准确通知指定人员，持续保持警示直至确认地面清洁干燥，复检后撤牌，4步顺序正确且无需提示。"
+        },
+        "sealed_admin_config": {
+          "notification_target": "由施测者扮演的清洁人员或负责人",
+          "real_water_forbidden": true
+        }
+      },
+      "safety": {
+        "source_sensitive": true,
+        "content_reviewer_recommendation": "REVIEW_REQUIRED",
+        "content_reviewer_note": "优先使用防滑仿真水渍垫或封闭小区域，不建议在受试者行走路径放真实水。若受试者进入湿滑区、搬牌时失稳或现场无法隔离，监督员立即停止。",
+        "proposed_stop_conditions": "优先使用防滑仿真水渍垫或封闭小区域，不建议在受试者行走路径放真实水。若受试者进入湿滑区、搬牌时失稳或现场无法隔离，监督员立即停止。"
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "RETURN_FOR_REVISION",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "题干要求4步，现有指标只评2步，无法判定闭环。建议用防滑仿真水渍垫替代真实水，补通知对象/话术、清洁完成确认和撤牌前复检。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 202,
+        "source_ref": "原题39",
+        "based_on_question_id": "M5_OP_039",
+        "based_on_candidate_record_hash": "sha256:72849591ae2f8e0c67315eb19ab9ebaf437e5cd3715f616905c0410dbb2b1904",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039"
+      },
+      "known_technical_gap": "question prompt, tools and rubric anchors are not rendered",
+      "candidate_record_hash": "sha256:c48c7314e2991a8e69ed9f914b62b88d969d2021f82cd9809b0bc784e2a2ccfe"
+    },
+    {
+      "question_id": "M6_SC_003_V2",
+      "previous_question_id": "M6_SC_003",
+      "question_version": 2,
+      "module": "M6",
+      "question_type": "SINGLE_CHOICE",
+      "source_status": "DRAFT",
+      "revision_status": "SAFETY_TECHNICAL_REVISION_APPLIED_AWAITING_FULL_REVIEW",
+      "prompt": "查看包装上的储存条件，以下哪件商品必须放入冷藏区？",
+      "target_construct": "COGNITION",
+      "options": [
+        {
+          "key": "A",
+          "text": "包装标注“2℃—6℃冷藏”的低温酸奶"
+        },
+        {
+          "key": "B",
+          "text": "包装标注“阴凉干燥处常温保存”的薯片"
+        },
+        {
+          "key": "C",
+          "text": "包装标注“常温保存”的洗衣液"
+        }
+      ],
+      "candidate_answer": "A",
+      "presentation": {
+        "type": "IMAGE_CARD",
+        "media_brief": "三张同时显示品名和储存条件的商品卡，低温酸奶明确标注2℃—6℃冷藏",
+        "asset_ids": [],
+        "asset_status": "ASSET_REQUIRED",
+        "asset_requirements": [
+          "三张商品卡同时显示品名和储存条件",
+          "储存文字与温度使用程序化文字叠加",
+          "不得使用常温酸奶包装冒充低温酸奶"
+        ]
+      },
+      "tools": {
+        "brief": null
+      },
+      "rubric": {
+        "criteria": [],
+        "anchors": null,
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": true,
+        "content_reviewer_recommendation": "SENSITIVE",
+        "content_reviewer_note": "在常见商品和标签说明前提下，B为唯一答案。正式素材应显示酸奶包装上的冷藏条件，避免把所有酸奶类型一概而论。",
+        "proposed_stop_conditions": "酸奶素材未清楚显示冷藏条件、温度文字不可辨认、或素材实际为常温酸奶时停止上线并更换素材。"
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "APPROVED",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "题目已按赫东安全与技术审核结论及修复稿 v1.0 重写，须重新完成内容审核。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 275,
+        "source_ref": null,
+        "based_on_question_id": "M6_SC_003",
+        "based_on_candidate_record_hash": "sha256:101deb2a5cbf315b39beb7f05374dbfb70b16ebb4abff570e9ca870086badee8",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039",
+        "safety_technical_review_result_id": "job-skill-safety-tech-review-20260719031839",
+        "revision_spec": "doc/features/job-skill-shelver-pilot-13-question-revision-and-renderer-fix-v1.0.md"
+      },
+      "known_technical_gap": "required visual asset is not produced or bound; full content, safety and technical re-review required",
+      "review_level": "assessment_critical",
+      "candidate_record_hash": "sha256:5eb5945be994128eb737f2229c92826f63a3f18e7f17a35876d9bb571e4d348f"
+    },
+    {
+      "question_id": "M6_SC_009_V2",
+      "previous_question_id": "M6_SC_009",
+      "question_version": 2,
+      "module": "M6",
+      "question_type": "SINGLE_CHOICE",
+      "source_status": "DRAFT",
+      "revision_status": "SAFETY_TECHNICAL_REVISION_APPLIED_AWAITING_FULL_REVIEW",
+      "prompt": "两件商品的外包装非常相似，归位前最可靠的核对方法是？",
+      "target_construct": "COGNITION | RULE_EXECUTION",
+      "options": [
+        {
+          "key": "A",
+          "text": "核对品名、规格和口味等文字信息，再用条码或商品编码与价签/系统记录确认"
+        },
+        {
+          "key": "B",
+          "text": "看包装颜色和原来摆放的位置判断"
+        },
+        {
+          "key": "C",
+          "text": "只看品牌名称，相同品牌就当作同一件商品"
+        }
+      ],
+      "candidate_answer": "A",
+      "presentation": {
+        "type": "IMAGE_CARD",
+        "media_brief": "同品牌相近配色、规格或口味不同的商品卡及可核对条码或商品编码",
+        "asset_ids": [],
+        "asset_status": "ASSET_REQUIRED",
+        "asset_requirements": [
+          "品名、规格、口味、条码或商品编码清晰可见",
+          "结构化文字与条码使用程序化生成或叠加",
+          "不能仅靠明显颜色差异分辨"
+        ]
+      },
+      "tools": {
+        "brief": null
+      },
+      "rubric": {
+        "criteria": [],
+        "anchors": null,
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": false,
+        "content_reviewer_recommendation": "NOT_SENSITIVE",
+        "content_reviewer_note": "B为唯一最佳答案。后续训练宜进一步要求核对品名、规格、口味和条码，不依赖包装颜色或原摆放位置。",
+        "proposed_stop_conditions": "无现场安全停止条件；素材缺少条码/商品编码、关键文字不可读或两件商品差异过于明显时不得上线。"
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "APPROVED",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "题目已按赫东安全与技术审核结论及修复稿 v1.0 重写，须重新完成内容审核。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 281,
+        "source_ref": null,
+        "based_on_question_id": "M6_SC_009",
+        "based_on_candidate_record_hash": "sha256:0490f1b0e8a9246c328f92e773b02fc03e8096e8eda9ba337ee19e8360e0d5f1",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039",
+        "safety_technical_review_result_id": "job-skill-safety-tech-review-20260719031839",
+        "revision_spec": "doc/features/job-skill-shelver-pilot-13-question-revision-and-renderer-fix-v1.0.md"
+      },
+      "known_technical_gap": "required visual asset is not produced or bound; full content, safety and technical re-review required",
+      "review_level": "assessment_critical",
+      "candidate_record_hash": "sha256:05afc3f8f32b5f01fe9380961653d916d06c93d2070a77f7ccc4cf21ae0ce3c4"
+    },
+    {
+      "question_id": "M6_SC_012_V2",
+      "previous_question_id": "M6_SC_012",
+      "question_version": 2,
+      "module": "M6",
+      "question_type": "SINGLE_CHOICE",
+      "source_status": "DRAFT",
+      "revision_status": "REVISION_APPLIED_AWAITING_CONTENT_RECONFIRMATION",
+      "prompt": "零售商品上的常见条形码主要起什么作用？",
+      "target_construct": "COGNITION",
+      "options": [
+        {
+          "key": "A",
+          "text": "承载商品编码，扫描后由系统调取对应商品资料"
+        },
+        {
+          "key": "B",
+          "text": "直接把商品的全部品名、规格、厂家和价格文字存进条纹中"
+        },
+        {
+          "key": "C",
+          "text": "只用于表示包装材料和外观颜色"
+        }
+      ],
+      "candidate_answer": "A",
+      "presentation": {
+        "type": "IMAGE_CARD",
+        "media_brief": "条形码、商品编码和系统资料关联关系",
+        "asset_ids": []
+      },
+      "tools": {
+        "brief": null
+      },
+      "rubric": {
+        "criteria": [],
+        "anchors": null,
+        "sealed_admin_config": null
+      },
+      "safety": {
+        "source_sensitive": false,
+        "content_reviewer_recommendation": "REVIEW_REQUIRED",
+        "content_reviewer_note": "B把条码说成直接包含品名/规格/厂家，不够准确。建议答案改为“识别一个贸易项目/商品编码，扫描后由系统调取对应商品资料”，并重写三个选项。",
+        "proposed_stop_conditions": ""
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "RETURN_FOR_REVISION",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "B把条码说成直接包含品名/规格/厂家，不够准确。建议答案改为“识别一个贸易项目/商品编码，扫描后由系统调取对应商品资料”，并重写三个选项。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 284,
+        "source_ref": null,
+        "based_on_question_id": "M6_SC_012",
+        "based_on_candidate_record_hash": "sha256:445b250d706dd28ce616d1742540cb5f136a7d27a9d9f33cffa0af88c2a2a4d8",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039"
+      },
+      "known_technical_gap": null,
+      "candidate_record_hash": "sha256:f226423685dd4b8be561e7c9ffa5730392fa7363d1b3e795e82fcde0e390b489"
+    },
+    {
+      "question_id": "M6_OP_035_V2",
+      "previous_question_id": "M6_OP_035",
+      "question_version": 2,
+      "module": "M6",
+      "question_type": "OFFLINE_OPERATION",
+      "source_status": "DRAFT",
+      "revision_status": "REVISION_APPLIED_AWAITING_CONTENT_RECONFIRMATION",
+      "prompt": "依据货架区域标识和标准映射，将6件轻型训练商品放回正确区域，并做到正面朝外、放置稳定。",
+      "target_construct": "商品归区实操R2",
+      "options": [],
+      "candidate_answer": null,
+      "presentation": {
+        "type": "OFFLINE_MATERIALS",
+        "media_brief": null,
+        "asset_ids": []
+      },
+      "tools": {
+        "brief": "稳定迷你货架1组；饮料、零食、日化3个清晰区域标识；6件轻型训练商品；密封标准映射卡"
+      },
+      "rubric": {
+        "criteria": [
+          {
+            "criterion_id": "r1",
+            "description": "6件训练商品全部放入标准映射指定区域"
+          },
+          {
+            "criterion_id": "r2",
+            "description": "无错放和遗漏"
+          },
+          {
+            "criterion_id": "r3",
+            "description": "商品正面朝外"
+          },
+          {
+            "criterion_id": "r4",
+            "description": "商品放置稳定，重物不在高位"
+          }
+        ],
+        "anchors": {
+          "0": "6件中有3件及以上错区，或出现危险放置（重物高位、商品不稳易坠落），未形成基本归区结果。",
+          "1": "6件中有1至2件错区，或虽全部归区但有倒放、反面朝外、不稳定等1至2处陈列错误；经一次提示后完成也记1分。",
+          "2": "6件全部按标准映射放入正确区域，无错放，均正面朝外、放置稳定并符合区域内基本陈列要求，全程无需提示。"
+        },
+        "sealed_admin_config": {
+          "standard_mapping": {
+            "训练瓶装水、训练盒装饮料": "饮料区",
+            "训练饼干、训练薯片": "零食区",
+            "训练洗衣液、训练纸巾": "日化区"
+          }
+        }
+      },
+      "safety": {
+        "source_sensitive": false,
+        "content_reviewer_recommendation": "REVIEW_REQUIRED",
+        "content_reviewer_note": "使用轻型训练商品和稳定货架；重物不得设置在高位，禁止攀爬或把商品抛入货架。",
+        "proposed_stop_conditions": "使用轻型训练商品和稳定货架；重物不得设置在高位，禁止攀爬或把商品抛入货架。"
+      },
+      "content_review": {
+        "reviewer": "陈晓青",
+        "reviewed_date": "2026-07-19",
+        "prior_conclusion": "RETURN_FOR_REVISION",
+        "current_status": "AWAITING_RECONFIRMATION",
+        "review_note": "任务可实施，但必须提供6件商品与货架区域的标准映射、清晰区域标识及摆放规则；当前r1与r2实质重复，需加入正面、稳定和位置要求。"
+      },
+      "provenance": {
+        "source_file": "专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+        "source_row": 259,
+        "source_ref": "原题35",
+        "based_on_question_id": "M6_OP_035",
+        "based_on_candidate_record_hash": "sha256:11f5afcabb6f268b5b7a7cc0ef737f7ef2aa9169d1322a47853c20f3c6f0a256",
+        "content_review_result_id": "job-skill-review-2026-07-19-20260719020039"
+      },
+      "known_technical_gap": "question prompt, tools and rubric anchors are not rendered",
+      "candidate_record_hash": "sha256:5e4f3dff9c4f3dbde45ebe74e99ff5cb38f70a90e38dacf2b9488e6cdc2b5a99"
+    }
+  ]
+}

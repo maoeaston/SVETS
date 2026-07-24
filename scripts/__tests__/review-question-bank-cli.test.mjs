@@ -18,6 +18,7 @@ function getSqlJs() {
 function buildTrueFalseRow(overrides = {}) {
   return {
     question_id: 'Q_BASE_SAFETY_OPERATION_TF_001',
+    bank_domain: 'BASE_ABILITY',
     module_type: 'SAFETY_OPERATION',
     question_type: 'TRUE_FALSE',
     status: 'DRAFT',
@@ -61,6 +62,7 @@ async function createTempDb() {
 
     CREATE TABLE question_bank (
       question_id TEXT PRIMARY KEY,
+      bank_domain TEXT NOT NULL,
       module_type TEXT NOT NULL,
       item_usage TEXT NOT NULL DEFAULT 'SCORED_ITEM',
       question_type TEXT NOT NULL,
@@ -82,6 +84,7 @@ function seedReviewRows(db) {
   const insertQuestionSql = `
     INSERT INTO question_bank (
       question_id,
+      bank_domain,
       module_type,
       question_type,
       status,
@@ -90,13 +93,14 @@ function seedReviewRows(db) {
       content_json,
       scoring_rule_json
     ) VALUES (
-      ?, ?, ?, ?, ?, ?, ?, ?
+      ?, ?, ?, ?, ?, ?, ?, ?, ?
     )
   `
 
   const insertQuestion = (row) =>
     db.run(insertQuestionSql, [
       row.question_id,
+      row.bank_domain,
       row.module_type,
       row.question_type,
       row.status,
@@ -232,5 +236,31 @@ describe('review-question-bank CLI', () => {
       { question_id: 'Q_BASE_SAFETY_OPERATION_TF_002', status: 'DRAFT' },
       { question_id: 'Q_BASE_SAFETY_OPERATION_TF_003', status: 'DRAFT' }
     ])
+  })
+
+  it('JOB_SPECIFIC 即使逐题合格，也会被阶段四全局门禁阻止激活', async () => {
+    const { db, dbPath, dir } = await createTempDb()
+    const row = buildTrueFalseRow({
+      question_id: 'M1_TF_TEST_V2',
+      bank_domain: 'JOB_SPECIFIC',
+      media_asset_id: null
+    })
+    db.run(`INSERT INTO question_bank (
+      question_id, bank_domain, module_type, question_type, status,
+      media_asset_id, tool_asset_ids_json, content_json, scoring_rule_json
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, [
+      row.question_id, row.bank_domain, row.module_type, row.question_type, row.status,
+      row.media_asset_id, row.tool_asset_ids_json, row.content_json, row.scoring_rule_json
+    ])
+    persistDb(db, dbPath)
+    db.close()
+    const { runQuestionBankReviewCli } = await loadCliModule()
+
+    await expect(runQuestionBankReviewCli([
+      '--db', dbPath,
+      '--activate',
+      '--report', join(dir, 'job-report.json')
+    ], createRecorder())).rejects.toThrow(/PILOT_GATE_PENDING.*ASSET_DELIVERY_INCOMPLETE/)
+    expect(await readStatuses(dbPath)).toEqual([{ question_id: 'M1_TF_TEST_V2', status: 'DRAFT' }])
   })
 })

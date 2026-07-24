@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xuancan.example/schemas/job-skill-shelver-pilot-safety-technical-review-result-v1.schema.json",
+  "title": "超市理货员 Pilot 安全与技术审核结果 v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "result_id",
+    "status",
+    "package",
+    "strategy",
+    "reviewer",
+    "summary",
+    "questions"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "job-skill-safety-technical-review-result-v1"
+    },
+    "result_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "const": "SUBMITTED"
+    },
+    "package": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package_id",
+        "package_version",
+        "manifest_id",
+        "manifest_version"
+      ],
+      "properties": {
+        "package_id": {
+          "const": "job-skill-shelver-pilot-safety-technical-review-packet-v2"
+        },
+        "package_version": {
+          "const": 2
+        },
+        "manifest_id": {
+          "const": "strategy_job_skill_shelver_v1@2-pilot-r1"
+        },
+        "manifest_version": {
+          "const": 2
+        }
+      }
+    },
+    "strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strategy_id",
+        "strategy_version"
+      ],
+      "properties": {
+        "strategy_id": {
+          "const": "strategy_job_skill_shelver_v1"
+        },
+        "strategy_version": {
+          "const": 2
+        }
+      }
+    },
+    "reviewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "roles",
+        "reviewed_date",
+        "submitted_at"
+      ],
+      "properties": {
+        "name": {
+          "const": "赫东"
+        },
+        "roles": {
+          "type": "array",
+          "const": [
+            "SAFETY_REVIEWER",
+            "TECHNICAL_REVIEWER"
+          ]
+        },
+        "reviewed_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "submitted_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total",
+        "technical_pass",
+        "technical_return",
+        "safety_pass",
+        "safety_return",
+        "sensitive",
+        "not_sensitive",
+        "content_reconfirmation_pending"
+      ],
+      "properties": {
+        "total": {
+          "const": 24
+        },
+        "technical_pass": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 24
+        },
+        "technical_return": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 24
+        },
+        "safety_pass": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 24
+        },
+        "safety_return": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 24
+        },
+        "sensitive": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 24
+        },
+        "not_sensitive": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 24
+        },
+        "content_reconfirmation_pending": {
+          "const": 13
+        }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 24,
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "question_id",
+          "question_version",
+          "candidate_record_hash",
+          "renderer_review",
+          "data_contract_review",
+          "material_tool_review",
+          "technical_conclusion",
+          "safety_sensitive_decision",
+          "safety_review",
+          "safety_conclusion",
+          "stop_conditions",
+          "technical_note",
+          "safety_note"
+        ],
+        "properties": {
+          "question_id": {
+            "type": "string",
+            "pattern": "^M[1-6]_(SC|OP)_[0-9]{3}(_V[2-9][0-9]*)?$"
+          },
+          "question_version": {
+            "type": "integer",
+            "enum": [
+              1,
+              2
+            ]
+          },
+          "candidate_record_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "renderer_review": {
+            "enum": [
+              "PASS",
+              "RETURN"
+            ]
+          },
+          "data_contract_review": {
+            "enum": [
+              "PASS",
+              "RETURN"
+            ]
+          },
+          "material_tool_review": {
+            "enum": [
+              "PASS",
+              "RETURN"
+            ]
+          },
+          "technical_conclusion": {
+            "enum": [
+              "PASS",
+              "RETURN_FOR_REVISION"
+            ]
+          },
+          "safety_sensitive_decision": {
+            "enum": [
+              "SENSITIVE",
+              "NOT_SENSITIVE"
+            ]
+          },
+          "safety_review": {
+            "enum": [
+              "PASS",
+              "RETURN"
+            ]
+          },
+          "safety_conclusion": {
+            "enum": [
+              "PASS",
+              "RETURN_FOR_REVISION"
+            ]
+          },
+          "stop_conditions": {
+            "type": "string",
+            "minLength": 1
+          },
+          "technical_note": {
+            "type": "string",
+            "minLength": 1
+          },
+          "safety_note": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

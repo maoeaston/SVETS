@@ -2,33 +2,55 @@ import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import { isAbsolute, join, normalize } from 'node:path'
 import { mapImportRow } from './question-bank-import.mjs'
+import { expectedAnswer, loadRetainedQuestions } from './job-skill-delivery-contract.mjs'
 
 const REQUIRED_GATE_NAMES = ['technical', 'visual', 'vocational', 'special_education', 'assessment']
 const LIFECYCLE_VALUES = new Set(['planned', 'generated', 'composited', 'reviewing', 'approved', 'retired'])
-const CATEGORY_VALUES = new Set(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'REFERENCE'])
+const CATEGORY_VALUES = new Set(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'DELIVERY', 'REFERENCE'])
 const PRIORITY_VALUES = new Set(['P0', 'P1', 'P2', 'REFERENCE'])
 const ASSET_TYPE_VALUES = new Set([
   'product_photo', 'scene', 'damaged', 'icon_svg', 'aac_svg', 'emotion_svg', 'character',
   'video', 'bg', 'step_illustration', 'avatar', 'app_icon', 'reference', 'software_task',
-  'tool_card', 'process_strip'
+  'tool_card', 'process_strip', 'answer_image', 'role_play_script', 'audio',
+  'offline_setup_guide', 'sealed_config'
 ])
-const ASSET_ROLE_VALUES = new Set(['QUESTION_MEDIA', 'UI_ASSET', 'TOOL_CHECKLIST', 'OTHER'])
+const ASSET_ROLE_VALUES = new Set([
+  'QUESTION_MEDIA', 'UI_ASSET', 'TOOL_CHECKLIST', 'ROLE_PLAY_SCRIPT',
+  'SEALED_ADMIN_CONFIG', 'OFFLINE_SETUP_GUIDE', 'OTHER'
+])
 const USAGE_MODE_VALUES = new Set(['training', 'assessment', 'both', 'system', 'production'])
-const DELIVERY_FORMAT_VALUES = new Set(['png', 'webp', 'svg', 'css', 'mp4'])
-const PRODUCTION_METHOD_VALUES = new Set(['ai_direct', 'ai_plus_overlay', 'programmatic', 'composite'])
+const DELIVERY_FORMAT_VALUES = new Set(['png', 'webp', 'svg', 'css', 'mp4', 'mp3', 'json', 'pdf'])
+const PRODUCTION_METHOD_VALUES = new Set(['ai_direct', 'ai_plus_overlay', 'programmatic', 'composite', 'authored'])
 const REVIEW_LEVEL_VALUES = new Set(['standard', 'assessment_critical', 'safety_critical'])
 const GATE_STATUS_VALUES = new Set(['pending', 'passed', 'rejected', 'waived', 'revision_required'])
 const REVIEWER_KIND_VALUES = new Set(['human', 'script', 'ai_advisory'])
 const IMAGE_FALLBACK_REASONS = ['primary_unavailable', 'manual_override']
 const IMAGE_PARAM_KEYS = new Set(['size', 'resolution', 'n'])
 const VIDEO_PARAM_KEYS = new Set(['size', 'resolution', 'duration', 'generate_audio'])
-const EXPECTED_COUNTS = { A: 68, B: 14, C: 32, D: 11, E: 30, F: 52, G: 24, REFERENCE: 6 }
+const EXPECTED_COUNTS = { A: 68, B: 14, C: 32, D: 11, E: 30, F: 52, G: 24, DELIVERY: 33, REFERENCE: 6 }
+const ASSET_MANIFEST_VERSION = '0.5.0'
+const ASSET_PLAN_VERSION = 'v1.3.0-298-runtime-authority+delivery-lock-v1'
+const QUESTION_AUTHORITY_FIELDS = new Set([
+  'job_skill_runtime_authority_path',
+  'job_skill_runtime_status',
+  'job_skill_question_total',
+  'phase4_gate_path',
+  'phase4_gate_status',
+  'delivery_lock_path',
+  'offline_toolkit_manifest_path',
+  'offline_toolkit_status',
+  'binding_policy',
+  'activation_policy'
+])
 const MIME_BY_FORMAT = {
   png: 'image/png',
   webp: 'image/webp',
   svg: 'image/svg+xml',
   css: 'text/css',
-  mp4: 'video/mp4'
+  mp4: 'video/mp4',
+  mp3: 'audio/mpeg',
+  json: 'application/json',
+  pdf: 'application/pdf'
 }
 
 function isSafeRelativePath(value) {
@@ -41,8 +63,14 @@ function fileSha256(path) {
   return createHash('sha256').update(readFileSync(path)).digest('hex')
 }
 
+function sourceQuestionId(questionId) {
+  return typeof questionId === 'string' ? questionId.replace(/_V\d+$/, '') : questionId
+}
+
 function loadQuestionContracts(projectRoot) {
-  const contracts = new Map()
+  const sourceContracts = new Map()
+  const currentContracts = new Map()
+  const sourceToCurrent = new Map()
   const jobSourcePath = join(
     projectRoot,
     'doc',
@@ -52,18 +80,38 @@ function loadQuestionContracts(projectRoot) {
   const rawRows = JSON.parse(readFileSync(jobSourcePath, 'utf8'))
   for (const rawRow of rawRows) {
     const row = mapImportRow(rawRow)
-    contracts.set(row.question_id, {
+    sourceContracts.set(row.question_id, {
       questionType: row.question_type,
       expectedAnswer: row.scoring_rule_json.correct_answer ?? null
+    })
+  }
+
+  const { retained } = loadRetainedQuestions(projectRoot)
+  for (const question of retained) {
+    sourceContracts.set(question.source_question_id, {
+      questionType: question.question_type,
+      expectedAnswer: expectedAnswer(question)
     })
   }
 
   const baseSqlPath = join(projectRoot, 'doc', 'features', 'question-bank-import-base-ability-v02.sql')
   const baseSql = readFileSync(baseSqlPath, 'utf8')
   for (const match of baseSql.matchAll(/VALUES\('((?:GA-[A-Z0-9-]+|Q_BASE_[A-Z0-9_]+))'/g)) {
-    contracts.set(match[1], { questionType: null, expectedAnswer: null })
+    sourceContracts.set(match[1], { questionType: null, expectedAnswer: null })
+    currentContracts.set(match[1], { sourceQuestionId: match[1], runtimeStatus: 'DRAFT_BASE_ABILITY' })
   }
-  return contracts
+
+  const runtimeAuthorityPath = join(projectRoot, 'doc', 'features', 'job-skill-shelver-runtime-authority-v1.json')
+  const runtimeAuthority = JSON.parse(readFileSync(runtimeAuthorityPath, 'utf8'))
+  for (const question of runtimeAuthority.questions ?? []) {
+    currentContracts.set(question.current_question_id, {
+      sourceQuestionId: question.source_question_id,
+      runtimeStatus: question.runtime_status
+    })
+    sourceToCurrent.set(question.source_question_id, question.current_question_id)
+  }
+
+  return { sourceContracts, currentContracts, sourceToCurrent }
 }
 
 export function validateVisualAssetManifest(manifest, {
@@ -74,9 +122,44 @@ export function validateVisualAssetManifest(manifest, {
   const errors = []
   const warnings = []
   const assets = Array.isArray(manifest?.assets) ? manifest.assets : []
-  if (manifest?.version !== '0.3.1') errors.push('manifest.version must be 0.3.1')
-  if (manifest?.plan_version !== 'v1.2.4-video-sop') {
-    errors.push('manifest.plan_version must be v1.2.4-video-sop')
+  if (manifest?.version !== ASSET_MANIFEST_VERSION) {
+    errors.push(`manifest.version must be ${ASSET_MANIFEST_VERSION}`)
+  }
+  if (manifest?.plan_version !== ASSET_PLAN_VERSION) {
+    errors.push(`manifest.plan_version must be ${ASSET_PLAN_VERSION}`)
+  }
+  if (!manifest?.question_authority || typeof manifest.question_authority !== 'object') {
+    errors.push('manifest.question_authority is required')
+  } else {
+    const authority = manifest.question_authority
+    for (const key of Object.keys(authority)) {
+      if (!QUESTION_AUTHORITY_FIELDS.has(key)) errors.push(`manifest.question_authority has unknown field ${key}`)
+    }
+    if (authority.job_skill_runtime_status !== 'DRAFT_COMPILED_NOT_ACTIVATABLE') {
+      errors.push('manifest.question_authority.job_skill_runtime_status must be DRAFT_COMPILED_NOT_ACTIVATABLE')
+    }
+    if (authority.job_skill_question_total !== 298) {
+      errors.push('manifest.question_authority.job_skill_question_total must be 298')
+    }
+    if (authority.phase4_gate_status !== 'BLOCKED_ASSET_DELIVERY_AND_PILOT_GATE') {
+      errors.push('manifest.question_authority.phase4_gate_status must be BLOCKED_ASSET_DELIVERY_AND_PILOT_GATE')
+    }
+    if (authority.offline_toolkit_status !== 'LOCKED_FOR_PRODUCTION') {
+      errors.push('manifest.question_authority.offline_toolkit_status must be LOCKED_FOR_PRODUCTION')
+    }
+    if (projectRoot) {
+      for (const pathField of [
+        'job_skill_runtime_authority_path',
+        'phase4_gate_path',
+        'delivery_lock_path',
+        'offline_toolkit_manifest_path'
+      ]) {
+        const relPath = authority[pathField]
+        if (!isSafeRelativePath(relPath) || !existsSync(join(projectRoot, relPath))) {
+          errors.push(`manifest.question_authority.${pathField} must point to an existing repo-relative file`)
+        }
+      }
+    }
   }
   if (assets.length === 0) errors.push('manifest.assets must contain at least one asset')
 
@@ -123,6 +206,12 @@ export function validateVisualAssetManifest(manifest, {
     if (!Array.isArray(item.question_ids) || new Set(item.question_ids).size !== item.question_ids.length) {
       errors.push(`${item.asset_id}: question_ids must be a unique array`)
     }
+    if (!Array.isArray(item.current_question_ids) || new Set(item.current_question_ids).size !== item.current_question_ids.length) {
+      errors.push(`${item.asset_id}: current_question_ids must be a unique array`)
+    }
+    if (item.answer_contract_hash !== null && !/^sha256:[a-f0-9]{64}$/.test(item.answer_contract_hash ?? '')) {
+      errors.push(`${item.asset_id}: answer_contract_hash must be a prefixed SHA-256 hash or null`)
+    }
     if (!Array.isArray(item.fallback_allowed_when)) {
       errors.push(`${item.asset_id}: fallback_allowed_when must be an array`)
     }
@@ -135,8 +224,9 @@ export function validateVisualAssetManifest(manifest, {
     }
     if (!Array.isArray(item.reference_asset_ids)) {
       errors.push(`${item.asset_id}: reference_asset_ids must be an array`)
-    } else if (item.category !== 'REFERENCE' && item.reference_asset_ids.length === 0) {
-      errors.push(`${item.asset_id}: non-reference asset must cite at least one core reference asset`)
+    } else if (['ai_direct', 'ai_plus_overlay', 'composite'].includes(item.production_method)
+      && item.category !== 'REFERENCE' && item.reference_asset_ids.length === 0) {
+      errors.push(`${item.asset_id}: AI delivery asset must cite at least one core reference asset`)
     }
     if (item.runtime_path !== null) {
       if (!isSafeRelativePath(item.runtime_path)) errors.push(`${item.asset_id}: runtime_path must be repo-relative`)
@@ -303,10 +393,11 @@ export function validateVisualAssetManifest(manifest, {
   }
 
   if (projectRoot) {
-    const questions = loadQuestionContracts(projectRoot)
+    const { sourceContracts, currentContracts, sourceToCurrent } = loadQuestionContracts(projectRoot)
     for (const item of assets) {
+      const expectedCurrentIds = []
       for (const questionId of item.question_ids ?? []) {
-        const contract = questions.get(questionId)
+        const contract = sourceContracts.get(questionId)
         if (!contract) {
           errors.push(`${item.asset_id}: question_id not found in current question contracts: ${questionId}`)
         } else if (item.expected_answer !== null && contract.expectedAnswer !== item.expected_answer) {
@@ -314,6 +405,23 @@ export function validateVisualAssetManifest(manifest, {
             `${item.asset_id}: expected_answer ${JSON.stringify(item.expected_answer)} differs from question ${questionId} (${JSON.stringify(contract.expectedAnswer)})`
           )
         }
+        expectedCurrentIds.push(sourceToCurrent.get(sourceQuestionId(questionId)) ?? questionId)
+      }
+      for (const currentQuestionId of item.current_question_ids ?? []) {
+        if (!currentContracts.has(currentQuestionId)) {
+          errors.push(`${item.asset_id}: current_question_id not found in runtime question contracts: ${currentQuestionId}`)
+        }
+      }
+      const uniqueExpectedCurrentIds = [...new Set(expectedCurrentIds)].sort()
+      const actualCurrentIds = [...(item.current_question_ids ?? [])].sort()
+      if ((item.question_ids?.length ?? 0) > 0) {
+        if (JSON.stringify(actualCurrentIds) !== JSON.stringify(uniqueExpectedCurrentIds)) {
+          errors.push(
+            `${item.asset_id}: current_question_ids must exactly match question_ids mapped through current runtime authority`
+          )
+        }
+      } else if (actualCurrentIds.length > 0) {
+        errors.push(`${item.asset_id}: current_question_ids must be empty when question_ids is empty`)
       }
     }
   } else {
@@ -351,7 +459,11 @@ export function approvedAssetsToResourceRows(manifest, projectRoot) {
       const fileSize = statSync(filePath).size
       return {
         asset_id: item.asset_id,
-        asset_type: item.delivery_format === 'mp4' ? 'VIDEO' : 'IMAGE',
+        asset_type: item.delivery_format === 'mp4' ? 'VIDEO'
+          : item.delivery_format === 'mp3' ? 'AUDIO'
+            : item.delivery_format === 'json' ? 'JSON'
+              : item.delivery_format === 'pdf' ? 'PDF'
+                : 'IMAGE',
         asset_role: item.asset_role,
         app_uri: `app://asset/${item.asset_id}`,
         local_path: item.runtime_path,
@@ -367,11 +479,16 @@ export function approvedAssetsToResourceRows(manifest, projectRoot) {
 }
 
 export function buildVisualAssetResourceSql(rows, isoTimestamp) {
-  const managedRoles = "'QUESTION_MEDIA', 'UI_ASSET', 'TOOL_CHECKLIST'"
+  const managedRoles = "'QUESTION_MEDIA', 'UI_ASSET', 'TOOL_CHECKLIST', 'ROLE_PLAY_SCRIPT', 'SEALED_ADMIN_CONFIG', 'OFFLINE_SETUP_GUIDE'"
   const approvedIds = rows.map((row) => sqlStr(row.asset_id))
   const retireClause = approvedIds.length > 0 ? `AND asset_id NOT IN (${approvedIds.join(', ')})` : ''
   const statements = [
     'BEGIN;',
+    'CREATE TEMP TABLE IF NOT EXISTS _asset_seed_hash_guard (conflict_count INTEGER NOT NULL CHECK (conflict_count = 0));',
+    'DELETE FROM _asset_seed_hash_guard;',
+    rows.length > 0
+      ? `INSERT INTO _asset_seed_hash_guard (conflict_count) SELECT COUNT(*) FROM asset_resource WHERE ${rows.map((row) => `(asset_id = ${sqlStr(row.asset_id)} AND file_hash <> ${sqlStr(row.file_hash)})`).join(' OR ')};`
+      : 'INSERT INTO _asset_seed_hash_guard (conflict_count) VALUES (0);',
     `UPDATE asset_resource
 SET status = 'DEPRECATED', updated_at = datetime('now')
 WHERE asset_role IN (${managedRoles})
@@ -404,6 +521,7 @@ ON CONFLICT(asset_id) DO UPDATE SET
   last_verified_at = excluded.last_verified_at,
   updated_at = datetime('now');`)
   }
+  statements.push('DROP TABLE _asset_seed_hash_guard;')
   statements.push('COMMIT;')
   return statements.join('\n')
 }

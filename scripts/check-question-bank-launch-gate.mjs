@@ -23,6 +23,7 @@ function parseArgs(argv) {
   const args = {
     dbPath: null,
     jobCode: 'SUPERMARKET_SHELVER',
+    bankDomain: 'BASE_ABILITY',
     reportPath: null
   }
 
@@ -34,6 +35,10 @@ function parseArgs(argv) {
     }
     if (token === '--job') {
       args.jobCode = argv[++i]
+      continue
+    }
+    if (token === '--bank') {
+      args.bankDomain = argv[++i]
       continue
     }
     if (token === '--report') {
@@ -66,13 +71,15 @@ function queryAll(db, sql) {
   return rows
 }
 
-function loadQuestionBankRows(db, jobCode) {
+function loadQuestionBankRows(db, jobCode, bankDomain) {
   const escapedJobCode = String(jobCode).replace(/'/g, "''")
+  const escapedBankDomain = String(bankDomain).replace(/'/g, "''")
   return queryAll(
     db,
-    `SELECT question_id, job_code, module_type, question_type, status, content_json
+    `SELECT question_id, job_code, bank_domain, module_type, question_type, status, content_json
      FROM question_bank
      WHERE job_code = '${escapedJobCode}'
+       AND bank_domain = '${escapedBankDomain}'
      ORDER BY question_id`
   )
 }
@@ -123,14 +130,15 @@ export async function runQuestionBankLaunchGateCli(
   const db = new SQL.Database(readFileSync(dbPath))
 
   try {
-    const rows = loadQuestionBankRows(db, args.jobCode)
+    const rows = loadQuestionBankRows(db, args.jobCode, args.bankDomain)
     const report = checkQuestionBankLaunchGate(rows, {
-      jobCode: args.jobCode
+      jobCode: args.jobCode,
+      bankDomain: args.bankDomain
     })
 
     writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n', 'utf-8')
     io.stdout(
-      `[question-bank-launch-gate] checked ${report.summary.totalRows} rows for ${args.jobCode}; offline ACTIVE ${report.summary.offlineActive}`
+      `[question-bank-launch-gate] checked ${report.summary.totalRows} ${args.bankDomain} rows for ${args.jobCode}; offline ACTIVE ${report.summary.offlineActive}`
     )
     for (const line of formatIssues(report.issues)) {
       if (report.passed) {

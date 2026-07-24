@@ -1,0 +1,54 @@
+{
+  "schema_version": "job-skill-shelver-298-targeted-v5-content-rereview-result-v1",
+  "package_id": "job-skill-shelver-298-targeted-v5-content-rereview-packet-v1",
+  "candidate_set_hash": "sha256:55b761ed6cf8b62460a79006d10ec37fa25a41702ab61b25fd26f185b8c403a7",
+  "reviewer": "陈晓青",
+  "submitted_at": "2026-07-20T10:06:56.006Z",
+  "summary": {
+    "total": 5,
+    "pass": 1,
+    "return_for_revision": 4
+  },
+  "questions": [
+    {
+      "question_id": "M1_OP_038_V5",
+      "previous_question_id": "M1_OP_038_V4",
+      "new_semantic_hash": "sha256:5d0154bf9b8874e0b223d3c0df8e3bde7809ad984074c507ade6966331fb242c",
+      "candidate_record_hash": "sha256:b9e1ee8d66fc51b010abb426fe5200b1831e3f5dcdc590a0b8e1274f781e44f0",
+      "conclusion": "PASS",
+      "review_note": ""
+    },
+    {
+      "question_id": "M2_OP_031_V5",
+      "previous_question_id": "M2_OP_031_V4",
+      "new_semantic_hash": "sha256:ac943aaa61ce519fc4f35500923ca91112ccb2914115e28e8e6f5702c002769d",
+      "candidate_record_hash": "sha256:92ebfa11f0e8d747f0726537282688c8dcf29f7d820146a22ff3535945d672c0",
+      "conclusion": "RETURN_FOR_REVISION",
+      "review_note": "M2_OP_031_V5：scoring_rule.score_0_description 仍把“现场商品不符合5件合格品设置时仍继续”列为0分条件，与 structured_edit.exception_branches 中“停止计分并由评估员纠正题目设置，不把设置异常计入学员表现”冲突。该冲突会导致同一现场布置错误既可能被判为无效施测，也可能被判为学员0分。最低修改要求：从0分条件中删除所有现场设置异常内容，明确数量、状态或标签配置不符时本次施测暂停/作废，由评估员复位后重测；0、1、2分只评价5件合格品场景下的日期比较、前置结果和提示次数。"
+    },
+    {
+      "question_id": "M2_OP_038_V5",
+      "previous_question_id": "M2_OP_038_V4",
+      "new_semantic_hash": "sha256:413678c24399c10a8cfa08ebace8d8211fef63d6d063aa7169fc49f8b91e015b",
+      "candidate_record_hash": "sha256:799d7dd25c0773ad912673e5f7e5488a7887831cb5b64e8f7da8d94833040d85",
+      "conclusion": "RETURN_FOR_REVISION",
+      "review_note": "M2_OP_038_V5：scoring_rule.score_0_description 仍将“现场设置不是8件合格品时仍继续”作为0分条件，与异常分支规定的“停止计分并由评估员纠正设置，不把异常对象纳入评分”冲突。该冲突会把评估员的道具布置错误计为学员0分。最低修改要求：删除该0分条件，将商品数量、状态或标签设置异常单独定义为无效施测/暂停计分；复位为8件合格品后重新施测，仅按锁定顺序正确件数、材料权限行为和提示次数评分。"
+    },
+    {
+      "question_id": "M2_OP_041_V5",
+      "previous_question_id": "M2_OP_041_V4",
+      "new_semantic_hash": "sha256:400d23d822bf48a968170b8b317795b994a1dd5fb3f6610bf15a05ba221787f5",
+      "candidate_record_hash": "sha256:a98260f52794a2e79de3545690fc1d13a5e8fb8d3c6cef242d9f09253544536e",
+      "conclusion": "RETURN_FOR_REVISION",
+      "review_note": "M2_OP_041_V5：scoring_rule.score_0_description 仍包含“现场设置不是10件合格品/未按固定脚本中断时仍继续计分”。其中“继续计分”是评估员行为，不是学员可观察表现，也与 exception_branches 的“停止计分并复位题目”冲突。该冲突会把商品设置错误或中断脚本执行错误误判为学员0分。最低修改要求：将商品数量/状态异常和中断脚本异常全部移出0、1、2分，统一定义为本次施测无效并由评估员复位重测；0分仅保留有效场景下正确排列少于7件、未按进度标记接续、违规改写材料或提示红线。"
+    },
+    {
+      "question_id": "M5_DG_034_V5",
+      "previous_question_id": "M5_DG_034_V4",
+      "new_semantic_hash": "sha256:7f593cb626236846041f01369cdc8608af22047108c8ea19f9940ded4232a64b",
+      "candidate_record_hash": "sha256:d76a3a65fd6710d753cb3c1698de5f94479156a0ac58c775f5674e1731044e5d",
+      "conclusion": "RETURN_FOR_REVISION",
+      "review_note": "M5_DG_034_V5：题干已经写明“现场安全后”且“确认其无反应且无正常呼吸”，但拖拽卡 i1、i2 又要求排序“确认现场安全”和“确认无反应且无正常呼吸”。前置条件与待排序步骤重复冲突，教师可能按题干理解只需排序确认后的 i3→i4，也可能按四卡答案判 i1→i2→i3→i4，导致任务范围不唯一。最低修改要求：二选一——将题干改为从发现顾客倒地开始，明确要求排序完整四步；或保留当前已确认的前置条件，删除 i1、i2 并重建确认后的步骤与映射。正常呼吸和持续危险例外分支可保留。"
+    }
+  ]
+}

@@ -170,6 +170,30 @@ describe('question-bank review gate', () => {
     expect(report.items[0].reasons.join('\n')).toMatch(/DEPRECATED/i)
   })
 
+  it('扫描 presentation、variant、tool、script、sealed config 和 offline setup 的资产引用', () => {
+    const content = JSON.parse(buildTrueFalseRow().content_json)
+    content.presentation = { assets: [{ asset_id: 'asset_presentation' }] }
+    content.variants = [{ media_asset_id: 'asset_variant' }]
+    content.administration = {
+      script_asset_id: 'asset_script',
+      sealed_config_asset_id: 'asset_sealed'
+    }
+    content.offline_setup = { asset_ids: ['asset_setup'] }
+    const row = buildTrueFalseRow({
+      tool_asset_ids_json: JSON.stringify(['asset_tool']),
+      content_json: JSON.stringify(content)
+    })
+    const report = reviewQuestionBankRows([row], { assetsById: ACTIVE_ASSETS })
+
+    expect(report.items[0].status).toBe('BLOCKED')
+    for (const assetId of [
+      'asset_presentation', 'asset_variant', 'asset_script',
+      'asset_sealed', 'asset_setup', 'asset_tool'
+    ]) {
+      expect(report.items[0].reasons).toContain(`asset reference not found: ${assetId}`)
+    }
+  })
+
   it('线上 rubric 含经提示时失败', () => {
     const report = reviewQuestionBankRows(
       [

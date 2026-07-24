@@ -57,8 +57,16 @@ describe('student:create — 正常路径', () => {
     expect(ua.status).toBe('ACTIVE')
 
     const sp = db
-      .prepare('SELECT student_id, student_name, status FROM student_profile WHERE student_id = ?')
-      .get(r.studentId) as { student_id: string; student_name: string; status: string }
+      .prepare(
+        'SELECT student_id, user_id, student_name, status FROM student_profile WHERE student_id = ?'
+      )
+      .get(r.studentId) as {
+      student_id: string
+      user_id: string
+      student_name: string
+      status: string
+    }
+    expect(sp.user_id).toBe(ua.user_id)
     expect(sp.student_name).toBe('张三')
     expect(sp.status).toBe('ACTIVE')
   })

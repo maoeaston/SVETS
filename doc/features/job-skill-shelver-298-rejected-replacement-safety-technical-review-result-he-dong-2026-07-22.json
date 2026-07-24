@@ -1,0 +1,212 @@
+{
+  "schema_version": "job-skill-shelver-298-rejected-replacement-safety-technical-review-result-v1",
+  "package_id": "job-skill-shelver-298-rejected-replacement-safety-technical-review-packet-he-dong-v1",
+  "candidate_set_id": "job-skill-shelver-298-rejected-replacement-candidates-v2",
+  "candidate_set_hash": "sha256:28a1d072fb81ed85dd3ee923f40c04a569a2b18248f1092684bf2faef2bd34ab",
+  "reviewer": {
+    "name": "赫东",
+    "track": "SAFETY_TECHNICAL_REVIEW",
+    "role": "安全与技术审核"
+  },
+  "submitted_at": "2026-07-22T02:01:26.248616Z",
+  "authority": {
+    "activation_authority_granted": false,
+    "can_activate_questions": false,
+    "runtime_database_change_allowed": false,
+    "activation_sql_generated": false
+  },
+  "summary": {
+    "total": 11,
+    "pass": 7,
+    "return_for_revision": 4
+  },
+  "questions": [
+    {
+      "question_id": "M1_OB_048_V2",
+      "previous_question_id": "M1_OB_048",
+      "new_semantic_hash": "sha256:15d21ff96b88405a253a7e22427332e67b852e7e5fe3f9bb01578548fc579d59",
+      "candidate_record_hash": "sha256:f7fc18686e5958a640a3a0e740e3aa3cd96d4ece727fb4a055203a7d9627bf8e",
+      "activation_authority": "NONE",
+      "conclusion": "RETURN_FOR_REVISION",
+      "review_fields": {
+        "safety_conclusion": "RETURN_FOR_REVISION",
+        "technical_conclusion": "RETURN_FOR_REVISION",
+        "renderer_feasibility": "PASS",
+        "data_contract_integrity": "RETURN_FOR_REVISION",
+        "safety_sensitive_decision": "KEEP",
+        "stop_condition_note": "退回复修：当前停止条件把误放真实液体写成由评估员“复位后重测”，未要求立即封锁、停止接触并通知负责人或清洁责任人员；真实不明液体不得由评估员自行复位。最低要求：出现真实液体、标识片翘起或隔离空间不足时立即终止施测，保持警示隔离，通知负责人和清洁责任人员处理，确认现场安全后另行重测。",
+        "technical_note": "退回复修：1分允许任意只完成4至5项，可能遗漏“警示隔离”“不接触不明液体”或“上报”等关键安全动作仍得分，评分锚点未设置安全门槛。最低要求：将停止、提醒绕行、隔离、不接触和上报设为1分及以上的必备条件；任一缺失、允许人员通行、触碰或跨越不明液体、未经确认恢复作业，均判0分并停止。"
+      }
+    },
+    {
+      "question_id": "M1_OP_042_V2",
+      "previous_question_id": "M1_OP_042",
+      "new_semantic_hash": "sha256:0b2a1b9a77329eb5de7514b7f6810ef919d337d1f31e3d012c71db169085d367",
+      "candidate_record_hash": "sha256:1491cf6b2db9a222cb3c772bc3c4aa1110ee9a3fde911fb11d441b94a1bff552",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "safety_conclusion": "PASS",
+        "technical_conclusion": "RETURN_FOR_REVISION",
+        "renderer_feasibility": "RETURN_FOR_REVISION",
+        "data_contract_integrity": "RETURN_FOR_REVISION",
+        "safety_sensitive_decision": "REMOVE",
+        "stop_condition_note": "通过；本题使用固定货架和轻质空包装，无独立安全敏感风险，建议取消安全敏感标记。商品、价签、排面图或脚本不一致时暂停计分并由评估员复位的条件可执行。",
+        "technical_note": "退回复修：题干和rubric要求同SKU旧货前置、新货后置，但现场材料仅有4个SKU各2件轻质空包装，未说明哪些是旧货或新货，也未提供日期、批次标签或货架预置旧货，FIFO无法观察和唯一判定。最低要求：为每个SKU设置可识别的旧货与新货，并用固定日期或批次标签锁定答案；或在货架预置旧货、另提供待补新货。否则删除FIFO指标及相关评分条件。"
+      }
+    },
+    {
+      "question_id": "M3_OP_056_V2",
+      "previous_question_id": "M3_OP_056",
+      "new_semantic_hash": "sha256:fa5e1945e97a1ac6fee17712924f6628122e8f400375d9b48f28f58347cb31af",
+      "candidate_record_hash": "sha256:f1ca96705755eef044b1b7712858140df645bd590c01583a33754a59e553453f",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "safety_conclusion": "PASS",
+        "technical_conclusion": "PASS",
+        "renderer_feasibility": "PASS",
+        "data_contract_integrity": "PASS",
+        "safety_sensitive_decision": "KEEP",
+        "stop_condition_note": "通过",
+        "technical_note": "通过"
+      }
+    },
+    {
+      "question_id": "M4_OP_043_V2",
+      "previous_question_id": "M4_OP_043",
+      "new_semantic_hash": "sha256:7df37f5d3f61aeb8fce82e17493401713b3cb84a72dfc9e540b20bd25127a119",
+      "candidate_record_hash": "sha256:27068d7eef3394c3c5d77827da331c5267b9b9fbc43d88d2d3796ba451ac1418",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "safety_conclusion": "PASS",
+        "technical_conclusion": "PASS",
+        "renderer_feasibility": "PASS",
+        "data_contract_integrity": "PASS",
+        "safety_sensitive_decision": "KEEP",
+        "stop_condition_note": "通过",
+        "technical_note": "通过"
+      }
+    },
+    {
+      "question_id": "M4_OP_044_V2",
+      "previous_question_id": "M4_OP_044",
+      "new_semantic_hash": "sha256:d36525b4131dce063a73e55b7b661b6c076c36b96ceef5cef50acdbead3f4b82",
+      "candidate_record_hash": "sha256:5e3a6e7305b38d4ca5f0c11f97aa3590b9f8da731ebf725abb01a748b8632dff",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "safety_conclusion": "PASS",
+        "technical_conclusion": "PASS",
+        "renderer_feasibility": "PASS",
+        "data_contract_integrity": "PASS",
+        "safety_sensitive_decision": "KEEP",
+        "stop_condition_note": "通过",
+        "technical_note": "通过"
+      }
+    },
+    {
+      "question_id": "M4_OP_045_V2",
+      "previous_question_id": "M4_OP_045",
+      "new_semantic_hash": "sha256:6ea00bf423c14ea51c76b67873e9ae3e27b24baa6d643192f28dd28fbdce0c1c",
+      "candidate_record_hash": "sha256:55c3a86bdc4f9a077ea259cd1c3d9c7c889d8b8cebe6c6fb3acfbf42209813c2",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "safety_conclusion": "PASS",
+        "technical_conclusion": "RETURN_FOR_REVISION",
+        "renderer_feasibility": "RETURN_FOR_REVISION",
+        "data_contract_integrity": "RETURN_FOR_REVISION",
+        "safety_sensitive_decision": "KEEP",
+        "stop_condition_note": "通过；题目使用常温轻质商品，不涉及危险操作。存在两件以上错区、商品区域信息不唯一或答案不唯一时，应暂停计分并由评估员复位。",
+        "technical_note": "退回复修：1分锚点要求把错区商品放入“问题暂存位”，但现场材料只提供三个周转箱，没有问题暂存位；该动作也不在题干、唯一达标行为或rubric中，现场无法按统一条件执行和评分。最低要求：删除该分支，改为“正确识别错区商品但未完成正确归位”；或在题干、材料和rubric中明确增加唯一问题暂存位及其使用条件，并同步评分。"
+      }
+    },
+    {
+      "question_id": "M4_OP_046_V2",
+      "previous_question_id": "M4_OP_046",
+      "new_semantic_hash": "sha256:896a5e25a4a0f267366f3afd8999660629872dd0dddf1a88a4ab103f4364f681",
+      "candidate_record_hash": "sha256:ef02afbcee4372d706019c04381ee4c2d417ea7a582fffc73c84b3a2846383d9",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "safety_conclusion": "PASS",
+        "technical_conclusion": "RETURN_FOR_REVISION",
+        "renderer_feasibility": "RETURN_FOR_REVISION",
+        "data_contract_integrity": "RETURN_FOR_REVISION",
+        "safety_sensitive_decision": "KEEP",
+        "stop_condition_note": "通过；本题使用轻质商品，无独立危险源。清单存在多处差错、实物数量异常或答案不唯一时，应暂停计分并由评估员复位。",
+        "technical_note": "退回复修：候选把“规格不符”和“数量不符”合并为同一唯一差错，但后续统一要求“问题商品不进入货架并贴问题标识”。数量短缺或多出属于清单、收货或交接差异，不一定存在可唯一标识的问题商品，处置对象和答案不唯一。最低要求：将预埋差错限定为1件商品的品名、规格或条码与清单不符；或拆分数量异常分支，明确暂停该清单项、记录数量差异并上报，不把正常商品错误标为问题品，并分别设置答案和rubric。"
+      }
+    },
+    {
+      "question_id": "M4_OP_047_V2",
+      "previous_question_id": "M4_OP_047",
+      "new_semantic_hash": "sha256:e622ca49cb3916e644e95b7ede5a4c6989490848b27049af178a924fd6dba4e4",
+      "candidate_record_hash": "sha256:98b1d1375a1a377f3edbc39650157281b0f54ffcd9235fc1ea5c0555ef449354",
+      "activation_authority": "NONE",
+      "conclusion": "RETURN_FOR_REVISION",
+      "review_fields": {
+        "safety_conclusion": "RETURN_FOR_REVISION",
+        "technical_conclusion": "RETURN_FOR_REVISION",
+        "renderer_feasibility": "RETURN_FOR_REVISION",
+        "data_contract_integrity": "RETURN_FOR_REVISION",
+        "safety_sensitive_decision": "ADD",
+        "stop_condition_note": "退回复修：现场混用“年月日、斜杠和8位数字”三种日期格式，却未定义斜杠格式和8位数字的解析口径，也未固定模拟工作日；可能造成效期误读和错误轮转。最低要求：统一为YYYY-MM-DD，或提供明确格式图例并固定模拟工作日及效期口径；日期标签缺失、格式无法识别、批次号不可比较或答案不唯一时立即暂停计分，由评估员更换材料后重测。",
+        "technical_note": "退回复修：同到期日按批次号由小到大不是通用FIFO或FEFO规则，且当前未说明批次号是否为等长纯数字、如何比较。最低要求：明确这是本题或门店锁定的次级排序规则，并使用等长可比较的批次编号；或仅考查到期日排序，将相同到期日设置为等价位置。同步锁定日期格式、唯一答案和评分口径。"
+      }
+    },
+    {
+      "question_id": "M4_OP_048_V2",
+      "previous_question_id": "M4_OP_048",
+      "new_semantic_hash": "sha256:fd0eb08f69cd179445021530f8b2068546f65229ffe98d6306073a5722644a13",
+      "candidate_record_hash": "sha256:925cccefdaa3011984ad265cd28a70ca065141d7e3fde21fb77b348c4ebe27aa",
+      "activation_authority": "NONE",
+      "conclusion": "RETURN_FOR_REVISION",
+      "review_fields": {
+        "safety_conclusion": "RETURN_FOR_REVISION",
+        "technical_conclusion": "RETURN_FOR_REVISION",
+        "renderer_feasibility": "RETURN_FOR_REVISION",
+        "data_contract_integrity": "RETURN_FOR_REVISION",
+        "safety_sensitive_decision": "KEEP",
+        "stop_condition_note": "退回复修：材料和题干只写“异常项按题设进入问题区”，未定义异常项数量、类型和安全模拟方式；若现场误用真实破损、泄漏或污染商品，现有停止条件也未覆盖。最低要求：锁定唯一安全仿真异常品，使用无液体、无尖锐、无污染的空包装或图片卡；发现真实泄漏、尖锐破损、异味、污染或货架不稳时立即停止、隔离警示并由评估员或负责人处理，确认前不得继续。",
+        "technical_note": "退回复修：题干、材料和rubric均未说明哪一件商品因何属于异常，“异常项按题设”没有实际题设，导致10件正确数量、问题区处置和答案无法唯一判定。最低要求：明确10件中正常品和异常品的数量、异常判据、对应货位或问题区答案以及中断前后状态；评分1分和2分应分别锁定正确上架数量、异常处置与最终复查要求。"
+      }
+    },
+    {
+      "question_id": "M5_OP_048_V2",
+      "previous_question_id": "M5_OP_048",
+      "new_semantic_hash": "sha256:dd1de83733c7cedc6a9a133e84ad19f68e91852c70eac348fda43604cc94b261",
+      "candidate_record_hash": "sha256:2c8e2481d47bb49e6f407f80f201615b26674c69616688e0440283497be632d2",
+      "activation_authority": "NONE",
+      "conclusion": "RETURN_FOR_REVISION",
+      "review_fields": {
+        "safety_conclusion": "RETURN_FOR_REVISION",
+        "technical_conclusion": "RETURN_FOR_REVISION",
+        "renderer_feasibility": "RETURN_FOR_REVISION",
+        "data_contract_integrity": "RETURN_FOR_REVISION",
+        "safety_sensitive_decision": "KEEP",
+        "stop_condition_note": "退回复修：1分允许只清除并分类3件散落物，而0分又规定“仍留有明显绊倒物”即0分；若第4件仍在通道，现场同时满足1分条件和0分红线，且未明确继续隔离至评估员接管。最低要求：安全红线优先，任何未隔离的遗留绊倒物均判0分并停止；1分可改为4件全部移出但有1件分类错误，或明确剩余物持续被路障完全隔离并由评估员接管后才可判1分。",
+        "technical_note": "退回复修：0分与1分阈值不互斥，评估员无法对“清除3件、遗留1件”的同一表现唯一评分。最低要求：重写1分锚点，使其与0分红线互斥，并明确遗留物数量、是否仍处通道、隔离状态及恢复通行权限；未清除或未隔离的绊倒物不得获得1分。"
+      }
+    },
+    {
+      "question_id": "M5_OP_055_V2",
+      "previous_question_id": "M5_OP_055",
+      "new_semantic_hash": "sha256:7307e88432f95c06091d39ce418a1d4bc13da45f3a28e367242ef212d5c564ae",
+      "candidate_record_hash": "sha256:dbe4a823ad5881ce60dc79863d53200221ce7f946ac28071cd85bfb22d7939b5",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "safety_conclusion": "PASS",
+        "technical_conclusion": "PASS",
+        "renderer_feasibility": "PASS",
+        "data_contract_integrity": "PASS",
+        "safety_sensitive_decision": "KEEP",
+        "stop_condition_note": "通过",
+        "technical_note": "通过"
+      }
+    }
+  ]
+}

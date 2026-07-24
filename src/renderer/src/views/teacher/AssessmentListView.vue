@@ -14,16 +14,12 @@
       </div>
     </header>
 
-    <p
-      v-if="errorMsg"
-      class="error-msg"
-      role="alert"
-    >
-      {{ errorMsg }}
-    </p>
+    <PageState v-if="loading" kind="loading" title="正在读取测评任务" description="坐次、分配和安全状态正在同步。" />
+    <PageState v-else-if="errorMsg" :kind="errorMsg.includes('权限') ? 'forbidden' : errorMsg.includes('阻断') ? 'blocked' : 'error'" title="测评列表没有加载成功" :description="errorMsg" action-label="重新加载" @action="fetchList" />
+    <PageState v-else-if="items.length === 0" kind="empty" title="当前没有开放测评" description="可以发起测评，正式题库仍受独立激活门禁保护。" action-label="发起测评" @action="router.push('/teacher/assessments/new')" />
 
     <table
-      v-if="!loading && items.length > 0"
+      v-if="!loading && !errorMsg && items.length > 0"
       class="table"
     >
       <thead>
@@ -118,60 +114,38 @@
             >
               恢复
             </button>
-
-            <!-- 触发红线（小弹层 / 简化为内嵌下拉） -->
-            <template v-if="redlineOpenFor === row.sessionId">
-              <select
-                v-model="redlineReason"
-                class="redline-select"
-              >
-                <option value="">
-                  选择原因…
-                </option>
-                <option
-                  v-for="r in REASON_CODES"
-                  :key="r.value"
-                  :value="r.value"
-                >
-                  {{ r.label }}
-                </option>
-              </select>
-              <select
-                v-model="redlinePhase"
-                class="redline-select"
-              >
-                <option value="">
-                  选择场景…
-                </option>
-                <option
-                  v-for="p in CONTEXT_PHASES"
-                  :key="p.value"
-                  :value="p.value"
-                >
-                  {{ p.label }}
-                </option>
-              </select>
-              <button
-                class="btn-inline btn-redline-confirm"
-                :disabled="!redlineReason || !redlinePhase || actingSessionId === row.sessionId"
-                @click="handleRedline(row.sessionId)"
-              >
-                确认红线
-              </button>
-              <button
-                class="btn-inline"
-                @click="closeRedline"
-              >
-                取消
-              </button>
-            </template>
             <button
-              v-else
+              v-if="row.status === 'EMOTION_INTERRUPTED'"
+              class="btn-inline btn-abort"
+              :disabled="actingSessionId === row.sessionId"
+              @click="handleEmotionCollapse(row.sessionId)"
+            >
+              结束本坐次
+            </button>
+
+            <button
+              v-if="row.status === 'ACTIVE'"
+              class="btn-inline btn-resume"
+              :disabled="actingSessionId === row.sessionId"
+              @click="handlePlannedPause(row.sessionId)"
+            >
+              暂停到下一坐次
+            </button>
+            <button
+              v-if="row.status === 'SUSPENDED_REVIEW_REQUIRED'"
+              class="btn-inline btn-resume"
+              :disabled="actingSessionId === row.sessionId"
+              @click="handleStartNextSitting(row.sessionId)"
+            >
+              开始下一坐次
+            </button>
+
+            <button
               class="btn-inline btn-redline"
               :disabled="actingSessionId === row.sessionId"
-              @click="openRedline(row.sessionId)"
+              @click="handleRedline(row.sessionId)"
             >
-              触发红线
+              立即安全停止
             </button>
 
             <!-- 终止 -->
@@ -187,42 +161,24 @@
       </tbody>
     </table>
 
-    <p
-      v-else-if="loading"
-      class="loading"
-    >
-      加载中…
-    </p>
-    <p
-      v-else
-      class="empty"
-    >
-      暂无进行中的测评
-    </p>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 import { useAssessmentStore } from '../../stores/assessment'
+import PageState from '../../components/PageState.vue'
 import type { SessionListItem, SessionStatus, AssessmentErrorCode } from '@shared/types/assessment'
-import {
-  SAFETY_REASON_CODES as REASON_CODES,
-  SAFETY_CONTEXT_PHASES as CONTEXT_PHASES
-} from '@shared/types/safety'
 
 const auth = useAuthStore()
 const store = useAssessmentStore()
+const router = useRouter()
 
 const loading = ref(false)
 const errorMsg = ref('')
 const actingSessionId = ref<string | null>(null)
-
-// 红线触发内嵌表单（一次只展开一行）
-const redlineOpenFor = ref<string | null>(null)
-const redlineReason = ref('')
-const redlinePhase = ref('ONLINE_ASSESSMENT') // 默认线上测评场景
 
 const items = computed<SessionListItem[]>(() => store.sessionList)
 
@@ -301,6 +257,46 @@ async function handleResume(sessionId: string): Promise<void> {
   await fetchList()
 }
 
+async function handleEmotionCollapse(sessionId: string): Promise<void> {
+  if (!auth.userId || !auth.role) return
+  if (!window.confirm('确认学生无法在本坐次恢复？这只结束本坐次，不会直接作废整个测评。')) return
+  actingSessionId.value = sessionId
+  const result = await window.api.assessment.recordEmotionCollapse({
+    callerUserId: auth.userId, callerRole: auth.role, sessionId
+  })
+  actingSessionId.value = null
+  if (!result.success) {
+    errorMsg.value = store.mapError(result.errorCode)
+    return
+  }
+  await fetchList()
+}
+
+async function handlePlannedPause(sessionId: string): Promise<void> {
+  if (!auth.userId || !auth.role) return
+  if (!window.confirm('确认按计划暂停本坐次？学生将在下一坐次从当前未提交题继续。')) return
+  actingSessionId.value = sessionId
+  const result = await store.pauseSitting({ callerUserId: auth.userId, callerRole: auth.role, sessionId })
+  actingSessionId.value = null
+  if (!result.ok) {
+    errorMsg.value = store.mapError(result.errorCode)
+    return
+  }
+  await fetchList()
+}
+
+async function handleStartNextSitting(sessionId: string): Promise<void> {
+  if (!auth.userId || !auth.role) return
+  actingSessionId.value = sessionId
+  const result = await store.startNextSitting({ callerUserId: auth.userId, callerRole: auth.role, sessionId })
+  actingSessionId.value = null
+  if (!result.ok) {
+    errorMsg.value = store.mapError(result.errorCode)
+    return
+  }
+  await fetchList()
+}
+
 async function handleAbort(sessionId: string, studentName: string): Promise<void> {
   if (!auth.userId || !auth.role) return
   if (!window.confirm(`确认终止「${studentName}」的测评？终止后不可恢复。`)) return
@@ -318,43 +314,20 @@ async function handleAbort(sessionId: string, studentName: string): Promise<void
   await fetchList()
 }
 
-function openRedline(sessionId: string): void {
-  redlineOpenFor.value = sessionId
-  redlineReason.value = ''
-  redlinePhase.value = 'ONLINE_ASSESSMENT'
-}
-
-function closeRedline(): void {
-  redlineOpenFor.value = null
-  redlineReason.value = ''
-  redlinePhase.value = 'ONLINE_ASSESSMENT'
-}
-
 async function handleRedline(sessionId: string): Promise<void> {
   if (!auth.userId || !auth.role) return
-  if (!redlineReason.value || !redlinePhase.value) return
-  if (
-    !window.confirm(
-      '确认触发安全红线？同学生的所有开放测评将被批量终止，且不可恢复。'
-    )
-  ) {
-    return
-  }
   actingSessionId.value = sessionId
   const result = await store.triggerRedline({
     callerUserId: auth.userId,
     callerRole: auth.role,
-    sessionId,
-    reasonCode: redlineReason.value,
-    contextPhase: redlinePhase.value
+    sessionId
   })
   actingSessionId.value = null
   if (!result.success) {
     errorMsg.value = store.mapError(result.errorCode)
     return
   }
-  closeRedline()
-  await fetchList()
+  await router.push(`/teacher/safety/${result.incidentId}`)
 }
 
 onMounted(() => {

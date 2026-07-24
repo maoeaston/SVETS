@@ -288,10 +288,18 @@ describe('TC-O: JOB_SKILL_SCORE 自动生成', () => {
     completeSession(sessionId, 2)
 
     const rows = db
-      .prepare(`SELECT result_type FROM result_record WHERE source_aggregate_id = ?`)
-      .all(sessionId) as { result_type: string }[]
+      .prepare(`SELECT result_type, strategy_id, strategy_type, module_type FROM result_record WHERE source_aggregate_id = ?`)
+      .all(sessionId) as {
+        result_type: string
+        strategy_id: string | null
+        strategy_type: string | null
+        module_type: string | null
+      }[]
     expect(rows.length).toBe(1)
     expect(rows[0].result_type).toBe('JOB_SKILL_SCORE')
+    expect(rows[0].strategy_id).toBe(strategyId)
+    expect(rows[0].strategy_type).toBe('JOB_SKILL_ASSESSMENT')
+    expect(rows[0].module_type).toBeNull()
     expect(rows.some((r) => r.result_type === 'ABILITY_SCORE')).toBe(false)
   })
 

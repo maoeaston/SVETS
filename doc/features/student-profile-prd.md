@@ -5,9 +5,9 @@
 文件名：`student-profile-prd.md`
 PRD 版本：v1.0.0
 创建日期：2026-07-01
-对应主 PRD：炫灿-职途向导系统 MVP PRD v1.0.4
-对应 schema：`xc-career-guide-mvp-schema-v0.1.7-consistency-guard`
-状态：待审查
+对应主 PRD：`doc/specs/MVP_PRD_v1.0.9-authoritative.md`
+对应 schema：`src/main/db/schema.sql` v0.1.15
+状态：已实现；F1 账号显式关联于 2026-07-22 收口
 
 ---
 
@@ -44,12 +44,12 @@ PRD §4.1 主流程的第 1 步是「教师创建学生档案」，是后续发�
 4. 点击「保存」，渲染进程将 `form` 展开为普通对象后调用 `window.api.student.create(...)`
 5. 主进程 `student:create` handler：
    - 校验调用者角色（callerRole ∈ {TEACHER, ADMIN}）
-   - 生成一个 UUID，**同时作为 `student_profile.student_id` 和 `user_account.user_id`**
+   - 生成一个 UUID，当前兼容性实现仍同时作为 `student_profile.student_id` 和 `user_account.user_id`
    - 校验 username 全局唯一（捕获 schema UNIQUE 约束）
    - 校验 `sensory_profile_json` 结构（按 JSON 字段规范 §8）
    - 事务内执行：
      - INSERT `user_account`（user_id=UUID, role='STUDENT', password_hash=哈希后密码, status='ACTIVE'）
-     - INSERT `student_profile`（student_id=同 UUID, status='ACTIVE'）
+     - INSERT `student_profile`（student_id=同 UUID, user_id=同 UUID, status='ACTIVE'）
    - 事务提交后写 `error_event_log`（error_category='SYSTEM', severity='INFO', related_aggregate_type='STUDENT_PROFILE', related_aggregate_id=student_id, context_json 含 callerUserId）满足 §14.3 审计。**注：** schema 的 `error_category` CHECK 枚举不含 'STUDENT_PROFILE'（仅 IPC/DB/AOL/RECOVERY/ASSET/FSM/SCORING/REPORT/AUTH/SYSTEM），用 'SYSTEM' 承载主数据审计；关联通过 `related_aggregate_type` + `related_aggregate_id` 字段实现。
 6. 返回 `{ success: true, studentId }`，渲染进程跳转到 `/teacher/students/:id`
 
@@ -61,7 +61,7 @@ PRD §4.1 主流程的第 1 步是「教师创建学生档案」，是后续发�
 4. 主进程 `student:update` handler：
    - 校验目标档案 `status != 'ARCHIVED'`（归档档案不可编辑）
    - 校验 `sensory_profile_json` 结构（若包含该字段）
-   - UPDATE `student_profile` 对应字段 + `updated_at = datetime('now')`
+   - 先校验全部 patch 字段，再在同一事务 UPDATE `student_profile`；姓名变化时同步绑定账号的 `display_name`
    - 写 `error_event_log`（error_category='SYSTEM', severity='INFO', related_aggregate_type='STUDENT_PROFILE', related_aggregate_id=student_id, context_json 含 callerUserId 与变更字段）
 
 ### 场景 C：教师编辑感官画像（§17.1 验收项）
@@ -75,7 +75,7 @@ PRD §4.1 主流程的第 1 步是「教师创建学生档案」，是后续发�
 3. 主进程 `student:archive` handler：
    - 事务内：
      - UPDATE `student_profile` SET status='ARCHIVED'
-     - UPDATE `user_account` SET status='DISABLED'（阻止该学生登录；用 user_id = student_id 定位）
+     - UPDATE `user_account` SET status='DISABLED'（阻止该学生登录；通过 `student_profile.user_id` 定位）
    - 写 `error_event_log`（error_category='SYSTEM', severity='INFO', related_aggregate_type='STUDENT_PROFILE', related_aggregate_id=student_id, context_json 含 callerUserId）
 4. 返回成功，列表中该学生标记为「已归档」
 
@@ -89,7 +89,7 @@ PRD §4.1 主流程的第 1 步是「教师创建学生档案」，是后续发�
 
 - `student:list` — 分页/搜索查询学生列表：默认只返回 `status='ACTIVE'`，支持参数 `includeArchived=true` 同时返回已归档；按姓名模糊搜索；按 `created_at` 倒序，每页 20 条
 - `student:get` — 查询单个学生详情（含 sensory_profile_json 解析）
-- `student:create` — 事务创建 user_account + student_profile（同 UUID）
+- `student:create` — 事务创建 user_account + student_profile，并写入 `student_profile.user_id` 显式关联
 - `student:update` — 编辑 student_profile 字段（不含 username / password）
 - `student:archive` — 归档（student_profile.status → ARCHIVED + user_account.status → DISABLED）
 
@@ -158,8 +158,8 @@ PRD §4.1 主流程的第 1 步是「教师创建学生档案」，是后续发�
 
 | 资源 | 关系 |
 |---|---|
-| `student_profile` 表 | 本功能的核心读写对象 |
-| `user_account` 表 | create/archive 时写入；**约定 `user_account.user_id === student_profile.student_id`（同 UUID）**作为两表的隐式关联（schema 无 FK，应用层维护）|
+| `student_profile` 表 | 本功能的核心读写对象；允许 `user_id IS NULL` 的无账号档案继续显示和归档 |
+| `user_account` 表 | create/archive 时写入；通过 `student_profile.user_id` 外键显式关联。当前新建数据仍复用同 UUID，但查询和归档不得依赖两边主键相同 |
 | `error_event_log` 表 | create/update/archive 写 INFO 审计；系统异常写 ERROR |
 | `error_code_registry` 表 | handler 启动时 `INSERT OR IGNORE` 补充本功能错误码（error_category='SYSTEM'，不改 schema.sql；详见风险点）|
 | `src/main/db/connection.ts` | `getDatabase()` 由 handler 调用 |
@@ -168,7 +168,7 @@ PRD §4.1 主流程的第 1 步是「教师创建学生档案」，是后续发�
 | Pinia `useAuthStore` | 提供 `userId` / `role` 作为 IPC 的 caller 身份参数 |
 | 全局路由守卫 | 已保护 `/teacher/*`，未登录自动跳 `/login`（无需改动）|
 | 后续测评发起功能 | 依赖本功能产出的 `student_id`；且需校验 `student_profile.status = ACTIVE` 才允许发起新 session |
-| 后续学生端「个人档案查看」功能 | 只读引用 `student_profile`，按 student_id（= 登录 user_id）查询自己 |
+| 后续学生端「个人档案查看」功能 | 只读引用 `student_profile`，按 `student_profile.user_id = 登录 user_id` 查询自己 |
 
 ---
 
@@ -199,16 +199,13 @@ PRD §4.1 主流程的第 1 步是「教师创建学生档案」，是后续发�
 
 ## 风险点
 
-**[!] user_account ↔ student_profile 关联依赖应用层约定（无 schema FK）**
+**student_profile.user_id 显式账号关联**
 
-schema v0.1.7 冻结基线中，两表无 FK 互通。本 PRD 采用「同 UUID 复用」约定（`user_id === student_id`）建立隐式关联。这意味着：
-- 关联完整性由应用层（student.ts handler）保证，不由 DB 强制
-- 任何绕过 handler 直接写 DB 的代码（如未来的批量导入脚本）必须遵守此约定
-- 若未来 schema 升级允许加 FK，应将此约定上升为 DB 约束
+schema v0.1.15 已增加 `student_profile.user_id -> user_account.user_id` 外键，并允许无账号档案为 NULL。当前 create 为兼容既有数据仍复用同 UUID，但 get/list/archive 已按显式 `user_id` 关联，能够正确处理档案 ID 与账号 ID 不同的情况。任何批量导入或迁移都必须写入 `student_profile.user_id`，不得恢复为按两个主键相等推断。
 
 **[!] schema 无 `created_by` 列 vs PRD §5.1「创建人」必填（已知偏差）**
 
-schema `student_profile` 无 `created_by` 列，且 v0.1.7 为冻结基线。本 PRD 采用「审计日志方案」：在 `error_event_log` 写 INFO 记录操作人 callerUserId，满足 §14.3「创建/修改学生档案可追溯」要求。**但这不等于 PRD §5.1「创建人」必填字段的字面满足**——§5.1 列「创建人」为档案必填字段，暗示表内应持久化创建人。当前方案是**已知偏差**：审计可追溯 ≠ 表内有 created_by 列。后续 schema 升级（如 v0.2.0）应补 `created_by TEXT` 列正式满足 §5.1。MVP 阶段以「操作可追溯」为接受标准，标记为待补。
+schema v0.1.15 的 `student_profile` 仍无 `created_by` 列。本 PRD 采用「审计日志方案」：在 `error_event_log` 写 INFO 记录操作人 callerUserId，满足 §14.3「创建/修改学生档案可追溯」要求。**但这不等于 PRD §5.1「创建人」必填字段的字面满足**。该偏差必须通过后续独立 migration 评审解决，不能在功能 handler 中暗补字段。
 
 **[!] error_event_log.error_category 无 'STUDENT_PROFILE' 枚举**
 

@@ -199,6 +199,39 @@ describe('validateContentJson — source', () => {
 })
 
 describe('validateContentJson — OFFLINE_OPERATION', () => {
+  it('接受交付锁生成的 offline_setup 引用', () => {
+    const r = validateContentJson({
+      ...baseFields,
+      question_type: 'OFFLINE_OPERATION',
+      offline_tool_brief: '货架、商品、标签',
+      rubric_criteria: [{ criterion_id: 'facing', description: '商品正面朝外' }],
+      offline_setup: {
+        setup_id: 'setup_m1_op_043_v2',
+        item_ids: ['shelf_three_tier'],
+        asset_ids: ['asset_delivery_answer_image_m1_op_043']
+      }
+    })
+
+    expect(r).toEqual({ ok: true })
+  })
+
+  it('拒绝空 item_ids 或重复 asset_ids', () => {
+    const r = validateContentJson({
+      ...baseFields,
+      question_type: 'OFFLINE_OPERATION',
+      offline_tool_brief: '货架、商品、标签',
+      rubric_criteria: [{ criterion_id: 'facing', description: '商品正面朝外' }],
+      offline_setup: {
+        setup_id: 'setup_m1_op_043_v2',
+        item_ids: [],
+        asset_ids: ['asset_a', 'asset_a']
+      }
+    })
+
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.reason).toMatch(/offline_setup/i)
+  })
+
   it('rubric_criteria=[] → 失败', () => {
     const r = validateContentJson({
       ...baseFields,

@@ -1,0 +1,4414 @@
+{
+  "schema_version": "job-skill-shelver-298-merged-review-decisions-v1",
+  "decision_set_id": "job-skill-shelver-298-merged-review-decisions-2026-07-19",
+  "status": "DRAFT_DECISIONS_NO_ACTIVATION_AUTHORITY",
+  "generated_at": "2026-07-20T00:00:00+08:00",
+  "source_result_ids": [
+    "job-skill-shelver-298-content-review-2026-07-19",
+    "job-skill-shelver-298-safety-technical-review-2026-07-19"
+  ],
+  "source_resolution_ids": [
+    "job-skill-shelver-298-m5-dg-035-conflict-resolution-2026-07-20"
+  ],
+  "summary": {
+    "total": 274,
+    "approved_unchanged": 31,
+    "revision_required": 232,
+    "rejected": 11,
+    "blocked_conflict": 0
+  },
+  "questions": [
+    {
+      "question_id": "M1_DG_027",
+      "question_version": 1,
+      "source_record_hash": "sha256:44f8bd2e417680cff865064b31b1b4038ff636df0aa72e75840dbd0ffe9c8d06",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_DG_028",
+      "question_version": 1,
+      "source_record_hash": "sha256:c710ec3c94ce88eaef74e6854634720e1101a10ecc80a39342139145d4538761",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_DG_029",
+      "question_version": 1,
+      "source_record_hash": "sha256:96b520aa86398c082f2ed3f24bd29ae183899c53effa2bd2bf2ba8b871be0ddb",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_DG_030",
+      "question_version": 1,
+      "source_record_hash": "sha256:eda41b571538d19e333fc3fbaae305a08ad356187351a2883a26080bffa73773",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_DG_031",
+      "question_version": 1,
+      "source_record_hash": "sha256:74375df41219a8d5e6d95ce27dbb133a3dc87fac2369766b25abd20da4779dcb",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_DG_032",
+      "question_version": 1,
+      "source_record_hash": "sha256:a37858e06b7fdcbf4d2682b068cce062f3e343be28c878cc8cd4ab5cbb36050f",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_OB_048",
+      "question_version": 1,
+      "source_record_hash": "sha256:53ed79790601f597f0dcfa9ba3e5759a7a7c6a63bd7a4dc80bf68f6f42d74ce3",
+      "content_conclusion": "REJECTED",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REJECTED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_OP_034",
+      "question_version": 1,
+      "source_record_hash": "sha256:3a0e22dc7be9ebbbee0f125b1be71c6bafe45563e20447c0248cec3c7ab610c8",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_OP_035",
+      "question_version": 1,
+      "source_record_hash": "sha256:c83daf3256f0593d7f10433bcd3d09333d3ca572dab7dcb83f957f16370b3f8a",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_OP_036",
+      "question_version": 1,
+      "source_record_hash": "sha256:5afee81fb48dedded06e7a1a802e8fd751f866620eb00bdc16acc90fe18bf68a",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_OP_037",
+      "question_version": 1,
+      "source_record_hash": "sha256:f72105b5a40fc6161edce43c0915894b2d5d0129d74720d738a792f9615beb27",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_OP_038",
+      "question_version": 1,
+      "source_record_hash": "sha256:91b69895d4170db0980c111ff7c48038279e2597fafef46d6fe27e8dd704a111",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_OP_039",
+      "question_version": 1,
+      "source_record_hash": "sha256:da9b4e8ab578f36606dcbc9c4d03a847d0abc3d9ae2c9263e0022c34e9d11688",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_OP_040",
+      "question_version": 1,
+      "source_record_hash": "sha256:6fc3171ec4f4e4b53c31e7786eb8f9ba2d5a9fd8a7c4a8652508680af41af061",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_OP_041",
+      "question_version": 1,
+      "source_record_hash": "sha256:7878a861bcd41ab6a1b7566b4284915c988b3c7915984e52ff3089c77479a74b",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_OP_042",
+      "question_version": 1,
+      "source_record_hash": "sha256:0cedf8f5381ad778f68a6cc1ca5a2cb4fbaf269d9faaad34d9206d1fdfd114e6",
+      "content_conclusion": "REJECTED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REJECTED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_OP_043",
+      "question_version": 1,
+      "source_record_hash": "sha256:47809761b6caabed249257aad352f4d77e949afbdf3b5fb1344b04be353faf18",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_OP_044",
+      "question_version": 1,
+      "source_record_hash": "sha256:2e58921fafe96702eb56e966f8ce3e43b09ad9b7dce8feb2c8190e64b7d7c296",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_OP_045",
+      "question_version": 1,
+      "source_record_hash": "sha256:8e433a6b116548c7fa0071b1e5d5b73ce12c7e003454d3eaba688c06e45bfd6f",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_OP_046",
+      "question_version": 1,
+      "source_record_hash": "sha256:f20592853d98c4cd57442c2fd635798459c4a3e618d193b287710cbe9596d159",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_OP_047",
+      "question_version": 1,
+      "source_record_hash": "sha256:57549565c3abb9fb32d2f42169b2440ea469b773a864d45bc54394712e9430e0",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_SC_002",
+      "question_version": 1,
+      "source_record_hash": "sha256:da63e2df1712db2ab62085a3b3efeefd657c2402b4bb1fe704cea21d6a7012f4",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_SC_003",
+      "question_version": 1,
+      "source_record_hash": "sha256:5327bee503bee32ccc0c8997b5d407d84e17bae505fa1fd64f0c81d38ff62d27",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_SC_005",
+      "question_version": 1,
+      "source_record_hash": "sha256:5599cfd3ac71bd8321f71e46e18ba0078149564229bd36f10c2c18235bbbe477",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_SC_006",
+      "question_version": 1,
+      "source_record_hash": "sha256:1443ea4960058f854e5bcae1a09da70597d809aefd9d027845540845fb047690",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_SC_008",
+      "question_version": 1,
+      "source_record_hash": "sha256:c52dfde82abc27f8eefdd1da26a99378db60e485c2e9a2b8862b6dedbf9637cd",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_SC_009",
+      "question_version": 1,
+      "source_record_hash": "sha256:6dd11e7944a74b30320e803807b5b96fa6bee65d50798fc09db76b2106495ab9",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_SC_010",
+      "question_version": 1,
+      "source_record_hash": "sha256:f68b0cea42dbd1aa7229bf7fd1d7fda08656b95462ee3276191700615243295e",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_SC_011",
+      "question_version": 1,
+      "source_record_hash": "sha256:9b48c4d7963489f4b25bcb68e10034ca1b7067f66889cd54a11bce49a8f971dc",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_SC_012",
+      "question_version": 1,
+      "source_record_hash": "sha256:3b306fa99c79582e9ab42c851670a9ec660ceceded2fb9364f38165d975175fc",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_SC_013",
+      "question_version": 1,
+      "source_record_hash": "sha256:f5a3aa73aa23dc0a8a4e46ce68f45c499f43f4a6c0925c427bcb5f5b40ac342d",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_SC_014",
+      "question_version": 1,
+      "source_record_hash": "sha256:cbb1626bd55117d0123d0abeba3145db59340e3bc5449698a418743b54c11162",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_TF_015",
+      "question_version": 1,
+      "source_record_hash": "sha256:c43ba31d29bc82e6a805b585f4614c12bd57a62dc40753970b8a09433f68b975",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_TF_016",
+      "question_version": 1,
+      "source_record_hash": "sha256:1b210ba50db384ab0223a31e9c6c636a959627c5ca90991e2a60a3c99640b7bd",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_TF_017",
+      "question_version": 1,
+      "source_record_hash": "sha256:0f2be08e2fa31ae4e13f6b7e7315b971129aea81853caad833a39ec02badd919",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_TF_018",
+      "question_version": 1,
+      "source_record_hash": "sha256:9121a080036007c617cef33697a085fac7b22ddae0f39dbe3fe9107b6279d795",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_TF_019",
+      "question_version": 1,
+      "source_record_hash": "sha256:91562d4bad6c04877d4805a9c2b8a4908aff812130b0ae3431f818b0b318b7f0",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_TF_020",
+      "question_version": 1,
+      "source_record_hash": "sha256:6e73c42c83e1343813cdca032a273ec09defa70d2ec2ced5f29fa7963999d8ac",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_TF_021",
+      "question_version": 1,
+      "source_record_hash": "sha256:bc567b9928ca414cc9cc104692e7cff60d22983fc85037a8399b77763cb93c1b",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_TF_022",
+      "question_version": 1,
+      "source_record_hash": "sha256:b92c8f1645a9aca8813de2704570b2abf1595e22f485980c41c404937cbdaf6d",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_TF_023",
+      "question_version": 1,
+      "source_record_hash": "sha256:4c3a37c9b37d09cde70dc2f5cc1d2b39035bd02a8fb770356623fad5d7d11ec8",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_TF_024",
+      "question_version": 1,
+      "source_record_hash": "sha256:60581b279a45f5a878aedf84288d03ef4ccf7979b8ea10c5a3e91ba1363fc3b1",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_TF_025",
+      "question_version": 1,
+      "source_record_hash": "sha256:9bda535e3f683bf5d3b1e1a3011fdcc76ee52b759cbb67a39d6f0c4bd6bc5b5c",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M1_TF_026",
+      "question_version": 1,
+      "source_record_hash": "sha256:90d3d09337bfeeae4c62f3a5ce7462c52b7762f4bd583906314d65d15aefa007",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_DG_023",
+      "question_version": 1,
+      "source_record_hash": "sha256:d2f526c240164e4fd12a87bfed3ede1c04ad352cece40e1f9fffe71ddf43e450",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_DG_024",
+      "question_version": 1,
+      "source_record_hash": "sha256:0c2e08612c070b4b8c1ac305c5b93f8cfaefffc03513ed91a3c9679223913f3b",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_DG_025",
+      "question_version": 1,
+      "source_record_hash": "sha256:6296b1786ad991ab2c1badf7d51b70c2add35af7b8159b7d7684b870852c6db0",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_DG_026",
+      "question_version": 1,
+      "source_record_hash": "sha256:cb97c3377c54548b0a2bebc538e6164faa80b98df23db0dca6389ae5f11e5ed0",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_OP_028",
+      "question_version": 1,
+      "source_record_hash": "sha256:6b1f461eb0ea94958383e83e5463d7d03c9d54b8a0e0bd922d007f50096a656e",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_OP_029",
+      "question_version": 1,
+      "source_record_hash": "sha256:b47e00ee5973fc77e081d45b25340d0d6ad8b0097b1c312e594bdf100246628a",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_OP_030",
+      "question_version": 1,
+      "source_record_hash": "sha256:f0aa14b3b2494b4949be6af3a1f7dcdf59eb790643edf2b51d9d4e897300c4ed",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_OP_031",
+      "question_version": 1,
+      "source_record_hash": "sha256:24390d0fa22be6bab0b586762491fca679269399a6d630fb239cb9b625a6a4a3",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_OP_032",
+      "question_version": 1,
+      "source_record_hash": "sha256:392a449265463854a76a0af8ba78fc6d9e035c75e86d2ade2a8beef4d390fefc",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_OP_033",
+      "question_version": 1,
+      "source_record_hash": "sha256:60511eac5361114cd0428c88f0d28118bc30bc8307886c3bfa862cb17eaeb448",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_OP_034",
+      "question_version": 1,
+      "source_record_hash": "sha256:b9a29239da692ae7f8fbb60978facf97b79eede011af625f9da0184d29306a1c",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_OP_035",
+      "question_version": 1,
+      "source_record_hash": "sha256:c7d2cd2d7b2eba8407456969825bd4e8518fe35c2d8b95b5ae30cf61cb5d585e",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_OP_036",
+      "question_version": 1,
+      "source_record_hash": "sha256:7593edbcfaa6d1f397153b216e7cb589ed0471018a615d436703735e24878d77",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_OP_037",
+      "question_version": 1,
+      "source_record_hash": "sha256:0c955d5604698c07cb30429882c0985285d87ddf87ab31b6bd80bac37353415f",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_OP_038",
+      "question_version": 1,
+      "source_record_hash": "sha256:4e19cfb61a36667bf9951dcb0c8802b437a75c078f3b9ccb0fe2d69bf69ed8d3",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_OP_039",
+      "question_version": 1,
+      "source_record_hash": "sha256:0efa502da1da7dbcfaaf3ef968d0e274fb855edeeb3995d80574b7a33072b14c",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_OP_040",
+      "question_version": 1,
+      "source_record_hash": "sha256:0e2a1ece4b14d667e83a6f444c6ad31fc886436d9b66a8dbb77f256956f4a45f",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_OP_041",
+      "question_version": 1,
+      "source_record_hash": "sha256:f089babeb1d7249d83d7bbc8635d144b2c7f7b76f6e8200e8c4c780ff65c30a6",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_SC_001",
+      "question_version": 1,
+      "source_record_hash": "sha256:ccd44feeb928a8c8ab326ea6967da33f9153b79933c7d5cdeeca63460355285c",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_SC_004",
+      "question_version": 1,
+      "source_record_hash": "sha256:3648a89eabd65b40103ae7e87e86564677f5d72a7b75034c12c7d3e986e4a7f0",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_SC_006",
+      "question_version": 1,
+      "source_record_hash": "sha256:efa0dace374fc0cd9290940cc46751ca9bca8ab2fb178376e4aeba6fbf391508",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_SC_007",
+      "question_version": 1,
+      "source_record_hash": "sha256:68c8443a715bac332ba777803c721d5144564912ffbb18b313d875f5992e4002",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_SC_008",
+      "question_version": 1,
+      "source_record_hash": "sha256:46a33101c6b48652c359c68d89450fdaeea9c7bf47a008f8fff57534d218fce5",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_SC_009",
+      "question_version": 1,
+      "source_record_hash": "sha256:d4f091e307bccc0819f13b546c34a05dc00b5a8eaa4e9f2f98c637d2709933d6",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_SC_010",
+      "question_version": 1,
+      "source_record_hash": "sha256:a7a61dd20d8962f779a947802c5970b18857b55d8fa214fc10f4055611754628",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_SC_011",
+      "question_version": 1,
+      "source_record_hash": "sha256:171a71b51ec7ad1dd4b7b52a3c197b16f6c7073d66f39d882d7577f06a8d62d4",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_SC_012",
+      "question_version": 1,
+      "source_record_hash": "sha256:634fb634c9b42377e83ed5bf01ac016ee680eb2c7bb7f14a88c2e6a641cf6f2a",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_TF_013",
+      "question_version": 1,
+      "source_record_hash": "sha256:63dd4ff2ef405cf4cbb443b2fe4c5bf698ef7cb3c76442e56402b6f5d64e4990",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_TF_014",
+      "question_version": 1,
+      "source_record_hash": "sha256:7f8affe8e5d0a92f64ffb0be7480d7a1a312476c7a3fd657ea60ae5df9b179ba",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_TF_015",
+      "question_version": 1,
+      "source_record_hash": "sha256:9754ac06ca1035426aba2020f2e1dbd7bc113af9246f61ee5b3e3d2eddf426e5",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_TF_016",
+      "question_version": 1,
+      "source_record_hash": "sha256:1b0dfcc9fef8c0d7b04976f419ec3da6acb4364c49c3544540b44ac60b35656a",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_TF_017",
+      "question_version": 1,
+      "source_record_hash": "sha256:3b4e3e70dbcfabc8e9016237cf3a9a7ee70c8e7c2463686424e51c890ba34e3d",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_TF_018",
+      "question_version": 1,
+      "source_record_hash": "sha256:d30f072d621302d482a06322aed58f006c6babccc933afa5cae82f45bfc7e90b",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_TF_019",
+      "question_version": 1,
+      "source_record_hash": "sha256:7e529ce211e579584efd9ab2d7b7bf62136b43cc2fc7135effa757d55264c936",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_TF_020",
+      "question_version": 1,
+      "source_record_hash": "sha256:8705ed8cc2dd9549b2b3bdf452b434d5fea60d745916bb87402b47ef51fd3644",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_TF_021",
+      "question_version": 1,
+      "source_record_hash": "sha256:640f82aaceb9125165f039d6d358e2da0c0a0249fdc6952b361dc2001f65f9fa",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M2_TF_022",
+      "question_version": 1,
+      "source_record_hash": "sha256:0c8aa644596f452f48b2610b41286a4c4d4fc667c1ca165c23828221a0a4b120",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_DG_037",
+      "question_version": 1,
+      "source_record_hash": "sha256:c7a41df5d2f61fe6c5a26370acbd2a6edfe22cdb8fa547c92e2f5e4281a347ea",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_DG_038",
+      "question_version": 1,
+      "source_record_hash": "sha256:1af9392297f57a6feb6076255f0bdd6fba66238ad078ccae57e72dec6069302a",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_DG_039",
+      "question_version": 1,
+      "source_record_hash": "sha256:863bf21ce7c91e21492dc58131e7854d163b6990b453b8de2bdf658eac90ec23",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_DG_040",
+      "question_version": 1,
+      "source_record_hash": "sha256:60cf221e3409c467002bf512aaca11b46549bfae89a241541e89953ff5cc36f4",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_DG_041",
+      "question_version": 1,
+      "source_record_hash": "sha256:7c35803b1f4f57dd15685999f4219513871cf1b8083dc69200bb9bd14623b145",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_DG_042",
+      "question_version": 1,
+      "source_record_hash": "sha256:e8ee80027734ed6a7a2a8f991b277056b90c94e6feb8ded5d3fe4a1f7177d63f",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_OP_044",
+      "question_version": 1,
+      "source_record_hash": "sha256:230e7fb0783e9b6931595463134a8ce012eb35d629d6a437b613b3c7e2acea7d",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_OP_045",
+      "question_version": 1,
+      "source_record_hash": "sha256:9e764258765fbcdc65994d9311987e7159fef456efa5365691992539a271f5f0",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_OP_046",
+      "question_version": 1,
+      "source_record_hash": "sha256:4b858eb9ff0673afe1eba9d886b2ea4c523f37fd2ec5dcc0f7e724cd8e548b65",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_OP_047",
+      "question_version": 1,
+      "source_record_hash": "sha256:24ec376b9bc813f24b2545e330b882a24c38ae0d6f21c881e2e259711c638b7e",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_OP_048",
+      "question_version": 1,
+      "source_record_hash": "sha256:f8c325f04c6884b3b6ed03901376453a226cf8821c615a8cb2f346a83613053c",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_OP_049",
+      "question_version": 1,
+      "source_record_hash": "sha256:d7bbb0a47e054e72436b839f213025688d513da02a969404eb836d7b6ed6d2d7",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_OP_050",
+      "question_version": 1,
+      "source_record_hash": "sha256:c3d15bd745f6822d41da6d09ec63d7281dad4ff7c90ff33b725fd9146231f371",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_OP_051",
+      "question_version": 1,
+      "source_record_hash": "sha256:fad6bb7a335ba08e7cc21947a28b68621e16df03e8bc13b745c803d370f6c451",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_OP_052",
+      "question_version": 1,
+      "source_record_hash": "sha256:83b0ae23601831eba260cc4182493571bed2bf7b37cc7a4ed98d2d7a19ca6e0c",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_OP_053",
+      "question_version": 1,
+      "source_record_hash": "sha256:c39d7cb09fc12bcba611c99cf7cbf40a2f6ba423dcb3a1dff3882740af951b50",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_OP_054",
+      "question_version": 1,
+      "source_record_hash": "sha256:3fa3f8ad8bd1c590462030484610da2315532ae584eb0356bc2510dadccfa3a2",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_OP_055",
+      "question_version": 1,
+      "source_record_hash": "sha256:871362fc9d5f7671d7156433d36701f759f34294354064e34bc1043c8a9c5339",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_OP_056",
+      "question_version": 1,
+      "source_record_hash": "sha256:05e913e0302a15f7587156337f41954fe4ff3062dabf8a0cb887826b7627b1d5",
+      "content_conclusion": "REJECTED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REJECTED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_OP_057",
+      "question_version": 1,
+      "source_record_hash": "sha256:b0c2dbe6a7b339fdb09f0faf523c96f3dd74d685611250a344b69f5e85b19738",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_OP_058",
+      "question_version": 1,
+      "source_record_hash": "sha256:4073da4ac8f425bc53f115cacd47e23c0395eef108ca76e5781af59549db3d64",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_002",
+      "question_version": 1,
+      "source_record_hash": "sha256:4a37d9ecbc394e2db2aa27964d3b4728456d64aef5087b11522fe31c229ac98f",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_003",
+      "question_version": 1,
+      "source_record_hash": "sha256:6f7fc172406a3b7c6c6d88c6c49fb3e18ade47ba1fd3daaae536e312b51f5e22",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_004",
+      "question_version": 1,
+      "source_record_hash": "sha256:b35cf17e459ee1c6a6d8d896737b8b70626ab629f126ed651554f7a14d04556f",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_006",
+      "question_version": 1,
+      "source_record_hash": "sha256:6e235851e3367c53dd402ae42ff9f010942f383eee8ec4aecec8f8f63ff6973a",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_007",
+      "question_version": 1,
+      "source_record_hash": "sha256:8c0119bed9f3ec374698005aeb0e1ed66fc2f1a4a36b7074e0f2fbb668081c24",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_008",
+      "question_version": 1,
+      "source_record_hash": "sha256:26af5f2e20419be8ddecb9b133f5d9cc1258e423128940bba5d1a2baf00cb386",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_009",
+      "question_version": 1,
+      "source_record_hash": "sha256:28e8df2e96d4227f28c4693c517bcf33952ba990fb97e6f26c499aba55819313",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_010",
+      "question_version": 1,
+      "source_record_hash": "sha256:b60e9710acc9d73b943c9403389f09b764104a7ac5f6cfd07d1014f9b6042d54",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_011",
+      "question_version": 1,
+      "source_record_hash": "sha256:2838d88b6d234a8c97ba930916f23b51121ecd20f70d486680ae50825015bc41",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_012",
+      "question_version": 1,
+      "source_record_hash": "sha256:e664be7321e20ce6596aef7558381c6608815cda2f88980481199ebf6966204a",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_013",
+      "question_version": 1,
+      "source_record_hash": "sha256:2e071a5ccabcb0010db3e6650308f08525a8f4d5d2491064bd2344f4c13ff52e",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_014",
+      "question_version": 1,
+      "source_record_hash": "sha256:15cebad551ad88bb1ac9b48bc80fa546df9e512df56d84e1269ef686c52c2ef2",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_015",
+      "question_version": 1,
+      "source_record_hash": "sha256:b25623e6175ff4b22ab8e656f83377d1c8d7a1f0066a04c7d0cec6b907a67cb3",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_016",
+      "question_version": 1,
+      "source_record_hash": "sha256:afed4fa9eee105c349bba97134746b068002ee557bb6e11d89802fc1fae61d7a",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_017",
+      "question_version": 1,
+      "source_record_hash": "sha256:0e8cd5c425e7b97dd190b25fd5042667b8a67e0ec12698b09ba19b22a8acdc6c",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_018",
+      "question_version": 1,
+      "source_record_hash": "sha256:c0a5952e518e8086fd1d37c8709205f4a79fa8552d9320cccdcf3196377d183d",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_020",
+      "question_version": 1,
+      "source_record_hash": "sha256:0a80ca5456584a74e7bc9fb43fc313a1fc3a7ebfcc6fa0b88e7aff6cd2deb60f",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_021",
+      "question_version": 1,
+      "source_record_hash": "sha256:94240539c86eb3f4a83b13b03bf4cb0e4c0f4cb4331e52a29be1f24a91a53b94",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_022",
+      "question_version": 1,
+      "source_record_hash": "sha256:ae3fbb6461ebd3f9f311e73b1f6ddfbaf8156e6ff22a5b08a9094ca113c100e0",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_023",
+      "question_version": 1,
+      "source_record_hash": "sha256:1b41932f81d48595d167a641e13fbf3aacc0187200067e7066784c58b5744999",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_SC_024",
+      "question_version": 1,
+      "source_record_hash": "sha256:23ec06eeedfbdb6d4be24c77b9211e0590bfadee71d59b10428becca29fef5c8",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_TF_025",
+      "question_version": 1,
+      "source_record_hash": "sha256:05f0f3fd49989092cf7f096aa3a7057316572225c11518f42f6692f860f4b854",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_TF_026",
+      "question_version": 1,
+      "source_record_hash": "sha256:cc69a8c33e6523e52e72e7842ab01f1e7a092f3c6d65165f0a817dec5ff3874e",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_TF_027",
+      "question_version": 1,
+      "source_record_hash": "sha256:fb3d8b2a4cc4eb438021ea7e09a0cd656033ec84f31b8466761f4b47d0bf75fe",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_TF_028",
+      "question_version": 1,
+      "source_record_hash": "sha256:b4ea0ad7a57a4da697306e07b35a6a6120defc15545de3b5b2debdcfcbcd6447",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_TF_029",
+      "question_version": 1,
+      "source_record_hash": "sha256:7871f8c93cec7848f65fa5aac6d1191e5dd14c811f9bb96142433460ae581a91",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_TF_030",
+      "question_version": 1,
+      "source_record_hash": "sha256:104b76c9d89477b295e9720091448cbf1edc99907c94fb79f6a8f489068dd423",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_TF_031",
+      "question_version": 1,
+      "source_record_hash": "sha256:9d94375246090c2eba8a68ddc1806d305af44701d8c97949166a2b5b3f57595b",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_TF_032",
+      "question_version": 1,
+      "source_record_hash": "sha256:d7924e95550026a44703d0849b4d7e7c69b1a054092d504c0e71daa7f13bf021",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_TF_033",
+      "question_version": 1,
+      "source_record_hash": "sha256:846fb48c30e6967f3d371062b56a287dbcea9a154234728dcddbdb03c3b03e50",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_TF_034",
+      "question_version": 1,
+      "source_record_hash": "sha256:b468663122a1b20f3d82062f87b60906f5d76f9cd75986ed8f1203a5f99ce894",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_TF_035",
+      "question_version": 1,
+      "source_record_hash": "sha256:c7a26c0423ab1c4eb8a0e494ebc8c21d0ecd82be80017575aee4cb09c479ffb0",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M3_TF_036",
+      "question_version": 1,
+      "source_record_hash": "sha256:7ea0cf74d83dca244a676bca0aa6b5bf01137bc5b0a6f5e66158a7127316c2b6",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_DG_023",
+      "question_version": 1,
+      "source_record_hash": "sha256:6d43b9bc83607ff6864c4449b90ae6d78e451024497094f55fe742c15df118b2",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_DG_024",
+      "question_version": 1,
+      "source_record_hash": "sha256:e8561ce32000326e1ce227f7e0757dd3a19e8c74d103f7506fb6fa52d518d83e",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_DG_025",
+      "question_version": 1,
+      "source_record_hash": "sha256:d9e346ae2260e29c3f44684d349c0f462a02cb356af4b9f3651a577517209f9d",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_DG_026",
+      "question_version": 1,
+      "source_record_hash": "sha256:c2dd316d5093ea2f59308c85c2d9ac41d14034539de05f99015ed8a3c8d88a03",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_DG_027",
+      "question_version": 1,
+      "source_record_hash": "sha256:c112a3dea2ea2c2b36a1b73c64e284da6c5f58d4a844fcf2735ad11704f015fc",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_028",
+      "question_version": 1,
+      "source_record_hash": "sha256:93dcb696a4447cca6f9d62c754193e4ac83e32bb5555ac1417403387b5fd5076",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_030",
+      "question_version": 1,
+      "source_record_hash": "sha256:3c0e01e971e10089a5528ae7186af37418a1824547be25ff71dd40b988227c07",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_031",
+      "question_version": 1,
+      "source_record_hash": "sha256:e4d7460ac127ea47f9088b817b87dad1ff66a4a024967f19b33c736492a7f3f9",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_032",
+      "question_version": 1,
+      "source_record_hash": "sha256:0611cf3684f3a1ef41de341bd18ac799b43fd86378e16c65044942888306cfab",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_033",
+      "question_version": 1,
+      "source_record_hash": "sha256:2faad8e4ae1342155460403b3c2736034faf49dbf53ee17c721024c5629194a2",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_034",
+      "question_version": 1,
+      "source_record_hash": "sha256:6e1a279eb820a8bec3d53b3572ada71540848ab1a87432078902d296c732d132",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_035",
+      "question_version": 1,
+      "source_record_hash": "sha256:55945ed697812df922ef05a54368f434cd22620cfaa619fbaecb4509cd0a1fa1",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_036",
+      "question_version": 1,
+      "source_record_hash": "sha256:9828befb2ece4082cf644fecdcabdc4e28ef811556187972589c203edf59fcb0",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_037",
+      "question_version": 1,
+      "source_record_hash": "sha256:f090e6033e6238de5ee210a6c4b3e777a333b5419b8f3efbe9db993acbb8ad4d",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_038",
+      "question_version": 1,
+      "source_record_hash": "sha256:414971403738b0d67d8d13167063fe12f1ec6a701cc66a9cd3e86ff4cf18e71f",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_039",
+      "question_version": 1,
+      "source_record_hash": "sha256:ae775a0dbbe3d04c95fe8645bfeb7f0cb21e6962643d5747b45d32bcd337b2f0",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_040",
+      "question_version": 1,
+      "source_record_hash": "sha256:a021eac84c24e9d0b6895958c461903611470113c1ebb13ff13c4947c13113c2",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_041",
+      "question_version": 1,
+      "source_record_hash": "sha256:2620c88edd0fcd9abfe9fd6fe82c3b9415bd06c93985ebae87ecd254649530cf",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_042",
+      "question_version": 1,
+      "source_record_hash": "sha256:eeb6fc0956db5f6ab7e26d76bd041421e18ce89a473ffc5684631264935765cf",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_043",
+      "question_version": 1,
+      "source_record_hash": "sha256:3eb4b8bfca8c35bbfd4539f834d4a83783651bb5f87605b21071a6c44652cc21",
+      "content_conclusion": "REJECTED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REJECTED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_044",
+      "question_version": 1,
+      "source_record_hash": "sha256:87fda31a32c0782139bf956eaa1a9d05376cd08b50218976f4e9a27c69173fab",
+      "content_conclusion": "REJECTED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REJECTED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_045",
+      "question_version": 1,
+      "source_record_hash": "sha256:a443fc7b83294a11dd79a8f125ad12d398f30614f8e5de146f585d08132514fa",
+      "content_conclusion": "REJECTED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REJECTED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_046",
+      "question_version": 1,
+      "source_record_hash": "sha256:b2e67c3e38195666c88504f3141e0c32aff3e9561a717f991913c9a9ea07968f",
+      "content_conclusion": "REJECTED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REJECTED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_047",
+      "question_version": 1,
+      "source_record_hash": "sha256:bb59c4e3f037545d84e854f9aa32a9b4240a4fb4a112b401185510ac108d6880",
+      "content_conclusion": "REJECTED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REJECTED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_OP_048",
+      "question_version": 1,
+      "source_record_hash": "sha256:0963e4f2f42932579720d5cba1f3462c64e794a486ae7cd7ced44e699c670b95",
+      "content_conclusion": "REJECTED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REJECTED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_SC_002",
+      "question_version": 1,
+      "source_record_hash": "sha256:fb4ba8ea6557acbfb4257395f9ba562916e317c32b960495f9d043c1f2b5464b",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_SC_004",
+      "question_version": 1,
+      "source_record_hash": "sha256:532d4ea9db1b292996764163eb557cf13b38e8850b80dd3e2cffde106590f667",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_SC_006",
+      "question_version": 1,
+      "source_record_hash": "sha256:6d6424b6a5dcab84479b04cd844a3b184054e8c3c1bd7337c233fceb3ed4d477",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_SC_007",
+      "question_version": 1,
+      "source_record_hash": "sha256:068d957b2daae591d9a58145fc823417087696b216b42b75c5c14c8f0b41810d",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_SC_008",
+      "question_version": 1,
+      "source_record_hash": "sha256:c6d6b7bfbb8e91f5f5ecd7707ce605f3c24f7f225f4dd8eddea4c05e219928d9",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_SC_009",
+      "question_version": 1,
+      "source_record_hash": "sha256:f12d878aca577721a5dffb0e68cb68860109377b9a49c8c86223a935e77b8464",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_SC_010",
+      "question_version": 1,
+      "source_record_hash": "sha256:67f395f9136029aabd259ba8c99bdd4a84e9ca042ded339f24af3a8e3d24ff1d",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_SC_011",
+      "question_version": 1,
+      "source_record_hash": "sha256:4d9318e4c62f1fd60c34a5863323bc883a709d6d45579e4fdf7ce880cbbbe75c",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_SC_012",
+      "question_version": 1,
+      "source_record_hash": "sha256:03488dc027ca0110db824454cc05947613824bd064f66e0e2ba5679e18c26e5d",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_TF_013",
+      "question_version": 1,
+      "source_record_hash": "sha256:d20ba3d4d9d2ceba390551c4f9e06a79ab5f74295875625a3bd7f318e38cd0a4",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_TF_014",
+      "question_version": 1,
+      "source_record_hash": "sha256:4d9b63c1dabfbb2ec50a0b4df201135abc9c09798be7a288b6b9952d2206d104",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_TF_015",
+      "question_version": 1,
+      "source_record_hash": "sha256:052e907dcc4484fab02b12ba80101ce68d16b5a035d68a0be38089dd6e14c28e",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_TF_016",
+      "question_version": 1,
+      "source_record_hash": "sha256:f0ba352b4b5046a87792eb5db130502b2194cc32676f1ef1c99af7afdb7c84c2",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_TF_017",
+      "question_version": 1,
+      "source_record_hash": "sha256:0663d358219349fbc7c1d029964fdeca8bee4fda8b08abb1a94d0cf390aae1df",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_TF_018",
+      "question_version": 1,
+      "source_record_hash": "sha256:2778b81d36da115748cd9c3cdc99445c32e14b8049951807532e37eca16fe2fe",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_TF_019",
+      "question_version": 1,
+      "source_record_hash": "sha256:af5b0e8dffc4f9d763b69362e1610f747c022692ceabb587f1b17613318e485b",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_TF_020",
+      "question_version": 1,
+      "source_record_hash": "sha256:1ca7842ed5bc7c79024b8a1dc0da8effb5be2d55556dce4ffc4dd89910d048f9",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_TF_021",
+      "question_version": 1,
+      "source_record_hash": "sha256:d760da4a4fbe296016a34017667f3339e3372a0ffb20c66df1f54d6c4d068a88",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M4_TF_022",
+      "question_version": 1,
+      "source_record_hash": "sha256:8f63c268b1d9d48f1a0f58af87d7801fc11a380c78f30c29bd0862667d036357",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_DG_033",
+      "question_version": 1,
+      "source_record_hash": "sha256:f23d7d4be00c36e38bf5f5dfa1db84db15f2124a944afb03a158262cc87763e2",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_DG_034",
+      "question_version": 1,
+      "source_record_hash": "sha256:52f373f4f2b37bff6363724ad46a080886b33d984a5a99f48b6869100e586115",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_DG_035",
+      "question_version": 1,
+      "source_record_hash": "sha256:4252c9d0af32ffa33a26d01132fde01b4a5deca507283cfe010b2184a134eeab",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [
+        {
+          "conflict": "内容审核的建议映射要求先说明问题再找负责人，但同题修改意见要求先找负责人再说明问题，步骤顺序相反",
+          "resolution": "采用 i2 → i1 → i3；将 i3 改为“复述确认并执行指示”；即时安全风险须先采取本人权限内的现场控制措施。",
+          "resolution_id": "job-skill-shelver-298-m5-dg-035-conflict-resolution-2026-07-20",
+          "source_file": "doc/features/job-skill-shelver-298-review-conflict-resolution-m5-dg-035-2026-07-20.md",
+          "source_file_hash": "sha256:2e76f620632b76439a3f607ea2487f65ed28087085a5c0ae52470e229288e141"
+        }
+      ],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": "job-skill-shelver-298-m5-dg-035-conflict-resolution-2026-07-20"
+      }
+    },
+    {
+      "question_id": "M5_DG_036",
+      "question_version": 1,
+      "source_record_hash": "sha256:7dd612436f5ca20907f6a6eaf4a944c7b8e77de1c845f143452931514591fa8f",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_DG_037",
+      "question_version": 1,
+      "source_record_hash": "sha256:36774deb527d6d9aadcbf9928b72897100aeb5c8ca5a0efa8b6e6ff66ef16a11",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_DG_038",
+      "question_version": 1,
+      "source_record_hash": "sha256:b17ebcc3368fba63d19ee160cb1b620334558fe5e312b8aa736890d897029bf8",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_OP_040",
+      "question_version": 1,
+      "source_record_hash": "sha256:330cbc3b1310b0af6afd9a0ffde357a9cf7acd2b6145fdee883eca3c59558732",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_OP_041",
+      "question_version": 1,
+      "source_record_hash": "sha256:1937771bff784ac4f9d22ea0587b4838fa405f7448647a65ed85c7265dc88100",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_OP_042",
+      "question_version": 1,
+      "source_record_hash": "sha256:6d1d63c701027889604a4303a524ad169aa3a5e8ae2d3f6d36d9c40518e5a383",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_OP_043",
+      "question_version": 1,
+      "source_record_hash": "sha256:a49f1551ff281d638f15092cddd63f090c9766b011e9854f2c5a671b6948b660",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_OP_044",
+      "question_version": 1,
+      "source_record_hash": "sha256:02b17029eee112e5856ecdf5cdfb91c4737a5c453b392e90037e4e00fe157d21",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_OP_045",
+      "question_version": 1,
+      "source_record_hash": "sha256:3e48bbb093dabb1e9e9d9cc49088fb89b4708e6248182946516eec47565a4696",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_OP_046",
+      "question_version": 1,
+      "source_record_hash": "sha256:baa517edf3efe250e599e163ec9ca39373ad3e687902c1bdbca03dd2fc7ae882",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_OP_047",
+      "question_version": 1,
+      "source_record_hash": "sha256:7a5e4e482325e7a576503322d993677d0f2033383f3491f22154d9b44a32f7a3",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_OP_048",
+      "question_version": 1,
+      "source_record_hash": "sha256:c3c543cda8cb036cf94cbd71f1c6f2c7c9ad05c1023d2eed5641762010459f09",
+      "content_conclusion": "REJECTED",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REJECTED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_OP_049",
+      "question_version": 1,
+      "source_record_hash": "sha256:e068d4abb6980263c2ddeef39d999f8230aa987e482ba26ba4581fed99ec0fa0",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_OP_050",
+      "question_version": 1,
+      "source_record_hash": "sha256:e82b4eba62b1cef661d21727441a9de1c7a660f1f8000a93f50550e21e7d6322",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_OP_051",
+      "question_version": 1,
+      "source_record_hash": "sha256:dd3233551b6ffb61222d0cb180ae192293ae2a080c417131f1770417f90805fb",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_OP_052",
+      "question_version": 1,
+      "source_record_hash": "sha256:78614f37bab5a97033ec40b7bd13cc15b06bf844b2774adb48992700c2cd5004",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_OP_053",
+      "question_version": 1,
+      "source_record_hash": "sha256:14f740903fb06250d7d733bbf9e81fdc314b77664221019ecbeea780f33776c8",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_OP_054",
+      "question_version": 1,
+      "source_record_hash": "sha256:98e5d469a724dfb33480d6a0747a4ff188661a347ef642721c6aacb148c4f6c9",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_OP_055",
+      "question_version": 1,
+      "source_record_hash": "sha256:e89d44b8f08b972b6880b0cb3271b13e2ff86e3435d1dae77f4e19abfd6de1eb",
+      "content_conclusion": "REJECTED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REJECTED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_SC_003",
+      "question_version": 1,
+      "source_record_hash": "sha256:a7accbb82230f5151052c44b40a98cdcc364967c8e306537c678fc7e351054d0",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_SC_004",
+      "question_version": 1,
+      "source_record_hash": "sha256:22a6fcbdcb7d64de5a88074453f226ae3f3f8c26e8ac64636b9beca11835fa93",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_SC_005",
+      "question_version": 1,
+      "source_record_hash": "sha256:c22996afeb43a99ac357dce6ddb9065fe66b7acb12f2f847423474bee04197a3",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_SC_006",
+      "question_version": 1,
+      "source_record_hash": "sha256:82b5f8f5e45682538d5237b19512a620cc8b2dc2eef5853c782528d303c4677a",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_SC_007",
+      "question_version": 1,
+      "source_record_hash": "sha256:c29262435b521ca83dd12488564bd87029680688544610ba9244526ee1d97920",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_SC_008",
+      "question_version": 1,
+      "source_record_hash": "sha256:55c023943720b28f6fe23092ae28e49a32bc01b755134035bc9c60b2945e5d75",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_SC_010",
+      "question_version": 1,
+      "source_record_hash": "sha256:07399f752ef256accb8325db6edef3eeb253d87406decf028e0a657714583e5a",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_SC_011",
+      "question_version": 1,
+      "source_record_hash": "sha256:3336105ec010dcf96d39551cc0399e53f1032dc0de5ab536210a93181c009dd7",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_SC_012",
+      "question_version": 1,
+      "source_record_hash": "sha256:bed769bd98c916ab8c2e2e87d4684fc1f3ac187e48b9b379c0c5d2af0cbdbfbb",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_SC_013",
+      "question_version": 1,
+      "source_record_hash": "sha256:08b68a9284ee4cd35812f2cccf52344883ee321f7eba29c546c4bf92b71c7bb3",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_SC_014",
+      "question_version": 1,
+      "source_record_hash": "sha256:0c89181b215fbdddba3676ea27194eae2cca29b27c77181eee203a3c75e206a1",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_SC_015",
+      "question_version": 1,
+      "source_record_hash": "sha256:e1026399a71b4ca5cbfccc69cdec40546c6a18edf57dba537adf2bb94d370ece",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_SC_016",
+      "question_version": 1,
+      "source_record_hash": "sha256:85f58db69d484aaeeac9cc03aeb20b021f0b37bb6fa9aa9037daaea211f7b4dd",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_SC_017",
+      "question_version": 1,
+      "source_record_hash": "sha256:b6118a485778add28f74038299387cb9bf26d136e6baca757dc58cde6f4fb000",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_SC_018",
+      "question_version": 1,
+      "source_record_hash": "sha256:35f17c121d9705a1dc9fdffa4d0764443e11c547ee44cecae3ff0bca682fc085",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_SC_019",
+      "question_version": 1,
+      "source_record_hash": "sha256:895c334cb29ee9615d580331e47e8e6202066c628e77cdfefea92ff619443578",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_SC_020",
+      "question_version": 1,
+      "source_record_hash": "sha256:06df21fc24574ec879ea3c387c18b33b648e0876e767b4f5d5ff882d7ec01ea0",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_TF_021",
+      "question_version": 1,
+      "source_record_hash": "sha256:e0a1e0f99ded9f758418465e5211a81405a8170478d7eecac31c4acdd9a63afa",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_TF_022",
+      "question_version": 1,
+      "source_record_hash": "sha256:e82cb38a1f541a4963bd89c5be4ba813f85f47d5581574b2f6f943929667d672",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_TF_023",
+      "question_version": 1,
+      "source_record_hash": "sha256:60110dad0adecb957c5921c8eed5e14fec05f42a7f8d088d4a7d2816b5477bec",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_TF_024",
+      "question_version": 1,
+      "source_record_hash": "sha256:ae694b35d5ea45309410d06dadf7eadc49ade10c7e55d09db4e88bc885f9df50",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_TF_025",
+      "question_version": 1,
+      "source_record_hash": "sha256:4a52a9a83679fdd61343eda1cdae1da6240a7d06b30f4dbab0c0acf27c9ed8ca",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_TF_026",
+      "question_version": 1,
+      "source_record_hash": "sha256:6dc00e62ebbb777c9c1be4f6828024b02755905d88efc11a104120c2eff4bb4d",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_TF_027",
+      "question_version": 1,
+      "source_record_hash": "sha256:918c1401e235409d4d5fc5838676aba19a2ca340488f92d880084f0890de2720",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_TF_028",
+      "question_version": 1,
+      "source_record_hash": "sha256:7ca133aa9a32b02df2c7559fa0ee07c8702a8b77cc7b317109e9a636ecbb0378",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_TF_029",
+      "question_version": 1,
+      "source_record_hash": "sha256:79abd5fcbf8bfe90cbc5193c5d458853710739999fc140cfce8194b00390b9a9",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_TF_030",
+      "question_version": 1,
+      "source_record_hash": "sha256:9a89116e1deaf7cc5e3951e088da105ed20d5baa94a8bad338689799805e6764",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_TF_031",
+      "question_version": 1,
+      "source_record_hash": "sha256:724d3be794a89dec8c6b3d8d98bcc9bf252ebd0bd3f96e2f78d3e4f6069f4417",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M5_TF_032",
+      "question_version": 1,
+      "source_record_hash": "sha256:00df5f8455203a4c018a3e67d5ea1cc19e7dee5034c0ebb2501d3af153fef16f",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_DG_027",
+      "question_version": 1,
+      "source_record_hash": "sha256:5aec7d9dd947770911868012b2aac2343d96afadf8c60dbd837d05793ac63098",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_DG_028",
+      "question_version": 1,
+      "source_record_hash": "sha256:761a480b9088ad256239c9d32a8c669840bfe86294364d51b6a6250fc588b52f",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_DG_029",
+      "question_version": 1,
+      "source_record_hash": "sha256:b0b25aebf9e214705b7fc6082139691eda0606c2410b82172df8496d157053a8",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_DG_030",
+      "question_version": 1,
+      "source_record_hash": "sha256:d65992f0dcc5bd33ef29c72ab226b8233644a7ed57edbdb84283ec4b24d34b42",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_DG_031",
+      "question_version": 1,
+      "source_record_hash": "sha256:1d41afb566cfbaed2337729737aec1e1e0b910a793b8e85b60ec8ddf7d421133",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_DG_032",
+      "question_version": 1,
+      "source_record_hash": "sha256:68e0744e229471fdc0b6fdacaeb1b835c28a80a864e1fff2f50a4b2d23fb1b77",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_DG_033",
+      "question_version": 1,
+      "source_record_hash": "sha256:fb142666ce97656783204f1575c4ae8274236af2e98f661815f86ec503db068b",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_OP_034",
+      "question_version": 1,
+      "source_record_hash": "sha256:bafe20ec356bf9f8bfb6d89aa89da7a9ab11ad46156039e9a1020cdd1a8772e1",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_OP_036",
+      "question_version": 1,
+      "source_record_hash": "sha256:047200a50348decfedba98253e3d2c4a217721d314e17660b78c8fb76524a57f",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_OP_037",
+      "question_version": 1,
+      "source_record_hash": "sha256:e68f1ec89e35936b261aec5d9936e7c6b6b0ebebf16873b5e384810c264754fb",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_OP_038",
+      "question_version": 1,
+      "source_record_hash": "sha256:306002ed25667d1f369844c441fc5c7bae94e929e5908fbd45ef74c03315d324",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_OP_039",
+      "question_version": 1,
+      "source_record_hash": "sha256:5ab2b4c859b446df2308657e7853789d6b10db465c84bf33ee7653ee24358790",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_OP_040",
+      "question_version": 1,
+      "source_record_hash": "sha256:eb3b029124a8b2449649d3892105b3163a140940cd9de70468c0ddc15dde7645",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_OP_041",
+      "question_version": 1,
+      "source_record_hash": "sha256:c7ba4f43eadd5583c54f0e6c6b9dd3961c126454446fe018b1afe61e54e1cb0e",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_OP_042",
+      "question_version": 1,
+      "source_record_hash": "sha256:7f25cff85bf39802e6f0d781757df2138dfde2b0dd19a73cf257aaa2a12ba5af",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_OP_043",
+      "question_version": 1,
+      "source_record_hash": "sha256:096d7cc04f22d5d895b7fbcf331752ceea71684884824a0c771e90fff6207684",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_OP_044",
+      "question_version": 1,
+      "source_record_hash": "sha256:5bdaf35cc9fbf1fcebf5183b1f6b91c34a27a478304d351bb821482a29c6538b",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_OP_045",
+      "question_version": 1,
+      "source_record_hash": "sha256:4e6b1d512750057817cbda3763fb802376986652ca3a7da6bd83ef9eff7dda48",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_OP_046",
+      "question_version": 1,
+      "source_record_hash": "sha256:a1b0b4b4c84deff4ef6bd4411e1415f8ccbc89baa0f07700dc0f46403f7b9488",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "RETURN_FOR_REVISION",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_OP_047",
+      "question_version": 1,
+      "source_record_hash": "sha256:4d110f9d9fd4f69ae11325f57f4b23044c94cb78ceb07d24fff0e9bf7aaf5e48",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_OP_048",
+      "question_version": 1,
+      "source_record_hash": "sha256:b0a23d69bd8905c37368fd8d8208e3f92f01e640e4a8a27349a93c0e0a235312",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_SC_001",
+      "question_version": 1,
+      "source_record_hash": "sha256:39541e521e4055d206eb87d3b571abd49f19e8a7ffcd050f91e0d54dbe34b547",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_SC_002",
+      "question_version": 1,
+      "source_record_hash": "sha256:3d0a5f89d2920d38b7138fa7451fba29e36c09980796d5e6fbd8837627623d4b",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_SC_004",
+      "question_version": 1,
+      "source_record_hash": "sha256:5c68fde81a1c54d69d17534a1432ff86cc886ddadc4c81d858d87cf8904fb594",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_SC_005",
+      "question_version": 1,
+      "source_record_hash": "sha256:08a5d4cd5a8352595f8c93ff781c57651d2bca31d08588f162bdd167ab48c6c4",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_SC_006",
+      "question_version": 1,
+      "source_record_hash": "sha256:26cbde35492734ce467dadf22483309210b5189c961911ee6fb1e47f6c31ec0c",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "RETURN_FOR_REVISION",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_SC_007",
+      "question_version": 1,
+      "source_record_hash": "sha256:7bbba9baf60b4cb201df50d4c14f4184ffe7e64412b66950f965a7f55cef40e3",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_SC_008",
+      "question_version": 1,
+      "source_record_hash": "sha256:c9fc828f35571ed1b2054a8f51dc3b60a93cab87f6d53e2ae773a431138590d3",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_SC_010",
+      "question_version": 1,
+      "source_record_hash": "sha256:08573783efffcefa9cf6edaa53abbb4efce94049449d9b33f1eabf5e34315bf2",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_SC_011",
+      "question_version": 1,
+      "source_record_hash": "sha256:66c4fd2ff0a1b7cc44c7825587aabbae6b1a22c5ba2e132d4195e67e13d5654a",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_SC_013",
+      "question_version": 1,
+      "source_record_hash": "sha256:7acfc6959814d1b86a22c1f706ef6248cb840a30abea681aec79ed6671098ece",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_SC_014",
+      "question_version": 1,
+      "source_record_hash": "sha256:16e054d0d9f1f5f18e25bc2ef987e6c66d0cf194c015937de908ca75e7e5d5fd",
+      "content_conclusion": "APPROVED",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "APPROVED_UNCHANGED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_TF_015",
+      "question_version": 1,
+      "source_record_hash": "sha256:9a0846058017e483e29da11f86b401970460885c0afe4764b4d709e97be1a4ac",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_TF_016",
+      "question_version": 1,
+      "source_record_hash": "sha256:aa3839b37329a99b1d7a62c13b671db925d3c4b657c62fd5879613451e4372ac",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_TF_017",
+      "question_version": 1,
+      "source_record_hash": "sha256:dfdd764d2974193a6659f22a0a25e39944ab42eeee22f41d9c44825a253dbc8e",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_TF_018",
+      "question_version": 1,
+      "source_record_hash": "sha256:160187b914f118b82f15d00aa7ce177cf51bae6953cfaf779e6e8127cdf0f06f",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_TF_019",
+      "question_version": 1,
+      "source_record_hash": "sha256:f13002e1f5afa7da8a080a2b8ca0f10717693d835355020b06f47c0806ab327f",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_TF_020",
+      "question_version": 1,
+      "source_record_hash": "sha256:193f8f7bf20ffd1b0121b07b6d8d74c59e80ae89239de3af462b825ca097c570",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_TF_021",
+      "question_version": 1,
+      "source_record_hash": "sha256:97f011f839d4ffbddd012f606c97b7e101b39f69cc15b6dbbd077541fc91c3f0",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_TF_022",
+      "question_version": 1,
+      "source_record_hash": "sha256:2e410f7a13912e6cab6321391e29e1fbf002bc400c4ae952dc863bc7dbeca56e",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_TF_023",
+      "question_version": 1,
+      "source_record_hash": "sha256:c74a13e626e93abba78e1c50105e26aac4bcae7d241db31830f424ca0177c8cb",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_TF_024",
+      "question_version": 1,
+      "source_record_hash": "sha256:eb9b806cea0aa09b5d03c26a8f2d1a5a2db255ea5cc65890e6d035b0de152e75",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_TF_025",
+      "question_version": 1,
+      "source_record_hash": "sha256:bff3bf7afdd77ed81d90d9267ecdcd9cbaf33133a6b4bcc8f1045dae0c22f78d",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    },
+    {
+      "question_id": "M6_TF_026",
+      "question_version": 1,
+      "source_record_hash": "sha256:56452ac180629792bb74a5e7605430e8463d2ad68c9d5a18e15eb81a5b803b08",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "safety_conclusion": "PASS",
+      "technical_conclusion": "PASS",
+      "merged_decision": "REVISION_REQUIRED",
+      "conflicts": [],
+      "resolved_conflicts": [],
+      "review_result_refs": {
+        "content_result_id": "job-skill-shelver-298-content-review-2026-07-19",
+        "safety_technical_result_id": "job-skill-shelver-298-safety-technical-review-2026-07-19",
+        "conflict_resolution_id": null
+      }
+    }
+  ]
+}

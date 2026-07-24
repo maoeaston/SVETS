@@ -247,6 +247,23 @@ describe('schema v0.1.10 scoring closure constraints', () => {
     })
     seedSystemEvent('ev1')
     seedSystemEvent('ev2')
+    seedSystemEvent('ev_missing_scope')
+
+    const scopeColumn = (db.prepare('PRAGMA table_info(offline_score_record)').all() as Array<{
+      name: string
+      notnull: number
+      dflt_value: string | null
+    }>).find((column) => column.name === 'score_scope')
+    expect(scopeColumn).toMatchObject({ notnull: 1, dflt_value: null })
+
+    expect(() => {
+      db.prepare(
+        `INSERT INTO offline_score_record
+           (offline_score_id, session_id, question_id, score, scoring_rubric_json,
+            scored_by, scored_event_id, task_operation_code)
+         VALUES ('os_missing_scope', 's1', ?, 2, '{}', ?, 'ev_missing_scope', NULL)`
+      ).run(q.question_id, teacherId)
+    }).toThrow()
 
     expect(() => {
       db.prepare(

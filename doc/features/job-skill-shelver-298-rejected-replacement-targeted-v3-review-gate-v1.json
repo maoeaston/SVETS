@@ -1,0 +1,90 @@
+{
+  "schema_version": "job-skill-shelver-298-rejected-replacement-targeted-v3-review-gate-v1",
+  "gate_id": "job-skill-shelver-298-rejected-replacement-targeted-v3-review-gate-v1",
+  "status": "PENDING_TARGETED_V3_REREVIEW_NO_ACTIVATION_AUTHORITY",
+  "generated_at": "2026-07-22T15:00:00+08:00",
+  "candidate_set": {
+    "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-candidates-v3.json",
+    "candidate_set_id": "job-skill-shelver-298-rejected-replacement-targeted-candidates-v3",
+    "candidate_set_hash": "sha256:6066f243639237f898095b79ecd667d93bf54a1dc2ecf39a85852d7df96870f4"
+  },
+  "review_routing": {
+    "content": [
+      "M1_OB_048_V3",
+      "M1_OP_042_V3",
+      "M3_OP_056_V3",
+      "M4_OP_045_V3",
+      "M4_OP_046_V3",
+      "M4_OP_048_V3",
+      "M5_OP_048_V3",
+      "M5_OP_055_V3"
+    ],
+    "safety_technical": [
+      "M1_OB_048_V3",
+      "M1_OP_042_V3",
+      "M4_OP_045_V3",
+      "M4_OP_046_V3",
+      "M4_OP_047_V3",
+      "M4_OP_048_V3",
+      "M5_OP_048_V3"
+    ],
+    "carried_forward_passes": [
+      {
+        "question_id": "M3_OP_056_V3",
+        "track": "SAFETY_TECHNICAL",
+        "status": "PASS",
+        "source_record_hash": "sha256:3e7482520b61eea56c7eb57a776994461c3fbeb6452380252b4cce4bd193c502"
+      },
+      {
+        "question_id": "M4_OP_047_V3",
+        "track": "CONTENT",
+        "status": "PASS",
+        "source_record_hash": "sha256:248557ffd348d730b142212239e3f9d2fab05e9bea3412ca4fbeae13511c0a69"
+      },
+      {
+        "question_id": "M5_OP_055_V3",
+        "track": "SAFETY_TECHNICAL",
+        "status": "PASS",
+        "source_record_hash": "sha256:65eff944f2b4732800c4c8da1033bb0d1d6cc0c3bb6dc1edd5727b457db232d3"
+      }
+    ]
+  },
+  "passed_v2_references": [
+    {
+      "question_id": "M4_OP_043_V2",
+      "candidate_record_hash": "sha256:27068d7eef3394c3c5d77827da331c5267b9b9fbc43d88d2d3796ba451ac1418",
+      "semantic_hash": "sha256:7df37f5d3f61aeb8fce82e17493401713b3cb84a72dfc9e540b20bd25127a119",
+      "review_status": "PASSED_REVIEW_ONLY_NO_ACTIVATION_AUTHORITY",
+      "merged_record_hash": "sha256:3a20abb36ac00779b76affb5076db6c7ba6943976dd0d22dc176152fe068ca16",
+      "activation_authority": "NONE",
+      "treatment": "PRESERVE_V2_AS_REVIEW_ONLY_REFERENCE_NO_V3_NO_ACTIVATION"
+    },
+    {
+      "question_id": "M4_OP_044_V2",
+      "candidate_record_hash": "sha256:5e3a6e7305b38d4ca5f0c11f97aa3590b9f8da731ebf725abb01a748b8632dff",
+      "semantic_hash": "sha256:d36525b4131dce063a73e55b7b661b6c076c36b96ceef5cef50acdbead3f4b82",
+      "review_status": "PASSED_REVIEW_ONLY_NO_ACTIVATION_AUTHORITY",
+      "merged_record_hash": "sha256:82ca1811bc593cd619875ff715a8b5004d62ffba144f77d9b6e701a61db8da41",
+      "activation_authority": "NONE",
+      "treatment": "PRESERVE_V2_AS_REVIEW_ONLY_REFERENCE_NO_V3_NO_ACTIVATION"
+    }
+  ],
+  "merge_rule": "Each V3 candidate must pass every required targeted rereview track. Carried-forward passes remain bound to their source hashes. No review result grants activation authority.",
+  "summary": {
+    "total_v3": 9,
+    "pending_v3": 9,
+    "content_pending": 8,
+    "safety_technical_pending": 7,
+    "passed_v2_reference_only": 2
+  },
+  "boundaries": {
+    "activation_authority_granted": false,
+    "can_activate_questions": false,
+    "existing_287_unchanged": true,
+    "rejected_originals_11_unchanged": true,
+    "runtime_database_unchanged": true,
+    "activation_sql_not_generated": true,
+    "delivery_lock_unchanged": true
+  },
+  "gate_hash": "sha256:76698f3e7aff0f832ec845285868019752736c6d38de920cd4af00b7a94604fe"
+}

@@ -1,10 +1,14 @@
 import Database from 'better-sqlite3'
-import { join } from 'path'
+import { createHash } from 'crypto'
+import { dirname, join } from 'path'
 import { app } from 'electron'
 import { copyFileSync, existsSync, readFileSync, mkdirSync } from 'fs'
 import { hashPassword } from '../utils/password'
 import devAccounts from '../../shared/config/dev-accounts.json'
 import type { DBAdapter } from './interface'
+import { getActionLogPath } from '../domain/action-log-path'
+import { writeEvent } from '../domain/event-writer'
+import { reconcileActionLog, writeRecoverySnapshot } from '../domain/recovery'
 import {
   assertCurrentDatabaseSchema,
   isFreshDatabase,
@@ -46,9 +50,13 @@ export function initDatabase(): void {
     assertCurrentDatabaseSchema(adapter)
     seedDevUsers(database)
     db = database
+    const recovery = recoverActionLog(database, dbPath)
 
     if (fresh) console.log('[DB] Initialized fresh schema')
     if (migrated.length > 0) console.log(`[DB] Applied migrations: ${migrated.join(', ')}`)
+    console.log(
+      `[DB] Recovery: replayed=${recovery.replayedEventCount}, skipped=${recovery.skippedEventCount}, truncatedTail=${recovery.truncatedTail}`
+    )
     console.log(`[DB] Ready: ${dbPath}`)
   } catch (error) {
     database.close()
@@ -56,6 +64,50 @@ export function initDatabase(): void {
     throw error
   }
 }
+
+function recoverActionLog(database: Database.Database, dbPath: string): {
+  replayedEventCount: number
+  skippedEventCount: number
+  truncatedTail: boolean
+} {
+  const actionLogPath = getActionLogPath()
+  const recovery = reconcileActionLog(database as unknown as DBAdapter, {
+    logPath: actionLogPath,
+    archiveDir: join(dirname(actionLogPath), 'recovery-archive')
+  })
+
+  // 快照记录的是恢复前已落盘 SQLite 文件的校验值。随后用同一事务写入恢复审计和
+  // snapshot_meta，避免审计事件已经可见而快照元数据缺失。
+  database.pragma('wal_checkpoint(PASSIVE)')
+  const sqliteFileHash = createHash('sha256').update(readFileSync(dbPath)).digest('hex')
+
+  database.transaction(() => {
+    const recoveryEvent = writeEvent({
+      aggregateType: 'SYSTEM',
+      aggregateId: `startup-recovery:${Date.now()}`,
+      eventType: recovery.truncatedTail ? 'RECOVERY_LOG_TRUNCATED' : 'RECOVERY_REPLAYED',
+      payload: {
+        replayed_event_count: recovery.replayedEventCount,
+        skipped_event_count: recovery.skippedEventCount,
+        truncated_tail: recovery.truncatedTail,
+        archived_tail_path: recovery.archivedTailPath
+      },
+      actorId: 'SYSTEM',
+      actorRole: 'SYSTEM'
+    })
+    writeRecoverySnapshot(database as unknown as DBAdapter, {
+      lastAppliedEvent: recoveryEvent,
+      sqliteFileHash,
+      actionLogPath,
+      archivedLogPath: recovery.archivedTailPath,
+      schemaVersion: '0.1.15-multi-device-m3-grant-assignment',
+      appVersion: app.getVersion()
+    })
+  })()
+
+  return recovery
+}
+
 
 function seedDevUsers(database: Database.Database): void {
   const tx = database.transaction(() => {

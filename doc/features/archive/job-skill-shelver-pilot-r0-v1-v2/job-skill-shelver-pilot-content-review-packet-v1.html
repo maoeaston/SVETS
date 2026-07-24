@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>超市理货员 Pilot 24 题内容审核</title>
+<style>
+:root {
+  --canvas: oklch(97.5% 0.009 246);
+  --surface: oklch(100% 0 0);
+  --surface-soft: oklch(95.5% 0.015 246);
+  --ink: oklch(25% 0.025 250);
+  --muted: oklch(51% 0.025 250);
+  --line: oklch(88% 0.018 246);
+  --brand: oklch(55% 0.17 255);
+  --brand-soft: oklch(92% 0.045 250);
+  --success: oklch(52% 0.13 155);
+  --success-soft: oklch(94% 0.04 155);
+  --warning: oklch(64% 0.14 62);
+  --warning-soft: oklch(95% 0.055 75);
+  --danger: oklch(53% 0.18 27);
+  --danger-soft: oklch(94% 0.045 27);
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --shadow: 0 12px 32px rgba(28, 46, 76, 0.10), 0 2px 8px rgba(28, 46, 76, 0.06);
+  --header-h: 72px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: -apple-system, "SF Pro Text", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  font-size: 15px;
+  line-height: 1.72;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+button, input, textarea, select { font: inherit; }
+button, label, input, textarea, select { touch-action: manipulation; }
+button { cursor: pointer; }
+button:active { transform: scale(0.97); }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, a:focus-visible {
+  outline: 3px solid color-mix(in oklch, var(--brand) 32%, transparent);
+  outline-offset: 2px;
+}
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 500;
+  padding: 8px 12px;
+  transform: translateY(-150%);
+  background: var(--ink);
+  color: white;
+  border-radius: var(--r-sm);
+}
+.skip-link:focus { transform: translateY(0); }
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  min-height: var(--header-h);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 24px;
+  color: white;
+  background: oklch(43% 0.12 255);
+  box-shadow: 0 2px 12px rgba(22, 44, 82, 0.18);
+}
+.brand-block { min-width: 0; }
+.brand-block h1 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.25;
+  font-weight: 760;
+  text-wrap: balance;
+}
+.brand-block p { margin: 2px 0 0; color: oklch(88% 0.035 250); font-size: 12px; }
+.top-progress {
+  width: min(360px, 36vw);
+  margin-left: auto;
+}
+.progress-copy {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 5px;
+  font-size: 12px;
+  color: oklch(91% 0.025 250);
+  font-variant-numeric: tabular-nums;
+}
+.progress-track {
+  height: 8px;
+  overflow: hidden;
+  background: oklch(35% 0.07 255);
+  border-radius: 999px;
+}
+.progress-value {
+  width: 100%;
+  height: 100%;
+  background: oklch(79% 0.14 151);
+  border-radius: inherit;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: left;
+  transform: scaleX(0);
+}
+.shell {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  min-height: calc(100vh - var(--header-h));
+}
+.sidebar {
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow: auto;
+  padding: 20px 16px calc(24px + env(safe-area-inset-bottom));
+  background: var(--surface-soft);
+  box-shadow: inset -1px 0 0 var(--line);
+}
+.reviewer-panel {
+  padding: 15px;
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow: 0 1px 3px rgba(28, 46, 76, 0.11);
+}
+.eyebrow {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: .08em;
+}
+.reviewer-name { font-size: 18px; font-weight: 760; }
+.field-label {
+  display: block;
+  margin: 13px 0 5px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+.date-input, .search-input, .select-input, textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--ink);
+}
+.date-input, .search-input, .select-input {
+  min-height: 42px;
+  padding: 8px 11px;
+}
+textarea {
+  min-height: 92px;
+  padding: 10px 12px;
+  line-height: 1.65;
+  resize: vertical;
+}
+textarea::placeholder, input::placeholder { color: oklch(65% 0.02 250); }
+.save-state {
+  min-height: 22px;
+  margin-top: 8px;
+  color: var(--success);
+  font-size: 12px;
+}
+.reviewer-tools { margin-top: 10px; }
+.filter-block { margin-top: 18px; }
+.search-input { margin-bottom: 10px; }
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.filter-btn {
+  min-height: 40px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  transition-property: background-color, color, transform;
+  transition-duration: 130ms;
+}
+.filter-btn.active { background: var(--brand-soft); color: oklch(39% 0.13 255); }
+.question-nav {
+  display: grid;
+  gap: 7px;
+  margin-top: 14px;
+}
+.nav-item {
+  position: relative;
+  width: 100%;
+  min-height: 52px;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 9px;
+  border: 0;
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  transition-property: background-color, box-shadow, transform;
+  transition-duration: 130ms;
+}
+.nav-item.current {
+  background: var(--surface);
+  box-shadow: 0 1px 3px rgba(28, 46, 76, 0.12);
+}
+.nav-index {
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.nav-copy { min-width: 0; }
+.nav-id { display: block; font-size: 12px; font-weight: 780; }
+.nav-prompt {
+  display: block;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+  text-overflow: clip;
+}
+.status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--line);
+}
+.nav-item[data-status="complete"] .status-dot { background: var(--success); }
+.nav-item[data-status="partial"] .status-dot { background: var(--warning); }
+.main {
+  min-width: 0;
+  padding: 28px clamp(18px, 4vw, 56px) 120px;
+}
+.content-wrap { width: min(920px, 100%); margin: 0 auto; }
+.notice {
+  margin-bottom: 18px;
+  padding: 12px 15px;
+  border-radius: var(--r-md);
+  background: var(--warning-soft);
+  color: oklch(38% 0.08 58);
+  font-size: 13px;
+}
+.notice.danger { background: var(--danger-soft); color: oklch(40% 0.13 27); }
+.notice.success { background: var(--success-soft); color: oklch(36% 0.09 155); }
+.question-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.question-number {
+  flex: 0 0 auto;
+  min-width: 52px;
+  padding-top: 3px;
+  color: var(--brand);
+  font-size: 15px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.question-title { min-width: 0; }
+.question-title h2 {
+  margin: 0;
+  font-size: clamp(22px, 3vw, 30px);
+  line-height: 1.32;
+  font-weight: 780;
+  text-wrap: balance;
+}
+.meta-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 9px;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 3px 8px;
+  border-radius: var(--r-sm);
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 720;
+}
+.badge.safety { background: var(--danger-soft); color: var(--danger); }
+.source-flags { margin: 0 0 16px; }
+.source-card {
+  margin-bottom: 22px;
+  padding: 20px clamp(16px, 3vw, 26px);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.source-prompt {
+  margin: 0 0 14px;
+  font-size: 19px;
+  line-height: 1.62;
+  font-weight: 720;
+  text-wrap: pretty;
+}
+.option-list { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
+.option {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 10px 12px;
+  background: var(--surface-soft);
+  border-radius: var(--r-md);
+}
+.option-key {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--brand);
+  font-weight: 800;
+}
+.source-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px 22px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
+.source-details strong { display: block; color: var(--ink); font-weight: 720; }
+.criteria-list { margin: 8px 0 0; padding-left: 20px; }
+.review-form {
+  display: grid;
+  gap: 18px;
+}
+.form-section {
+  padding: 20px clamp(16px, 3vw, 26px);
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow: 0 1px 3px rgba(28, 46, 76, 0.11);
+}
+.form-section h3 { margin: 0 0 5px; font-size: 17px; }
+.help { margin: 0 0 14px; color: var(--muted); font-size: 13px; text-wrap: pretty; }
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 9px;
+}
+.choice {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  min-height: 48px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  cursor: pointer;
+  transition-property: border-color, background-color, transform;
+  transition-duration: 130ms;
+}
+.choice:has(input:checked) {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.choice input { margin: 4px 0 0; accent-color: var(--brand); }
+.choice-copy strong { display: block; font-size: 13px; }
+.choice-copy span { display: block; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.field-block { margin-top: 14px; }
+.field-block .field-label { margin-top: 0; color: var(--ink); font-size: 13px; }
+.required { color: var(--danger); }
+.anchor-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.anchor-grid textarea { min-height: 126px; }
+.anchor-score { display: block; margin-bottom: 6px; font-weight: 780; color: var(--brand); }
+.error-summary { display: none; }
+.error-summary.visible { display: block; }
+.footer-actions {
+  position: fixed;
+  left: 320px;
+  right: 0;
+  bottom: 0;
+  z-index: 80;
+  padding: 12px clamp(18px, 4vw, 56px) calc(12px + env(safe-area-inset-bottom));
+  background: color-mix(in oklch, var(--canvas) 94%, transparent);
+  box-shadow: 0 -8px 22px rgba(28, 46, 76, 0.08);
+}
+.action-inner {
+  width: min(920px, 100%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 auto;
+}
+.btn {
+  min-height: 44px;
+  padding: 9px 16px;
+  border: 0;
+  border-radius: var(--r-md);
+  font-size: 14px;
+  font-weight: 760;
+  transition-property: background-color, color, transform, opacity;
+  transition-duration: 130ms;
+}
+.btn.secondary { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(28, 46, 76, 0.12); }
+.btn.primary { background: var(--brand); color: white; }
+.btn.success { background: var(--success); color: white; }
+.btn:disabled { cursor: not-allowed; opacity: .42; transform: none; }
+.submit-spacer { flex: 1; }
+.hidden { display: none !important; }
+.file-input { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
+.result-panel {
+  display: none;
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: var(--r-lg);
+  background: var(--success-soft);
+  color: oklch(34% 0.08 155);
+}
+.result-panel.visible { display: block; }
+.result-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 12px; }
+.small-copy { color: var(--muted); font-size: 12px; }
+@media (hover: hover) {
+  .nav-item:hover { background: color-mix(in oklch, var(--surface) 70%, transparent); }
+  .filter-btn:hover { background: var(--surface); color: var(--ink); }
+  .choice:hover { border-color: color-mix(in oklch, var(--brand) 45%, var(--line)); }
+  .btn:hover { filter: brightness(.97); }
+}
+@media (max-width: 820px) {
+  :root { --header-h: 92px; }
+  .topbar { align-items: flex-start; padding: 12px 16px; }
+  .brand-block h1 { font-size: 17px; }
+  .top-progress { width: 140px; }
+  .shell { display: block; }
+  .sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    padding: 14px;
+    box-shadow: inset 0 -1px 0 var(--line);
+  }
+  .reviewer-panel {
+    display: grid;
+    grid-template-columns: 1fr minmax(145px, .7fr);
+    gap: 0 14px;
+  }
+  .reviewer-panel .save-state { grid-column: 1 / -1; }
+  .reviewer-panel .reviewer-tools { grid-column: 1 / -1; }
+  .filter-block { margin-top: 12px; }
+  .question-nav {
+    grid-template-columns: repeat(6, minmax(44px, 1fr));
+    max-height: 132px;
+    overflow: auto;
+  }
+  .nav-item { min-height: 44px; display: block; padding: 8px 4px; text-align: center; }
+  .nav-copy { display: none; }
+  .nav-index { font-size: 11px; }
+  .status-dot { margin: 4px auto 0; }
+  .main { padding: 22px 14px 112px; }
+  .footer-actions { left: 0; padding-inline: 14px; }
+}
+@media (max-width: 560px) {
+  .topbar { display: block; }
+  .top-progress { width: 100%; margin-top: 8px; }
+  .reviewer-panel .save-state { grid-column: 1; align-self: center; }
+  .reviewer-panel .reviewer-tools { grid-column: 2; }
+  .question-nav { display: flex; max-height: none; overflow-x: auto; padding-bottom: 4px; }
+  .nav-item { flex: 0 0 48px; }
+  .source-details, .anchor-grid { grid-template-columns: 1fr; }
+  .question-head { display: block; }
+  .question-number { margin-bottom: 4px; }
+  .choice-grid { grid-template-columns: 1fr; }
+  .action-inner { display: grid; grid-template-columns: .8fr .8fr 1.4fr; }
+  .submit-spacer { display: none; }
+  #submit-button { grid-column: auto; padding-inline: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">跳到审核内容</a>
+<header class="topbar">
+  <div class="brand-block">
+    <h1>超市理货员 Pilot 内容审核</h1>
+    <p>24 题固定集 · 内容与职教审核 · 不触发题目激活</p>
+  </div>
+  <div class="top-progress" aria-label="审核进度">
+    <div class="progress-copy"><span id="progress-label">已完成 0 / 24</span><span id="progress-percent">0%</span></div>
+    <div class="progress-track"><div class="progress-value" id="progress-value"></div></div>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" aria-label="审核导航">
+    <section class="reviewer-panel">
+      <div>
+        <span class="eyebrow">内容与职教审核人</span>
+        <div class="reviewer-name">陈晓青</div>
+      </div>
+      <div>
+        <label class="field-label" for="reviewed-date">审核日期 <span class="required">*</span></label>
+        <input class="date-input" id="reviewed-date" type="date">
+      </div>
+      <div class="save-state" id="save-state" role="status">本机自动保存已开启</div>
+      <div class="reviewer-tools">
+        <button class="btn secondary" id="import-button" type="button">导入审核结果</button>
+      </div>
+    </section>
+
+    <section class="filter-block">
+      <label class="field-label" for="question-search">查找题目</label>
+      <input class="search-input" id="question-search" type="search" placeholder="输入题号或题干">
+      <div class="filter-row" aria-label="题目筛选">
+        <button class="filter-btn active" type="button" data-filter="all">全部</button>
+        <button class="filter-btn" type="button" data-filter="incomplete">未完成</button>
+        <button class="filter-btn" type="button" data-filter="approved">通过</button>
+        <button class="filter-btn" type="button" data-filter="revision">需修改</button>
+        <button class="filter-btn" type="button" data-filter="asset">需素材</button>
+      </div>
+      <div class="question-nav" id="question-nav"></div>
+    </section>
+  </aside>
+
+  <main class="main" id="main-content">
+    <div class="content-wrap">
+      <div class="notice">
+        本页面只收集内容审核结论。提交不会修改题库、策略或激活状态，赫东仍需完成技术、安全和真实 Electron 见证。
+      </div>
+      <div class="error-summary notice danger" id="error-summary" role="alert"></div>
+      <div id="question-content"></div>
+      <section class="result-panel" id="result-panel" aria-live="polite">
+        <strong>审核结果已生成</strong>
+        <div id="result-copy">JSON 已下载，Markdown 结论已准备。</div>
+        <div class="result-actions">
+          <button class="btn secondary" id="download-json" type="button">再次下载 JSON</button>
+          <button class="btn secondary" id="download-markdown" type="button">下载 Markdown 结论</button>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<footer class="footer-actions">
+  <div class="action-inner">
+    <button class="btn secondary" id="previous-button" type="button">上一题</button>
+    <button class="btn secondary" id="next-button" type="button">下一题</button>
+    <span class="submit-spacer"></span>
+    <input class="file-input" id="import-file" type="file" accept="application/json,.json">
+    <button class="btn success" id="submit-button" type="button">提交并生成结论</button>
+  </div>
+</footer>
+
+<script id="package-data" type="application/json">{"package_id":"job-skill-shelver-pilot-content-review-packet-v1","package_version":1,"manifest_id":"strategy_job_skill_shelver_v1@1-pilot-r0","manifest_version":1,"strategy_id":"strategy_job_skill_shelver_v1","strategy_version":1,"reviewer_name":"陈晓青","generated_at":"2026-07-19T01:55:00+08:00","questions":[{"question_id":"M1_SC_001","question_version":1,"module":"M1","question_type":"SINGLE_CHOICE","source_status":"DRAFT","candidate_record_hash":"sha256:c109e88917b0e2693b7c01b47d329228d5ee5750dbffa851bc64c8c925d90d10","prompt":"超市货架上摆放商品，正确的做法是？","target_construct":"RULE_EXECUTION","options":[{"key":"A","text":"商品正面朝外，竖直摆正，前后对齐"},{"key":"B","text":"商品侧面朝外，斜靠在一起，节省空间"},{"key":"C","text":"商品躺倒平放，标签朝下，堆成两层"}],"candidate_answer":"A","presentation_type":"IMAGE_CARD","media_brief":"摆放规范R1","asset_ids":[],"tool_brief":null,"rubric_criteria":[],"current_anchors":null,"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":23,"source_ref":null,"source_flags":[],"renderer_gap":null},{"question_id":"M1_SC_004","question_version":1,"module":"M1","question_type":"SINGLE_CHOICE","source_status":"DRAFT","candidate_record_hash":"sha256:e744f295e8ffcf6dcdc01f7e7a1d019b604a09a988cdb826beddeae2f4c2689c","prompt":"5升装大桶水和小袋糖果，应该分别放在货架的哪一层？","target_construct":"RULE_EXECUTION","options":[{"key":"A","text":"大桶水放上层，糖果放下层"},{"key":"B","text":"大桶水放下层，糖果放上层"},{"key":"C","text":"大桶水和糖果都放在中间层"}],"candidate_answer":"B","presentation_type":"IMAGE_CARD","media_brief":"分层摆放R5","asset_ids":[],"tool_brief":null,"rubric_criteria":[],"current_anchors":null,"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":26,"source_ref":null,"source_flags":[],"renderer_gap":null},{"question_id":"M1_SC_007","question_version":1,"module":"M1","question_type":"SINGLE_CHOICE","source_status":"DRAFT","candidate_record_hash":"sha256:27e1995130642b207119bf54d49a1dbab531a2e235a2cb8ab9b7c89ca8a16825","prompt":"核对价签时，必须逐一检查的两项内容是？","target_construct":"RULE_EXECUTION","options":[{"key":"A","text":"商品名称是否对应+价格是否正确"},{"key":"B","text":"价签颜色是否统一+字体是否美观"},{"key":"C","text":"价签大小是否一致+边角是否翘起"}],"candidate_answer":"A","presentation_type":"IMAGE_CARD","media_brief":"价签核对要点R3","asset_ids":[],"tool_brief":null,"rubric_criteria":[],"current_anchors":null,"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":29,"source_ref":null,"source_flags":[],"renderer_gap":null},{"question_id":"M1_OP_033","question_version":1,"module":"M1","question_type":"OFFLINE_OPERATION","source_status":"DRAFT","candidate_record_hash":"sha256:d7b99fc4a3ea57c426bb319ff350d9685cd20033b4b7487b9f971ed8c920c1d2","prompt":"把5件商品摆到货架中层，正面朝外","target_construct":"摆放规范R1实操","options":[],"candidate_answer":null,"presentation_type":"OFFLINE_MATERIALS","media_brief":null,"asset_ids":[],"tool_brief":"迷你货架1组；5件实物商品（大小不一）","rubric_criteria":[{"criterion_id":"r1","description":"5件商品均摆在中层"},{"criterion_id":"r2","description":"每件商品正面朝外"},{"criterion_id":"r3","description":"商品竖直摆正不倾斜"}],"current_anchors":{"0":"未能完成","1":"部分完成","2":"完全达标"},"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":8,"source_ref":"原题81","source_flags":[],"renderer_gap":"question prompt, tools and rubric anchors are not rendered"},{"question_id":"M2_SC_002","question_version":1,"module":"M2","question_type":"SINGLE_CHOICE","source_status":"DRAFT","candidate_record_hash":"sha256:e7340e010b96a8b91fa1970958976429725296d4874f38a1595f7dc3f7396b5a","prompt":"超市理货\"先进先出\"的意思是？","target_construct":"RULE_EXECUTION","options":[{"key":"A","text":"早到货日期早的商品先摆前排先卖"},{"key":"B","text":"新到货日期新的商品先摆前排先卖"},{"key":"C","text":"卖得快的畅销商品先摆前排先卖"}],"candidate_answer":"A","presentation_type":"IMAGE_CARD","media_brief":"FIFO规则再认R6","asset_ids":[],"tool_brief":null,"rubric_criteria":[],"current_anchors":null,"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":69,"source_ref":null,"source_flags":[],"renderer_gap":null},{"question_id":"M2_SC_003","question_version":1,"module":"M2","question_type":"SINGLE_CHOICE","source_status":"DRAFT","candidate_record_hash":"sha256:265a18fb3e06881d13f6b249f1c65aab804a77b0a01434df3e5be55c9c486d33","prompt":"用刀具拆整箱商品时最需要避免的是？","target_construct":"FINE_MOTOR|SAFETY_OPERATION","options":[{"key":"A","text":"下刀太深划伤箱子里面的商品"},{"key":"B","text":"拆箱速度太慢影响补货的进度"},{"key":"C","text":"纸箱开口太大不方便折叠回收"}],"candidate_answer":"A","presentation_type":"IMAGE_CARD","media_brief":"安全拆箱操作","asset_ids":[],"tool_brief":null,"rubric_criteria":[],"current_anchors":null,"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":70,"source_ref":null,"source_flags":[],"renderer_gap":null},{"question_id":"M2_SC_005","question_version":1,"module":"M2","question_type":"SINGLE_CHOICE","source_status":"DRAFT","candidate_record_hash":"sha256:b65e89ac336ed693c3cd9b2823f7626327211b79bf1213e13755e266a24e85da","prompt":"同款商品两批到货：批次1日期早批次2日期晚。上架时正确的摆法是？","target_construct":"RULE_EXECUTION","options":[{"key":"A","text":"批次1放前排批次2放后排"},{"key":"B","text":"批次2放前排批次1放后排"},{"key":"C","text":"两批混合摆放不区分前后"}],"candidate_answer":"A","presentation_type":"IMAGE_CARD","media_brief":"FIFO双批次应用R6","asset_ids":[],"tool_brief":null,"rubric_criteria":[],"current_anchors":null,"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":72,"source_ref":null,"source_flags":[],"renderer_gap":null},{"question_id":"M2_OP_027","question_version":1,"module":"M2","question_type":"OFFLINE_OPERATION","source_status":"DRAFT","candidate_record_hash":"sha256:39fd7d9383ac4f42732b2fa7072bbbec2fa8dcd9bfd1ed315bd32e923171f9d6","prompt":"请徒手安全地拆开整箱商品并把商品全部取出","target_construct":"安全拆箱实操","options":[],"candidate_answer":null,"presentation_type":"OFFLINE_MATERIALS","media_brief":null,"asset_ids":[],"tool_brief":"整箱商品1箱（胶带封装）","rubric_criteria":[{"criterion_id":"r1","description":"安全拆开纸箱未割伤商品"},{"criterion_id":"r2","description":"商品全部取出"}],"current_anchors":{"0":"未能完成","1":"部分完成","2":"完全达标"},"safety_sensitive":true,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":53,"source_ref":"原题30","source_flags":[],"renderer_gap":"question prompt, tools and rubric anchors are not rendered"},{"question_id":"M3_SC_001","question_version":1,"module":"M3","question_type":"SINGLE_CHOICE","source_status":"DRAFT","candidate_record_hash":"sha256:8633ff8f0cb993a524c68dbbf023bc17170dae86bb808766842635d9795fb62e","prompt":"商品标注生产日期：2025年06月01日，保质期12个月\"，它最晚在哪天之前必须卖出？\"","target_construct":"COGNITION","options":[{"key":"A","text":"2026年06月01日"},{"key":"B","text":"2026年05月31日"},{"key":"C","text":"2026年07月01日"}],"candidate_answer":"A","presentation_type":"IMAGE_CARD","media_brief":"效期计算基础R7","asset_ids":[],"tool_brief":null,"rubric_criteria":[],"current_anchors":null,"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":112,"source_ref":null,"source_flags":["题干含异常引号，请重点确认文字和日期口径。"],"renderer_gap":null},{"question_id":"M3_SC_005","question_version":1,"module":"M3","question_type":"SINGLE_CHOICE","source_status":"DRAFT","candidate_record_hash":"sha256:4394fb249f63ce9f1e208dd4f6cf6f3b4f7685dc48bfb7e33febc774c22d8a9a","prompt":"超市规定保质期不足15天属于临期商品。今天是2026年07月04日，以下哪件商品属于临期？","target_construct":"COGNITION","options":[{"key":"A","text":"保质期到2026年07月20日的饼干（还有16天）"},{"key":"B","text":"保质期到2026年07月15日的酸奶（还有11天）"},{"key":"C","text":"保质期到2026年08月10日的牛奶（还有37天）"}],"candidate_answer":"B","presentation_type":"IMAGE_CARD","media_brief":"临期判别15天门槛R7","asset_ids":[],"tool_brief":null,"rubric_criteria":[],"current_anchors":null,"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":116,"source_ref":null,"source_flags":[],"renderer_gap":null},{"question_id":"M3_SC_019","question_version":1,"module":"M3","question_type":"SINGLE_CHOICE","source_status":"DRAFT","candidate_record_hash":"sha256:689fb511285ee13b4cf6388d7287c7a01cc1fadedee18b63ab639e771f9df562","prompt":"发现临期商品后，正确的做法是？","target_construct":"RULE_EXECUTION","options":[{"key":"A","text":"直接从货架撤下扔掉"},{"key":"B","text":"移出原位放入临期专区等候上级处理"},{"key":"C","text":"继续留在原货架下次补货时再说"}],"candidate_answer":"B","presentation_type":"IMAGE_CARD","media_brief":"临期商品处置R7","asset_ids":[],"tool_brief":null,"rubric_criteria":[],"current_anchors":null,"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":130,"source_ref":null,"source_flags":[],"renderer_gap":null},{"question_id":"M3_OP_043","question_version":1,"module":"M3","question_type":"OFFLINE_OPERATION","source_status":"DRAFT","candidate_record_hash":"sha256:f1c77eb774cef2d100db56212405dc11d9bfb423713758605f9a13ef96151890","prompt":"从5件商品中找出今天到期的1件和已过期的1件，分别放入临期区和报损区","target_construct":"临期/过期区分R7","options":[],"candidate_answer":null,"presentation_type":"OFFLINE_MATERIALS","media_brief":null,"asset_ids":[],"tool_brief":"迷你货架1组（5件商品含各种日期标签）；临期专区标识；报损区标识","rubric_criteria":[{"criterion_id":"r1","description":"正确找出当天到期商品放入临期区"},{"criterion_id":"r2","description":"正确找出过期商品放入报损区"}],"current_anchors":{"0":"未能完成","1":"部分完成","2":"完全达标"},"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":96,"source_ref":"原题43","source_flags":[],"renderer_gap":"question prompt, tools and rubric anchors are not rendered"},{"question_id":"M4_SC_001","question_version":1,"module":"M4","question_type":"SINGLE_CHOICE","source_status":"DRAFT","candidate_record_hash":"sha256:714ac74a48b1b89f86b69a05b7824f40a921c6614f30d74ac9c38b9dbb404078","prompt":"货物入库时，标准做法是？","target_construct":"RULE_EXECUTION","options":[{"key":"A","text":"随意堆放节省时间"},{"key":"B","text":"按品类分区摆放重物下层轻物上层"},{"key":"C","text":"按照到货顺序依次堆放"}],"candidate_answer":"B","presentation_type":"IMAGE_CARD","media_brief":"入库基本规范R5","asset_ids":[],"tool_brief":null,"rubric_criteria":[],"current_anchors":null,"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":174,"source_ref":null,"source_flags":[],"renderer_gap":null},{"question_id":"M4_SC_003","question_version":1,"module":"M4","question_type":"SINGLE_CHOICE","source_status":"DRAFT","candidate_record_hash":"sha256:e60fc3875e4ece2ddb8a75960d009f77fc53a75bdee258af861dac2d3d4a1a43","prompt":"货物入库时必须核对哪两项？","target_construct":"RULE_EXECUTION","options":[{"key":"A","text":"商品数量是否与送货单一致+有无破损"},{"key":"B","text":"商品价格是否正确+包装是否好看"},{"key":"C","text":"品牌是否知名+颜色是否统一"}],"candidate_answer":"A","presentation_type":"IMAGE_CARD","media_brief":"收货核对R12","asset_ids":[],"tool_brief":null,"rubric_criteria":[],"current_anchors":null,"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":176,"source_ref":null,"source_flags":[],"renderer_gap":null},{"question_id":"M4_SC_005","question_version":1,"module":"M4","question_type":"SINGLE_CHOICE","source_status":"DRAFT","candidate_record_hash":"sha256:ac08e25f39a9dd9dd9a3977b4dbeea98eb9fa9646ed71d05e92eaf954cab1223","prompt":"收货时发现送货单写10箱但实际只到了9箱，正确做法是？","target_construct":"RULE_EXECUTION","options":[{"key":"A","text":"先收下9箱缺的那箱下次再说"},{"key":"B","text":"停止收货上报负责人核实处理"},{"key":"C","text":"签收后自己记录月底再一起核对"}],"candidate_answer":"B","presentation_type":"IMAGE_CARD","media_brief":"数量不符停收上报R12","asset_ids":[],"tool_brief":null,"rubric_criteria":[],"current_anchors":null,"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":178,"source_ref":null,"source_flags":[],"renderer_gap":null},{"question_id":"M4_OP_029","question_version":1,"module":"M4","question_type":"OFFLINE_OPERATION","source_status":"DRAFT","candidate_record_hash":"sha256:78b9a9bc9e7035d18c0afcb9155814b620e9b35a13b6760ab0913fd9bd1babcf","prompt":"清点库房货架上的某类商品总数量，并写在记录本上","target_construct":"库房盘点基础实操","options":[],"candidate_answer":null,"presentation_type":"OFFLINE_MATERIALS","media_brief":null,"asset_ids":[],"tool_brief":"迷你货架1组（某类商品若干件分散放置）；记录本","rubric_criteria":[{"criterion_id":"r1","description":"逐件清点无漏数"},{"criterion_id":"r2","description":"数量记录在记录本上"}],"current_anchors":{"0":"未能完成","1":"部分完成","2":"完全达标"},"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":154,"source_ref":"原题29","source_flags":[],"renderer_gap":"question prompt, tools and rubric anchors are not rendered"},{"question_id":"M5_SC_001","question_version":1,"module":"M5","question_type":"SINGLE_CHOICE","source_status":"DRAFT","candidate_record_hash":"sha256:2e7999af625e5210580e505513dfe7514057a235c3c106cd34ab69b194b9cc79","prompt":"发现货架旁地面有水渍，正确做法是？","target_construct":"RULE_EXECUTION|SAFETY_OPERATION","options":[{"key":"A","text":"绕过去不管有专门清洁人员"},{"key":"B","text":"立即放置\"小心地滑\"警示牌并通知清洁处理"},{"key":"C","text":"用脚把水渍踢到货架底下"}],"candidate_answer":"B","presentation_type":"IMAGE_CARD","media_brief":"地面水渍安全处置","asset_ids":[],"tool_brief":null,"rubric_criteria":[],"current_anchors":null,"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":219,"source_ref":null,"source_flags":[],"renderer_gap":null},{"question_id":"M5_SC_002","question_version":1,"module":"M5","question_type":"SINGLE_CHOICE","source_status":"DRAFT","candidate_record_hash":"sha256:1c9ca58ff9d06fc7d244b02b9197462e440e7240dc08e151c6462437acc49d8b","prompt":"发现一个货架支架已松动可能倒塌，正确做法是？","target_construct":"SAFETY_OPERATION","options":[{"key":"A","text":"用其他东西支撑一下继续工作"},{"key":"B","text":"立即停止该区域作业并通知负责人"},{"key":"C","text":"先把上面商品取下继续理货"}],"candidate_answer":"B","presentation_type":"IMAGE_CARD","media_brief":"货架安全隐患应急","asset_ids":[],"tool_brief":null,"rubric_criteria":[],"current_anchors":null,"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":220,"source_ref":null,"source_flags":[],"renderer_gap":null},{"question_id":"M5_SC_009","question_version":1,"module":"M5","question_type":"SINGLE_CHOICE","source_status":"DRAFT","candidate_record_hash":"sha256:a76f0177d52b6771e414b4551032e558bd9dc070f62a392f18326e07ace91789","prompt":"独自工作时不小心将玻璃瓶打碎，正确做法是？","target_construct":"SAFETY_OPERATION","options":[{"key":"A","text":"用手直接清理碎玻璃快速处理"},{"key":"B","text":"先放置警示牌防止他人走近再用专用工具清理并报告"},{"key":"C","text":"用脚把碎片踢到角落"}],"candidate_answer":"B","presentation_type":"IMAGE_CARD","media_brief":"玻璃碎片安全处置","asset_ids":[],"tool_brief":null,"rubric_criteria":[],"current_anchors":null,"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":227,"source_ref":null,"source_flags":[],"renderer_gap":null},{"question_id":"M5_OP_039","question_version":1,"module":"M5","question_type":"OFFLINE_OPERATION","source_status":"DRAFT","candidate_record_hash":"sha256:72849591ae2f8e0c67315eb19ab9ebaf437e5cd3715f616905c0410dbb2b1904","prompt":"发现地面水渍后完整处置（放警示牌→通知清洁→确认清洁完成→撤牌）","target_construct":"安全隐患处置实操否决项","options":[],"candidate_answer":null,"presentation_type":"OFFLINE_MATERIALS","media_brief":null,"asset_ids":[],"tool_brief":"小心地滑警示牌1个；地面预置水渍（少量着色水）；清洁工具在指定位置","rubric_criteria":[{"criterion_id":"r1","description":"立即放置警示牌"},{"criterion_id":"r2","description":"通知清洁人员或负责人"}],"current_anchors":{"0":"未能完成","1":"部分完成","2":"完全达标"},"safety_sensitive":true,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":202,"source_ref":"原题39","source_flags":[],"renderer_gap":"question prompt, tools and rubric anchors are not rendered"},{"question_id":"M6_SC_003","question_version":1,"module":"M6","question_type":"SINGLE_CHOICE","source_status":"DRAFT","candidate_record_hash":"sha256:ce435dea2d58b09a12d661ef3c54b2c4bb0a271dbe70208f9bd41032a7f2b5df","prompt":"以下哪件商品必须存放在冷藏区？","target_construct":"COGNITION","options":[{"key":"A","text":"薯片"},{"key":"B","text":"酸奶"},{"key":"C","text":"洗衣液"}],"candidate_answer":"B","presentation_type":"IMAGE_CARD","media_brief":"冷链商品识别A组","asset_ids":[],"tool_brief":null,"rubric_criteria":[],"current_anchors":null,"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":275,"source_ref":null,"source_flags":[],"renderer_gap":null},{"question_id":"M6_SC_009","question_version":1,"module":"M6","question_type":"SINGLE_CHOICE","source_status":"DRAFT","candidate_record_hash":"sha256:aa0310c16783856d32454d226c5625ffa73b30c37136775a1bba4aedf21b51c6","prompt":"货架上有两件外包装非常相似的商品，区分它们最可靠的方法是？","target_construct":"COGNITION","options":[{"key":"A","text":"看包装颜色哪个更好看"},{"key":"B","text":"仔细看包装上的文字名称和规格"},{"key":"C","text":"根据摆放位置猜测"}],"candidate_answer":"B","presentation_type":"IMAGE_CARD","media_brief":"近邻商品区分原则B组","asset_ids":[],"tool_brief":null,"rubric_criteria":[],"current_anchors":null,"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":281,"source_ref":null,"source_flags":[],"renderer_gap":null},{"question_id":"M6_SC_012","question_version":1,"module":"M6","question_type":"SINGLE_CHOICE","source_status":"DRAFT","candidate_record_hash":"sha256:445b250d706dd28ce616d1742540cb5f136a7d27a9d9f33cffa0af88c2a2a4d8","prompt":"商品条形码主要用于识别什么？","target_construct":"COGNITION","options":[{"key":"A","text":"商品的颜色和外观"},{"key":"B","text":"商品的身份信息（品名/规格/厂家）"},{"key":"C","text":"商品的包装材料"}],"candidate_answer":"B","presentation_type":"IMAGE_CARD","media_brief":"条形码功能知识","asset_ids":[],"tool_brief":null,"rubric_criteria":[],"current_anchors":null,"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":284,"source_ref":null,"source_flags":[],"renderer_gap":null},{"question_id":"M6_OP_035","question_version":1,"module":"M6","question_type":"OFFLINE_OPERATION","source_status":"DRAFT","candidate_record_hash":"sha256:11f5afcabb6f268b5b7a7cc0ef737f7ef2aa9169d1322a47853c20f3c6f0a256","prompt":"把6件实物商品放回对应的货架区域","target_construct":"商品归区实操R2","options":[],"candidate_answer":null,"presentation_type":"OFFLINE_MATERIALS","media_brief":null,"asset_ids":[],"tool_brief":"6件实物商品；迷你货架1组（贴有区域标识）","rubric_criteria":[{"criterion_id":"r1","description":"6件商品全部放入正确区域"},{"criterion_id":"r2","description":"无错放"}],"current_anchors":{"0":"未能完成","1":"部分完成","2":"完全达标"},"safety_sensitive":false,"source_file":"专业岗位能力测评题库-M1-M6-数据库导出-298条.json","source_row":259,"source_ref":"原题35","source_flags":[],"renderer_gap":"question prompt, tools and rubric anchors are not rendered"}]}</script>
+<script>
+(function () {
+  "use strict";
+
+  var packageData = JSON.parse(document.getElementById("package-data").textContent);
+  var storageKey = "svets-review:" + packageData.package_id + ":manifest-" + packageData.manifest_version;
+  var state = { reviewed_date: "", reviews: {}, submission: null };
+  var currentIndex = 0;
+  var activeFilter = "all";
+  var searchTerm = "";
+  var saveTimer = null;
+
+  var elements = {
+    nav: document.getElementById("question-nav"),
+    content: document.getElementById("question-content"),
+    reviewedDate: document.getElementById("reviewed-date"),
+    search: document.getElementById("question-search"),
+    saveState: document.getElementById("save-state"),
+    progressLabel: document.getElementById("progress-label"),
+    progressPercent: document.getElementById("progress-percent"),
+    progressValue: document.getElementById("progress-value"),
+    previous: document.getElementById("previous-button"),
+    next: document.getElementById("next-button"),
+    submit: document.getElementById("submit-button"),
+    errorSummary: document.getElementById("error-summary"),
+    resultPanel: document.getElementById("result-panel"),
+    resultCopy: document.getElementById("result-copy"),
+    importFile: document.getElementById("import-file"),
+    importButton: document.getElementById("import-button"),
+    downloadJson: document.getElementById("download-json"),
+    downloadMarkdown: document.getElementById("download-markdown")
+  };
+
+  function escapeHtml(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function getReview(questionId) {
+    if (!state.reviews[questionId]) state.reviews[questionId] = {};
+    return state.reviews[questionId];
+  }
+
+  function hasText(value) {
+    return typeof value === "string" && value.trim().length > 0;
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+      elements.saveState.textContent = "已自动保存 " + new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
+      elements.saveState.style.color = "var(--success)";
+    } catch (error) {
+      elements.saveState.textContent = "浏览器无法自动保存，请提交后下载结果";
+      elements.saveState.style.color = "var(--danger)";
+    }
+  }
+
+  function scheduleSave() {
+    clearTimeout(saveTimer);
+    elements.saveState.textContent = "正在保存";
+    saveTimer = setTimeout(saveState, 220);
+  }
+
+  function loadState() {
+    try {
+      var stored = localStorage.getItem(storageKey);
+      if (stored) {
+        var parsed = JSON.parse(stored);
+        if (parsed && typeof parsed === "object") state = Object.assign(state, parsed);
+      }
+    } catch (error) {
+      elements.saveState.textContent = "未能读取本机草稿";
+      elements.saveState.style.color = "var(--danger)";
+    }
+    elements.reviewedDate.value = state.reviewed_date || "";
+  }
+
+  function radioGroup(field, label, options, selected) {
+    var html = '<div class="field-block"><span class="field-label">' + escapeHtml(label) + ' <span class="required">*</span></span><div class="choice-grid">';
+    options.forEach(function (option) {
+      var id = field + "-" + option.value;
+      html += '<label class="choice" for="' + escapeHtml(id) + '">';
+      html += '<input id="' + escapeHtml(id) + '" type="radio" name="' + escapeHtml(field) + '" data-field="' + escapeHtml(field) + '" value="' + escapeHtml(option.value) + '"' + (selected === option.value ? " checked" : "") + '>';
+      html += '<span class="choice-copy"><strong>' + escapeHtml(option.label) + '</strong>';
+      if (option.help) html += '<span>' + escapeHtml(option.help) + '</span>';
+      html += '</span></label>';
+    });
+    return html + "</div></div>";
+  }
+
+  function textareaField(field, label, value, placeholder, required) {
+    return '<div class="field-block"><label class="field-label" for="' + escapeHtml(field) + '">' + escapeHtml(label) + (required ? ' <span class="required">*</span>' : "") + '</label>' +
+      '<textarea id="' + escapeHtml(field) + '" data-field="' + escapeHtml(field) + '" placeholder="' + escapeHtml(placeholder || "") + '">' + escapeHtml(value || "") + '</textarea></div>';
+  }
+
+  function selectField(field, label, value, options) {
+    var html = '<div class="field-block"><label class="field-label" for="' + escapeHtml(field) + '">' + escapeHtml(label) + ' <span class="required">*</span></label>';
+    html += '<select class="select-input" id="' + escapeHtml(field) + '" data-field="' + escapeHtml(field) + '"><option value="">请选择</option>';
+    options.forEach(function (option) {
+      html += '<option value="' + escapeHtml(option) + '"' + (value === option ? " selected" : "") + '>' + escapeHtml(option) + '</option>';
+    });
+    return html + "</select></div>";
+  }
+
+  function renderSource(question) {
+    var optionsHtml = "";
+    if (question.options.length) {
+      optionsHtml = '<ul class="option-list">' + question.options.map(function (option) {
+        return '<li class="option"><span class="option-key">' + escapeHtml(option.key) + '</span><span>' + escapeHtml(option.text) + '</span></li>';
+      }).join("") + "</ul>";
+    }
+
+    var offlineHtml = "";
+    if (question.question_type === "OFFLINE_OPERATION") {
+      offlineHtml = '<div class="source-details"><div><span class="eyebrow">工具和材料</span><strong>' + escapeHtml(question.tool_brief || "未填写") + '</strong></div>';
+      offlineHtml += '<div><span class="eyebrow">当前评分锚点</span><strong>0 未能完成 · 1 部分完成 · 2 完全达标</strong></div></div>';
+      offlineHtml += '<div class="field-block"><span class="field-label">当前可观察指标</span><ul class="criteria-list">' +
+        question.rubric_criteria.map(function (criterion) { return "<li>" + escapeHtml(criterion.description) + "</li>"; }).join("") + "</ul></div>";
+    } else {
+      offlineHtml = '<div class="source-details"><div><span class="eyebrow">候选答案</span><strong>' + escapeHtml(question.candidate_answer) + '</strong></div>' +
+        '<div><span class="eyebrow">素材状态</span><strong>' + escapeHtml(question.media_brief || "无素材说明") + "，已绑定 " + question.asset_ids.length + " 项</strong></div></div>";
+    }
+
+    return '<section class="source-card" aria-label="题目候选内容"><p class="source-prompt">' + escapeHtml(question.prompt) + '</p>' + optionsHtml + offlineHtml + "</section>";
+  }
+
+  function renderOnlineForm(question, review) {
+    var html = '<form class="review-form" novalidate>';
+    html += '<section class="form-section"><h3>题目质量</h3><p class="help">确认题干是否清楚，选项是否只有一个最佳答案。</p>';
+    html += radioGroup("prompt_review", "题干", [
+      { value: "PASS", label: "通过", help: "表述清楚，可以直接施测" },
+      { value: "RETURN", label: "退回修改", help: "存在歧义、错字或职业口径问题" }
+    ], review.prompt_review);
+    html += radioGroup("options_review", "选项", [
+      { value: "UNIQUE_BEST", label: "只有一个最佳答案", help: "三个选项互斥" },
+      { value: "AMBIGUOUS", label: "存在歧义", help: "可能有多个可接受答案" }
+    ], review.options_review);
+    html += "</section>";
+
+    html += '<section class="form-section"><h3>答案确认</h3><p class="help">当前候选答案为 ' + escapeHtml(question.candidate_answer) + "。</p>";
+    html += radioGroup("answer_review", "答案结论", [
+      { value: "CONFIRMED", label: "确认候选答案", help: "答案为 " + question.candidate_answer },
+      { value: "CHANGED", label: "需要改答案", help: "填写新的答案" },
+      { value: "UNABLE", label: "无法确认", help: "需要补充专业依据" }
+    ], review.answer_review);
+    if (review.answer_review === "CHANGED") {
+      html += selectField("reviewed_answer", "建议答案", review.reviewed_answer, ["A", "B", "C"]);
+    }
+    html += textareaField("review_basis", "审核依据", review.review_basis, "填写职业规范、门店作业规则或培训口径", true);
+    html += "</section>";
+
+    html += '<section class="form-section"><h3>素材裁决</h3><p class="help">判断没有图片时是否仍能准确理解和作答。</p>';
+    html += radioGroup("material_decision", "素材结论", [
+      { value: "TEXT_ONLY_APPROVED", label: "允许纯文本施测", help: "不依赖图片也能准确作答" },
+      { value: "ASSET_REQUIRED", label: "必须补素材", help: "缺少素材会影响理解或区分" }
+    ], review.material_decision);
+    if (review.material_decision === "ASSET_REQUIRED") {
+      html += textareaField("material_requirement", "素材要求", review.material_requirement, "写清素材内容及其对作答的作用", true);
+    }
+    html += "</section>";
+
+    html += '<section class="form-section"><h3>内容结论</h3><p class="help">答案、题干或素材需要变化时，当前候选题只能退回修改。</p>';
+    html += radioGroup("content_conclusion", "逐题结论", [
+      { value: "APPROVED", label: "内容通过", help: "当前候选内容可以继续技术和安全复核" },
+      { value: "RETURN_FOR_REVISION", label: "退回修改", help: "修订后重新计算 hash 并复审" },
+      { value: "REJECTED", label: "拒绝或换题", help: "建议在新的策略版本中替换" }
+    ], review.content_conclusion);
+    html += textareaField("review_note", "审核备注", review.review_note, "概括通过理由或需要修改的内容", true);
+    html += "</section></form>";
+    return html;
+  }
+
+  function renderOfflineForm(question, review) {
+    var html = '<div class="notice danger">系统预检：当前 0、1、2 分锚点过于泛化，本题不能直接判定内容通过。请给出具体锚点后退回修订。</div>';
+    html += '<form class="review-form" novalidate>';
+    html += '<section class="form-section"><h3>可执行性</h3><p class="help">确认现场是否能按题干、工具和观察指标完成施测。</p>';
+    html += radioGroup("task_executable", "任务可以执行", [
+      { value: "YES", label: "是", help: "题干动作可以现场完成" },
+      { value: "NO", label: "否", help: "任务条件或动作不成立" }
+    ], review.task_executable);
+    html += radioGroup("tools_complete", "工具和材料完整", [
+      { value: "YES", label: "是", help: "现有清单足以准备施测" },
+      { value: "NO", label: "否", help: "需要补充或更换材料" }
+    ], review.tools_complete);
+    html += radioGroup("criteria_sufficient", "观察指标足以评分", [
+      { value: "YES", label: "是", help: "指标清楚且可以观察" },
+      { value: "NO", label: "否", help: "指标遗漏或互相重叠" }
+    ], review.criteria_sufficient);
+    html += "</section>";
+
+    html += '<section class="form-section"><h3>建议评分锚点</h3><p class="help">三档描述必须可观察、互斥，并能让不同评分人得到一致结论。</p><div class="anchor-grid">';
+    html += '<div><span class="anchor-score">0 分</span><textarea data-field="anchor_0" placeholder="未达到哪些关键动作或出现什么失败">' + escapeHtml(review.anchor_0 || "") + "</textarea></div>";
+    html += '<div><span class="anchor-score">1 分</span><textarea data-field="anchor_1" placeholder="完成了哪些部分，还缺少什么">' + escapeHtml(review.anchor_1 || "") + "</textarea></div>";
+    html += '<div><span class="anchor-score">2 分</span><textarea data-field="anchor_2" placeholder="全部达到哪些可观察条件">' + escapeHtml(review.anchor_2 || "") + "</textarea></div></div>";
+    html += textareaField("safety_note", question.safety_sensitive ? "停止条件或安全关注" : "停止条件或安全关注（没有可填“无”）", review.safety_note, "记录需要赫东复核的安全事项", question.safety_sensitive);
+    html += "</section>";
+
+    html += '<section class="form-section"><h3>内容结论</h3><p class="help">补充锚点会改变候选记录，本轮只能退回修订或拒绝。</p>';
+    html += radioGroup("content_conclusion", "逐题结论", [
+      { value: "RETURN_FOR_REVISION", label: "退回修改", help: "采用建议锚点形成修订候选" },
+      { value: "REJECTED", label: "拒绝或换题", help: "任务不适合进入本次 Pilot" }
+    ], review.content_conclusion);
+    html += textareaField("review_note", "审核备注", review.review_note, "概括可执行性判断和需要修改的内容", true);
+    html += "</section></form>";
+    return html;
+  }
+
+  function renderQuestion() {
+    var question = packageData.questions[currentIndex];
+    var review = getReview(question.question_id);
+    var flags = question.source_flags.map(function (flag) {
+      return '<div class="notice danger source-flags">' + escapeHtml(flag) + "</div>";
+    }).join("");
+
+    var html = '<div class="question-head"><div class="question-number">' + String(currentIndex + 1).padStart(2, "0") + " / 24</div>";
+    html += '<div class="question-title"><h2>' + escapeHtml(question.question_id + " · " + (question.question_type === "SINGLE_CHOICE" ? "线上单选" : "线下实操")) + '</h2>';
+    html += '<div class="meta-line"><span class="badge">' + escapeHtml(question.module) + '</span><span class="badge">' + escapeHtml(question.target_construct) + '</span>';
+    html += '<span class="badge">候选 hash ' + escapeHtml(question.candidate_record_hash.slice(7, 19)) + '</span>';
+    if (question.safety_sensitive) html += '<span class="badge safety">安全敏感题</span>';
+    html += "</div></div></div>";
+    html += flags + renderSource(question);
+    html += question.question_type === "SINGLE_CHOICE" ? renderOnlineForm(question, review) : renderOfflineForm(question, review);
+    elements.content.innerHTML = html;
+    bindReviewInputs();
+    updateFooter();
+    elements.errorSummary.classList.remove("visible");
+    history.replaceState(null, "", "#" + question.question_id);
+    document.title = question.question_id + " · Pilot 内容审核";
+  }
+
+  function bindReviewInputs() {
+    elements.content.querySelectorAll("[data-field]").forEach(function (input) {
+      input.addEventListener(input.type === "radio" || input.tagName === "SELECT" ? "change" : "input", function () {
+        var question = packageData.questions[currentIndex];
+        var review = getReview(question.question_id);
+        review[input.dataset.field] = input.value;
+        state.submission = null;
+        elements.resultPanel.classList.remove("visible");
+        scheduleSave();
+        updateProgress();
+        renderNav();
+        if (input.dataset.field === "answer_review" || input.dataset.field === "material_decision") {
+          renderQuestion();
+          var conditional = document.querySelector('[data-field="' + (input.dataset.field === "answer_review" ? "reviewed_answer" : "material_requirement") + '"]');
+          if (conditional) conditional.focus();
+        }
+      });
+    });
+  }
+
+  function questionErrors(question, review) {
+    var errors = [];
+    function requireField(field, label) {
+      if (!hasText(review[field])) errors.push({ field: field, label: label });
+    }
+
+    if (question.question_type === "SINGLE_CHOICE") {
+      requireField("prompt_review", "题干结论");
+      requireField("options_review", "选项结论");
+      requireField("answer_review", "答案结论");
+      if (review.answer_review === "CHANGED") requireField("reviewed_answer", "建议答案");
+      requireField("review_basis", "审核依据");
+      requireField("material_decision", "素材结论");
+      if (review.material_decision === "ASSET_REQUIRED") requireField("material_requirement", "素材要求");
+      requireField("content_conclusion", "内容结论");
+      requireField("review_note", "审核备注");
+
+      if (review.content_conclusion === "APPROVED") {
+        if (review.prompt_review !== "PASS") errors.push({ field: "content_conclusion", label: "题干未通过时不能判定内容通过" });
+        if (review.options_review !== "UNIQUE_BEST") errors.push({ field: "content_conclusion", label: "选项存在歧义时不能判定内容通过" });
+        if (review.answer_review !== "CONFIRMED") errors.push({ field: "content_conclusion", label: "答案需要变化或无法确认时不能判定内容通过" });
+        if (review.material_decision !== "TEXT_ONLY_APPROVED") errors.push({ field: "content_conclusion", label: "必须补素材时不能判定当前候选内容通过" });
+      }
+    } else {
+      requireField("task_executable", "任务可执行性");
+      requireField("tools_complete", "工具和材料");
+      requireField("criteria_sufficient", "观察指标");
+      requireField("anchor_0", "0 分锚点");
+      requireField("anchor_1", "1 分锚点");
+      requireField("anchor_2", "2 分锚点");
+      if (question.safety_sensitive) requireField("safety_note", "停止条件或安全关注");
+      requireField("content_conclusion", "内容结论");
+      requireField("review_note", "审核备注");
+    }
+    return errors;
+  }
+
+  function reviewStatus(question) {
+    var review = getReview(question.question_id);
+    if (questionErrors(question, review).length === 0) return "complete";
+    if (Object.keys(review).some(function (key) { return hasText(review[key]); })) return "partial";
+    return "empty";
+  }
+
+  function matchesFilter(question) {
+    var review = getReview(question.question_id);
+    var status = reviewStatus(question);
+    if (searchTerm) {
+      var haystack = (question.question_id + " " + question.prompt).toLowerCase();
+      if (haystack.indexOf(searchTerm) === -1) return false;
+    }
+    if (activeFilter === "incomplete") return status !== "complete";
+    if (activeFilter === "approved") return review.content_conclusion === "APPROVED";
+    if (activeFilter === "revision") return review.content_conclusion === "RETURN_FOR_REVISION" || review.content_conclusion === "REJECTED";
+    if (activeFilter === "asset") return review.material_decision === "ASSET_REQUIRED";
+    return true;
+  }
+
+  function renderNav() {
+    elements.nav.innerHTML = packageData.questions.map(function (question, index) {
+      if (!matchesFilter(question)) return "";
+      var status = reviewStatus(question);
+      var displayStatus = status === "empty" ? "empty" : status;
+      return '<button type="button" class="nav-item' + (index === currentIndex ? " current" : "") + '" data-index="' + index + '" data-status="' + displayStatus + '">' +
+        '<span class="nav-index">' + String(index + 1).padStart(2, "0") + '</span><span class="nav-copy"><span class="nav-id">' + escapeHtml(question.question_id) +
+        '</span><span class="nav-prompt">' + escapeHtml(question.prompt) + '</span></span><span class="status-dot" aria-hidden="true"></span></button>';
+    }).join("");
+
+    elements.nav.querySelectorAll(".nav-item").forEach(function (button) {
+      button.addEventListener("click", function () {
+        currentIndex = Number(button.dataset.index);
+        renderQuestion();
+        renderNav();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+  }
+
+  function updateProgress() {
+    var complete = packageData.questions.filter(function (question) { return reviewStatus(question) === "complete"; }).length;
+    var percent = Math.round(complete / packageData.questions.length * 100);
+    elements.progressLabel.textContent = "已完成 " + complete + " / " + packageData.questions.length;
+    elements.progressPercent.textContent = percent + "%";
+    elements.progressValue.style.transform = "scaleX(" + (complete / packageData.questions.length) + ")";
+  }
+
+  function updateFooter() {
+    elements.previous.disabled = currentIndex === 0;
+    elements.next.disabled = currentIndex === packageData.questions.length - 1;
+  }
+
+  function navigate(delta) {
+    var nextIndex = Math.min(packageData.questions.length - 1, Math.max(0, currentIndex + delta));
+    if (nextIndex !== currentIndex) {
+      currentIndex = nextIndex;
+      renderQuestion();
+      renderNav();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }
+
+  function buildResult() {
+    var submittedAt = new Date().toISOString();
+    var questionResults = packageData.questions.map(function (question) {
+      var review = getReview(question.question_id);
+      var base = {
+        question_id: question.question_id,
+        question_version: question.question_version,
+        candidate_record_hash: question.candidate_record_hash,
+        question_type: question.question_type,
+        content_conclusion: review.content_conclusion,
+        review_note: review.review_note.trim()
+      };
+      if (question.question_type === "SINGLE_CHOICE") {
+        return Object.assign(base, {
+          prompt_review: review.prompt_review,
+          options_review: review.options_review,
+          answer_review: review.answer_review,
+          candidate_answer: question.candidate_answer,
+          reviewed_answer: review.answer_review === "CHANGED" ? review.reviewed_answer : (review.answer_review === "CONFIRMED" ? question.candidate_answer : null),
+          review_basis: review.review_basis.trim(),
+          material_decision: review.material_decision,
+          material_requirement: review.material_decision === "ASSET_REQUIRED" ? review.material_requirement.trim() : null
+        });
+      }
+      return Object.assign(base, {
+        task_executable: review.task_executable,
+        tools_complete: review.tools_complete,
+        criteria_sufficient: review.criteria_sufficient,
+        proposed_anchors: {
+          score_0: review.anchor_0.trim(),
+          score_1: review.anchor_1.trim(),
+          score_2: review.anchor_2.trim()
+        },
+        safety_note: (review.safety_note || "").trim()
+      });
+    });
+
+    function count(field, value) {
+      return questionResults.filter(function (question) { return question[field] === value; }).length;
+    }
+
+    return {
+      schema_version: "job-skill-content-review-result-v1",
+      result_id: "job-skill-review-" + state.reviewed_date + "-" + submittedAt.replace(/[^0-9]/g, "").slice(0, 14),
+      status: "SUBMITTED",
+      package: {
+        package_id: packageData.package_id,
+        package_version: packageData.package_version,
+        manifest_id: packageData.manifest_id,
+        manifest_version: packageData.manifest_version
+      },
+      strategy: {
+        strategy_id: packageData.strategy_id,
+        strategy_version: packageData.strategy_version
+      },
+      reviewer: {
+        name: packageData.reviewer_name,
+        role: "CONTENT_VOCATIONAL_REVIEWER",
+        reviewed_date: state.reviewed_date,
+        submitted_at: submittedAt
+      },
+      summary: {
+        total: questionResults.length,
+        online_total: questionResults.filter(function (question) { return question.question_type === "SINGLE_CHOICE"; }).length,
+        offline_total: questionResults.filter(function (question) { return question.question_type === "OFFLINE_OPERATION"; }).length,
+        approved: count("content_conclusion", "APPROVED"),
+        return_for_revision: count("content_conclusion", "RETURN_FOR_REVISION"),
+        rejected: count("content_conclusion", "REJECTED"),
+        text_only_approved: count("material_decision", "TEXT_ONLY_APPROVED"),
+        asset_required: count("material_decision", "ASSET_REQUIRED")
+      },
+      questions: questionResults
+    };
+  }
+
+  function resultMarkdown(result) {
+    var lines = [
+      "# 超市理货员 Pilot 24 题内容审核结论",
+      "",
+      "- 审核人：" + result.reviewer.name,
+      "- 审核日期：" + result.reviewer.reviewed_date,
+      "- 提交时间：" + result.reviewer.submitted_at,
+      "- 审核对象：" + result.strategy.strategy_id + "@" + result.strategy.strategy_version,
+      "- 结果状态：" + result.status,
+      "- 内容通过：" + result.summary.approved + " / 24",
+      "- 退回修改：" + result.summary.return_for_revision + " / 24",
+      "- 拒绝或换题：" + result.summary.rejected + " / 24",
+      "- 允许纯文本：" + result.summary.text_only_approved + " / 18",
+      "- 必须补素材：" + result.summary.asset_required + " / 18",
+      "",
+      "本结论只代表内容与职教审核，不授权修改题目状态、激活题目或修改 strategy v1。",
+      ""
+    ];
+
+    result.questions.forEach(function (question, index) {
+      lines.push("## " + String(index + 1).padStart(2, "0") + " " + question.question_id + "@1");
+      lines.push("");
+      lines.push("- 题型：" + question.question_type);
+      lines.push("- 候选 hash：" + question.candidate_record_hash);
+      lines.push("- 内容结论：" + question.content_conclusion);
+      if (question.question_type === "SINGLE_CHOICE") {
+        lines.push("- 题干：" + question.prompt_review);
+        lines.push("- 选项：" + question.options_review);
+        lines.push("- 答案：" + question.answer_review + "，候选 " + question.candidate_answer + "，审核后 " + (question.reviewed_answer || "无"));
+        lines.push("- 审核依据：" + question.review_basis);
+        lines.push("- 素材：" + question.material_decision);
+        if (question.material_requirement) lines.push("- 素材要求：" + question.material_requirement);
+      } else {
+        lines.push("- 任务可执行：" + question.task_executable);
+        lines.push("- 工具完整：" + question.tools_complete);
+        lines.push("- 指标充分：" + question.criteria_sufficient);
+        lines.push("- 0 分锚点：" + question.proposed_anchors.score_0);
+        lines.push("- 1 分锚点：" + question.proposed_anchors.score_1);
+        lines.push("- 2 分锚点：" + question.proposed_anchors.score_2);
+        lines.push("- 安全关注：" + (question.safety_note || "无"));
+      }
+      lines.push("- 审核备注：" + question.review_note);
+      lines.push("");
+    });
+    return lines.join("\n");
+  }
+
+  function downloadBlob(filename, type, content) {
+    var url = URL.createObjectURL(new Blob([content], { type: type }));
+    var link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  function showSubmission(result) {
+    state.submission = result;
+    saveState();
+    elements.resultCopy.textContent = "JSON 已下载，Markdown 结论已准备。内容通过 " + result.summary.approved + " 题，退回修改 " + result.summary.return_for_revision + " 题，拒绝或换题 " + result.summary.rejected + " 题。";
+    elements.resultPanel.classList.add("visible");
+    elements.resultPanel.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function submitReview() {
+    elements.errorSummary.classList.remove("visible");
+    var globalErrors = [];
+    if (!hasText(state.reviewed_date)) globalErrors.push("请填写审核日期。");
+
+    var firstInvalid = null;
+    packageData.questions.forEach(function (question, index) {
+      var errors = questionErrors(question, getReview(question.question_id));
+      if (errors.length && !firstInvalid) firstInvalid = { index: index, errors: errors };
+    });
+
+    if (globalErrors.length || firstInvalid) {
+      if (firstInvalid) {
+        currentIndex = firstInvalid.index;
+        activeFilter = "incomplete";
+        document.querySelectorAll(".filter-btn").forEach(function (button) {
+          button.classList.toggle("active", button.dataset.filter === activeFilter);
+        });
+        renderQuestion();
+        renderNav();
+        var labels = firstInvalid.errors.map(function (error) { return error.label; });
+        var dateMessage = globalErrors.length ? globalErrors.join(" ") + " " : "";
+        elements.errorSummary.textContent = dateMessage + packageData.questions[firstInvalid.index].question_id + " 还有未完成或互相冲突的项目：" + labels.join("、") + "。";
+        elements.errorSummary.classList.add("visible");
+        setTimeout(function () {
+          var target = document.querySelector('[data-field="' + firstInvalid.errors[0].field + '"]');
+          if (target) target.focus();
+        }, 0);
+      } else {
+        elements.errorSummary.textContent = globalErrors.join(" ");
+        elements.errorSummary.classList.add("visible");
+        elements.reviewedDate.focus();
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    var result = buildResult();
+    showSubmission(result);
+    downloadBlob(result.result_id + ".json", "application/json;charset=utf-8", JSON.stringify(result, null, 2) + "\n");
+  }
+
+  function importResult(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var result = JSON.parse(reader.result);
+        if (result.schema_version !== "job-skill-content-review-result-v1") throw new Error("审核结果格式不匹配");
+        if (!result.package || result.package.package_id !== packageData.package_id || result.package.manifest_version !== packageData.manifest_version) {
+          throw new Error("审核包或 manifest 版本不匹配");
+        }
+        if (!Array.isArray(result.questions) || result.questions.length !== packageData.questions.length) throw new Error("题目数量不是 24");
+        result.questions.forEach(function (item) {
+          var question = packageData.questions.find(function (candidate) { return candidate.question_id === item.question_id; });
+          if (!question || question.candidate_record_hash !== item.candidate_record_hash) throw new Error(item.question_id + " 的候选 hash 不匹配");
+        });
+        if (!window.confirm("导入会覆盖本机当前草稿，是否继续？")) return;
+
+        state.reviewed_date = result.reviewer.reviewed_date;
+        state.reviews = {};
+        result.questions.forEach(function (item) {
+          if (item.question_type === "SINGLE_CHOICE") {
+            state.reviews[item.question_id] = {
+              prompt_review: item.prompt_review,
+              options_review: item.options_review,
+              answer_review: item.answer_review,
+              reviewed_answer: item.answer_review === "CHANGED" ? item.reviewed_answer : "",
+              review_basis: item.review_basis,
+              material_decision: item.material_decision,
+              material_requirement: item.material_requirement || "",
+              content_conclusion: item.content_conclusion,
+              review_note: item.review_note
+            };
+          } else {
+            state.reviews[item.question_id] = {
+              task_executable: item.task_executable,
+              tools_complete: item.tools_complete,
+              criteria_sufficient: item.criteria_sufficient,
+              anchor_0: item.proposed_anchors.score_0,
+              anchor_1: item.proposed_anchors.score_1,
+              anchor_2: item.proposed_anchors.score_2,
+              safety_note: item.safety_note || "",
+              content_conclusion: item.content_conclusion,
+              review_note: item.review_note
+            };
+          }
+        });
+        state.submission = result;
+        elements.reviewedDate.value = state.reviewed_date;
+        saveState();
+        renderQuestion();
+        renderNav();
+        updateProgress();
+        showSubmission(result);
+      } catch (error) {
+        elements.errorSummary.textContent = "无法导入：" + error.message;
+        elements.errorSummary.classList.add("visible");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } finally {
+        elements.importFile.value = "";
+      }
+    };
+    reader.readAsText(file, "utf-8");
+  }
+
+  elements.reviewedDate.addEventListener("change", function () {
+    state.reviewed_date = elements.reviewedDate.value;
+    state.submission = null;
+    elements.resultPanel.classList.remove("visible");
+    scheduleSave();
+  });
+  elements.search.addEventListener("input", function () {
+    searchTerm = elements.search.value.trim().toLowerCase();
+    renderNav();
+  });
+  document.querySelectorAll(".filter-btn").forEach(function (button) {
+    button.addEventListener("click", function () {
+      activeFilter = button.dataset.filter;
+      document.querySelectorAll(".filter-btn").forEach(function (item) { item.classList.toggle("active", item === button); });
+      renderNav();
+    });
+  });
+  elements.previous.addEventListener("click", function () { navigate(-1); });
+  elements.next.addEventListener("click", function () { navigate(1); });
+  elements.submit.addEventListener("click", submitReview);
+  elements.importFile.addEventListener("change", function () {
+    if (elements.importFile.files && elements.importFile.files[0]) importResult(elements.importFile.files[0]);
+  });
+  elements.importButton.addEventListener("click", function () { elements.importFile.click(); });
+  elements.downloadJson.addEventListener("click", function () {
+    if (!state.submission) return;
+    downloadBlob(state.submission.result_id + ".json", "application/json;charset=utf-8", JSON.stringify(state.submission, null, 2) + "\n");
+  });
+  elements.downloadMarkdown.addEventListener("click", function () {
+    if (!state.submission) return;
+    downloadBlob(state.submission.result_id + ".md", "text/markdown;charset=utf-8", resultMarkdown(state.submission) + "\n");
+  });
+
+  var hashId = location.hash.slice(1);
+  var hashIndex = packageData.questions.findIndex(function (question) { return question.question_id === hashId; });
+  if (hashIndex >= 0) currentIndex = hashIndex;
+
+  loadState();
+  renderQuestion();
+  renderNav();
+  updateProgress();
+  if (state.submission) {
+    elements.resultPanel.classList.add("visible");
+    elements.resultCopy.textContent = "已载入上次提交结果，可再次下载 JSON 或 Markdown。";
+  }
+})();
+</script>
+</body>
+</html>

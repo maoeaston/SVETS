@@ -1,0 +1,733 @@
+{
+  "schema_version": "job-skill-shelver-298-rejected-replacement-review-merged-gate-v1",
+  "gate_id": "job-skill-shelver-298-rejected-replacement-review-merged-gate-v1",
+  "status": "COMPLETED_WITH_RETURNS_NO_ACTIVATION_AUTHORITY",
+  "generated_at": "2026-07-22T10:30:00+08:00",
+  "candidate_set": {
+    "path": "doc/features/job-skill-shelver-298-rejected-replacement-candidates-v2.json",
+    "candidate_set_hash": "sha256:28a1d072fb81ed85dd3ee923f40c04a569a2b18248f1092684bf2faef2bd34ab",
+    "sha256": "sha256:36a7c8fd3f48799c66804586e30fbc849cd62f9dba7090a355a7b6c156008f97"
+  },
+  "pending_gate": {
+    "path": "doc/features/job-skill-shelver-298-rejected-replacement-review-gate-v1.json",
+    "gate_hash": "sha256:2d2b002946fc201839cbc8565471e7825eab729898f814ca1e5b904d4ca0c884",
+    "sha256": "sha256:8e4bc40df67cb7f7ffea11a09fc6c2ad0a0bd153ecb02aa0d94d034284b28657"
+  },
+  "source_results": {
+    "content": {
+      "source_path": "E:\\Downloads\\job-skill-shelver-298-rejected-replacement-content-confirmation-packet-chen-xiaoqing-v1-result.json",
+      "received_path": "doc/features/job-skill-shelver-298-rejected-replacement-content-confirmation-result-chen-xiaoqing-2026-07-22.json",
+      "bytes": 15635,
+      "sha256": "sha256:c1ee9285ee6dec38bc52d487ed4d7391d581c02ee9caf9a3c3a85bdb6bce4e6e",
+      "reviewer": {
+        "name": "陈晓青",
+        "track": "CONTENT_CONFIRMATION",
+        "role": "内容确认"
+      },
+      "submitted_at": "2026-07-22T02:03:21.072Z",
+      "attachment_byte_match_verified": true
+    },
+    "safety_technical": {
+      "source_path": "E:\\Downloads\\job-skill-shelver-298-rejected-replacement-safety-technical-review-packet-he-dong-v1-result.json",
+      "received_path": "doc/features/job-skill-shelver-298-rejected-replacement-safety-technical-review-result-he-dong-2026-07-22.json",
+      "bytes": 14101,
+      "sha256": "sha256:755837f746e55ba580f9d20b7fd9ea129cc29277f068e8d399d114bad715aabe",
+      "reviewer": {
+        "name": "赫东",
+        "track": "SAFETY_TECHNICAL_REVIEW",
+        "role": "安全与技术审核"
+      },
+      "submitted_at": "2026-07-22T02:01:26.248616Z",
+      "attachment_byte_match_verified": true
+    }
+  },
+  "validation": {
+    "schema_identity_submitted_at_scope_hash_summary": "PASSED",
+    "exact_content_question_set": [
+      "M1_OB_048_V2",
+      "M1_OP_042_V2",
+      "M3_OP_056_V2",
+      "M4_OP_043_V2",
+      "M4_OP_044_V2",
+      "M4_OP_045_V2",
+      "M4_OP_046_V2",
+      "M4_OP_047_V2",
+      "M4_OP_048_V2",
+      "M5_OP_048_V2",
+      "M5_OP_055_V2"
+    ],
+    "exact_safety_technical_question_set": [
+      "M1_OB_048_V2",
+      "M1_OP_042_V2",
+      "M3_OP_056_V2",
+      "M4_OP_043_V2",
+      "M4_OP_044_V2",
+      "M4_OP_045_V2",
+      "M4_OP_046_V2",
+      "M4_OP_047_V2",
+      "M4_OP_048_V2",
+      "M5_OP_048_V2",
+      "M5_OP_055_V2"
+    ],
+    "safety_technical_effective_status_policy": "FAIL_CLOSED_IF_ANY_SAFETY_OR_TECHNICAL_SUBFIELD_RETURNS",
+    "source_internal_consistency": "PASSED_WITH_FAIL_CLOSED_NORMALIZATION",
+    "source_consistency_anomalies": [
+      {
+        "question_id": "M1_OP_042_V2",
+        "source_declared_conclusion": "PASS",
+        "effective_safety_technical_conclusion": "RETURN_FOR_REVISION",
+        "reason": "Top-level conclusion ignored one or more safety/technical subfield returns; merged fail-closed."
+      },
+      {
+        "question_id": "M4_OP_045_V2",
+        "source_declared_conclusion": "PASS",
+        "effective_safety_technical_conclusion": "RETURN_FOR_REVISION",
+        "reason": "Top-level conclusion ignored one or more safety/technical subfield returns; merged fail-closed."
+      },
+      {
+        "question_id": "M4_OP_046_V2",
+        "source_declared_conclusion": "PASS",
+        "effective_safety_technical_conclusion": "RETURN_FOR_REVISION",
+        "reason": "Top-level conclusion ignored one or more safety/technical subfield returns; merged fail-closed."
+      }
+    ],
+    "scope_anomalies": []
+  },
+  "summary": {
+    "total": 11,
+    "passed_review_only_no_activation_authority": 2,
+    "return_for_revision": 9,
+    "pending": 0,
+    "content": {
+      "total": 11,
+      "passed": 3,
+      "return_for_revision": 8
+    },
+    "safety_technical_source_declared": {
+      "total": 11,
+      "passed": 7,
+      "return_for_revision": 4
+    },
+    "safety_technical_effective": {
+      "total": 11,
+      "passed": 4,
+      "return_for_revision": 7
+    },
+    "returns_by_failed_tracks": {
+      "CONTENT": 2,
+      "CONTENT+SAFETY_TECHNICAL": 6,
+      "SAFETY_TECHNICAL": 1
+    }
+  },
+  "authority": {
+    "activation_authority_granted": false,
+    "can_activate_questions": false,
+    "candidate_set_ready_for_separate_authority_amendment": false,
+    "authority_amendment_executed": false,
+    "existing_287_unchanged": true,
+    "rejected_originals_11_unchanged": true,
+    "runtime_database_unchanged": true,
+    "activation_sql_generated": false,
+    "delivery_lock_unchanged": true,
+    "next_revision_required": 9
+  },
+  "questions": [
+    {
+      "question_id": "M1_OB_048_V2",
+      "previous_question_id": "M1_OB_048",
+      "question_version": 2,
+      "candidate_record_hash": "sha256:f7fc18686e5958a640a3a0e740e3aa3cd96d4ece727fb4a055203a7d9627bf8e",
+      "semantic_hash": "sha256:15d21ff96b88405a253a7e22427332e67b852e7e5fe3f9bb01578548fc579d59",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-review-gate-v1.json",
+        "gate_hash": "sha256:2d2b002946fc201839cbc8565471e7825eab729898f814ca1e5b904d4ca0c884",
+        "status": "PENDING_REPLACEMENT_REVIEW"
+      },
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "review_fields": {
+            "content_conclusion": "RETURN_FOR_REVISION",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "PASS",
+            "material_feasibility": "PASS",
+            "content_note": "退回复修。题干、现场材料、安全边界和6项rubric本身可以稳定执行，但proposed_question仍沿用ability_tags=[BASIC_SOCIAL]，assessment_point也仅写“M1_OB_048淘汰题替代岗位实操”。本题实际测量的是不明液体现场的安全停止、隔离、上报和恢复条件，而不是一般亲社会反应。若按当前标签入库，会把安全操作表现错误投影到BASIC_SOCIAL维度，造成报告解释和抽题分层偏差。",
+            "required_revision": "最低修改要求：将assessment_point改为明确的“不明液体发现与隔离上报”或同等岗位测点；ability_tags至少改为SAFETY_OPERATION、RULE_EXECUTION，并重新生成候选hash。题干、材料、rubric和0/1/2分阈值可保持不变。"
+          },
+          "source_record_hash": "sha256:2e03f2de647796e3291fb8c3ea985fcebfd5ab81303ced10d8fbec00530d7529"
+        },
+        "safety_technical": {
+          "status": "RETURN_FOR_REVISION",
+          "source_declared_status": "RETURN_FOR_REVISION",
+          "review_fields": {
+            "safety_conclusion": "RETURN_FOR_REVISION",
+            "technical_conclusion": "RETURN_FOR_REVISION",
+            "renderer_feasibility": "PASS",
+            "data_contract_integrity": "RETURN_FOR_REVISION",
+            "safety_sensitive_decision": "KEEP",
+            "stop_condition_note": "退回复修：当前停止条件把误放真实液体写成由评估员“复位后重测”，未要求立即封锁、停止接触并通知负责人或清洁责任人员；真实不明液体不得由评估员自行复位。最低要求：出现真实液体、标识片翘起或隔离空间不足时立即终止施测，保持警示隔离，通知负责人和清洁责任人员处理，确认现场安全后另行重测。",
+            "technical_note": "退回复修：1分允许任意只完成4至5项，可能遗漏“警示隔离”“不接触不明液体”或“上报”等关键安全动作仍得分，评分锚点未设置安全门槛。最低要求：将停止、提醒绕行、隔离、不接触和上报设为1分及以上的必备条件；任一缺失、允许人员通行、触碰或跨越不明液体、未经确认恢复作业，均判0分并停止。"
+          },
+          "source_record_hash": "sha256:cf17fd1f13dc38dda5a3c60743f31d119ba973875e02e76c1b21dbe58dd9d02a"
+        }
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "next_question_id": "M1_OB_048_V3",
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:99426874baa9f1ed16d6b8e24cac7cbe284123842bdd86d9e72df275a79625ff"
+    },
+    {
+      "question_id": "M1_OP_042_V2",
+      "previous_question_id": "M1_OP_042",
+      "question_version": 2,
+      "candidate_record_hash": "sha256:1491cf6b2db9a222cb3c772bc3c4aa1110ee9a3fde911fb11d441b94a1bff552",
+      "semantic_hash": "sha256:0b2a1b9a77329eb5de7514b7f6810ef919d337d1f31e3d012c71db169085d367",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-review-gate-v1.json",
+        "gate_hash": "sha256:2d2b002946fc201839cbc8565471e7825eab729898f814ca1e5b904d4ca0c884",
+        "status": "PENDING_REPLACEMENT_REVIEW"
+      },
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "review_fields": {
+            "content_conclusion": "RETURN_FOR_REVISION",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "RETURN_FOR_REVISION",
+            "rubric_observability": "RETURN_FOR_REVISION",
+            "material_feasibility": "RETURN_FOR_REVISION",
+            "content_note": "退回复修。题干要求“同SKU旧货前置、新货后置”，但现场材料仅写4个SKU各2件轻质空包装，没有为每个SKU配置可观察的旧货/新货日期或批次标识，也没有说明任务单、排面图和价签如何锁定8件商品的唯一位置。教师无法判断哪件是旧货、哪件是新货，学员可能形成多个同样合理的摆放结果。1分中的“正确完成6至7件”也未说明正确件数是否同时要求对应SKU的FIFO正确。",
+            "required_revision": "最低修改要求：为4个SKU分别配置1件旧批次和1件新批次，写明固定日期/批次标签及唯一答案卡；材料清单同步加入这些标识。将1分明确为“6至7件处于唯一正确货位，且已完成SKU均旧货前置、新货后置，并正确完成中断标记与接续”；明确任一已完成SKU新旧倒置的计分归属。"
+          },
+          "source_record_hash": "sha256:204f478e947203ed5840ca632e2746cb7245474e55da1172e43074dd129370f9"
+        },
+        "safety_technical": {
+          "status": "RETURN_FOR_REVISION",
+          "source_declared_status": "PASS",
+          "review_fields": {
+            "safety_conclusion": "PASS",
+            "technical_conclusion": "RETURN_FOR_REVISION",
+            "renderer_feasibility": "RETURN_FOR_REVISION",
+            "data_contract_integrity": "RETURN_FOR_REVISION",
+            "safety_sensitive_decision": "REMOVE",
+            "stop_condition_note": "通过；本题使用固定货架和轻质空包装，无独立安全敏感风险，建议取消安全敏感标记。商品、价签、排面图或脚本不一致时暂停计分并由评估员复位的条件可执行。",
+            "technical_note": "退回复修：题干和rubric要求同SKU旧货前置、新货后置，但现场材料仅有4个SKU各2件轻质空包装，未说明哪些是旧货或新货，也未提供日期、批次标签或货架预置旧货，FIFO无法观察和唯一判定。最低要求：为每个SKU设置可识别的旧货与新货，并用固定日期或批次标签锁定答案；或在货架预置旧货、另提供待补新货。否则删除FIFO指标及相关评分条件。"
+          },
+          "source_record_hash": "sha256:0d801b02b7e6abbb89e56d246734e6f88afb88ea70ebf4100a7d33c9e48e9f0a"
+        }
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "next_question_id": "M1_OP_042_V3",
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:8cf10754f9839db4b765c9b2d5d6e4a67518c49718bddb16c6a191523b94195a"
+    },
+    {
+      "question_id": "M3_OP_056_V2",
+      "previous_question_id": "M3_OP_056",
+      "question_version": 2,
+      "candidate_record_hash": "sha256:f1ca96705755eef044b1b7712858140df645bd590c01583a33754a59e553453f",
+      "semantic_hash": "sha256:fa5e1945e97a1ac6fee17712924f6628122e8f400375d9b48f28f58347cb31af",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-review-gate-v1.json",
+        "gate_hash": "sha256:2d2b002946fc201839cbc8565471e7825eab729898f814ca1e5b904d4ca0c884",
+        "status": "PENDING_REPLACEMENT_REVIEW"
+      },
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "review_fields": {
+            "content_conclusion": "RETURN_FOR_REVISION",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "RETURN_FOR_REVISION",
+            "material_feasibility": "PASS",
+            "content_note": "退回复修。岗位情境、8件商品、日期标签和最终FIFO结果均可布置，但1分要求“至少正确核验6件”。当前题干没有要求学员读出、记录或逐件勾选日期，教师只能看到学员翻看包装，无法直接判断其究竟正确读取了几件日期。同一最终摆放结果可能被不同教师判为核验6件或8件，rubric的部分得分不可稳定复现。",
+            "required_revision": "最低修改要求：二选一。方案A：要求学员逐件读出或在核验表记录8个到期日，并增加核验记录表，使“正确核验几件”可直接核对；方案B：删除按核验件数评分，仅按最终8个位置、最早到期2件前置、排面恢复和提示次数设置互斥的0/1/2分阈值。"
+          },
+          "source_record_hash": "sha256:8aacd0ef928f2514ef384b9f70cdad9b09995584f0b8189795541f4948079c57"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source_declared_status": "PASS",
+          "review_fields": {
+            "safety_conclusion": "PASS",
+            "technical_conclusion": "PASS",
+            "renderer_feasibility": "PASS",
+            "data_contract_integrity": "PASS",
+            "safety_sensitive_decision": "KEEP",
+            "stop_condition_note": "通过",
+            "technical_note": "通过"
+          },
+          "source_record_hash": "sha256:3e7482520b61eea56c7eb57a776994461c3fbeb6452380252b4cce4bd193c502"
+        }
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT"
+      ],
+      "next_question_id": "M3_OP_056_V3",
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:d352c4d9496093f33ea5571c88bb3a002dce9dced712a144d02c7e8081b33543"
+    },
+    {
+      "question_id": "M4_OP_043_V2",
+      "previous_question_id": "M4_OP_043",
+      "question_version": 2,
+      "candidate_record_hash": "sha256:27068d7eef3394c3c5d77827da331c5267b9b9fbc43d88d2d3796ba451ac1418",
+      "semantic_hash": "sha256:7df37f5d3f61aeb8fce82e17493401713b3cb84a72dfc9e540b20bd25127a119",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-review-gate-v1.json",
+        "gate_hash": "sha256:2d2b002946fc201839cbc8565471e7825eab729898f814ca1e5b904d4ca0c884",
+        "status": "PENDING_REPLACEMENT_REVIEW"
+      },
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_fields": {
+            "content_conclusion": "PASS",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "PASS",
+            "material_feasibility": "PASS",
+            "content_note": "通过。任务已从文职文件分类转换为补货结束后的纸箱、塑料膜和问题商品分流，属于理货员可执行的现场整理任务。6件材料、三个区域、唯一映射、问题商品权限边界以及0/1/2分数量阈值一致，教师可直接观察并稳定评分。",
+            "required_revision": "无。"
+          },
+          "source_record_hash": "sha256:93ebe2ee00fc82da74b92c63d5987a2e69b212f5cc2aed197b25fb50b6e769dd"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source_declared_status": "PASS",
+          "review_fields": {
+            "safety_conclusion": "PASS",
+            "technical_conclusion": "PASS",
+            "renderer_feasibility": "PASS",
+            "data_contract_integrity": "PASS",
+            "safety_sensitive_decision": "KEEP",
+            "stop_condition_note": "通过",
+            "technical_note": "通过"
+          },
+          "source_record_hash": "sha256:046f6c5e82b2b6e8912f3e8a74f8b8892790440671a643d009d823f579da4729"
+        }
+      },
+      "status": "PASSED_REVIEW_ONLY_NO_ACTIVATION_AUTHORITY",
+      "failed_review_tracks": [],
+      "next_question_id": null,
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:3a20abb36ac00779b76affb5076db6c7ba6943976dd0d22dc176152fe068ca16"
+    },
+    {
+      "question_id": "M4_OP_044_V2",
+      "previous_question_id": "M4_OP_044",
+      "question_version": 2,
+      "candidate_record_hash": "sha256:5e3a6e7305b38d4ca5f0c11f97aa3590b9f8da731ebf725abb01a748b8632dff",
+      "semantic_hash": "sha256:d36525b4131dce063a73e55b7b661b6c076c36b96ceef5cef50acdbead3f4b82",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-review-gate-v1.json",
+        "gate_hash": "sha256:2d2b002946fc201839cbc8565471e7825eab729898f814ca1e5b904d4ca0c884",
+        "status": "PENDING_REPLACEMENT_REVIEW"
+      },
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_fields": {
+            "content_conclusion": "PASS",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "PASS",
+            "material_feasibility": "PASS",
+            "content_note": "通过。题目已转换为依据通道号、货架号和层位号规划补货顺序的真实备货任务。8件商品编码不得并列，路线规则和唯一答案卡能够锁定唯一顺序；按正确位置数量设置的0/1/2分阈值互斥，提示次数明确，现场材料可以标准化准备。",
+            "required_revision": "无。"
+          },
+          "source_record_hash": "sha256:87da64dd04cdfdb4716375a5f116a8f889c3f48090b2ad41c7c0240e14171f9e"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source_declared_status": "PASS",
+          "review_fields": {
+            "safety_conclusion": "PASS",
+            "technical_conclusion": "PASS",
+            "renderer_feasibility": "PASS",
+            "data_contract_integrity": "PASS",
+            "safety_sensitive_decision": "KEEP",
+            "stop_condition_note": "通过",
+            "technical_note": "通过"
+          },
+          "source_record_hash": "sha256:5f5f34fa1a6eb57374094e351dd00f8c7f331c1f0713a9e260fbad56a5f52b2f"
+        }
+      },
+      "status": "PASSED_REVIEW_ONLY_NO_ACTIVATION_AUTHORITY",
+      "failed_review_tracks": [],
+      "next_question_id": null,
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:82ca1811bc593cd619875ff715a8b5004d62ffba144f77d9b6e701a61db8da41"
+    },
+    {
+      "question_id": "M4_OP_045_V2",
+      "previous_question_id": "M4_OP_045",
+      "question_version": 2,
+      "candidate_record_hash": "sha256:55c3a86bdc4f9a077ea259cd1c3d9c7c889d8b8cebe6c6fb3acfbf42209813c2",
+      "semantic_hash": "sha256:6ea00bf423c14ea51c76b67873e9ae3e27b24baa6d643192f28dd28fbdce0c1c",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-review-gate-v1.json",
+        "gate_hash": "sha256:2d2b002946fc201839cbc8565471e7825eab729898f814ca1e5b904d4ca0c884",
+        "status": "PENDING_REPLACEMENT_REVIEW"
+      },
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "review_fields": {
+            "content_conclusion": "RETURN_FOR_REVISION",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "RETURN_FOR_REVISION",
+            "material_feasibility": "RETURN_FOR_REVISION",
+            "content_note": "退回复修。题干和材料只提供零食区、常温饮品区、洗护清洁区三个周转箱，但1分条件要求学员把错区商品放入“问题暂存位”。现场材料中不存在该区域，rubric也没有定义何种动作构成放入问题暂存位。教师无法执行该评分分支，同一表现可能被判1分或0分。",
+            "required_revision": "最低修改要求：二选一。方案A：增加带明确标识的问题商品暂存位，并在rubric和材料中同步定义；方案B：删除该不存在的动作，将1分改为“独立识别唯一错区商品但未完成正确归位，且未误动其余8件”，同时保持2分为识别、正确归位和复查全部完成。"
+          },
+          "source_record_hash": "sha256:a1558d57ed0bd362b409e0b1b9dbc2aec796e657b6f8f316168f773553609813"
+        },
+        "safety_technical": {
+          "status": "RETURN_FOR_REVISION",
+          "source_declared_status": "PASS",
+          "review_fields": {
+            "safety_conclusion": "PASS",
+            "technical_conclusion": "RETURN_FOR_REVISION",
+            "renderer_feasibility": "RETURN_FOR_REVISION",
+            "data_contract_integrity": "RETURN_FOR_REVISION",
+            "safety_sensitive_decision": "KEEP",
+            "stop_condition_note": "通过；题目使用常温轻质商品，不涉及危险操作。存在两件以上错区、商品区域信息不唯一或答案不唯一时，应暂停计分并由评估员复位。",
+            "technical_note": "退回复修：1分锚点要求把错区商品放入“问题暂存位”，但现场材料只提供三个周转箱，没有问题暂存位；该动作也不在题干、唯一达标行为或rubric中，现场无法按统一条件执行和评分。最低要求：删除该分支，改为“正确识别错区商品但未完成正确归位”；或在题干、材料和rubric中明确增加唯一问题暂存位及其使用条件，并同步评分。"
+          },
+          "source_record_hash": "sha256:bce7f8bf788c781ee535ed32eb873446a29e95c4f5f9e8b0aee1c4e8f15b6079"
+        }
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "next_question_id": "M4_OP_045_V3",
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:2faf4b027b8b9e528c97a16c5e9e51a95f91ef384af4765929b2095f1acf4ab8"
+    },
+    {
+      "question_id": "M4_OP_046_V2",
+      "previous_question_id": "M4_OP_046",
+      "question_version": 2,
+      "candidate_record_hash": "sha256:ef02afbcee4372d706019c04381ee4c2d417ea7a582fffc73c84b3a2846383d9",
+      "semantic_hash": "sha256:896a5e25a4a0f267366f3afd8999660629872dd0dddf1a88a4ab103f4364f681",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-review-gate-v1.json",
+        "gate_hash": "sha256:2d2b002946fc201839cbc8565471e7825eab729898f814ca1e5b904d4ca0c884",
+        "status": "PENDING_REPLACEMENT_REVIEW"
+      },
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "review_fields": {
+            "content_conclusion": "RETURN_FOR_REVISION",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "RETURN_FOR_REVISION",
+            "rubric_observability": "RETURN_FOR_REVISION",
+            "material_feasibility": "RETURN_FOR_REVISION",
+            "content_note": "退回复修。题干把唯一差错写成“规格或数量不符”，但这两类差错的对象和处置不同：规格不符可对应一件具体问题商品，数量不足可能没有可贴标识的商品，数量多出又需要锁定哪件属于多出项。当前唯一结果却统一要求“问题商品不进入货架、完成标识”，导致数量差错场景下答案不唯一或无对象可执行。",
+            "required_revision": "最低修改要求：锁定一种差错类型。建议改为“6件实物中有1件规格/条码与补货清单不符”，明确该唯一商品、答案卡、问题标识和上报对象；或将数量不足、数量多出分别制作独立版本，为每种版本写明唯一处置。题干、材料、rubric和0/1/2分必须使用同一差错类型。"
+          },
+          "source_record_hash": "sha256:b2ed8e4dc50ca1a5026b23980926598cf064c788815962c86b983872847000eb"
+        },
+        "safety_technical": {
+          "status": "RETURN_FOR_REVISION",
+          "source_declared_status": "PASS",
+          "review_fields": {
+            "safety_conclusion": "PASS",
+            "technical_conclusion": "RETURN_FOR_REVISION",
+            "renderer_feasibility": "RETURN_FOR_REVISION",
+            "data_contract_integrity": "RETURN_FOR_REVISION",
+            "safety_sensitive_decision": "KEEP",
+            "stop_condition_note": "通过；本题使用轻质商品，无独立危险源。清单存在多处差错、实物数量异常或答案不唯一时，应暂停计分并由评估员复位。",
+            "technical_note": "退回复修：候选把“规格不符”和“数量不符”合并为同一唯一差错，但后续统一要求“问题商品不进入货架并贴问题标识”。数量短缺或多出属于清单、收货或交接差异，不一定存在可唯一标识的问题商品，处置对象和答案不唯一。最低要求：将预埋差错限定为1件商品的品名、规格或条码与清单不符；或拆分数量异常分支，明确暂停该清单项、记录数量差异并上报，不把正常商品错误标为问题品，并分别设置答案和rubric。"
+          },
+          "source_record_hash": "sha256:f8c2dfb927e06f9267a888c3c468bc6e3aa68e4b0934524bf0d142a5d6eb196b"
+        }
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "next_question_id": "M4_OP_046_V3",
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:5e81211216c284d487234baa2d00dfa9b92ce801a15c23b606a6c590a6aaeb1a"
+    },
+    {
+      "question_id": "M4_OP_047_V2",
+      "previous_question_id": "M4_OP_047",
+      "question_version": 2,
+      "candidate_record_hash": "sha256:98b1d1375a1a377f3edbc39650157281b0f54ffcd9235fc1ea5c0555ef449354",
+      "semantic_hash": "sha256:e622ca49cb3916e644e95b7ede5a4c6989490848b27049af178a924fd6dba4e4",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-review-gate-v1.json",
+        "gate_hash": "sha256:2d2b002946fc201839cbc8565471e7825eab729898f814ca1e5b904d4ca0c884",
+        "status": "PENDING_REPLACEMENT_REVIEW"
+      },
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "review_fields": {
+            "content_conclusion": "PASS",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "PASS",
+            "material_feasibility": "PASS",
+            "content_note": "通过。题目已转换为同SKU商品效期和批次排序，符合FIFO岗位情境。固定日期、固定批次号、无并列的唯一答案卡能够锁定8个位置；0/1/2分按正确位置数量和提示次数互斥执行。作为平行题使用的边界已写明，不影响本题内容确认。",
+            "required_revision": "无。"
+          },
+          "source_record_hash": "sha256:248557ffd348d730b142212239e3f9d2fab05e9bea3412ca4fbeae13511c0a69"
+        },
+        "safety_technical": {
+          "status": "RETURN_FOR_REVISION",
+          "source_declared_status": "RETURN_FOR_REVISION",
+          "review_fields": {
+            "safety_conclusion": "RETURN_FOR_REVISION",
+            "technical_conclusion": "RETURN_FOR_REVISION",
+            "renderer_feasibility": "RETURN_FOR_REVISION",
+            "data_contract_integrity": "RETURN_FOR_REVISION",
+            "safety_sensitive_decision": "ADD",
+            "stop_condition_note": "退回复修：现场混用“年月日、斜杠和8位数字”三种日期格式，却未定义斜杠格式和8位数字的解析口径，也未固定模拟工作日；可能造成效期误读和错误轮转。最低要求：统一为YYYY-MM-DD，或提供明确格式图例并固定模拟工作日及效期口径；日期标签缺失、格式无法识别、批次号不可比较或答案不唯一时立即暂停计分，由评估员更换材料后重测。",
+            "technical_note": "退回复修：同到期日按批次号由小到大不是通用FIFO或FEFO规则，且当前未说明批次号是否为等长纯数字、如何比较。最低要求：明确这是本题或门店锁定的次级排序规则，并使用等长可比较的批次编号；或仅考查到期日排序，将相同到期日设置为等价位置。同步锁定日期格式、唯一答案和评分口径。"
+          },
+          "source_record_hash": "sha256:c1c7f7268e6925a4e300bc40fb2023def6f3dd2d5e47893e867be83d755521e9"
+        }
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "SAFETY_TECHNICAL"
+      ],
+      "next_question_id": "M4_OP_047_V3",
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:2867467f356d6148be7ffd45d98ffea469cbb952927e045f8c076b7c36febd55"
+    },
+    {
+      "question_id": "M4_OP_048_V2",
+      "previous_question_id": "M4_OP_048",
+      "question_version": 2,
+      "candidate_record_hash": "sha256:925cccefdaa3011984ad265cd28a70ca065141d7e3fde21fb77b348c4ebe27aa",
+      "semantic_hash": "sha256:fd0eb08f69cd179445021530f8b2068546f65229ffe98d6306073a5722644a13",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-review-gate-v1.json",
+        "gate_hash": "sha256:2d2b002946fc201839cbc8565471e7825eab729898f814ca1e5b904d4ca0c884",
+        "status": "PENDING_REPLACEMENT_REVIEW"
+      },
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "review_fields": {
+            "content_conclusion": "RETURN_FOR_REVISION",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "RETURN_FOR_REVISION",
+            "rubric_observability": "RETURN_FOR_REVISION",
+            "material_feasibility": "RETURN_FOR_REVISION",
+            "content_note": "退回复修。题干和现场材料只写10件商品，没有说明其中是否包含异常商品、异常商品有几件及异常类型；但唯一结果和rubric要求“异常项按题设进入问题区”，0分又规定“问题商品被上架”。现场无法锁定哪件应进入问题区，也不清楚“10件全部正确”是10件全部上架，还是合格品上架加异常品隔离，会产生多个评分口径。",
+            "required_revision": "最低修改要求：锁定总数和构成，例如“10件中9件为合格补货品、1件为条码/规格不符的异常干扰品”；材料列明异常标识和唯一答案卡；题干明确异常品应进入问题暂存区。将2分写成“9件进入唯一正确货位、1件进入问题区并完成中断标记、接续和复查”；1分和0分也按同一10件计数口径重写。"
+          },
+          "source_record_hash": "sha256:1d70564730ac4e49f767cbac4d417cc661892eed3bbbea06522e5dfab844812b"
+        },
+        "safety_technical": {
+          "status": "RETURN_FOR_REVISION",
+          "source_declared_status": "RETURN_FOR_REVISION",
+          "review_fields": {
+            "safety_conclusion": "RETURN_FOR_REVISION",
+            "technical_conclusion": "RETURN_FOR_REVISION",
+            "renderer_feasibility": "RETURN_FOR_REVISION",
+            "data_contract_integrity": "RETURN_FOR_REVISION",
+            "safety_sensitive_decision": "KEEP",
+            "stop_condition_note": "退回复修：材料和题干只写“异常项按题设进入问题区”，未定义异常项数量、类型和安全模拟方式；若现场误用真实破损、泄漏或污染商品，现有停止条件也未覆盖。最低要求：锁定唯一安全仿真异常品，使用无液体、无尖锐、无污染的空包装或图片卡；发现真实泄漏、尖锐破损、异味、污染或货架不稳时立即停止、隔离警示并由评估员或负责人处理，确认前不得继续。",
+            "technical_note": "退回复修：题干、材料和rubric均未说明哪一件商品因何属于异常，“异常项按题设”没有实际题设，导致10件正确数量、问题区处置和答案无法唯一判定。最低要求：明确10件中正常品和异常品的数量、异常判据、对应货位或问题区答案以及中断前后状态；评分1分和2分应分别锁定正确上架数量、异常处置与最终复查要求。"
+          },
+          "source_record_hash": "sha256:5a2f4dc4bcdbfcd6ef9172ae6064477f21ee03e8b04e81f54f19d0409dbd3aa6"
+        }
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "next_question_id": "M4_OP_048_V3",
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:a277b530cb17372b49a1e095e4291cbc6d85aa161a34ea89e27a1794d489d3a5"
+    },
+    {
+      "question_id": "M5_OP_048_V2",
+      "previous_question_id": "M5_OP_048",
+      "question_version": 2,
+      "candidate_record_hash": "sha256:2c8e2481d47bb49e6f407f80f201615b26674c69616688e0440283497be632d2",
+      "semantic_hash": "sha256:dd1de83733c7cedc6a9a133e84ad19f68e91852c70eac348fda43604cc94b261",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-review-gate-v1.json",
+        "gate_hash": "sha256:2d2b002946fc201839cbc8565471e7825eab729898f814ca1e5b904d4ca0c884",
+        "status": "PENDING_REPLACEMENT_REVIEW"
+      },
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "review_fields": {
+            "content_conclusion": "RETURN_FOR_REVISION",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "PASS",
+            "material_feasibility": "PASS",
+            "content_note": "退回复修。显性模拟、材料安全、通道恢复步骤及0/1/2分阈值均可执行，但proposed_question仍沿用ability_tags=[BASIC_SOCIAL]，assessment_point仅写“M5_OP_048淘汰题替代岗位实操”。本题实际测量的是通道绊倒风险识别、警示隔离、安全移除和分类复查。按当前标签入库会把安全操作错误计入基础社交维度。",
+            "required_revision": "最低修改要求：将assessment_point改为明确的“通道散落物安全处置”或同等岗位测点；ability_tags至少改为SAFETY_OPERATION、RULE_EXECUTION，并重新生成候选hash。题干、材料、rubric和评分阈值可保持不变。"
+          },
+          "source_record_hash": "sha256:09861411d3846f920dbfef13a64c50e0413c3ad066bc613f3382a0450cb2dacd"
+        },
+        "safety_technical": {
+          "status": "RETURN_FOR_REVISION",
+          "source_declared_status": "RETURN_FOR_REVISION",
+          "review_fields": {
+            "safety_conclusion": "RETURN_FOR_REVISION",
+            "technical_conclusion": "RETURN_FOR_REVISION",
+            "renderer_feasibility": "RETURN_FOR_REVISION",
+            "data_contract_integrity": "RETURN_FOR_REVISION",
+            "safety_sensitive_decision": "KEEP",
+            "stop_condition_note": "退回复修：1分允许只清除并分类3件散落物，而0分又规定“仍留有明显绊倒物”即0分；若第4件仍在通道，现场同时满足1分条件和0分红线，且未明确继续隔离至评估员接管。最低要求：安全红线优先，任何未隔离的遗留绊倒物均判0分并停止；1分可改为4件全部移出但有1件分类错误，或明确剩余物持续被路障完全隔离并由评估员接管后才可判1分。",
+            "technical_note": "退回复修：0分与1分阈值不互斥，评估员无法对“清除3件、遗留1件”的同一表现唯一评分。最低要求：重写1分锚点，使其与0分红线互斥，并明确遗留物数量、是否仍处通道、隔离状态及恢复通行权限；未清除或未隔离的绊倒物不得获得1分。"
+          },
+          "source_record_hash": "sha256:900a205ba92ca494e1eba2bcea1b21bc60c0a6f88e049b5fc5eef32bd660c791"
+        }
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "next_question_id": "M5_OP_048_V3",
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:ea8431733de2487876bb02b035ed67ae9e1a8c18aa681a8ca7603abcaa6aa54d"
+    },
+    {
+      "question_id": "M5_OP_055_V2",
+      "previous_question_id": "M5_OP_055",
+      "question_version": 2,
+      "candidate_record_hash": "sha256:dbe4a823ad5881ce60dc79863d53200221ce7f946ac28071cd85bfb22d7939b5",
+      "semantic_hash": "sha256:7307e88432f95c06091d39ce418a1d4bc13da45f3a28e367242ef212d5c564ae",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-review-gate-v1.json",
+        "gate_hash": "sha256:2d2b002946fc201839cbc8565471e7825eab729898f814ca1e5b904d4ca0c884",
+        "status": "PENDING_REPLACEMENT_REVIEW"
+      },
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "review_fields": {
+            "content_conclusion": "RETURN_FOR_REVISION",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "RETURN_FOR_REVISION",
+            "rubric_observability": "RETURN_FOR_REVISION",
+            "material_feasibility": "RETURN_FOR_REVISION",
+            "content_note": "退回复修。题目将模糊指令改为显性角色扮演，岗位方向正确，但评分所称“4项关键信息”没有统一计数口径。rubric写“具体货架/层位、SKU或规格、数量、优先级”，可被理解为4项、5项或以“或”任选；不同教师会对询问货架但未询问层位、询问SKU但未询问规格的表现作出不同计数。此外材料只写三种SKU，未确认角色卡要求的6瓶无糖茶是否足量，且未说明本题是否在负责人确认后结束。",
+            "required_revision": "最低修改要求：明确四个评分维度及合并规则，例如①目标位置=货架+层位，②商品身份=品名/SKU+规格，③数量，④优先级；逐项写入rubric。材料明确至少提供6瓶500毫升无糖茶及其他干扰SKU。说明评分在学员准确复述并等待确认后结束，或若要求开始补货则补充后续操作和评分。"
+          },
+          "source_record_hash": "sha256:36898f15a26932aaf39114b36a42557dac3e31b90db485db1a38ffb2742a09d7"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source_declared_status": "PASS",
+          "review_fields": {
+            "safety_conclusion": "PASS",
+            "technical_conclusion": "PASS",
+            "renderer_feasibility": "PASS",
+            "data_contract_integrity": "PASS",
+            "safety_sensitive_decision": "KEEP",
+            "stop_condition_note": "通过",
+            "technical_note": "通过"
+          },
+          "source_record_hash": "sha256:65eff944f2b4732800c4c8da1033bb0d1d6cc0c3bb6dc1edd5727b457db232d3"
+        }
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT"
+      ],
+      "next_question_id": "M5_OP_055_V3",
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:16082dd37520bae4c4cbd1047d76384cde512c5d9382b804bc6fa278500bc46e"
+    }
+  ],
+  "gate_hash": "sha256:1eaa590a8765b5a5e5e00077c127d1e4d96e82988a453fee36c284cb0bb297fa"
+}

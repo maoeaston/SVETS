@@ -1,9 +1,9 @@
 import { createHash } from 'crypto'
 import { v4 as uuidv4 } from 'uuid'
-import { appendFileSync, mkdirSync } from 'fs'
-import { join } from 'path'
+import { appendFileSync } from 'fs'
 import { app } from 'electron'
 import { getDatabase } from '../db/connection'
+import { getActionLogPath } from './action-log-path'
 import type {
   ActionLogEntry,
   AggregateType,
@@ -11,27 +11,20 @@ import type {
   EventType
 } from '@shared/types/event-payloads'
 
-// 获取 action_log.jsonl 路径（只追加，永不修改）
-function getLogPath(): string {
-  const logsDir = join(app.getPath('userData'), 'data')
-  mkdirSync(logsDir, { recursive: true })
-  return join(logsDir, 'action_log.jsonl')
-}
-
 // checksum = SHA-256(JSON.stringify(payload)) — 与 doc/ 规范一致
 function calculateChecksum(payload: Record<string, unknown>): string {
   return createHash('sha256').update(JSON.stringify(payload), 'utf8').digest('hex')
 }
 
 // 获取聚合根内的下一个 event_sequence
-function nextSequence(aggregateId: string): number {
+function nextSequence(aggregateType: AggregateType, aggregateId: string): number {
   const row = getDatabase()
     .prepare(
       `SELECT MAX(event_sequence) AS max_seq
        FROM domain_event_projection
-       WHERE aggregate_id = ?`
+       WHERE aggregate_type = ? AND aggregate_id = ?`
     )
-    .get(aggregateId) as { max_seq: number | null }
+    .get(aggregateType, aggregateId) as { max_seq: number | null }
   return (row.max_seq ?? 0) + 1
 }
 
@@ -62,7 +55,7 @@ export function writeEvent(params: WriteEventParams): ActionLogEntry {
     params
 
   const eventId = uuidv4()
-  const eventSequence = nextSequence(aggregateId)
+  const eventSequence = nextSequence(aggregateType, aggregateId)
   const checksum = calculateChecksum(payload)
   const createdAt = new Date().toISOString()
   const appVersion = app.getVersion()
@@ -84,7 +77,7 @@ export function writeEvent(params: WriteEventParams): ActionLogEntry {
   }
 
   // Step 1: 追加写入 JSONL（文件锁由操作系统保证单进程安全）
-  const logPath = getLogPath()
+  const logPath = getActionLogPath()
   appendFileSync(logPath, JSON.stringify(entry) + '\n', { encoding: 'utf-8' })
 
   // Step 2: 写入 domain_event_projection

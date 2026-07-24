@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Job Skill Targeted V3 Pending Gate",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "summary",
+    "releaseable",
+    "questions",
+    "gate_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "job-skill-shelver-298-targeted-v3-rereview-gate-v1"
+    },
+    "status": {
+      "const": "PENDING_REVIEW"
+    },
+    "releaseable": {
+      "const": false
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 145,
+      "maxItems": 145
+    }
+  }
+}

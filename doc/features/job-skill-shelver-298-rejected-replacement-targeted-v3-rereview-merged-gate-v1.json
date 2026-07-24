@@ -1,0 +1,624 @@
+{
+  "schema_version": "job-skill-shelver-298-rejected-replacement-targeted-v3-rereview-merged-gate-v1",
+  "gate_id": "job-skill-shelver-298-rejected-replacement-targeted-v3-rereview-merged-gate-v1",
+  "status": "COMPLETED_WITH_RETURNS_NO_ACTIVATION_AUTHORITY",
+  "generated_at": "2026-07-22T12:00:00+08:00",
+  "candidate_set": {
+    "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-candidates-v3.json",
+    "candidate_set_hash": "sha256:6066f243639237f898095b79ecd667d93bf54a1dc2ecf39a85852d7df96870f4",
+    "sha256": "sha256:25bbed1f1f3eca7a24f797afd70727077f8f5581812c2003dfe12d5590d1a257"
+  },
+  "pending_gate": {
+    "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v3-review-gate-v1.json",
+    "gate_hash": "sha256:76698f3e7aff0f832ec845285868019752736c6d38de920cd4af00b7a94604fe",
+    "sha256": "sha256:3649ebaa324586b75f03735303e69471f5d5e2e9728b5f7de34ffd0acdb0aa60"
+  },
+  "source_results": {
+    "content": {
+      "source_path": "E:\\Downloads\\job-skill-shelver-298-rejected-replacement-targeted-v3-content-rereview-packet-chen-xiaoqing-v1-result.json",
+      "received_path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v3-content-rereview-result-chen-xiaoqing-2026-07-22.json",
+      "bytes": 12664,
+      "sha256": "sha256:70dd799fdc5071245b4b08e2e6a2540c79d92b95a68124fb39449039b1e69e92",
+      "reviewer": {
+        "name": "陈晓青",
+        "track": "CONTENT_REREVIEW",
+        "role": "内容定点复审"
+      },
+      "submitted_at": "2026-07-22T03:23:51.422Z",
+      "attachment_byte_match_verified": true
+    },
+    "safety_technical": {
+      "source_path": "E:\\Downloads\\job-skill-shelver-298-rejected-replacement-targeted-v3-safety-technical-rereview-packet-he-dong-v1-result.json",
+      "received_path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v3-safety-technical-rereview-result-he-dong-2026-07-22.json",
+      "bytes": 5676,
+      "sha256": "sha256:40d2cc0cbb07cc67f02f87a47f27505fb83f85a322274373ff28e89426051923",
+      "reviewer": {
+        "name": "赫东",
+        "track": "SAFETY_TECHNICAL_REREVIEW",
+        "role": "安全与技术定点复审"
+      },
+      "submitted_at": "2026-07-22T03:21:55.761115Z",
+      "attachment_byte_match_verified": true
+    }
+  },
+  "validation": {
+    "schema_identity_submitted_at_scope_hash_summary": "PASSED",
+    "exact_content_question_set": [
+      "M1_OB_048_V3",
+      "M1_OP_042_V3",
+      "M3_OP_056_V3",
+      "M4_OP_045_V3",
+      "M4_OP_046_V3",
+      "M4_OP_048_V3",
+      "M5_OP_048_V3",
+      "M5_OP_055_V3"
+    ],
+    "exact_safety_technical_question_set": [
+      "M1_OB_048_V3",
+      "M1_OP_042_V3",
+      "M4_OP_045_V3",
+      "M4_OP_046_V3",
+      "M4_OP_047_V3",
+      "M4_OP_048_V3",
+      "M5_OP_048_V3"
+    ],
+    "carried_forward_pass_hashes": "PASSED",
+    "effective_status_policy": "FAIL_CLOSED_IF_ANY_TRACK_SUBFIELD_RETURNS",
+    "source_internal_consistency": "PASSED",
+    "source_consistency_anomalies": [],
+    "scope_anomalies": []
+  },
+  "summary": {
+    "v3_total": 9,
+    "v3_passed_review_only_no_activation_authority": 3,
+    "v3_return_for_revision": 6,
+    "v3_pending": 0,
+    "content_v3": {
+      "total": 8,
+      "passed": 2,
+      "return_for_revision": 6
+    },
+    "safety_technical_v3": {
+      "total": 7,
+      "passed": 7,
+      "return_for_revision": 0
+    },
+    "v3_returns_by_failed_tracks": {
+      "CONTENT": 6
+    },
+    "cumulative_replacement_review": {
+      "total": 11,
+      "passed_review_only_no_activation_authority": 5,
+      "return_for_revision": 6
+    }
+  },
+  "cumulative_passed_references": [
+    {
+      "question_id": "M4_OP_043_V2",
+      "version": 2,
+      "semantic_hash": "sha256:7df37f5d3f61aeb8fce82e17493401713b3cb84a72dfc9e540b20bd25127a119",
+      "candidate_record_hash": "sha256:27068d7eef3394c3c5d77827da331c5267b9b9fbc43d88d2d3796ba451ac1418",
+      "activation_authority": "NONE"
+    },
+    {
+      "question_id": "M4_OP_044_V2",
+      "version": 2,
+      "semantic_hash": "sha256:d36525b4131dce063a73e55b7b661b6c076c36b96ceef5cef50acdbead3f4b82",
+      "candidate_record_hash": "sha256:5e3a6e7305b38d4ca5f0c11f97aa3590b9f8da731ebf725abb01a748b8632dff",
+      "activation_authority": "NONE"
+    },
+    {
+      "question_id": "M1_OB_048_V3",
+      "version": 3,
+      "semantic_hash": "sha256:1e641508132b4f09ff926596382b26685857bc5832aff4c4ca9647cbe66981e5",
+      "candidate_record_hash": "sha256:002747a15bb22cd2cd1134dd200ca0f0435cba3929321a249c08cb2dc681fda3",
+      "activation_authority": "NONE"
+    },
+    {
+      "question_id": "M4_OP_047_V3",
+      "version": 3,
+      "semantic_hash": "sha256:f42242e98260c906a30fc01361c35627463c328e7e388b5a1b38e5383504b6b1",
+      "candidate_record_hash": "sha256:c5163f8d6607553c0e45fcb4126ef89b0e2d0eace79991fb7c9938a27c68d28c",
+      "activation_authority": "NONE"
+    },
+    {
+      "question_id": "M5_OP_055_V3",
+      "version": 3,
+      "semantic_hash": "sha256:64b8778f81fbf40160e03ecc5b94543ca229919d70d38817bfd271d9ddc412e0",
+      "candidate_record_hash": "sha256:a111139bd3f5b0216e3deaf9329eaf8879f854d9c4be56c73fb86bc2fcb828ca",
+      "activation_authority": "NONE"
+    }
+  ],
+  "authority": {
+    "activation_authority_granted": false,
+    "can_activate_questions": false,
+    "candidate_set_ready_for_separate_authority_amendment": false,
+    "authority_amendment_executed": false,
+    "existing_287_unchanged": true,
+    "rejected_originals_11_unchanged": true,
+    "runtime_database_unchanged": true,
+    "activation_sql_generated": false,
+    "delivery_lock_unchanged": true,
+    "next_revision_required": 6
+  },
+  "questions": [
+    {
+      "question_id": "M1_OB_048_V3",
+      "previous_question_id": "M1_OB_048_V2",
+      "source_question_id": "M1_OB_048",
+      "question_version": 3,
+      "candidate_record_hash": "sha256:002747a15bb22cd2cd1134dd200ca0f0435cba3929321a249c08cb2dc681fda3",
+      "semantic_hash": "sha256:1e641508132b4f09ff926596382b26685857bc5832aff4c4ca9647cbe66981e5",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v3-review-gate-v1.json",
+        "gate_hash": "sha256:76698f3e7aff0f832ec845285868019752736c6d38de920cd4af00b7a94604fe",
+        "status": "PENDING_TARGETED_V3_REREVIEW_NO_ACTIVATION_AUTHORITY"
+      },
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "source": "V3_RESULT",
+          "review_fields": {
+            "content_conclusion": "PASS",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "PASS",
+            "material_feasibility": "PASS",
+            "content_note": "通过。上轮指出的测点和能力标签错误已关闭：assessment_point已明确为不明液体发现、隔离、上报与恢复条件确认，ability_tags已改为SAFETY_OPERATION和RULE_EXECUTION。干燥仿真标识片不制造真实湿滑风险；六项动作可直接观察。0分锁定任一关键安全动作缺失或危险行为，1分仅覆盖完成前五项但未主动说明恢复条件，2分要求六项全部完成，三个等级互斥。",
+            "required_revision": "无。"
+          },
+          "source_record_hash": "sha256:9c2255ecabc6c08ae7a6f76dd74dff8afe38629af330094d952676e0e53fbff1"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source": "V3_RESULT",
+          "review_fields": {
+            "safety_conclusion": "PASS",
+            "technical_conclusion": "PASS",
+            "renderer_feasibility": "PASS",
+            "data_contract_integrity": "PASS",
+            "safety_sensitive_decision": "KEEP",
+            "stop_condition_note": "通过",
+            "technical_note": "通过"
+          },
+          "source_record_hash": "sha256:c3c1534d07e3aa30cf325020c774555155129ac1a346151f6326ce2c125d3899"
+        }
+      },
+      "status": "PASSED_REVIEW_ONLY_NO_ACTIVATION_AUTHORITY",
+      "failed_review_tracks": [],
+      "next_question_id": null,
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "previous_v2_not_activated": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:ce3158167f1dd943aa4f74b219ff4fe67ccd0d40b4d27b79953a137d3c38d2d5"
+    },
+    {
+      "question_id": "M1_OP_042_V3",
+      "previous_question_id": "M1_OP_042_V2",
+      "source_question_id": "M1_OP_042",
+      "question_version": 3,
+      "candidate_record_hash": "sha256:9d9a4aa8a8fdc65adb25b9978cb756837e81e7b1bfc1d180fac666f624c35986",
+      "semantic_hash": "sha256:9ebaa103184bc056930aecc5e52738fea17931f66ff86f84924502be2394e658",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v3-review-gate-v1.json",
+        "gate_hash": "sha256:76698f3e7aff0f832ec845285868019752736c6d38de920cd4af00b7a94604fe",
+        "status": "PENDING_TARGETED_V3_REREVIEW_NO_ACTIVATION_AUTHORITY"
+      },
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "source": "V3_RESULT",
+          "review_fields": {
+            "content_conclusion": "RETURN_FOR_REVISION",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "RETURN_FOR_REVISION",
+            "material_feasibility": "PASS",
+            "content_note": "退回复修。上轮要求的4个SKU新旧批次标识、唯一货位和FIFO答案已经补齐，现场可以布置。但评分仍有未覆盖表现：学员将8件全部放入正确货位、FIFO和中断接续均正确，但遗漏最终复查时，不满足2分；又因正确件数不是6至7件，不满足1分；也不属于0分条件。同样，6至7件正确但遗漏复查时也没有明确归属。此外“已完成SKU”未明确是指该SKU两件均已摆放完成，教师可能采用不同计数口径。",
+            "required_revision": "最低修改要求：明确“已完成SKU”是同一SKU的新旧两件均已摆放。补齐遗漏最终复查的计分分支，例如：1分同时覆盖①6至7件处于正确货位、所有已完成SKU的FIFO正确且中断接续正确；②8件及FIFO、中断接续均正确但遗漏最终复查。0分写明不满足1分最低阈值或出现FIFO倒置、中断恢复失败、指向性提示等情形。"
+          },
+          "source_record_hash": "sha256:5270dc02fc565779b07132d3d5f73ba51daf2790eaa9afc5679849904af84d11"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source": "V3_RESULT",
+          "review_fields": {
+            "safety_conclusion": "PASS",
+            "technical_conclusion": "PASS",
+            "renderer_feasibility": "PASS",
+            "data_contract_integrity": "PASS",
+            "safety_sensitive_decision": "KEEP",
+            "stop_condition_note": "通过",
+            "technical_note": "通过"
+          },
+          "source_record_hash": "sha256:27d0ddf7e70b93d383d0b773ae791b38262650777550ca83d5f6c00218a420f7"
+        }
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT"
+      ],
+      "next_question_id": "M1_OP_042_V4",
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "previous_v2_not_activated": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:423cc05bdef8ab391defcb8482aa22825ff50302c9a74164b1cf1efa1189e08b"
+    },
+    {
+      "question_id": "M3_OP_056_V3",
+      "previous_question_id": "M3_OP_056_V2",
+      "source_question_id": "M3_OP_056",
+      "question_version": 3,
+      "candidate_record_hash": "sha256:0b25bd9785cc8e4b76149ce672ea5e9f6fa184d708f2219a08cda79a4bda870b",
+      "semantic_hash": "sha256:218c32730081b9df9ccf09f449b787d4d8142c3aecda542d042645aad233ec08",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v3-review-gate-v1.json",
+        "gate_hash": "sha256:76698f3e7aff0f832ec845285868019752736c6d38de920cd4af00b7a94604fe",
+        "status": "PENDING_TARGETED_V3_REREVIEW_NO_ACTIVATION_AUTHORITY"
+      },
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "source": "V3_RESULT",
+          "review_fields": {
+            "content_conclusion": "RETURN_FOR_REVISION",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "RETURN_FOR_REVISION",
+            "material_feasibility": "PASS",
+            "content_note": "退回复修。增加8行核验记录表后，“正确核验几件日期”已经可观察，上一轮核心问题已关闭。但0/1/2分仍不穷尽：例如8个日期全部记录正确、最早到期2件中仅1件正确前置、未错误前置其他商品且已恢复排面时，不满足2分，也因记录数不是6至7件而不满足1分，同时不触发0分。教师将无法稳定确定该表现应判0分还是1分。",
+            "required_revision": "最低修改要求：将1分改为覆盖所有达到部分阈值但未完全达标的表现，例如“正确记录至少6件，最早到期2件中至少1件正确前置、未错误前置其他商品且恢复排面”；2分继续要求8件记录及前置、后置、排面全部正确；0分改为正确记录少于6件、两件均未正确前置、错误前置其他商品、未恢复排面或提示红线。"
+          },
+          "source_record_hash": "sha256:bb5aa8e237fa6db067a2fc4c5ad41f4e688971ef8e13fe44cd950e9e029b4e85"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source": "CARRIED_FROM_V2_REVIEW",
+          "source_record_hash": "sha256:3e7482520b61eea56c7eb57a776994461c3fbeb6452380252b4cce4bd193c502"
+        }
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT"
+      ],
+      "next_question_id": "M3_OP_056_V4",
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "previous_v2_not_activated": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:595b9b44203f9ef88db6412bc770cc63b079ee22b158424c7035015a0477a365"
+    },
+    {
+      "question_id": "M4_OP_045_V3",
+      "previous_question_id": "M4_OP_045_V2",
+      "source_question_id": "M4_OP_045",
+      "question_version": 3,
+      "candidate_record_hash": "sha256:f88e4582b6120e54a401a6fba5db649ee7de4f18a9efc7b54734beb09bde426f",
+      "semantic_hash": "sha256:d832aca0d47bb56e9222b86ad892aafad30716ecb0d42f1e56756eca74538de6",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v3-review-gate-v1.json",
+        "gate_hash": "sha256:76698f3e7aff0f832ec845285868019752736c6d38de920cd4af00b7a94604fe",
+        "status": "PENDING_TARGETED_V3_REREVIEW_NO_ACTIVATION_AUTHORITY"
+      },
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "source": "V3_RESULT",
+          "review_fields": {
+            "content_conclusion": "RETURN_FOR_REVISION",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "RETURN_FOR_REVISION",
+            "material_feasibility": "PASS",
+            "content_note": "退回复修。不存在的问题暂存位已从1分条件删除，9件商品、唯一错区商品和三个周转箱能够形成唯一答案。但评分仍遗漏一种常见表现：学员正确识别并归位唯一错区商品、未误动其他商品，但没有执行最终复查。该表现不满足2分；又因为已经完成正确归位，不符合1分所写的“未完成正确归位”；同时不触发0分，导致评分空档。",
+            "required_revision": "最低修改要求：把1分改为以“已正确识别唯一错区商品且未误动其余8件”为最低条件，可覆盖未完成归位或已正确归位但遗漏最终复查；2分要求识别、正确归位、复查全部完成；0分继续覆盖未找到、误动正常商品、归入错误区域及提示红线。"
+          },
+          "source_record_hash": "sha256:f616e5b76b62cae8c266cb3ecb72c7312c63b0449c3b3b9ee3610ab38c5e30af"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source": "V3_RESULT",
+          "review_fields": {
+            "safety_conclusion": "PASS",
+            "technical_conclusion": "PASS",
+            "renderer_feasibility": "PASS",
+            "data_contract_integrity": "PASS",
+            "safety_sensitive_decision": "KEEP",
+            "stop_condition_note": "通过",
+            "technical_note": "通过"
+          },
+          "source_record_hash": "sha256:1bf9c1f771c22c56ca756fa5296f94e20bc8dee33db35e9c0e73ee3d5cd40f06"
+        }
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT"
+      ],
+      "next_question_id": "M4_OP_045_V4",
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "previous_v2_not_activated": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:658125ba5160fde5ae67644ea9a61a172000d815b760cd8fe682e8ed8cbf46de"
+    },
+    {
+      "question_id": "M4_OP_046_V3",
+      "previous_question_id": "M4_OP_046_V2",
+      "source_question_id": "M4_OP_046",
+      "question_version": 3,
+      "candidate_record_hash": "sha256:4a108428c1ea75b29eab8ff67ab042e1066ae9f10e15c3d09adae6c1cec76437",
+      "semantic_hash": "sha256:d2b9af088eb511484619dc2d5ef9548e9029439c974894adca6ab90cde484c2f",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v3-review-gate-v1.json",
+        "gate_hash": "sha256:76698f3e7aff0f832ec845285868019752736c6d38de920cd4af00b7a94604fe",
+        "status": "PENDING_TARGETED_V3_REREVIEW_NO_ACTIVATION_AUTHORITY"
+      },
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "source": "V3_RESULT",
+          "review_fields": {
+            "content_conclusion": "RETURN_FOR_REVISION",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "RETURN_FOR_REVISION",
+            "rubric_observability": "RETURN_FOR_REVISION",
+            "material_feasibility": "RETURN_FOR_REVISION",
+            "content_note": "退回复修。题目已经排除数量差错，改为唯一问题商品，方向正确；但候选仍写“规格或条码与清单不符”，没有在本题中锁定究竟是哪一种差错，现场材料也写“固定规格或条码不符标签”。不同布置可改变学员需要核对的证据和唯一答案，未形成单一标准化候选。另一个冲突是1分要求“发现并隔离”，但题干、材料和rubric没有问题暂存区或独立隔离动作，只规定不上架、贴标和上报，教师对“隔离完成”的判断没有统一依据。",
+            "required_revision": "最低修改要求：锁定一种差错类型并贯穿题干、材料、答案和hash，建议固定为“1件商品条码与补货清单不符”，其余5件全部一致。若1分继续使用“隔离”，应增加带明确标识的问题商品暂存区和对应rubric；否则把1分改为“发现唯一不符商品并停止其上架，但遗漏贴标或上报中的1项”。"
+          },
+          "source_record_hash": "sha256:8ad6474a72497a1ff2bbb45e035cd038aaf8f2f58dbb24df96a0fa7fefb4b388"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source": "V3_RESULT",
+          "review_fields": {
+            "safety_conclusion": "PASS",
+            "technical_conclusion": "PASS",
+            "renderer_feasibility": "PASS",
+            "data_contract_integrity": "PASS",
+            "safety_sensitive_decision": "KEEP",
+            "stop_condition_note": "通过",
+            "technical_note": "通过"
+          },
+          "source_record_hash": "sha256:33599dc6c9f7acd691070d6550fca77506ac635d82b9aa11fca975c9a2cf6eb5"
+        }
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT"
+      ],
+      "next_question_id": "M4_OP_046_V4",
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "previous_v2_not_activated": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:5b546559e4339aed04ea72029843819cea98e720ffc95f9296d3529b3f196328"
+    },
+    {
+      "question_id": "M4_OP_047_V3",
+      "previous_question_id": "M4_OP_047_V2",
+      "source_question_id": "M4_OP_047",
+      "question_version": 3,
+      "candidate_record_hash": "sha256:c5163f8d6607553c0e45fcb4126ef89b0e2d0eace79991fb7c9938a27c68d28c",
+      "semantic_hash": "sha256:f42242e98260c906a30fc01361c35627463c328e7e388b5a1b38e5383504b6b1",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v3-review-gate-v1.json",
+        "gate_hash": "sha256:76698f3e7aff0f832ec845285868019752736c6d38de920cd4af00b7a94604fe",
+        "status": "PENDING_TARGETED_V3_REREVIEW_NO_ACTIVATION_AUTHORITY"
+      },
+      "required_review_tracks": [
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "source": "CARRIED_FROM_V2_REVIEW",
+          "source_record_hash": "sha256:248557ffd348d730b142212239e3f9d2fab05e9bea3412ca4fbeae13511c0a69"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source": "V3_RESULT",
+          "review_fields": {
+            "safety_conclusion": "PASS",
+            "technical_conclusion": "PASS",
+            "renderer_feasibility": "PASS",
+            "data_contract_integrity": "PASS",
+            "safety_sensitive_decision": "KEEP",
+            "stop_condition_note": "通过",
+            "technical_note": "通过"
+          },
+          "source_record_hash": "sha256:37c60be028b9bd680e1d2c825bee0e4bb8edc2294e91b0f22793f7523f5c33b8"
+        }
+      },
+      "status": "PASSED_REVIEW_ONLY_NO_ACTIVATION_AUTHORITY",
+      "failed_review_tracks": [],
+      "next_question_id": null,
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "previous_v2_not_activated": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:c8982ae8c131f33f4b759fb485126dda2100c72f3d7bad770d96d58cf7cc8281"
+    },
+    {
+      "question_id": "M4_OP_048_V3",
+      "previous_question_id": "M4_OP_048_V2",
+      "source_question_id": "M4_OP_048",
+      "question_version": 3,
+      "candidate_record_hash": "sha256:a80c054a04e5225a9622b59d0d58d1aa56c9c1314c48dd6077f92002b8189fe9",
+      "semantic_hash": "sha256:fa0e01a00233784470d774eb02c8bb90521175bf9a84f06b707fe548063848f2",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v3-review-gate-v1.json",
+        "gate_hash": "sha256:76698f3e7aff0f832ec845285868019752736c6d38de920cd4af00b7a94604fe",
+        "status": "PENDING_TARGETED_V3_REREVIEW_NO_ACTIVATION_AUTHORITY"
+      },
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "source": "V3_RESULT",
+          "review_fields": {
+            "content_conclusion": "RETURN_FOR_REVISION",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "RETURN_FOR_REVISION",
+            "material_feasibility": "PASS",
+            "content_note": "退回复修。10件商品已锁定为9件合格品和1件条码不符仿真异常品，问题暂存区、唯一答案及中断脚本均已补齐，上一轮对象冲突已关闭。但评分仍存在空档：9件合格品和异常品均处置正确、中断标记与接续正确，却遗漏最终复查时，不满足2分；又因正确合格品不是7至8件，不满足1分；同时不触发0分。7至8件正确但遗漏复查的表现也未明确归属。",
+            "required_revision": "最低修改要求：补齐最终复查遗漏的计分规则。例如1分覆盖①7至8件合格品正确、异常品进入问题区且中断标记接续正确；②9件合格品和异常品处置、中断恢复均正确但遗漏最终复查。2分要求全部动作及复查完成；0分写为不满足1分最低阈值、异常品被上架/未隔离、中断恢复失败或提示红线。"
+          },
+          "source_record_hash": "sha256:6a831cb0cb9af33e0ff9f7db2357320dc3a78ccc46388ab5373c6d9734f9821d"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source": "V3_RESULT",
+          "review_fields": {
+            "safety_conclusion": "PASS",
+            "technical_conclusion": "PASS",
+            "renderer_feasibility": "PASS",
+            "data_contract_integrity": "PASS",
+            "safety_sensitive_decision": "KEEP",
+            "stop_condition_note": "通过",
+            "technical_note": "通过"
+          },
+          "source_record_hash": "sha256:824243fb7fbf98c5bddec15964dbf1770951f74814a7c334b04411fec9e8b02e"
+        }
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT"
+      ],
+      "next_question_id": "M4_OP_048_V4",
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "previous_v2_not_activated": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:7573691e09e6fb949e597c5d4c22ac71c6da26374ad516b4b26721c975e0317f"
+    },
+    {
+      "question_id": "M5_OP_048_V3",
+      "previous_question_id": "M5_OP_048_V2",
+      "source_question_id": "M5_OP_048",
+      "question_version": 3,
+      "candidate_record_hash": "sha256:9cadb07c134ee9a5b95dca45a16a4fa6d1890ac8fa2d23b2a2c5c68575b0273d",
+      "semantic_hash": "sha256:c7e32ef6c8e4cd9fe13883a5a9a2a38b579748b5b3905ffc5bb0f9a25c9d67c1",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v3-review-gate-v1.json",
+        "gate_hash": "sha256:76698f3e7aff0f832ec845285868019752736c6d38de920cd4af00b7a94604fe",
+        "status": "PENDING_TARGETED_V3_REREVIEW_NO_ACTIVATION_AUTHORITY"
+      },
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "review_results": {
+        "content": {
+          "status": "RETURN_FOR_REVISION",
+          "source": "V3_RESULT",
+          "review_fields": {
+            "content_conclusion": "RETURN_FOR_REVISION",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "RETURN_FOR_REVISION",
+            "material_feasibility": "PASS",
+            "content_note": "退回复修。assessment_point和ability_tags已经改为通道散落物安全处置，上一轮标签问题已关闭；材料和停止条件也可执行。但评分只把“4件全部移出且恰好1件分类错误”列为1分，未覆盖其他非完全表现。例如全部移除并分类正确，但遗漏“停止推车”或未明确执行材料风险确认时，既不满足2分，也未必触发当前0分；不同教师可能判0分或1分。当前0分也没有明确把停止作业、风险确认等关键安全步骤缺失纳入红线。",
+            "required_revision": "最低修改要求：明确关键安全动作与非关键差错。建议0分规定：未停止作业、未警示隔离、未做尖锐/污染/重压风险确认、任一散落物未移出或未隔离、未经复查恢复通行，以及危险动作或提示红线；1分仅用于全部关键安全动作完成但出现1件分类错误或遗漏一个非关键收尾动作；2分要求五项全部完成。"
+          },
+          "source_record_hash": "sha256:2016d56a251daa164bf90574229d5181db98bcaaa844ca3900ece239ec5d971a"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source": "V3_RESULT",
+          "review_fields": {
+            "safety_conclusion": "PASS",
+            "technical_conclusion": "PASS",
+            "renderer_feasibility": "PASS",
+            "data_contract_integrity": "PASS",
+            "safety_sensitive_decision": "KEEP",
+            "stop_condition_note": "通过",
+            "technical_note": "通过"
+          },
+          "source_record_hash": "sha256:120adc58a2237e1b9527a3df5ea972bc034996d36e6d02c367de8764054d6d69"
+        }
+      },
+      "status": "RETURN_FOR_REVISION",
+      "failed_review_tracks": [
+        "CONTENT"
+      ],
+      "next_question_id": "M5_OP_048_V4",
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "previous_v2_not_activated": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:21ea0e1a6c0cd1196f3d1c17ff7df2691fab055ba03ecb5600964925a9c1b3a2"
+    },
+    {
+      "question_id": "M5_OP_055_V3",
+      "previous_question_id": "M5_OP_055_V2",
+      "source_question_id": "M5_OP_055",
+      "question_version": 3,
+      "candidate_record_hash": "sha256:a111139bd3f5b0216e3deaf9329eaf8879f854d9c4be56c73fb86bc2fcb828ca",
+      "semantic_hash": "sha256:64b8778f81fbf40160e03ecc5b94543ca229919d70d38817bfd271d9ddc412e0",
+      "source_pending_gate": {
+        "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v3-review-gate-v1.json",
+        "gate_hash": "sha256:76698f3e7aff0f832ec845285868019752736c6d38de920cd4af00b7a94604fe",
+        "status": "PENDING_TARGETED_V3_REREVIEW_NO_ACTIVATION_AUTHORITY"
+      },
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "review_results": {
+        "content": {
+          "status": "PASS",
+          "source": "V3_RESULT",
+          "review_fields": {
+            "content_conclusion": "PASS",
+            "occupational_authenticity": "PASS",
+            "prompt_and_boundary": "PASS",
+            "rubric_observability": "PASS",
+            "material_feasibility": "PASS",
+            "content_note": "通过。四个评分维度已明确为目标位置、商品身份、数量和优先级，其中位置必须同时含货架与层位，商品身份必须含品名或SKU及规格；角色卡、6瓶500毫升无糖茶和干扰SKU可形成唯一答案。题目明确在准确复述并等待负责人确认后结束，不开始补货；0/1/2分按完整澄清维度数、是否猜测移动、复述与确认以及提示次数稳定执行。",
+            "required_revision": "无。"
+          },
+          "source_record_hash": "sha256:6148c764ac0181f31b67c04f4e53634b4684b6acb1f0747f89ab35f2b97c152f"
+        },
+        "safety_technical": {
+          "status": "PASS",
+          "source": "CARRIED_FROM_V2_REVIEW",
+          "source_record_hash": "sha256:65eff944f2b4732800c4c8da1033bb0d1d6cc0c3bb6dc1edd5727b457db232d3"
+        }
+      },
+      "status": "PASSED_REVIEW_ONLY_NO_ACTIVATION_AUTHORITY",
+      "failed_review_tracks": [],
+      "next_question_id": null,
+      "activation_authority": "NONE",
+      "original_v1_remains_rejected": true,
+      "previous_v2_not_activated": true,
+      "supersedes_original": false,
+      "merged_record_hash": "sha256:c80053756fc729f263c5c6270510439090964affad0f90a6ba3b110b0e581358"
+    }
+  ],
+  "gate_hash": "sha256:5a9a9f85f7eaa9a471f83512e191958b09e257e33e51d575c1e705f0d2fb4480"
+}

@@ -256,6 +256,7 @@ afterAll(() => {
 beforeEach(() => {
   db.exec('DELETE FROM answer_record')
   db.exec('DELETE FROM assessment_session_question')
+  db.exec('DELETE FROM assessment_sitting')
   db.exec('DELETE FROM safety_incident_binding')
   db.exec('DELETE FROM result_record')
   db.exec('DELETE FROM assessment_session')

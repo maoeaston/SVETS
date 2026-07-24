@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Job Skill Targeted V3 Content Re-review Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "package_id",
+    "candidate_set_hash",
+    "reviewer",
+    "submitted_at",
+    "summary",
+    "questions"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "job-skill-shelver-298-targeted-v3-content-rereview-result-v1"
+    },
+    "package_id": {
+      "const": "job-skill-shelver-298-targeted-v3-content-rereview-packet-v1"
+    },
+    "candidate_set_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "reviewer": {
+      "type": "string",
+      "const": "陈晓青"
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "total",
+        "pass",
+        "return_for_revision"
+      ],
+      "properties": {
+        "total": {
+          "const": 144
+        },
+        "pass": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "return_for_revision": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 144,
+      "maxItems": 144,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "question_id",
+          "previous_question_id",
+          "old_semantic_hash",
+          "new_semantic_hash",
+          "patch_id",
+          "conclusion",
+          "review_note"
+        ],
+        "properties": {
+          "question_id": {
+            "type": "string",
+            "pattern": "^M[1-6]_[A-Z]+_\\d+_V3$"
+          },
+          "previous_question_id": {
+            "type": "string",
+            "pattern": "^M[1-6]_[A-Z]+_\\d+_V2$"
+          },
+          "old_semantic_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "new_semantic_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "patch_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "conclusion": {
+            "enum": [
+              "PASS",
+              "RETURN_FOR_REVISION"
+            ]
+          },
+          "review_note": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

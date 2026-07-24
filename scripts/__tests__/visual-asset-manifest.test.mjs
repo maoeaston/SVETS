@@ -13,10 +13,47 @@ const projectRoot = process.cwd()
 const manifest = JSON.parse(readFileSync('doc/assets/asset-manifest.json', 'utf8'))
 
 describe('visual asset manifest contract', () => {
-  it('完整覆盖 v1.2.4 明确列出的 231 个交付资产和 6 个核心参考资产', () => {
+  it('覆盖 231 个既有 A-G 资产、33 个阶段二交付资产和 6 个核心参考资产', () => {
     const result = validateVisualAssetManifest(manifest, { projectRoot })
     expect(result.errors).toEqual([])
-    expect(result.summary).toEqual({ total: 237, approved: 0, planned: 237 })
+    expect(result.summary).toEqual({ total: 270, approved: 0, planned: 270 })
+    expect(manifest).toMatchObject({
+      version: '0.5.0',
+      plan_version: 'v1.3.0-298-runtime-authority+delivery-lock-v1',
+      question_authority: {
+        job_skill_runtime_status: 'DRAFT_COMPILED_NOT_ACTIVATABLE',
+        job_skill_question_total: 298,
+        phase4_gate_status: 'BLOCKED_ASSET_DELIVERY_AND_PILOT_GATE',
+        offline_toolkit_status: 'LOCKED_FOR_PRODUCTION'
+      }
+    })
+  })
+
+  it('题目绑定资产同时记录来源题号和当前运行时题号', () => {
+    const firstVideo = manifest.assets.find((item) => item.asset_id === 'asset_vid_a_01_m1_tf_015')
+    const deliveryImage = manifest.assets.find((item) => item.asset_id === 'asset_delivery_answer_image_m6_sc_006')
+    const baseUi = manifest.assets.find((item) => item.asset_id === 'asset_aac_yes')
+
+    expect(firstVideo.question_ids).toEqual(['M1_TF_015'])
+    expect(firstVideo.current_question_ids).toEqual(['M1_TF_015_V2'])
+    expect(deliveryImage.question_ids).toEqual(['M6_SC_006'])
+    expect(deliveryImage.current_question_ids).toEqual(['M6_SC_006_V4'])
+    expect(baseUi.question_ids).toContain('GA-SOC-001')
+    expect(baseUi.current_question_ids).toContain('GA-SOC-001')
+  })
+
+  it('拒绝将旧来源题号误写进 current_question_ids', () => {
+    const broken = structuredClone(manifest)
+    const firstVideo = broken.assets.find((item) => item.asset_id === 'asset_vid_a_01_m1_tf_015')
+    firstVideo.current_question_ids = ['M1_TF_015']
+
+    const result = validateVisualAssetManifest(broken, { projectRoot, checkFiles: false })
+    expect(result.errors).toContain(
+      'asset_vid_a_01_m1_tf_015: current_question_id not found in runtime question contracts: M1_TF_015'
+    )
+    expect(result.errors).toContain(
+      'asset_vid_a_01_m1_tf_015: current_question_ids must exactly match question_ids mapped through current runtime authority'
+    )
   })
 
   it('运行时 ID 全部兼容 app://asset 协议，路径全小写', () => {
@@ -73,11 +110,19 @@ describe('visual asset manifest contract', () => {
     expect(assessmentVideos).toHaveLength(68)
     expect(trainingVideos).toHaveLength(6)
     expect(assessmentVideos.every((item) =>
-      item.prompt_template_id === 'video-action' && item.prompt_version === 'v1.2.4'
+      item.prompt_template_id === 'video-action' && item.prompt_version === 'v1.3.0'
     )).toBe(true)
     expect(trainingVideos.every((item) =>
-      item.prompt_template_id === 'offline-video' && item.prompt_version === 'v1.2.4'
+      item.prompt_template_id === 'offline-video' && item.prompt_version === 'v1.3.0'
     )).toBe(true)
+  })
+
+  it('阶段二锁定 17 张答案图、13 份唯一脚本和 3 个音频合同', () => {
+    const delivery = manifest.assets.filter((item) => item.category === 'DELIVERY')
+    expect(delivery.filter((item) => item.asset_type === 'answer_image')).toHaveLength(17)
+    expect(delivery.filter((item) => item.asset_type === 'role_play_script')).toHaveLength(13)
+    expect(delivery.filter((item) => item.asset_type === 'audio')).toHaveLength(3)
+    expect(delivery.every((item) => item.production_contract !== null)).toBe(true)
   })
 
   it('AI 资产没有逐资产 prompt_text 时不能离开 planned', () => {
@@ -211,6 +256,34 @@ describe('visual asset manifest contract', () => {
       ['asset_demo', 'ACTIVE'],
       ['asset_legacy', 'DEPRECATED']
     ])
+    db.close()
+  })
+
+  it('相同 asset_id 遇到不同 file_hash 时失败而不覆盖既有事实', async () => {
+    const SQL = await initSqlJs({
+      locateFile: (file) => join(projectRoot, 'node_modules', 'sql.js', 'dist', file)
+    })
+    const db = new SQL.Database()
+    db.run(`CREATE TABLE asset_resource (
+      asset_id TEXT PRIMARY KEY, asset_type TEXT NOT NULL, asset_role TEXT,
+      app_uri TEXT NOT NULL UNIQUE, local_path TEXT NOT NULL, mime_type TEXT,
+      file_hash TEXT NOT NULL, file_size_bytes INTEGER NOT NULL, duration_ms INTEGER,
+      width_px INTEGER, height_px INTEGER, status TEXT NOT NULL, last_verified_at TEXT,
+      created_at TEXT DEFAULT (datetime('now')), updated_at TEXT DEFAULT (datetime('now'))
+    )`)
+    db.run(`INSERT INTO asset_resource (
+      asset_id, asset_type, asset_role, app_uri, local_path, file_hash, file_size_bytes, status
+    ) VALUES ('asset_demo', 'IMAGE', 'QUESTION_MEDIA', 'app://asset/asset_demo', 'old.png', '${'b'.repeat(64)}', 1, 'ACTIVE')`)
+    const rows = [{
+      asset_id: 'asset_demo', asset_type: 'IMAGE', asset_role: 'QUESTION_MEDIA',
+      app_uri: 'app://asset/asset_demo', local_path: 'new.png', mime_type: 'image/png',
+      file_hash: 'a'.repeat(64), file_size_bytes: 2, duration_ms: null,
+      width_px: 10, height_px: 10, status: 'ACTIVE'
+    }]
+
+    expect(() => db.run(buildVisualAssetResourceSql(rows, '2026-07-20T00:00:00Z'))).toThrow()
+    expect(db.exec("SELECT file_hash FROM asset_resource WHERE asset_id='asset_demo'")[0].values[0][0])
+      .toBe('b'.repeat(64))
     db.close()
   })
 })

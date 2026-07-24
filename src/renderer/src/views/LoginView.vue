@@ -51,17 +51,22 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import type { AuthRole } from '@shared/types/auth'
 
-const router    = useRouter()
+const router = useRouter()
 const authStore = useAuthStore()
 
-const form    = ref({ username: '', password: '' })
+function homeForRole(role: AuthRole): string {
+  return role === 'STUDENT' ? '/student' : role === 'ADMIN' ? '/admin' : '/teacher'
+}
+
+const form = ref({ username: '', password: '' })
 const loading = ref(false)
-const error   = ref('')
+const error = ref('')
 
 async function handleLogin(): Promise<void> {
   loading.value = true
-  error.value   = ''
+  error.value = ''
   try {
     const result = await window.api.auth.login({
       username: form.value.username,
@@ -77,13 +82,7 @@ async function handleLogin(): Promise<void> {
     }
 
     authStore.setUser(result)
-
-    if (result.role === 'STUDENT') {
-      await router.push('/student')
-    } else {
-      // TEACHER 和 ADMIN 均进入教师端
-      await router.push('/teacher')
-    }
+    await router.push(homeForRole(result.role))
   } catch (err) {
     console.error('[LoginView] login failed:', err)
     error.value = '系统异常，请重试'

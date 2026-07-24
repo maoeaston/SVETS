@@ -11,6 +11,6 @@
 - `ref_r4_product_masters/`：每个商品品类的已审核母版
 - `ref_r5_lighting_camera.png`：光照、机位、色温和镜头距离参考板
 - `ref_r6_icon_style_board.png`：图标风格九宫格
-- `video-scene-anchors/`：A-F 六类判断题与 G 类训练示范的视频场景锚图；属于生产中间件，不计入 237 条运行时资产合同
+- `video-scene-anchors/`：A-F 六类判断题与 G 类训练示范的视频场景锚图；属于生产中间件，不计入 270 项运行时资产合同
 
 目前六项均为 `planned`，本 README 不代表参考图已经生成或批准。

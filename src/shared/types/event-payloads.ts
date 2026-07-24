@@ -1,6 +1,6 @@
 // 对应 doc/xc-career-guide-event-payload-schema-v1.0.0.md
 
-import type { AbilityTag, TeacherObservationPayload, JobSkillResultPayload } from './json-schemas'
+import type { AbilityTag, TeacherObservationPayload, JobSkillResultPayload, StrategyType } from './json-schemas'
 import type { OperationPassRatePayload } from './operation-scoring'
 import type { TrainingModuleType } from './training'
 import type {
@@ -353,8 +353,11 @@ export interface ResultCalculatedPayload {
   source_type: 'ASSESSMENT_SESSION' | 'TRAINING_SESSION'
   source_id: string
   student_id: string
+  strategy_id?: string | null
+  strategy_type?: StrategyType | null
   job_code: string
   task_code: string
+  module_type?: AbilityTag | null
   raw_score?: number | null
   max_score?: number | null
   normalized_score: number
@@ -431,7 +434,12 @@ export interface ReportGeneratedPayload {
   job_code: string
   task_code: string
   report_type: 'FULL_REPORT' | 'SAFETY_TERMINATION_REPORT'
+  source_aggregate_type: 'ASSESSMENT_SESSION' | 'TRAINING_SESSION' | 'SAFETY_INCIDENT' | 'SYSTEM'
+  source_aggregate_id: string
   result_ids: string[]
+  report_title: string
+  // 事件必须携带最终报告内容，确保 SQLite 投影可仅依赖 action log 重建。
+  report_content: Record<string, unknown>
   incident_ids?: string[]
   generated_at: string
   generated_by: string
@@ -468,6 +476,8 @@ export interface SafetyIncidentDetailConfirmedPayload {
   incident_id: string
   confirmed_at: string
   confirmed_by: string
+  reason_code: string
+  context_phase: string
   full_description: string
 }
 
@@ -485,6 +495,7 @@ export interface SafetyIncidentVoidedPayload {
   voided_by: string
   void_reason: 'FALSE_TRIGGER' | 'DUPLICATE_RECORD' | 'NON_SAFETY_EVENT' | 'FACTUAL_CORRECTION'
   void_notes?: string | null
+  replacement_incident_id?: string | null
 }
 
 export interface SafetyIncidentReplacedPayload {

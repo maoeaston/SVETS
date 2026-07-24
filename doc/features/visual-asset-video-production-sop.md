@@ -1,8 +1,11 @@
 # Seedance 视频资产生产 SOP
 
-**版本：** v1.0.0
+> [!IMPORTANT]
+> A 类与 G 类视频的题号、当前版本、情境和禁用画面以 `job-skill-shelver-current-contracts.md`、`job-skill-shelver-runtime-authority-v1.json` 和 `asset-manifest.json` 为准。旧 Pilot 文档只作门禁追溯，不再作为视频生产入口。
 
-**适用合同：** `visual-asset-master-plan.md v1.2.4-video-sop` / `asset-manifest.json v0.3.1`
+**版本：** v1.1.0
+
+**适用合同：** `visual-asset-master-plan.md v1.3.0-298-runtime-authority` / `asset-manifest.json v0.5.0`
 
 **适用范围：** A 类 68 个判断题视频、G 类 6 个线下操作示范视频
 

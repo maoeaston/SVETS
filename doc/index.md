@@ -43,6 +43,16 @@ doc/
 **数据库 schema 基线在代码库中：**
 - `src/main/db/schema.sql` — 当前权威 schema，改表结构、触发器、状态机时必读
 
+### 2.1.1 全量产品演进草案
+
+以下文件承接 MVP 冻结后的产品演进，目前均为 **DRAFT**，尚未替代 MVP PRD v1.0.9：
+
+| 文件 | 用途 | 何时读 |
+|---|---|---|
+| `specs/FULL_PRODUCT_PRD_v2.0-draft.md` | 单岗位完整产品 1.0 草案，包含正式试卷、完整课程、真实多设备、AI 自动评分和 AI 岗位推荐 | 评审 Post-MVP 产品范围、AI 边界和 1.0 验收 |
+| `features/mvp-pilot-freeze-plan.md` | 当前 MVP Pilot 的冻结范围、已知偏差、收口任务和发布闸门 | 停止 MVP 扩功能、准备冻结 tag |
+| `features/multi-device-m4-m5-prd.md` | M4 Safety Re-key 与 M5 Command Bus / 事件恢复 / Local Server / Teacher Web 的分段推进合同 | M4/M5 评审、拆实现任务书 |
+
 ### 2.2 方案 B 多设备架构（v2.2 唯一权威基线，M1/M2/M3 已落地）
 
 | 文件 | 用途 | 何时读 |
@@ -77,7 +87,7 @@ doc/
 | 00 | `impl/00-implementation-overview.md` | 一句话目标、统一范围边界、BASE_ABILITY vs JOB_SPECIFIC 架构对比、与 v0.1.10 兼容性、文档依赖关系 | 启动实施前的总览入口 |
 | 01 | `impl/01-schema-v0.1.12-design.md` + `.sql` | schema v0.1.12 完整设计文档 + 可执行 SQL（合并 v1.0.7/v1.0.8/v1.0.9 全部 schema 要求） | 建库、改表结构、写触发器 |
 | 02 | `impl/02-json-contracts-and-types.md` | 完整 TypeScript 类型定义（可合并进 json-schemas.ts）+ validateQuestionContract() 规则逻辑 | 写或校验 JSON 字段、实现 validator |
-| 03 | `impl/03-job-skill-demo-paper-spec.md` | 固定 18+6 示范卷具体题目 ID 清单（从 298 条中选出）+ 素材需求 + rubric 三档锚点 | 固定卷题目确认、素材制作、答案审核 |
+| 03 | `impl/03-job-skill-demo-paper-spec.md` | 历史固定 18+6 选卷设计，仅用于追溯；当前题目与素材合同见 `features/job-skill-shelver-current-contracts.md` | 追溯旧题选择依据，不作为素材制作输入 |
 | 04 | `impl/04-question-bank-import-cleaning-spec.md` | 298 条从旧库到新库的完整清洗规则 + dry-run 报告格式 + 导入执行顺序 | 实现导入脚本、数据清洗 |
 | 05 | `impl/05-state-machine-and-events.md` | assessment_session 三阶段状态机（ONLINE/OFFLINE/OBSERVATION）+ 新增事件 payload 定义 | 状态流转、事件写入、reducer |
 | 06 | `impl/06-acceptance-test-plan.md` | 120 条验收用例（按功能域分组，三段式：输入/步骤/预期） | 写测试用例、执行验收 |
@@ -141,11 +151,37 @@ doc/
 
 - `features/local-database-sync-sop.md` — A/B/C 三台 WSL 开发机轮流开发时的 `db:sync` / `db:verify` / 备份与重建流程
 - `features/multi-device-v2.2-migration-prd.md` — v0.1.13 M1、v0.1.14 M2、v0.1.15 M3 结构迁移与后续 M4-M7 里程碑
+- `features/multi-device-m4-m5-prd.md` — M4 三元安全聚合键与 M5A-M5D 架构换轨草案
+
+### 产品演进与收口
+
+- `features/pilot-r0-foundation-development-plan-2026-07-22.md` — **当前基础功能开发顺序与验收入口**：题库保持 DRAFT 时先推进学生、权限、保存恢复、安全、评分和报告底座；记录哪些题库/素材工作可后置、哪些底座不可后置
+- `features/full-product-1.0-planning-review-2026-07-18.md` — **当前规划审查入口**：记录 R0 / Full Product / M4 / M5 的 REJECT 结论、源码证据、必改清单与下一步唯一原子动作；仅为审查快照，不替代产品合同
+- `features/mvp-pilot-freeze-plan.md` — 当前 MVP Pilot 冻结、偏差和发布检查表
+- `features/base-ability-current-contracts.md` — **当前 BASE_ABILITY 96 题与 42+8 门禁导航入口**，明确候选池、DRAFT/NO_SCORE 阻断、renderer/线下教具和历史文件边界
+- `features/base-ability-42plus8-activation-gate-v1.json` — 基础能力 42+8 机器门禁；供给够 42+8，但 DRAFT/NO_SCORE/素材/试测未闭合时保持关闭
+- `features/job-skill-shelver-current-contracts.md` — **当前 JOB_SKILL 298 题与 270 项素材合同导航入口**，明确日常只读入口、历史审核链边界和禁止动作
+- `features/job-skill-shelver-runtime-authority-v1.json` — 298 道当前版本 DRAFT 题的机器权威；不得由此直接激活
+- `features/job-skill-shelver-phase4-activation-gate-v1.json` — 当前激活门禁；Pilot 未过且 270 项资产未批准时保持关闭
+- `features/job-skill-shelver-question-delivery-lock-v1.json` — 181 道需要视频、答案图、脚本、音频或线下工具支撑的交付锁
+- `features/job-skill-shelver-pilot-current-question-authority.md` — Pilot 24 题 strategy v3 历史门禁入口；不再作为 298 题素材生产唯一入口
+- `features/job-skill-shelver-pilot-revision-candidates-v3.json` — Pilot strategy v3 的24题机器候选合同，用于 Pilot 门禁追溯
+- `features/job-skill-shelver-pilot-activation-manifest-v3.json` — Pilot strategy v3 的 fail-closed activation manifest，记录复审、素材和真实 Electron 见证阻断
+- `features/job-skill-shelver-pilot-review-result-v1.schema.json` — 内容审核结果 JSON 的可复用机器合同
+- `features/job-skill-shelver-pilot-safety-technical-review-result-v1.schema.json` — 安全与技术审核结果 JSON 合同
+- `features/job-skill-shelver-298-question-content-review-packet-remaining-274-v1.md` — 陈晓青审核298题来源池剩余274题的 Markdown 填写包；只用于全量内容审核，不是当前 Pilot 激活合同
+- `features/job-skill-shelver-298-review-revision-handoff.md` — 下一会话接收陈晓青与赫东全量审核结果、固化JSON并生成版本化修订题的执行入口
+- `features/job-skill-shelver-298-semantic-change-rereview-merged-gate-2026-07-20.json` — 232道语义变化候选复审合并门禁；21题两方均通过、211题退回复修，全部不得直接激活
+- `features/job-skill-shelver-298-semantic-change-rereview-ledger-2026-07-20.md` — 陈晓青与赫东232题复审结果接收、hash 校验和汇总留档
+- `features/job-skill-shelver-298-*` 其他大量 JSON/HTML/MD — 审核链、复审链和生成器输入；日常素材生产不读，只有重建 298 权威或复盘审核时下钻
+- `features/archive/job-skill-shelver-pilot-r0-v1-v2/README.md` — strategy v1/v2 候选、审核包、审核结果和旧 manifest 的只读审计目录；不得作为当前生产输入
+- `specs/FULL_PRODUCT_PRD_v2.0-draft.md` — 全量产品 1.0 草案；AI 自动评分与 AI 岗位推荐属于 1.0 必选能力
 
 ### 视觉资产文档（仍活跃）
 
 - `reference/visual-asset-master-plan.md` — 唯一视觉风格与范围规划基线
-- `assets/asset-manifest.json` + `assets/asset-manifest.schema.json` — 231 个交付项 + 6 个核心参考资产的机器合同
+- `assets/asset-manifest.json` + `assets/asset-manifest.schema.json` — 270 项资产机器合同；`question_ids` 为来源题号，`current_question_ids` 为当前运行时题号
+- `assets/offline-toolkit-manifest-v1.json` — 100 道线下实操题的材料布置、复位和资产依赖合同
 - `question-bank-image-integration-checklist.md` — Manifest 生产、审核、入库执行清单
 - `visual-asset-video-production-sop.md` — Seedance 视频四段式输入、场景锚图、抽选和验收 SOP
 - `visual-asset-prompt-compilation-session-guide.md` — 新会话分批完成逐资产 Prompt 编译与独立复核的启动模板
@@ -162,9 +198,9 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 
 - `通用基础能力正式测评候选题库_v0.2-软件优先版.xlsx` — 基础能力题库现行候选池（PRD v1.0.7 题库基线，96 条软件优先候选题）
 - `专业岗位能力测评题库2026.7.3_终稿.pdf` — **[!] 文件名含"终稿"但实为 M1-M6 初始题目池（实测 549 题/项），仅作追溯查漏，不是最终口径，不要据此判断题量或答案**
-- `专业岗位能力测评题库-M1-M6-数据库导出-298条.json` — **M1-M6 题库真正的最终口径**（从 `question_bank` 实测导出的 298 条），专业岗位题库改造与 PRD v1.0.8/v1.0.9 均以此为准；已知数据缺陷（答案键存疑、rubric 缺三档锚点、`ability_tags` 非法值等）见 `doc/archive/M1-M6题库软件化审查报告-v2-db298口径-通向v1.0.8.md`
+- `专业岗位能力测评题库-M1-M6-数据库导出-298条.json` — M1-M6原始来源口径，用于追溯298条导出记录，不是当前题目或素材生产合同。当前入口见 `features/job-skill-shelver-current-contracts.md`。
 - `chatgpt建议298题作为核心测评母题.md` — 早期"298 题作为核心母题"建议备忘，仅作历史决策追溯
-- `question-bank-viewer.html` — 394题（BASE_ABILITY 96 + JOB_SPECIFIC 298）全量题库可视化浏览器（含选项、评分规则、媒体需求标记）
+- `question-bank-viewer.html` — 顶部展示当前 Pilot strategy v3 的24题权威候选，下方保留394题原始来源视图；被替代旧题显示历史标记。
 - `offline-toolkit-procurement-spec.md` — **线下评测工具包采购规格书 v2.1**：25件商品 + 14件日期属性矩阵 + 6场景包 + 开箱验收清单（模拟工作日：2026-09-10）
 - `visual-asset-master-plan.md` — 视觉资产总规划
 - `xuancanlogo.png` — 品牌 logo 素材（未接入应用）
@@ -182,13 +218,16 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | A/B/C 开发机同步本地数据库 | `features/local-database-sync-sop.md` |
 | 改事件写入/回放 | `specs/xc-career-guide-event-payload-schema-v1.0.0.md` |
 | 改 JSON 字段 | `specs/xc-career-guide-json-field-schema-v1.0.0.md` |
-| 题库/组卷相关（现有基础能力题库） | `specs/题库分层架构说明.md` |
+| 题库/组卷相关（现有基础能力题库） | `features/base-ability-current-contracts.md` → `specs/题库分层架构说明.md` |
 | 功能范围判断 | `specs/MVP_PRD_v1.0.9-authoritative.md` |
+| 全量产品 1.0 与 AI 范围评审 | `specs/FULL_PRODUCT_PRD_v2.0-draft.md` |
+| MVP Pilot 收口 | `features/mvp-pilot-freeze-plan.md` |
+| 多设备 M4/M5 推进 | `features/multi-device-m4-m5-prd.md` → `specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md` |
 | **多设备架构设计（方案 B）** | **`specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md`**（M1 落地进度见 `features/multi-device-v2.2-migration-prd.md`） |
 | **专业岗位测评维护** | **`specs/MVP_PRD_v1.0.9-authoritative.md` + 当前 feature 文档；§2.4 impl 仅作 v0.1.12 实施追溯** |
-| **视觉资产 Prompt 编译** | `reference/visual-asset-master-plan.md` → `features/visual-asset-prompt-compilation-session-guide.md` → `assets/asset-manifest.json` |
-| **Seedance 视频生产** | `features/visual-asset-video-production-sop.md` → `assets/asset-manifest.json` → `features/question-bank-image-integration-checklist.md` |
-| **视觉资产审核/入库** | `reference/visual-asset-master-plan.md` → `assets/asset-manifest.json` → `features/question-bank-image-integration-checklist.md` |
+| **视觉资产 Prompt 编译** | `features/job-skill-shelver-current-contracts.md` → `assets/asset-manifest.json` → `features/visual-asset-prompt-compilation-session-guide.md` |
+| **Seedance 视频生产** | `features/job-skill-shelver-current-contracts.md` → `features/visual-asset-video-production-sop.md` → `assets/asset-manifest.json` |
+| **视觉资产审核/入库** | `features/job-skill-shelver-current-contracts.md` → `assets/asset-manifest.json` → `features/question-bank-image-integration-checklist.md` |
 | 专业岗位 PRD 理解（要做什么） | `specs/MVP_PRD_v1.0.9-authoritative.md` |
 | 298 条题库数据核对 | `doc/reference/` M1-M6 298 条导出 + `doc/archive/` 审查报告 v2 |
 
@@ -210,6 +249,7 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 
 | 文件 | 标题 |
 |---|---|
+| [specs/FULL_PRODUCT_PRD_v2.0-draft.md](specs/FULL_PRODUCT_PRD_v2.0-draft.md) | 炫灿-职途向导系统全量产品 PRD｜v2.0 草案 |
 | [specs/MVP_PRD_v1.0.9-authoritative.md](specs/MVP_PRD_v1.0.9-authoritative.md) | 炫灿-职途向导系统 MVP 产品需求文档｜v1.0.9 权威合并版 |
 | [specs/architecture-plan-b-multi-device-v2.0-authoritative-baseline.md](specs/architecture-plan-b-multi-device-v2.0-authoritative-baseline.md) | 方案 B 多设备架构 v2.0 — 权威实施基线（已废止） |
 | [specs/architecture-plan-b-multi-device-v2.0.1-schema-alignment.md](specs/architecture-plan-b-multi-device-v2.0.1-schema-alignment.md) | 方案 B 架构 v2.0.1 — Schema 对齐硬化修订 |
@@ -242,11 +282,16 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | 功能前缀 | PRD | 实现文档 |
 |---|---|---|
 | `assessment` | [features/assessment-prd.md](features/assessment-prd.md) | [features/assessment-impl.md](features/assessment-impl.md) |
+| `data-persistence-recovery` | [features/data-persistence-recovery-prd.md](features/data-persistence-recovery-prd.md) | [features/data-persistence-recovery-impl.md](features/data-persistence-recovery-impl.md) |
 | `drag-render` | [features/drag-render-prd.md](features/drag-render-prd.md) | [features/drag-render-impl.md](features/drag-render-impl.md) |
+| `foundation-pages-exception-center` | [features/foundation-pages-exception-center-prd.md](features/foundation-pages-exception-center-prd.md) | [features/foundation-pages-exception-center-impl.md](features/foundation-pages-exception-center-impl.md) |
 | `login-by-role` | [features/login-by-role-prd.md](features/login-by-role-prd.md) | [features/login-by-role-impl.md](features/login-by-role-impl.md) |
+| `multi-device-m4-m5` | [features/multi-device-m4-m5-prd.md](features/multi-device-m4-m5-prd.md) | [features/multi-device-m4-m5-impl.md](features/multi-device-m4-m5-impl.md) |
 | `multi-device-v2.2-migration` | [features/multi-device-v2.2-migration-prd.md](features/multi-device-v2.2-migration-prd.md) | [features/multi-device-v2.2-migration-impl.md](features/multi-device-v2.2-migration-impl.md) |
 | `operation-scoring` | [features/operation-scoring-prd.md](features/operation-scoring-prd.md) | [features/operation-scoring-impl.md](features/operation-scoring-impl.md) |
+| `pause-recovery-safety` | [features/pause-recovery-safety-prd.md](features/pause-recovery-safety-prd.md) | [features/pause-recovery-safety-impl.md](features/pause-recovery-safety-impl.md) |
 | `question-bank-resources` | [features/question-bank-resources-prd.md](features/question-bank-resources-prd.md) | [features/question-bank-resources-impl.md](features/question-bank-resources-impl.md) |
+| `scoring-framework-dual-track` | [features/scoring-framework-dual-track-prd.md](features/scoring-framework-dual-track-prd.md) | [features/scoring-framework-dual-track-impl.md](features/scoring-framework-dual-track-impl.md) |
 | `strategy-config` | [features/strategy-config-prd.md](features/strategy-config-prd.md) | [features/strategy-config-impl.md](features/strategy-config-impl.md) |
 | `student-profile` | [features/student-profile-prd.md](features/student-profile-prd.md) | [features/student-profile-impl.md](features/student-profile-impl.md) |
 | `training` | [features/training-prd.md](features/training-prd.md) | [features/training-impl.md](features/training-impl.md) |
@@ -255,7 +300,38 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 
 | 文件 | 标题 |
 |---|---|
+| [features/base-ability-42plus8-evaluation-memo.md](features/base-ability-42plus8-evaluation-memo.md) | 基础能力测评 42+8 方案评估备忘录 |
+| [features/base-ability-current-contracts.md](features/base-ability-current-contracts.md) | 基础能力题库与 42+8 当前合同入口 |
+| [features/full-product-1.0-planning-review-2026-07-18.md](features/full-product-1.0-planning-review-2026-07-18.md) | SVETS MVP Pilot 收口与全量产品 1.0 规划审查报告 |
+| [features/job-skill-shelver-298-content-review-result-2026-07-19.md](features/job-skill-shelver-298-content-review-result-2026-07-19.md) | 超市理货员 298 题来源池内容全量审核包（剩余 274 题） |
+| [features/job-skill-shelver-298-question-content-review-packet-remaining-274-v1.md](features/job-skill-shelver-298-question-content-review-packet-remaining-274-v1.md) | 超市理货员 298 题来源池内容全量审核包（剩余 274 题） |
+| [features/job-skill-shelver-298-question-revision-ledger-2026-07-19.md](features/job-skill-shelver-298-question-revision-ledger-2026-07-19.md) | 超市理货员剩余274题审核合并与修订台账 |
+| [features/job-skill-shelver-298-rejected-replacement-candidates-v2.md](features/job-skill-shelver-298-rejected-replacement-candidates-v2.md) | 11道淘汰题的V2替代候选 |
+| [features/job-skill-shelver-298-rejected-replacement-review-ledger-v1.md](features/job-skill-shelver-298-rejected-replacement-review-ledger-v1.md) | 11道V2替代候选双轨审核接收台账 |
+| [features/job-skill-shelver-298-rejected-replacement-targeted-candidates-v3.md](features/job-skill-shelver-298-rejected-replacement-targeted-candidates-v3.md) | 9道退回题的V3定点修订候选 |
+| [features/job-skill-shelver-298-rejected-replacement-targeted-candidates-v4.md](features/job-skill-shelver-298-rejected-replacement-targeted-candidates-v4.md) | 6 道内容退回题的 V4 定点修订候选 |
+| [features/job-skill-shelver-298-rejected-replacement-targeted-v3-rereview-ledger-v1.md](features/job-skill-shelver-298-rejected-replacement-targeted-v3-rereview-ledger-v1.md) | 9道V3定点复审结果接收台账 |
+| [features/job-skill-shelver-298-rejected-replacement-targeted-v4-rereview-ledger-v1.md](features/job-skill-shelver-298-rejected-replacement-targeted-v4-rereview-ledger-v1.md) | 6 道 V4 内容定点复审结果接收台账 |
+| [features/job-skill-shelver-298-review-conflict-resolution-m5-dg-035-2026-07-20.md](features/job-skill-shelver-298-review-conflict-resolution-m5-dg-035-2026-07-20.md) | M5_DG_035 审核意见冲突人工裁决 |
+| [features/job-skill-shelver-298-review-revision-handoff.md](features/job-skill-shelver-298-review-revision-handoff.md) | 超市理货员298题 V4 复审结果接收交接 |
+| [features/job-skill-shelver-298-safety-technical-review-result-2026-07-19.md](features/job-skill-shelver-298-safety-technical-review-result-2026-07-19.md) | 超市理货员 274 题安全与技术审核结论 |
+| [features/job-skill-shelver-298-semantic-change-content-rereview-packet-chen-xiaoqing-v1.md](features/job-skill-shelver-298-semantic-change-content-rereview-packet-chen-xiaoqing-v1.md) | 232道语义变化候选内容复审包（陈晓青） |
+| [features/job-skill-shelver-298-semantic-change-content-rereview-result-chen-xiaoqing-2026-07-20.md](features/job-skill-shelver-298-semantic-change-content-rereview-result-chen-xiaoqing-2026-07-20.md) | 232道语义变化候选内容复审包（陈晓青） |
+| [features/job-skill-shelver-298-semantic-change-rereview-ledger-2026-07-20.md](features/job-skill-shelver-298-semantic-change-rereview-ledger-2026-07-20.md) | 232道语义变化候选复审结果接收留档 |
+| [features/job-skill-shelver-298-semantic-change-safety-technical-rereview-packet-he-dong-v1.md](features/job-skill-shelver-298-semantic-change-safety-technical-rereview-packet-he-dong-v1.md) | 232道语义变化候选安全与技术复审包（赫东） |
+| [features/job-skill-shelver-298-semantic-change-safety-technical-rereview-result-he-dong-2026-07-20.md](features/job-skill-shelver-298-semantic-change-safety-technical-rereview-result-he-dong-2026-07-20.md) | 232道语义变化候选安全与技术复审包（赫东） |
+| [features/job-skill-shelver-298-targeted-v3-rereview-ledger-v1.md](features/job-skill-shelver-298-targeted-v3-rereview-ledger-v1.md) | 超市理货员298题定点V3复审接收台账 |
+| [features/job-skill-shelver-298-targeted-v4-rereview-ledger-v1.md](features/job-skill-shelver-298-targeted-v4-rereview-ledger-v1.md) | 超市理货员298题定点V4复审接收台账 |
+| [features/job-skill-shelver-298-targeted-v5-rereview-ledger-v1.md](features/job-skill-shelver-298-targeted-v5-rereview-ledger-v1.md) | 超市理货员298题定点V5复审接收台账 |
+| [features/job-skill-shelver-298-targeted-v6-rereview-ledger-v1.md](features/job-skill-shelver-298-targeted-v6-rereview-ledger-v1.md) | 超市理货员298题定点V6复审接收台账 |
+| [features/job-skill-shelver-contract-chain-repair-implementation-plan-2026-07-20.md](features/job-skill-shelver-contract-chain-repair-implementation-plan-2026-07-20.md) | 岗位题库合同链修复与强绑定实施计划 |
+| [features/job-skill-shelver-current-contracts.md](features/job-skill-shelver-current-contracts.md) | 超市理货员题库与素材当前合同入口 |
+| [features/job-skill-shelver-phase4-activation-ledger-v1.md](features/job-skill-shelver-phase4-activation-ledger-v1.md) | 岗位题库阶段四统一激活门禁接线台账 v1 |
+| [features/job-skill-shelver-pilot-13-question-revision-and-renderer-fix-v1.0.md](features/job-skill-shelver-pilot-13-question-revision-and-renderer-fix-v1.0.md) | 超市理货员 Pilot 13 道退回题修订与学习端渲染修复稿 v1.0 |
+| [features/job-skill-shelver-pilot-current-question-authority.md](features/job-skill-shelver-pilot-current-question-authority.md) | 超市理货员 Pilot 当前题目门禁追溯入口 |
 | [features/local-database-sync-sop.md](features/local-database-sync-sop.md) | 本地多开发机数据库同步 SOP |
+| [features/mvp-pilot-freeze-plan.md](features/mvp-pilot-freeze-plan.md) | MVP Pilot 冻结与收口计划 |
+| [features/pilot-r0-foundation-development-plan-2026-07-22.md](features/pilot-r0-foundation-development-plan-2026-07-22.md) | Pilot R0 基础能力开发与验收计划 |
 | [features/question-bank-image-integration-checklist.md](features/question-bank-image-integration-checklist.md) | 视觉资产合同执行清单 |
 | [features/question-bank-launch-gate.md](features/question-bank-launch-gate.md) | 题库上线门禁脚本 |
 | [features/question-bank-source-csv-template.md](features/question-bank-source-csv-template.md) | 题库源 CSV 模板 |
@@ -274,16 +350,16 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 
 | Template ID | 版本 | 文件 |
 |---|---|---|
-| `avatar` | `v1.2.2` | [assets/prompt-templates/avatar.txt](assets/prompt-templates/avatar.txt) |
-| `character` | `v1.2.2` | [assets/prompt-templates/character.txt](assets/prompt-templates/character.txt) |
-| `damaged-product` | `v1.2.2` | [assets/prompt-templates/damaged-product.txt](assets/prompt-templates/damaged-product.txt) |
-| `icon-flat` | `v1.2.2` | [assets/prompt-templates/icon-flat.txt](assets/prompt-templates/icon-flat.txt) |
-| `offline-demo` | `v1.2.2` | [assets/prompt-templates/offline-demo.txt](assets/prompt-templates/offline-demo.txt) |
-| `offline-video` | `v1.2.4` | [assets/prompt-templates/offline-video.txt](assets/prompt-templates/offline-video.txt) |
-| `product-photo` | `v1.2.2` | [assets/prompt-templates/product-photo.txt](assets/prompt-templates/product-photo.txt) |
-| `scene-shelf` | `v1.2.2` | [assets/prompt-templates/scene-shelf.txt](assets/prompt-templates/scene-shelf.txt) |
-| `software-task` | `v1.2.2` | [assets/prompt-templates/software-task.txt](assets/prompt-templates/software-task.txt) |
-| `video-action` | `v1.2.4` | [assets/prompt-templates/video-action.txt](assets/prompt-templates/video-action.txt) |
+| `avatar` | `v1.3.0` | [assets/prompt-templates/avatar.txt](assets/prompt-templates/avatar.txt) |
+| `character` | `v1.3.0` | [assets/prompt-templates/character.txt](assets/prompt-templates/character.txt) |
+| `damaged-product` | `v1.3.0` | [assets/prompt-templates/damaged-product.txt](assets/prompt-templates/damaged-product.txt) |
+| `icon-flat` | `v1.3.0` | [assets/prompt-templates/icon-flat.txt](assets/prompt-templates/icon-flat.txt) |
+| `offline-demo` | `v1.3.0` | [assets/prompt-templates/offline-demo.txt](assets/prompt-templates/offline-demo.txt) |
+| `offline-video` | `v1.3.0` | [assets/prompt-templates/offline-video.txt](assets/prompt-templates/offline-video.txt) |
+| `product-photo` | `v1.3.0` | [assets/prompt-templates/product-photo.txt](assets/prompt-templates/product-photo.txt) |
+| `scene-shelf` | `v1.3.0` | [assets/prompt-templates/scene-shelf.txt](assets/prompt-templates/scene-shelf.txt) |
+| `software-task` | `v1.3.0` | [assets/prompt-templates/software-task.txt](assets/prompt-templates/software-task.txt) |
+| `video-action` | `v1.3.0` | [assets/prompt-templates/video-action.txt](assets/prompt-templates/video-action.txt) |
 
 ### 7.7 视觉参考与归档入口
 
@@ -294,6 +370,7 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | [features/archive/README.md](features/archive/README.md) | 题库视觉资产历史归档 |
 | [features/archive/generation-experiments/README.md](features/archive/generation-experiments/README.md) | 历史生成试验 |
 | [features/archive/historical-design/README.md](features/archive/historical-design/README.md) | 历史设计资料 |
+| [features/archive/job-skill-shelver-pilot-r0-v1-v2/README.md](features/archive/job-skill-shelver-pilot-r0-v1-v2/README.md) | 超市理货员 Pilot R0 v1/v2 审核历史 |
 | [features/archive/legacy-data/README.md](features/archive/legacy-data/README.md) | 旧数据与脚本隔离区 |
 | [features/archive/superseded-contracts/README.md](features/archive/superseded-contracts/README.md) | 已替代题库资源合同 |
 <!-- AUTO-GENERATED:DOC-INVENTORY:END -->

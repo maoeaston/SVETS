@@ -1,0 +1,144 @@
+{
+  "schema_version": "job-skill-shelver-298-rejected-replacement-targeted-v3-safety-technical-rereview-result-v1",
+  "package_id": "job-skill-shelver-298-rejected-replacement-targeted-v3-safety-technical-rereview-packet-he-dong-v1",
+  "candidate_set_id": "job-skill-shelver-298-rejected-replacement-targeted-candidates-v3",
+  "candidate_set_hash": "sha256:6066f243639237f898095b79ecd667d93bf54a1dc2ecf39a85852d7df96870f4",
+  "reviewer": {
+    "name": "赫东",
+    "track": "SAFETY_TECHNICAL_REREVIEW",
+    "role": "安全与技术定点复审"
+  },
+  "submitted_at": "2026-07-22T03:21:55.761115Z",
+  "summary": {
+    "total": 7,
+    "pass": 7,
+    "return_for_revision": 0
+  },
+  "authority": {
+    "activation_authority_granted": false,
+    "can_activate_questions": false,
+    "runtime_database_change_allowed": false,
+    "activation_sql_generated": false
+  },
+  "questions": [
+    {
+      "question_id": "M1_OB_048_V3",
+      "previous_question_id": "M1_OB_048_V2",
+      "new_semantic_hash": "sha256:1e641508132b4f09ff926596382b26685857bc5832aff4c4ca9647cbe66981e5",
+      "candidate_record_hash": "sha256:002747a15bb22cd2cd1134dd200ca0f0435cba3929321a249c08cb2dc681fda3",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "safety_conclusion": "PASS",
+        "technical_conclusion": "PASS",
+        "renderer_feasibility": "PASS",
+        "data_contract_integrity": "PASS",
+        "safety_sensitive_decision": "KEEP",
+        "stop_condition_note": "通过",
+        "technical_note": "通过"
+      }
+    },
+    {
+      "question_id": "M1_OP_042_V3",
+      "previous_question_id": "M1_OP_042_V2",
+      "new_semantic_hash": "sha256:9ebaa103184bc056930aecc5e52738fea17931f66ff86f84924502be2394e658",
+      "candidate_record_hash": "sha256:9d9a4aa8a8fdc65adb25b9978cb756837e81e7b1bfc1d180fac666f624c35986",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "safety_conclusion": "PASS",
+        "technical_conclusion": "PASS",
+        "renderer_feasibility": "PASS",
+        "data_contract_integrity": "PASS",
+        "safety_sensitive_decision": "KEEP",
+        "stop_condition_note": "通过",
+        "technical_note": "通过"
+      }
+    },
+    {
+      "question_id": "M4_OP_045_V3",
+      "previous_question_id": "M4_OP_045_V2",
+      "new_semantic_hash": "sha256:d832aca0d47bb56e9222b86ad892aafad30716ecb0d42f1e56756eca74538de6",
+      "candidate_record_hash": "sha256:f88e4582b6120e54a401a6fba5db649ee7de4f18a9efc7b54734beb09bde426f",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "safety_conclusion": "PASS",
+        "technical_conclusion": "PASS",
+        "renderer_feasibility": "PASS",
+        "data_contract_integrity": "PASS",
+        "safety_sensitive_decision": "KEEP",
+        "stop_condition_note": "通过",
+        "technical_note": "通过"
+      }
+    },
+    {
+      "question_id": "M4_OP_046_V3",
+      "previous_question_id": "M4_OP_046_V2",
+      "new_semantic_hash": "sha256:d2b9af088eb511484619dc2d5ef9548e9029439c974894adca6ab90cde484c2f",
+      "candidate_record_hash": "sha256:4a108428c1ea75b29eab8ff67ab042e1066ae9f10e15c3d09adae6c1cec76437",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "safety_conclusion": "PASS",
+        "technical_conclusion": "PASS",
+        "renderer_feasibility": "PASS",
+        "data_contract_integrity": "PASS",
+        "safety_sensitive_decision": "KEEP",
+        "stop_condition_note": "通过",
+        "technical_note": "通过"
+      }
+    },
+    {
+      "question_id": "M4_OP_047_V3",
+      "previous_question_id": "M4_OP_047_V2",
+      "new_semantic_hash": "sha256:f42242e98260c906a30fc01361c35627463c328e7e388b5a1b38e5383504b6b1",
+      "candidate_record_hash": "sha256:c5163f8d6607553c0e45fcb4126ef89b0e2d0eace79991fb7c9938a27c68d28c",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "safety_conclusion": "PASS",
+        "technical_conclusion": "PASS",
+        "renderer_feasibility": "PASS",
+        "data_contract_integrity": "PASS",
+        "safety_sensitive_decision": "KEEP",
+        "stop_condition_note": "通过",
+        "technical_note": "通过"
+      }
+    },
+    {
+      "question_id": "M4_OP_048_V3",
+      "previous_question_id": "M4_OP_048_V2",
+      "new_semantic_hash": "sha256:fa0e01a00233784470d774eb02c8bb90521175bf9a84f06b707fe548063848f2",
+      "candidate_record_hash": "sha256:a80c054a04e5225a9622b59d0d58d1aa56c9c1314c48dd6077f92002b8189fe9",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "safety_conclusion": "PASS",
+        "technical_conclusion": "PASS",
+        "renderer_feasibility": "PASS",
+        "data_contract_integrity": "PASS",
+        "safety_sensitive_decision": "KEEP",
+        "stop_condition_note": "通过",
+        "technical_note": "通过"
+      }
+    },
+    {
+      "question_id": "M5_OP_048_V3",
+      "previous_question_id": "M5_OP_048_V2",
+      "new_semantic_hash": "sha256:c7e32ef6c8e4cd9fe13883a5a9a2a38b579748b5b3905ffc5bb0f9a25c9d67c1",
+      "candidate_record_hash": "sha256:9cadb07c134ee9a5b95dca45a16a4fa6d1890ac8fa2d23b2a2c5c68575b0273d",
+      "activation_authority": "NONE",
+      "conclusion": "PASS",
+      "review_fields": {
+        "safety_conclusion": "PASS",
+        "technical_conclusion": "PASS",
+        "renderer_feasibility": "PASS",
+        "data_contract_integrity": "PASS",
+        "safety_sensitive_decision": "KEEP",
+        "stop_condition_note": "通过",
+        "technical_note": "通过"
+      }
+    }
+  ]
+}

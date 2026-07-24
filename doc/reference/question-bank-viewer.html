@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SVETS 题库总览 — 394题</title>
+<title>SVETS 当前 Pilot 候选与原始题库总览</title>
 <style>
 :root{--bg:#f0f2f5;--card-bg:#fff;--border:#e0e4ea;--accent:#3b6fe8;--text:#1a1d23;--muted:#6b7280;--prompt-bg:#f7f9fc}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -65,9 +65,143 @@ select:focus,input:focus{border-color:var(--accent);background:#fff}
 </style>
 </head>
 <body>
+<!-- PILOT_V3_OVERLAY_START -->
+<style>
+.pilot-authority{margin:18px 24px;padding:18px;border:1px solid #b8c59b;border-radius:12px;background:#f7f9f1;color:#28301f}.pilot-authority h2{margin:0 0 6px;font-size:18px}.pilot-authority p{margin:4px 0;line-height:1.55}.pilot-authority code{font-size:12px;overflow-wrap:anywhere}.pilot-grid{margin:14px 24px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:14px}.pilot-card{min-width:0;padding:15px;border:1px solid #cdd7bc;border-left:4px solid #657a3f;border-radius:10px;background:#fff}.pilot-card-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.pilot-id{font:700 12px/1.4 ui-monospace,monospace;color:#405128}.pilot-type,.pilot-replaces{font-size:11px;color:#6d7563}.pilot-replaces{margin-left:8px;padding:2px 6px;border-radius:99px;background:#fff0e7;color:#9b431f}.pilot-card h3{margin:9px 0;font-size:15px;line-height:1.55}.pilot-options{padding-left:22px;line-height:1.65}.pilot-correct{color:#35621f;font-weight:600}.pilot-card p,.pilot-card li{overflow-wrap:anywhere}.pilot-anchors{display:grid;gap:5px;margin:9px 0}.pilot-anchors p{display:grid;grid-template-columns:38px minmax(0,1fr);gap:7px;margin:0;padding:7px 9px;border-radius:6px;background:#f3f6ed;line-height:1.5}.pilot-safety{margin:10px 0;padding:8px 10px;border-left:3px solid #c45b2d;background:#fff5ee;line-height:1.55}.pilot-card details{margin-top:8px}.pilot-card details ul{padding-left:20px;line-height:1.55}.pilot-hash{margin-top:9px;color:#8a9182;font:10px/1.4 ui-monospace,monospace}.legacy-superseded{opacity:.58}.legacy-notice{margin-top:7px;padding:5px 7px;border-radius:5px;background:#fff0e7;color:#9b431f;font-size:11px;font-weight:700}@media(max-width:600px){.pilot-authority{margin:12px}.pilot-grid{margin:12px;grid-template-columns:minmax(0,1fr)}.pilot-card-head{display:grid}.grid{padding:12px;grid-template-columns:minmax(0,1fr)}.toolbar{position:static;padding:10px 12px}.stats{padding:10px 12px;gap:14px}#search{width:100%;min-width:0}.card{min-width:0}.card-header{flex-wrap:wrap}.card-tags{min-width:0}.media-badges .badge{max-width:100%;white-space:normal;overflow-wrap:anywhere}}
+</style>
+<section class="pilot-authority" id="pilot-current">
+  <h2>当前 Pilot 权威候选，strategy v3</h2>
+  <p><strong>题目、图片、视频和教具制作以本区24题为准。</strong> 下方394题是原始来源总览，只用于追溯，不得覆盖当前候选。</p>
+  <p>机器合同：<code>doc/features/job-skill-shelver-pilot-revision-candidates-v3.json</code>，状态：PENDING，尚未授权激活。</p>
+</section>
+<section class="pilot-grid"><article class="pilot-card" data-pilot-id="M1_SC_001">
+    <div class="pilot-card-head"><div><span class="pilot-id">M1_SC_001@1</span></div><span class="pilot-type">M1 · SINGLE_CHOICE</span></div>
+    <h3>超市货架上摆放商品，正确的做法是？</h3><ol class="pilot-options"><li class="pilot-correct"><b>A.</b> 商品正面朝外，竖直摆正，前后对齐 ✓</li><li class=""><b>B.</b> 商品侧面朝外，斜靠在一起，节省空间</li><li class=""><b>C.</b> 商品躺倒平放，标签朝下，堆成两层</li></ol>
+    <p class="pilot-safety"><b>停止条件：</b>无额外现场停止条件</p>
+    <p class="pilot-hash">sha256:94a9c099f685859ed54827ed349861ed9558faa46ee0f273580597cd0a320f0f</p>
+  </article><article class="pilot-card" data-pilot-id="M1_SC_004">
+    <div class="pilot-card-head"><div><span class="pilot-id">M1_SC_004@1</span></div><span class="pilot-type">M1 · SINGLE_CHOICE</span></div>
+    <h3>5升装大桶水和小袋糖果，应该分别放在货架的哪一层？</h3><ol class="pilot-options"><li class=""><b>A.</b> 大桶水放上层，糖果放下层</li><li class="pilot-correct"><b>B.</b> 大桶水放下层，糖果放上层 ✓</li><li class=""><b>C.</b> 大桶水和糖果都放在中间层</li></ol>
+    <p class="pilot-safety"><b>停止条件：</b>无额外现场停止条件</p>
+    <p class="pilot-hash">sha256:8a8faba96ee9a7c2579f1f050b6df68317cce5ed82686173edb70ff555688f44</p>
+  </article><article class="pilot-card" data-pilot-id="M1_SC_007_V2">
+    <div class="pilot-card-head"><div><span class="pilot-id">M1_SC_007_V2@2</span><span class="pilot-replaces">替代 M1_SC_007</span></div><span class="pilot-type">M1 · SINGLE_CHOICE</span></div>
+    <h3>核对商品与价签时，以下哪项检查最完整？</h3><ol class="pilot-options"><li class="pilot-correct"><b>A.</b> 核对品名、规格或条码是否对应，并确认销售价格及促销有效期 ✓</li><li class=""><b>B.</b> 只核对商品名称和当前价格，不看规格、条码和促销日期</li><li class=""><b>C.</b> 只核对价签颜色、字体和边角是否整齐</li></ol>
+    <p class="pilot-safety"><b>停止条件：</b>无额外现场停止条件</p>
+    <p class="pilot-hash">sha256:869a6be7300ed814de50f1a227d0874ce02a1a23f6d78ee8b92421de0f2faa8b</p>
+  </article><article class="pilot-card" data-pilot-id="M1_OP_033_V2">
+    <div class="pilot-card-head"><div><span class="pilot-id">M1_OP_033_V2@2</span><span class="pilot-replaces">替代 M1_OP_033</span></div><span class="pilot-type">M1 · OFFLINE_OPERATION</span></div>
+    <h3>将5件轻型训练商品摆到货架中层，做到正面朝外、竖直稳定并使同排前沿基本对齐。</h3><p><b>工具：</b>稳定的迷你货架1组；5件轻型、无尖锐边角的训练商品</p><div class="pilot-anchors"><p><b>0分</b>5件中有3件及以上未放在中层，或有3件及以上未正面朝外/倒放，任务整体未形成合格陈列。</p><p><b>1分</b>5件均放到中层，但有1至2件未正面朝外、倾斜不稳或前沿明显未对齐；经一次口头提示后完成也记1分。</p><p><b>2分</b>5件全部放在中层，均正面朝外、竖直稳定，同排商品前沿基本对齐，且全程无需提示。</p></div>
+    <p class="pilot-safety"><b>停止条件：</b>商品应为轻型、无尖锐边角的训练道具；货架稳定，禁止攀爬或踩踏取放。</p>
+    <p class="pilot-hash">sha256:8334119d703c2da13812f110025ba185346df22a4cc9466edf6986fedbf543f4</p>
+  </article><article class="pilot-card" data-pilot-id="M2_SC_002_V2">
+    <div class="pilot-card-head"><div><span class="pilot-id">M2_SC_002_V2@2</span><span class="pilot-replaces">替代 M2_SC_002</span></div><span class="pilot-type">M2 · SINGLE_CHOICE</span></div>
+    <h3>本课程对标有到期日的食品采用“先到期先出（FEFO）”。补货时正确的做法是？</h3><ol class="pilot-options"><li class="pilot-correct"><b>A.</b> 较早到期的商品前移，较晚到期的新批次放在后面 ✓</li><li class=""><b>B.</b> 较晚到期的新批次前移，较早到期的商品放在后面</li><li class=""><b>C.</b> 不核对到期日，把两个批次混合摆放</li></ol>
+    <p class="pilot-safety"><b>停止条件：</b>无额外现场停止条件</p>
+    <p class="pilot-hash">sha256:9595043891dc4a322e92d429e0bb6f916112ccc2e44f99ea9c7680eb28743add</p>
+  </article><article class="pilot-card" data-pilot-id="M2_SC_003_V2">
+    <div class="pilot-card-head"><div><span class="pilot-id">M2_SC_003_V2@2</span><span class="pilot-replaces">替代 M2_SC_003</span></div><span class="pilot-type">M2 · SINGLE_CHOICE</span></div>
+    <h3>使用安全开箱刀拆纸箱时，最优先要避免的是什么？</h3><ol class="pilot-options"><li class="pilot-correct"><b>A.</b> 刀刃伤到自己或旁边的人 ✓</li><li class=""><b>B.</b> 下刀太深划伤箱内商品</li><li class=""><b>C.</b> 拆箱速度较慢影响补货进度</li></ol>
+    <p class="pilot-safety"><b>停止条件：</b>发现刀具破损/松动、刀刃无法回缩、受试者朝身体或他人方向切割、非持刀手进入刀路时立即停止。</p>
+    <details><summary>素材生产条件</summary><ul><li>实拍或可信3D场景加程序化标注，禁止只靠AI生成模糊刀具结构</li><li>显示安全开箱刀、刀刃朝身体外侧、非持刀手不在刀路、纸箱位于稳定台面</li><li>不得显示朝身体切割、手压切割线、刀刃过度伸出或儿童接触刀具</li></ul></details><p class="pilot-hash">sha256:7064166ce026e140abd48af01e020a4341002af4aef72aedac3b631fb0ba2b9e</p>
+  </article><article class="pilot-card" data-pilot-id="M2_SC_005_V3">
+    <div class="pilot-card-head"><div><span class="pilot-id">M2_SC_005_V3@3</span><span class="pilot-replaces">替代 M2_SC_005_V2</span></div><span class="pilot-type">M2 · SINGLE_CHOICE</span></div>
+    <h3>模拟工作日是2026年09月10日。同款商品有两个仍可正常销售的批次：批次A标注“保质期至2026年09月25日”，批次B标注“保质期至2026年10月10日”。上架时应怎样摆放？</h3><ol class="pilot-options"><li class="pilot-correct"><b>A.</b> 批次A放在顾客先拿取的位置，批次B放在后面 ✓</li><li class=""><b>B.</b> 批次B放在顾客先拿取的位置，批次A放在后面</li><li class=""><b>C.</b> 两个批次混在一起，不核对到期日</li></ol>
+    <p class="pilot-safety"><b>停止条件：</b>模拟工作日与题干不一致、任一日期标签模糊、或任一批次在模拟工作日已过期时停止施测并更换候选数据/素材。</p>
+    <details><summary>素材生产条件</summary><ul><li>程序化叠加模拟工作日与两件同款商品的“保质期至”日期</li><li>两个批次外观相同、日期清楚、均无过期或报损标记</li><li>明确顾客正常取货方向的前排和后排，不用含糊的上下或左右代替</li></ul></details><p class="pilot-hash">sha256:c7e82d7b18835b9268cf472fbb50014387bb4c7543f889b7440f17a8bac5cf6a</p>
+  </article><article class="pilot-card" data-pilot-id="M2_OP_027_V2">
+    <div class="pilot-card-head"><div><span class="pilot-id">M2_OP_027_V2@2</span><span class="pilot-replaces">替代 M2_OP_027</span></div><span class="pilot-type">M2 · OFFLINE_OPERATION</span></div>
+    <h3>在稳定台面上，徒手沿预设易撕开口安全拆开标准训练纸箱，平稳取出全部商品并整理纸箱。</h3><p><b>工具：</b>统一规格轻型训练纸箱1箱；纸胶带或预设易撕开口；轻型、无玻璃内装训练商品；稳定台面</p><div class="pilot-anchors"><p><b>0分</b>无法在规定方式下打开纸箱，或出现踩箱、抛掷、强拉导致商品跌落/破损等不安全行为；触发停止条件直接记0分。</p><p><b>1分</b>能打开纸箱并取出商品，但有漏取、商品跌落、箱体严重撕裂，或需一次以上动作提示；未触发安全停止条件。</p><p><b>2分</b>在稳定台面上徒手沿胶带或预设开口安全拆箱，商品全部平稳取出且无破损、无遗漏，过程无需提示。</p></div>
+    <p class="pilot-safety"><b>停止条件：</b>本题不得提供刀具。出现用牙咬、踩踏纸箱、猛拉朝向身体、商品泄漏或玻璃破裂时立即停止；箱体和内装物重量须预先限定。</p>
+    <p class="pilot-hash">sha256:b8ad484b15ab1ab1b8161cba94d093fff6bd818def9376784fa32c0676614ae5</p>
+  </article><article class="pilot-card" data-pilot-id="M3_SC_001_V2">
+    <div class="pilot-card-head"><div><span class="pilot-id">M3_SC_001_V2@2</span><span class="pilot-replaces">替代 M3_SC_001</span></div><span class="pilot-type">M3 · SINGLE_CHOICE</span></div>
+    <h3>某商品包装明确标注“保质期至2026年06月01日”。施测日期为2026年06月02日，正确判断是？</h3><ol class="pilot-options"><li class="pilot-correct"><b>A.</b> 商品已超过包装标注日期，应停止正常销售并按门店流程隔离处理 ✓</li><li class=""><b>B.</b> 商品还可以正常销售到2026年06月30日</li><li class=""><b>C.</b> 只要包装完好，就不需要核对日期</li></ol>
+    <p class="pilot-safety"><b>停止条件：</b>无额外现场停止条件</p>
+    <p class="pilot-hash">sha256:9d71f2fc33b797912d86b7dc71cd996fc29b71c993fffaf860ada5a589a05e11</p>
+  </article><article class="pilot-card" data-pilot-id="M3_SC_005">
+    <div class="pilot-card-head"><div><span class="pilot-id">M3_SC_005@1</span></div><span class="pilot-type">M3 · SINGLE_CHOICE</span></div>
+    <h3>超市规定保质期不足15天属于临期商品。今天是2026年07月04日，以下哪件商品属于临期？</h3><ol class="pilot-options"><li class=""><b>A.</b> 保质期到2026年07月20日的饼干（还有16天）</li><li class="pilot-correct"><b>B.</b> 保质期到2026年07月15日的酸奶（还有11天） ✓</li><li class=""><b>C.</b> 保质期到2026年08月10日的牛奶（还有37天）</li></ol>
+    <p class="pilot-safety"><b>停止条件：</b>无额外现场停止条件</p>
+    <p class="pilot-hash">sha256:7e503aa45a1d3acb55e9c6d5d7885a97fa3948a860586b6146a80ca8c80b0b17</p>
+  </article><article class="pilot-card" data-pilot-id="M3_SC_019_V2">
+    <div class="pilot-card-head"><div><span class="pilot-id">M3_SC_019_V2@2</span><span class="pilot-replaces">替代 M3_SC_019</span></div><span class="pilot-type">M3 · SINGLE_CHOICE</span></div>
+    <h3>发现达到门店临期标准的商品后，以下哪项处理最合适？</h3><ol class="pilot-options"><li class="pilot-correct"><b>A.</b> 停止正常补货，隔离或醒目标识，登记并按门店流程报告处理 ✓</li><li class=""><b>B.</b> 直接丢弃，不登记也不报告</li><li class=""><b>C.</b> 继续留在正常货架，等下次补货时再处理</li></ol>
+    <p class="pilot-safety"><b>停止条件：</b>无额外现场停止条件</p>
+    <p class="pilot-hash">sha256:7569ef8e80b9f14a316dde59717569fee35f5e930bedae85bc27e6caf9b7cb21</p>
+  </article><article class="pilot-card" data-pilot-id="M3_OP_043_V2">
+    <div class="pilot-card-head"><div><span class="pilot-id">M3_OP_043_V2@2</span><span class="pilot-replaces">替代 M3_OP_043</span></div><span class="pilot-type">M3 · OFFLINE_OPERATION</span></div>
+    <h3>以模拟工作日2026年09月10日为准，从5件训练商品中找出1件当天到期品和1件已过期品，分别放入临期待处理区和报损隔离区。</h3><p><b>工具：</b>稳定迷你货架1组；5件标明“教具/不可食用”的训练商品；清晰的“保质期至”标签；临期待处理区标识；报损隔离区标识；密封标准答案卡</p><div class="pilot-anchors"><p><b>0分</b>未找出当天到期品或已过期品，任一过期品仍留在正常货架/被放入可售临期区，或两类商品均放错区域。</p><p><b>1分</b>正确识别两件目标商品，但其中1件分区错误，或需一次日期判断提示后才完成；不得把过期品放入可售区域。</p><p><b>2分</b>依据固定模拟日期独立找出当天到期品和已过期品，分别放入预先定义的临期待处理区与报损隔离区，且其余3件不误判。</p></div>
+    <p class="pilot-safety"><b>停止条件：</b>训练品必须明显标注“教具/不可食用”，真实过期食品不得再次进入销售或食用链；日期标签脱落、模糊时停止评分并更换材料。</p>
+    <p class="pilot-hash">sha256:3d65d282352fe7d7aa9d69d65fad13be3fb21d075512933782444af657cd6eec</p>
+  </article><article class="pilot-card" data-pilot-id="M4_SC_001">
+    <div class="pilot-card-head"><div><span class="pilot-id">M4_SC_001@1</span></div><span class="pilot-type">M4 · SINGLE_CHOICE</span></div>
+    <h3>货物入库时，标准做法是？</h3><ol class="pilot-options"><li class=""><b>A.</b> 随意堆放节省时间</li><li class="pilot-correct"><b>B.</b> 按品类分区摆放重物下层轻物上层 ✓</li><li class=""><b>C.</b> 按照到货顺序依次堆放</li></ol>
+    <p class="pilot-safety"><b>停止条件：</b>无额外现场停止条件</p>
+    <p class="pilot-hash">sha256:bcdb9930be256fd640cae22008801a2466c2edf3c594aacf962a266f093cf076</p>
+  </article><article class="pilot-card" data-pilot-id="M4_SC_003">
+    <div class="pilot-card-head"><div><span class="pilot-id">M4_SC_003@1</span></div><span class="pilot-type">M4 · SINGLE_CHOICE</span></div>
+    <h3>货物入库时必须核对哪两项？</h3><ol class="pilot-options"><li class="pilot-correct"><b>A.</b> 商品数量是否与送货单一致+有无破损 ✓</li><li class=""><b>B.</b> 商品价格是否正确+包装是否好看</li><li class=""><b>C.</b> 品牌是否知名+颜色是否统一</li></ol>
+    <p class="pilot-safety"><b>停止条件：</b>无额外现场停止条件</p>
+    <p class="pilot-hash">sha256:dae1d91beb7387735d3816248d538ba44313bca6854a37388496065cb8e9fbf6</p>
+  </article><article class="pilot-card" data-pilot-id="M4_SC_005_V2">
+    <div class="pilot-card-head"><div><span class="pilot-id">M4_SC_005_V2@2</span><span class="pilot-replaces">替代 M4_SC_005</span></div><span class="pilot-type">M4 · SINGLE_CHOICE</span></div>
+    <h3>收货时发现送货单写10箱，但某品项实际只到9箱，正确做法是？</h3><ol class="pilot-options"><li class="pilot-correct"><b>A.</b> 暂停该品项核验并复点，在单据记录差异、报告负责人，再按授权处理 ✓</li><li class=""><b>B.</b> 不记录差异，先签收9箱，月底再统一核对</li><li class=""><b>C.</b> 默认停止整批所有品项收货，不再核验其他货物</li></ol>
+    <p class="pilot-safety"><b>停止条件：</b>无额外现场停止条件</p>
+    <p class="pilot-hash">sha256:97169aefe9afee92571d0a7342a9fed4d45592be31f1fe95351bbd328f0e8317</p>
+  </article><article class="pilot-card" data-pilot-id="M4_OP_029_V2">
+    <div class="pilot-card-head"><div><span class="pilot-id">M4_OP_029_V2@2</span><span class="pilot-replaces">替代 M4_OP_029</span></div><span class="pilot-type">M4 · OFFLINE_OPERATION</span></div>
+    <h3>按固定库位顺序清点货架上的12件目标商品，并把品类和总数量清楚地写在记录表上。</h3><p><b>工具：</b>稳定迷你货架1组；分散在固定库位的同类轻型训练商品12件；记录表；笔；密封标准答案卡</p><div class="pilot-anchors"><p><b>0分</b>记录数量与标准答案相差2件及以上，或未形成可识别记录；存在明显漏区、重复计数且未自查。</p><p><b>1分</b>完成清点和记录，但数量与标准答案相差1件，或经一次提示复点后才得到正确数量。</p><p><b>2分</b>按固定顺序逐件清点所有目标商品，无漏数、无重复，记录本上的品类/数量清楚且与标准答案一致，全程无需提示。</p></div>
+    <p class="pilot-safety"><b>停止条件：</b>货架和商品需稳定、轻量且位于安全触达高度；禁止攀爬、钻入货架或搬动超出个人能力的箱件。</p>
+    <p class="pilot-hash">sha256:edc0db091a37c0f670a9129e65022d66f44042f9626027d5f786e5ce53a86c75</p>
+  </article><article class="pilot-card" data-pilot-id="M5_SC_001_V2">
+    <div class="pilot-card-head"><div><span class="pilot-id">M5_SC_001_V2@2</span><span class="pilot-replaces">替代 M5_SC_001</span></div><span class="pilot-type">M5 · SINGLE_CHOICE</span></div>
+    <h3>发现货架旁地面有水渍，暂时不能马上清除，正确的完整做法是？</h3><ol class="pilot-options"><li class="pilot-correct"><b>A.</b> 先守护并隔离水渍区域，阻止人员进入；再设置警示并通知清洁，确认地面干燥后复检撤除隔离 ✓</li><li class=""><b>B.</b> 放一块“小心地滑”警示牌后离开，等清洁人员自己发现</li><li class=""><b>C.</b> 自己绕开水渍继续理货，不处理也不报告</li></ol>
+    <p class="pilot-safety"><b>停止条件：</b>危险区域无法隔离、有人即将进入湿滑区、或清洁后仍未干燥时不得撤除警示和隔离。</p>
+    <details><summary>素材生产条件</summary><ul><li>显示工作人员在水渍外侧守护、顾客绕行、警示牌和隔离带或围挡</li><li>不得把只放警示牌后离开表现为正确操作</li><li>清楚显示水渍位置和人物动线</li></ul></details><p class="pilot-hash">sha256:f6a8627976bcc32591c17dfcfe87f1674dd0e63af678946b0b4694884d6107f7</p>
+  </article><article class="pilot-card" data-pilot-id="M5_SC_002_V2">
+    <div class="pilot-card-head"><div><span class="pilot-id">M5_SC_002_V2@2</span><span class="pilot-replaces">替代 M5_SC_002</span></div><span class="pilot-type">M5 · SINGLE_CHOICE</span></div>
+    <h3>发现货架支架松动，货架可能倒塌，正确的完整做法是？</h3><ol class="pilot-options"><li class="pilot-correct"><b>A.</b> 立即停止作业，疏离周围人员并封控危险区域，禁止自行扶正或取货，通知负责人处理 ✓</li><li class=""><b>B.</b> 自己停止理货并通知负责人，但不阻止顾客进入该区域</li><li class=""><b>C.</b> 先把货架上的商品取下来，再找东西临时支撑货架</li></ol>
+    <p class="pilot-safety"><b>停止条件：</b>真实货架存在晃动或倾斜时不得用于施测；任何人试图进入危险区、扶正货架或取下商品时立即停止。</p>
+    <details><summary>素材生产条件</summary><ul><li>显示人员在安全距离外封控通道、引导顾客绕行并通知负责人</li><li>只表现支架松动或明显倾斜风险，不制作真实倒塌</li><li>错误图不得成为可模仿的危险动作教程</li></ul></details><p class="pilot-hash">sha256:be30eb0d920892b1358c8afc6dfff981d2f2b11b4e5cd64702e76f69bcc8b01f</p>
+  </article><article class="pilot-card" data-pilot-id="M5_SC_009_V2">
+    <div class="pilot-card-head"><div><span class="pilot-id">M5_SC_009_V2@2</span><span class="pilot-replaces">替代 M5_SC_009</span></div><span class="pilot-type">M5 · SINGLE_CHOICE</span></div>
+    <h3>独自工作时发现玻璃瓶打碎在顾客通道上，正确的完整做法是？</h3><ol class="pilot-options"><li class="pilot-correct"><b>A.</b> 先守护并封控区域、通知支援；按要求佩戴防护，用扫帚簸箕或夹具清理，放入防穿刺容器，检查无残片和泄漏后再解封 ✓</li><li class=""><b>B.</b> 放一块警示牌后，用普通垃圾袋装碎玻璃并马上离开</li><li class=""><b>C.</b> 徒手捡起大块玻璃，小碎片踢到货架下面</li></ol>
+    <p class="pilot-safety"><b>停止条件：</b>施测不得使用真实玻璃；受试者徒手接触仿真碎片、进入未封控区域，或现场出现真实破碎/泄漏时立即停止。</p>
+    <details><summary>素材生产条件</summary><ul><li>使用仿真透明塑料碎片，不使用真实碎玻璃</li><li>显示封控、扫帚簸箕或夹具、防穿刺硬质容器、防护用品和清场复检</li><li>错误图不出现血液、伤口或刺激性细节</li></ul></details><p class="pilot-hash">sha256:4d5fa10b16f809dc060177e00a5447305c057ddd75e6645436fe601d63a1b297</p>
+  </article><article class="pilot-card" data-pilot-id="M5_OP_039_V2">
+    <div class="pilot-card-head"><div><span class="pilot-id">M5_OP_039_V2@2</span><span class="pilot-replaces">替代 M5_OP_039</span></div><span class="pilot-type">M5 · OFFLINE_OPERATION</span></div>
+    <h3>发现模拟水渍后，依次完成警示隔离、通知指定人员、确认清洁干燥和复检撤牌。</h3><p><b>工具：</b>防滑仿真水渍垫1张；小心地滑警示牌1个；可封闭的小型施测区域；通知对象卡；清洁完成确认卡</p><div class="pilot-anchors"><p><b>0分</b>未先警示隔离危险区域，直接跨越/踩入水渍，或在地面仍湿滑时撤牌；任一安全停止条件触发即记0分。</p><p><b>1分</b>完成警示、通知、确认、撤牌4步中的2至3步，或顺序基本正确但需一次提示；全过程未触发安全停止条件。</p><p><b>2分</b>发现后立即警示并隔离，准确通知指定人员，持续保持警示直至确认地面清洁干燥，复检后撤牌，4步顺序正确且无需提示。</p></div>
+    <p class="pilot-safety"><b>停止条件：</b>优先使用防滑仿真水渍垫或封闭小区域，不建议在受试者行走路径放真实水。若受试者进入湿滑区、搬牌时失稳或现场无法隔离，监督员立即停止。</p>
+    <p class="pilot-hash">sha256:c48c7314e2991a8e69ed9f914b62b88d969d2021f82cd9809b0bc784e2a2ccfe</p>
+  </article><article class="pilot-card" data-pilot-id="M6_SC_003_V2">
+    <div class="pilot-card-head"><div><span class="pilot-id">M6_SC_003_V2@2</span><span class="pilot-replaces">替代 M6_SC_003</span></div><span class="pilot-type">M6 · SINGLE_CHOICE</span></div>
+    <h3>查看包装上的储存条件，以下哪件商品必须放入冷藏区？</h3><ol class="pilot-options"><li class="pilot-correct"><b>A.</b> 包装标注“2℃—6℃冷藏”的低温酸奶 ✓</li><li class=""><b>B.</b> 包装标注“阴凉干燥处常温保存”的薯片</li><li class=""><b>C.</b> 包装标注“常温保存”的洗衣液</li></ol>
+    <p class="pilot-safety"><b>停止条件：</b>酸奶素材未清楚显示冷藏条件、温度文字不可辨认、或素材实际为常温酸奶时停止上线并更换素材。</p>
+    <details><summary>素材生产条件</summary><ul><li>三张商品卡同时显示品名和储存条件</li><li>储存文字与温度使用程序化文字叠加</li><li>不得使用常温酸奶包装冒充低温酸奶</li></ul></details><p class="pilot-hash">sha256:5eb5945be994128eb737f2229c92826f63a3f18e7f17a35876d9bb571e4d348f</p>
+  </article><article class="pilot-card" data-pilot-id="M6_SC_009_V2">
+    <div class="pilot-card-head"><div><span class="pilot-id">M6_SC_009_V2@2</span><span class="pilot-replaces">替代 M6_SC_009</span></div><span class="pilot-type">M6 · SINGLE_CHOICE</span></div>
+    <h3>两件商品的外包装非常相似，归位前最可靠的核对方法是？</h3><ol class="pilot-options"><li class="pilot-correct"><b>A.</b> 核对品名、规格和口味等文字信息，再用条码或商品编码与价签/系统记录确认 ✓</li><li class=""><b>B.</b> 看包装颜色和原来摆放的位置判断</li><li class=""><b>C.</b> 只看品牌名称，相同品牌就当作同一件商品</li></ol>
+    <p class="pilot-safety"><b>停止条件：</b>无现场安全停止条件；素材缺少条码/商品编码、关键文字不可读或两件商品差异过于明显时不得上线。</p>
+    <details><summary>素材生产条件</summary><ul><li>品名、规格、口味、条码或商品编码清晰可见</li><li>结构化文字与条码使用程序化生成或叠加</li><li>不能仅靠明显颜色差异分辨</li></ul></details><p class="pilot-hash">sha256:05afc3f8f32b5f01fe9380961653d916d06c93d2070a77f7ccc4cf21ae0ce3c4</p>
+  </article><article class="pilot-card" data-pilot-id="M6_SC_012_V2">
+    <div class="pilot-card-head"><div><span class="pilot-id">M6_SC_012_V2@2</span><span class="pilot-replaces">替代 M6_SC_012</span></div><span class="pilot-type">M6 · SINGLE_CHOICE</span></div>
+    <h3>零售商品上的常见条形码主要起什么作用？</h3><ol class="pilot-options"><li class="pilot-correct"><b>A.</b> 承载商品编码，扫描后由系统调取对应商品资料 ✓</li><li class=""><b>B.</b> 直接把商品的全部品名、规格、厂家和价格文字存进条纹中</li><li class=""><b>C.</b> 只用于表示包装材料和外观颜色</li></ol>
+    <p class="pilot-safety"><b>停止条件：</b>无额外现场停止条件</p>
+    <p class="pilot-hash">sha256:f226423685dd4b8be561e7c9ffa5730392fa7363d1b3e795e82fcde0e390b489</p>
+  </article><article class="pilot-card" data-pilot-id="M6_OP_035_V2">
+    <div class="pilot-card-head"><div><span class="pilot-id">M6_OP_035_V2@2</span><span class="pilot-replaces">替代 M6_OP_035</span></div><span class="pilot-type">M6 · OFFLINE_OPERATION</span></div>
+    <h3>依据货架区域标识和标准映射，将6件轻型训练商品放回正确区域，并做到正面朝外、放置稳定。</h3><p><b>工具：</b>稳定迷你货架1组；饮料、零食、日化3个清晰区域标识；6件轻型训练商品；密封标准映射卡</p><div class="pilot-anchors"><p><b>0分</b>6件中有3件及以上错区，或出现危险放置（重物高位、商品不稳易坠落），未形成基本归区结果。</p><p><b>1分</b>6件中有1至2件错区，或虽全部归区但有倒放、反面朝外、不稳定等1至2处陈列错误；经一次提示后完成也记1分。</p><p><b>2分</b>6件全部按标准映射放入正确区域，无错放，均正面朝外、放置稳定并符合区域内基本陈列要求，全程无需提示。</p></div>
+    <p class="pilot-safety"><b>停止条件：</b>使用轻型训练商品和稳定货架；重物不得设置在高位，禁止攀爬或把商品抛入货架。</p>
+    <p class="pilot-hash">sha256:5e4f3dff9c4f3dbde45ebe74e99ff5cb38f70a90e38dacf2b9488e6cdc2b5a99</p>
+  </article></section>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{const replacements={"M2_SC_003":"M2_SC_003_V2","M2_SC_005_V2":"M2_SC_005_V3","M5_SC_001":"M5_SC_001_V2","M5_SC_002":"M5_SC_002_V2","M5_SC_009":"M5_SC_009_V2","M6_SC_003":"M6_SC_003_V2","M6_SC_009":"M6_SC_009_V2","M2_SC_005":"M2_SC_005_V3"};document.querySelectorAll('#grid .card').forEach(card=>{const id=card.querySelector('.card-id')?.textContent?.trim();if(!id||!replacements[id])return;card.classList.add('legacy-superseded');const note=document.createElement('div');note.className='legacy-notice';note.textContent='历史源题，当前 Pilot 使用 '+replacements[id];card.querySelector('.card-header')?.after(note)})});
+</script>
+<!-- PILOT_V3_OVERLAY_END -->
 <header>
-  <h1>SVETS 题库总览</h1>
-  <p>BASE_ABILITY 96题（蓝色边框）+ JOB_SPECIFIC 298题（绿色边框），共 394题 | 紫色/橙色徽章 = 有媒体/交互需求</p>
+  <h1>SVETS 原始题库总览，历史来源区</h1>
+  <p>下方394题为原始来源视图；当前 Pilot 生产题目请使用页面顶部 strategy v3 区域</p>
 </header>
 <div class="stats">
   <div class="stat-group"><strong>394</strong>总题数</div>

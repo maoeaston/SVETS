@@ -1,0 +1,1457 @@
+{
+  "schema_version": "job-skill-shelver-298-targeted-v3-rereview-gate-v1",
+  "gate_id": "job-skill-shelver-298-targeted-v3-rereview-gate-v1",
+  "status": "PENDING_REVIEW",
+  "generated_at": "2026-07-20T00:00:00+08:00",
+  "candidate_set_hash": "sha256:709df136bcbfe6c64dbc9b63d9cdeccc8a2e3925def1158ee6c73cb7db627c4b",
+  "summary": {
+    "total": 145,
+    "pending": 145,
+    "passed": 0,
+    "return_for_revision": 0,
+    "preserved_v2_without_semantic_change": 66
+  },
+  "releaseable": false,
+  "questions": [
+    {
+      "question_id": "M1_DG_028_V3",
+      "old_semantic_hash": "sha256:3b35b73e44b214bf67357381cb61951317f1cf60d53cb2b3e0b85209b79e8705",
+      "new_semantic_hash": "sha256:6291ade9489e2a3ea388dbe1aeed1a2e6d1d4f444d452e386c26c7960b392c05",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_DG_029_V3",
+      "old_semantic_hash": "sha256:58223c0ac7524e374b268e1c7e1cac78ae99773904ebfd49cca135c7b4794aa8",
+      "new_semantic_hash": "sha256:05c1830b2d9c9e6eb6dd036b207ca37ee93845fb09ae01633e3eeb134b9d49e0",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_DG_032_V3",
+      "old_semantic_hash": "sha256:fa14a8ad29a9f97dc0057f84dee89ab6b6080c1a5bc75ca2a036b42eef418a8f",
+      "new_semantic_hash": "sha256:85259037fd4fcc61810a4d048269def2a9d80f73c7d7fb97cd48a262ec41a63d",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_034_V3",
+      "old_semantic_hash": "sha256:7515852d022fe747703497246e99456aa9cdaa13515a8dad9f4088cbde491399",
+      "new_semantic_hash": "sha256:90f759fe9769dddee5b46d6f1f4501ebce1c639368503f6c23d6d07d93043f60",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_035_V3",
+      "old_semantic_hash": "sha256:ca5e491dc0273333aa970cef81ccbdec6dfe7e06c07ceabeb528784e7899d21c",
+      "new_semantic_hash": "sha256:e911d6d1aa0e29cc5aa90f571e87723a52935b674a118eddd1f2dea9bc394c14",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_036_V3",
+      "old_semantic_hash": "sha256:4be7ef7270db333d28ac24119457dfed700dc0c524df4d1a5097fe0f677239a0",
+      "new_semantic_hash": "sha256:949f793328899369f62a2e53ef952de681925da77224c1acf3693f98533068df",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_037_V3",
+      "old_semantic_hash": "sha256:9f702e56c156c08c0721e075e2e0010eefe7192e1a5ee3111585caa8392e6db8",
+      "new_semantic_hash": "sha256:0e70d41b8d5a898f0adb58434f492f505e1e03c6b468f2fb0e5f92dace270a6d",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_038_V3",
+      "old_semantic_hash": "sha256:889f2b0d8eb09335d260c1c692683d6b570af11fbb23c6acaa08fdd7084ede54",
+      "new_semantic_hash": "sha256:2b08e09dd00efebffaed9411fabab5dce330464936ea86bb407bc8cba996e225",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_039_V3",
+      "old_semantic_hash": "sha256:96193f1f639d8def83981e436b3fef770ea1b12b96281f47b9b76c2c8ef07fec",
+      "new_semantic_hash": "sha256:c643910a5990949717e39d0c79ee1b20f7ab2111d066acb9b48f34c8a475d1d4",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_040_V3",
+      "old_semantic_hash": "sha256:e3f1cdf4fd8bc886563f63716b13c1805854998235bd71ff3a36dd04aea76181",
+      "new_semantic_hash": "sha256:4046016fab924661a1d614002d3e2873ac174773c851372168aa0aeaf1f281fc",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_041_V3",
+      "old_semantic_hash": "sha256:32fe7a57934e571d56489f04946e1641f5946757d84b279840012f47bf1b3dad",
+      "new_semantic_hash": "sha256:73da9d60a24f0e38c7e8b61b9ed86eb2aa4c6909e7519410ac22daba2bbf784a",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_043_V3",
+      "old_semantic_hash": "sha256:00673c07f8851d7615e0d66326a571f9a4200ee5b9a01b55d7f8a14b9bc39410",
+      "new_semantic_hash": "sha256:48f15b458dcc20e7eb4c3cf1d0fa58ede824fa9810b95e42bef0436e511d265a",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_044_V3",
+      "old_semantic_hash": "sha256:dffd99fa6d92c896431591e67d167ea389d90908de8dcfd93e14495332ba9fa7",
+      "new_semantic_hash": "sha256:b60a01c1810b6955b6ae60b8093fe8269b2870fa54b59673c13d8c541f9f48d5",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_045_V3",
+      "old_semantic_hash": "sha256:736bb19fd6c4389e418b34c2c34bd499ce4b3515d028150f6697f2e9eb392747",
+      "new_semantic_hash": "sha256:4ddfd0c99d0b6df90b703965b04bf400d75a947ccaf32ccdd8b86e563789f5cd",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_046_V3",
+      "old_semantic_hash": "sha256:e864dfa22f30d3abf8feea8041574996a983c2a0fda23ad5472ac277e17ed040",
+      "new_semantic_hash": "sha256:cc7bcd4e0ca855897169dc4ba44fe6392294d180b10a1ed58cde7e6538ae184e",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_OP_047_V3",
+      "old_semantic_hash": "sha256:4f7271b5e217459a5b50d7f3e72dfe9df34eccb4720f0fd1720a23e85cdec0ba",
+      "new_semantic_hash": "sha256:1c5b379d7b86504b7cc748fbdc21b0eca4fa7c064feedb054bc420c669552917",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_SC_005_V3",
+      "old_semantic_hash": "sha256:7b6f032c59dcef912d5287dc6ab333b378a70ba9ff4e6f8d72964971d53d2ef5",
+      "new_semantic_hash": "sha256:a327c18522994b76d6d6e04ca18dbaad68120b78260f924e133472d38359aae4",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_SC_012_V3",
+      "old_semantic_hash": "sha256:6053b717585dc29e269d902fc68c01dfde84387b76819a7a705bb96b7d5185b9",
+      "new_semantic_hash": "sha256:8a96a4f3103ddf5cdba5c63445d454afd880a633023d4dc452238ccdaaea8e30",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M1_TF_025_V3",
+      "old_semantic_hash": "sha256:b646c418fbb5490cbe120af45a4798506c2e98471efa95900a369b561849fc52",
+      "new_semantic_hash": "sha256:c9e5d8ccee79e44621be975a4c9d6d30cd7b8265088c01c2fe8f2704df0f282e",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_DG_026_V3",
+      "old_semantic_hash": "sha256:2c85f19ad0f30e515f65b394052d05d4c21103111a7c635ed804df97d640ac1c",
+      "new_semantic_hash": "sha256:6e2636b6f925efed15a3499ec249c42e5ac0190e9e27e7cd1879256f5b35b984",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_028_V3",
+      "old_semantic_hash": "sha256:275612f1612739780eacc844daf62184e38438e5aa00dbd773c652f6b36e1d09",
+      "new_semantic_hash": "sha256:6f81516980eae21aa5511388f9c2470eb39ea190e397ce656feb6820d1c130c8",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_029_V3",
+      "old_semantic_hash": "sha256:7d437e7ae5c5f7d547eeab22667a7cb30f2f80d2ec65def9c1b322bdbcb50d3f",
+      "new_semantic_hash": "sha256:e7cc09471bc1ec7e8a8a1e3b7e05a00b9084b16b74da75bca8c013e45f2c6334",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_030_V3",
+      "old_semantic_hash": "sha256:b3c3b4668c1f7e74f1fe8c66048573f2b1bfeb034bc41525ec74573d87fc6643",
+      "new_semantic_hash": "sha256:ef48293c66bf047e23bd7494030e251d95e55ca0a6f7988ecfaf4e8c9d5763aa",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_031_V3",
+      "old_semantic_hash": "sha256:25b3e009fb0d421ede5d1524332c683e3b0252c1bfa1c581c525fbf1599eb2bf",
+      "new_semantic_hash": "sha256:931a913dca9f392b1b8ae4845cedd114fe2f876b5638d13795fc2c9ddc5ef8d1",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_032_V3",
+      "old_semantic_hash": "sha256:7c1f08cc56443b9017fbe227980915a586d3d78adb469a51abd0f2e5c4844ec2",
+      "new_semantic_hash": "sha256:1cd7f2fb140484c43c57e4f03ee36c68d301aa8dbb48088183eca2e56ab51ca1",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_033_V3",
+      "old_semantic_hash": "sha256:83f322010585a1d81f09075a460115ab32627471d04ce24edb5ce23b17ed9efa",
+      "new_semantic_hash": "sha256:8c60f57dcaf64c3c15ef5e8234df2233757e8b4592ee4d404c7a08f32bb2b12d",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_034_V3",
+      "old_semantic_hash": "sha256:c2dfda462963703920ab65b9240846ebd43f655a9089e54b824585f761121ebb",
+      "new_semantic_hash": "sha256:fc45e5b7e8d43c83bbdcd250bbe1f774dd76a05889455ea29d3967def91b96d8",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_035_V3",
+      "old_semantic_hash": "sha256:22ebed3ccd36861506dd2bbfcbe8396b8d8bd219c39f589a971d0a88a865b3d5",
+      "new_semantic_hash": "sha256:075d1ffbdc4ff32f5d7dfbf9f9380b785bad43480146e81344333da8f9ab4f65",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_036_V3",
+      "old_semantic_hash": "sha256:04fa7612b05f9fe5f12f8d668d1294547b08293f3f673958a396e99b7102cfde",
+      "new_semantic_hash": "sha256:021aa98d0139d7ad8f77436356dad162a3bf3a1a868523dd0605994097751970",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_037_V3",
+      "old_semantic_hash": "sha256:caf1a1b0085726c6837d68144f94e365d89700374364c08ddbb958187a7fb592",
+      "new_semantic_hash": "sha256:8c609dc145f7b6664f3977336cae04a67b94ee1923c40f1e1eb9adc457f55975",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_038_V3",
+      "old_semantic_hash": "sha256:f98b3b845314e9573028884ec0dbe27332f1cf7052bb5bb113b0e1398e109dfc",
+      "new_semantic_hash": "sha256:08fc01fe301354748c5c7b59b329223603572d64346029e637d5164ffccd6aea",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_039_V3",
+      "old_semantic_hash": "sha256:149eefa5b4d9be9117e74b26089df78267c74e59967d0d38a5d6325be3e832a9",
+      "new_semantic_hash": "sha256:129331907100620b02b4011cd669b05f6299554055906aafa438e5354fcf5404",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_040_V3",
+      "old_semantic_hash": "sha256:d548dea17d15484c17b9f8706f0acf405230d00dfbe087334a26edf5dd5db2bc",
+      "new_semantic_hash": "sha256:db30ebb4f70d66e0414126837ce4e38eace5be547b35b63ce202fa8d0a39a50b",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_OP_041_V3",
+      "old_semantic_hash": "sha256:82bffcf68ee10836bc669bd16248c45399e77e5a07d87efabed6a89be7553c0c",
+      "new_semantic_hash": "sha256:ced9ae0163ed476d6f5ab52cc7ff421c9b4913a04078ebd96045848fa74e555c",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_SC_001_V3",
+      "old_semantic_hash": "sha256:fb0e715e8db42463a79681452b80570601630ea97d0259365dcf0cf6f67ed6a5",
+      "new_semantic_hash": "sha256:a959f24c905d461bdfbce2b5462138d219331bc2b8a65015a43b22117889d3e5",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_SC_007_V3",
+      "old_semantic_hash": "sha256:aebf5ce17b2efdef46dbb039a020a18b6e9ae79941ddfb6513c98e9be5d1b597",
+      "new_semantic_hash": "sha256:9a1395d4e6ac08b2890d0735b831e3d65b35c719504a0606ce3c0b6176b70bd9",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_TF_018_V3",
+      "old_semantic_hash": "sha256:b646c418fbb5490cbe120af45a4798506c2e98471efa95900a369b561849fc52",
+      "new_semantic_hash": "sha256:fd17c7e2c9bddd5d1c0345ec3308987f0b429bf34604aea36258fbf7440e279f",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M2_TF_022_V3",
+      "old_semantic_hash": "sha256:edc4111753f4fa23bcf50b28bc15275f0bf550cf6389d4f3e4f5a10d6f633639",
+      "new_semantic_hash": "sha256:9684e3d91a8c8369104c6a17e81c4616ecf620320cdb587da7e9d4cee4980a6e",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_DG_038_V3",
+      "old_semantic_hash": "sha256:995c818c6450eb1a46f14e494c99026d9290d18535a8f54089d9221fa8a612f6",
+      "new_semantic_hash": "sha256:f8e8b296da637de85ae9d0e37dee3b0de42f99e64e437229282f5aa6bd99a3ae",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_DG_041_V3",
+      "old_semantic_hash": "sha256:0aa2465d938b9ad78eb9e3bff3c9bcff1b94fa33bfc37b61095572f4630d3230",
+      "new_semantic_hash": "sha256:fcecb6febe47e8f310ce828eca74b8c36b094a7ed169a3e8d44e946c49e67760",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_044_V3",
+      "old_semantic_hash": "sha256:67071cc928d0cc9b57379043d428bcc094d6f5ab73af6dd3321a6e3f3e2db071",
+      "new_semantic_hash": "sha256:83bd7094cef6d0a61cd103851a965dac7a8022b71fac42bacbcc14194d415f23",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_045_V3",
+      "old_semantic_hash": "sha256:ff49ad114b2a29154acadbd00d57d90ef1f67ca3f311dce56763c4d19c890a54",
+      "new_semantic_hash": "sha256:64daaeef87269a69866470e5815ee81a27f5ee3a1374ff5dacca0c54100215ac",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_046_V3",
+      "old_semantic_hash": "sha256:20b5ccc7eec4b80852b12e350ee49c220cae65c704316ee53ebbd07d9c67fb63",
+      "new_semantic_hash": "sha256:b2e91ceb2e5c408a980b5cd63799da442f97cc96cd531283cf82d98ba57b97ca",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_047_V3",
+      "old_semantic_hash": "sha256:915b068e15549a11962129481f5f82b19cefadff2fb71fd34ae57c667a03b0f0",
+      "new_semantic_hash": "sha256:9998617a119cf11c79ad9ebdbfcd1df8113065ad5e4c6a9a4eacb6aea15dfe09",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_048_V3",
+      "old_semantic_hash": "sha256:cb6871c7e9dc818bb155798f9afdad0de13d130cab516818a50c1e9cbb073ce8",
+      "new_semantic_hash": "sha256:17a1538fe26c41e51c99df105ed403a0cdaa7ba1cc38088dca1d33a84f5b0731",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_049_V3",
+      "old_semantic_hash": "sha256:ddda6a94f5a33a79f26ba3966709e00a8ea27ddc3d342b4c85433352b0915e16",
+      "new_semantic_hash": "sha256:b33a766a85d11a64c79065cb169e3ae985df37fdbea0b8ef320b4335a0f37cb9",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_050_V3",
+      "old_semantic_hash": "sha256:0388d70eb083835fcd34bfd9062c0ac805bd916ae0e574736585f98fcb0ac434",
+      "new_semantic_hash": "sha256:0f52df020cf4e8ab8710162018aed35c352949a2a8e22f506b2ae2683b321dff",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_051_V3",
+      "old_semantic_hash": "sha256:254f7ded8d8d1cda90a547681e23bbedb1b7adc209a1739b1cdde6917d96a2a7",
+      "new_semantic_hash": "sha256:fcff99f53611668c9ff0fc9f9910cb1a459aa3ae8a776a6f064d0e928378a221",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_052_V3",
+      "old_semantic_hash": "sha256:756d84982a7317c0eaf41e679c402f489a21bc669a872dfad5d864cf1df6e5db",
+      "new_semantic_hash": "sha256:1d6ad56987b694980b793fe54de71c40adc2db6f93a90e2bec2b323ecd114262",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_053_V3",
+      "old_semantic_hash": "sha256:eeb39ef1101dedc3f967ba90700dff6cd7db54659d4da080c05667c6dae755a9",
+      "new_semantic_hash": "sha256:62f9038dc49b0d612595987639db882372de54ac2885efe899d29e2e93e5c2cf",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_054_V3",
+      "old_semantic_hash": "sha256:edb5d4c3ef6eeb962cac937b90ffe85c5aade24ede7ef2f742638a6aade32682",
+      "new_semantic_hash": "sha256:931e47bea88bb603b9c4b7a312a1ea8a3b97b7fe24a869ae7061e54221556ab8",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_055_V3",
+      "old_semantic_hash": "sha256:83a6aa4028be0d24d558a7133a1be4f1373046585dbbdc91050892904c5f0bfd",
+      "new_semantic_hash": "sha256:e63decfbd255abe5aa90aa7909b4772b3ab5ed420540ad97d00150d944762466",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_057_V3",
+      "old_semantic_hash": "sha256:4e8152b1f67bde0b35a8d73c53c5a91cf39a73c0ae16875cd92c2fa98853fa4a",
+      "new_semantic_hash": "sha256:c7aacfc85285615c32dd3ae0ace1007009f971df29482376d905d8b0609a058c",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_OP_058_V3",
+      "old_semantic_hash": "sha256:7041efbac9fa99ed184cc303a4ce58176466a86b86b852a24065ae308f8ff9cb",
+      "new_semantic_hash": "sha256:47f35f5b9a6f4d60b8a90db4abd9c464fbcb79c68a8fa29881c47e85757c4c93",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_003_V3",
+      "old_semantic_hash": "sha256:4ad294ec46c35ae196de396dc77dd2124284ebb796f80f2b45b03a21f0f575a5",
+      "new_semantic_hash": "sha256:b052ae089299e24e488e6c16d539e4520f660155518c69f5f14be6a4587539ff",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_004_V3",
+      "old_semantic_hash": "sha256:c80cfdd71d259fbadea6402455bf1e1a0ae5efc74b1f63a2fc1de362c07a237f",
+      "new_semantic_hash": "sha256:332f19052d4038906a1ff8a6ae94d48f023cf63747422faf2ff7fd6df72cea66",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_006_V3",
+      "old_semantic_hash": "sha256:78c8293b1d987cad6bf7a39082125389065d3025e872d109b9b5666561f2ab99",
+      "new_semantic_hash": "sha256:9536e67a976a0602c648ac8f1324e6c9dfa72bd35b443c5defbf27f35c55f326",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_007_V3",
+      "old_semantic_hash": "sha256:c9ab6726e3698c82b0313c722f33ef8262d3326ff061581ef57db56190b9ca2b",
+      "new_semantic_hash": "sha256:6c8400bc98514f6c6a3e034cd1255af2fd86b6259601fc14a1d4e1b5a1de3bf5",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_008_V3",
+      "old_semantic_hash": "sha256:d5f01f0bd0e3734c3dbe0e0732b4942aa155296a5454c4e2a652f2d96acf1908",
+      "new_semantic_hash": "sha256:7aefabc6a0ebd69841d7bc01756dc3302f05a1a4b61a2393c36be2d846146b61",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_009_V3",
+      "old_semantic_hash": "sha256:b69b29dcce03f59a7d744af1b35230a8ed2950176b52573f86dec0d2f2b6d44c",
+      "new_semantic_hash": "sha256:7e69f0c557145d009bf70af3775bf7ed77cab3932698812d1d6725470ba88c88",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_010_V3",
+      "old_semantic_hash": "sha256:aebd50eb1a29a95d3edd8aa41a09c822c0b347168e06a2318e13873f39162cf6",
+      "new_semantic_hash": "sha256:c269051d6b61c3fa6b19b38a5e40bf89ab730c43061699ade22bc88d1b74f002",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_012_V3",
+      "old_semantic_hash": "sha256:419d47af6be4a08112fa72ce11c790a798c4eedfd6fc07735ba9858887b972c7",
+      "new_semantic_hash": "sha256:236831e44a4c411b7edac59a15ef56f12a9cb1d7e4c1dad4ad0ae4697f1a218e",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_014_V3",
+      "old_semantic_hash": "sha256:e7ba75053185a0eedc1a59c6664e3d2da18740e2c15293551b8967e6e5bd90d8",
+      "new_semantic_hash": "sha256:d691e8c217162ef855c832f3cf50f091c2969b10aa0a7aff42db979e594d1e49",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_015_V3",
+      "old_semantic_hash": "sha256:59081bce227672e8e6986accaf83f0478b732ee65c88f27ea2f0cbfb49ede2de",
+      "new_semantic_hash": "sha256:a1b99290165602c7cc90478bb6d7fa2d1db2f687a6de9ccec1d58319669737cf",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_021_V3",
+      "old_semantic_hash": "sha256:52060130ebd8f7b69c04b714dd308f5fa691b810ac52a8624d819e160243b4af",
+      "new_semantic_hash": "sha256:e7d08833a2250db72f3a919ec32a3d5b9ca13dc2f533362212ee9d76cc482b24",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_022_V3",
+      "old_semantic_hash": "sha256:2a2ca97c471bde6de76107aa48bde7c44d07e8c8a294c5e1a4390f04156a08b3",
+      "new_semantic_hash": "sha256:a8d99154d43f95833cc315fb97727226fa26ce1250bd4b813818e429872c1c40",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_SC_023_V3",
+      "old_semantic_hash": "sha256:472c9d7997934bb1bd3f99790bb54bb21e55321407699261140235a036c4d190",
+      "new_semantic_hash": "sha256:a2bfc23829beb19433282fd3f0ecbe2ddda70be56088ef19c0a8490f87e1b440",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_TF_025_V3",
+      "old_semantic_hash": "sha256:edc4111753f4fa23bcf50b28bc15275f0bf550cf6389d4f3e4f5a10d6f633639",
+      "new_semantic_hash": "sha256:ef161fcde08b09e60bb9226792faa36309bb35b9609bb30e94177dc408b11e6c",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_TF_028_V3",
+      "old_semantic_hash": "sha256:b646c418fbb5490cbe120af45a4798506c2e98471efa95900a369b561849fc52",
+      "new_semantic_hash": "sha256:4068d9635d27e0a507c4531d28c6c662f69cef38d841e4f59209820b9b612256",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_TF_030_V3",
+      "old_semantic_hash": "sha256:b646c418fbb5490cbe120af45a4798506c2e98471efa95900a369b561849fc52",
+      "new_semantic_hash": "sha256:cdd7424c4d9fa954b7ec2aed54e0a4448feebddfeebd9bf61c7caa4d81eb3145",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_TF_033_V3",
+      "old_semantic_hash": "sha256:b646c418fbb5490cbe120af45a4798506c2e98471efa95900a369b561849fc52",
+      "new_semantic_hash": "sha256:da51986e564a2cdad900372faaaa47d915107948a576a23586322120cf7b7ae2",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M3_TF_034_V3",
+      "old_semantic_hash": "sha256:b646c418fbb5490cbe120af45a4798506c2e98471efa95900a369b561849fc52",
+      "new_semantic_hash": "sha256:233d1c84cf3ae365989049993fdef73151fa1ea0276c3a3f41d6633700ac11c4",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_DG_023_V3",
+      "old_semantic_hash": "sha256:7ba5fe4013284397ae75acdb53a3b7f6b2913dfdb4170551950801964c92c0d2",
+      "new_semantic_hash": "sha256:2fa8bc02823ba91275f2230ff897b28dda419189700846ecbeb0254edfe0fc8a",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_DG_025_V3",
+      "old_semantic_hash": "sha256:5a72c0452b994665c467c5235e9f99b7f85efe85a31519d42c9876a7437b0493",
+      "new_semantic_hash": "sha256:0fffa26f4be400a59997aacc397616d3e299869458cd4139405d49e68a38c0d3",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_028_V3",
+      "old_semantic_hash": "sha256:3d0ba3bd66feb67a95bb6c0e4e73968d65ddb8270911e7301824ec2502ba770a",
+      "new_semantic_hash": "sha256:34ade895442309ce0f62999fddbdf84fef2d5967c3b035e01ee2c65ef45ed530",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_030_V3",
+      "old_semantic_hash": "sha256:fa5df687bd4427750ea2e8e7860be6f8ce34395437659493978102a35ee0aaaf",
+      "new_semantic_hash": "sha256:05b935bc228de1666325a5b4ccf64c1dacb326d0f8a6b6cb1e163c070586a5fc",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_031_V3",
+      "old_semantic_hash": "sha256:9ce52f02ec17eb2a5942c39495a58558ab32b88cb898de0460a537cfaa728e40",
+      "new_semantic_hash": "sha256:8ed948e2a7a22a24e47324216fd00be47b44c53e0ee14151976e0b56999165aa",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_032_V3",
+      "old_semantic_hash": "sha256:27ed1ba24da0fb0762df1b088ef779f33d2710ab182b78fe6abaa3895c7ac8de",
+      "new_semantic_hash": "sha256:c78f3b758b6dea36a484bee3fed44451db34d84eeb99ec3990b5293a6b3f694d",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_033_V3",
+      "old_semantic_hash": "sha256:e8389ac3bd8e653884e510a140a8e6a27f9ebe0e4abca8ba3a1c526248f34b67",
+      "new_semantic_hash": "sha256:993ed641827e6483060400d8751af74bc6691e6f4c2e77fccadbb0d0d85af912",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_034_V3",
+      "old_semantic_hash": "sha256:5b348c5d9c01d2973707c964e459c0ee1e1bb840ab7efd615943a7f411988499",
+      "new_semantic_hash": "sha256:3be596897ba37aa84da45070331e960f99151db2d1f74d906371c6e53a1ebbd0",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_035_V3",
+      "old_semantic_hash": "sha256:2fdda6bbec775adeb63dacc790b2417a963665c715f6743bdffeeec6191f9c92",
+      "new_semantic_hash": "sha256:29c9d5bcb07999cff2effb663ba89058a579377cbd95c87d8cff72f7816e34d7",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_036_V3",
+      "old_semantic_hash": "sha256:4c0814321e039e52dbc02fea179b610cffc4eb551cfdd36d67d75d67fabf7275",
+      "new_semantic_hash": "sha256:d18e8a891cc1f7254140cccc6e866b71b17254b742bbfb252b585728bc060c4f",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_037_V3",
+      "old_semantic_hash": "sha256:bce3dd330be07c1601c881eabae8412f79480e2ca821cba010903936d54c85af",
+      "new_semantic_hash": "sha256:f45a5405cc1996c274eeb3d95c51f3efb523797bd9a5ce9c49642129bfa7ad47",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_038_V3",
+      "old_semantic_hash": "sha256:0458a2101e3057bd00f6aee519f26e14f867534275d193f36b593c16dd8cefa1",
+      "new_semantic_hash": "sha256:e9436cc7abdef4109c8415ba7d1e412e6943fbf04226f48e967d29fa6955f1a8",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_039_V3",
+      "old_semantic_hash": "sha256:23ed021568a49d35f6652272c467419030b7649fe4f85f7333a77e8561a006ec",
+      "new_semantic_hash": "sha256:b3edd455286c898e9f69aca51caa7f782815651266dbe06063552208279f6f33",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_040_V3",
+      "old_semantic_hash": "sha256:feb954d5e65f3b2b9e6ff929c64f57c8c500bc5664cfcebb5b588f091084c43a",
+      "new_semantic_hash": "sha256:ee7f394907806e1e36d53cd6afac7f091491cc3706228295ed86174c50ed60a3",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_041_V3",
+      "old_semantic_hash": "sha256:c17cc89b9349b780d192e38896117dff2d117b8ad974947afe98702a6345bbaf",
+      "new_semantic_hash": "sha256:fbd994b87bcf72e16afc0aac8517ebfd667b683bea33ccc8b58c9506e8639b2a",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_OP_042_V3",
+      "old_semantic_hash": "sha256:5e8d9c3f10e8fdff7945b7db622b4b0efa3023e96ea44e8cd446217d70473afd",
+      "new_semantic_hash": "sha256:07853f89889582c06554750422b3242d368fc9c899c996ba631a8c1afca8ed77",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_SC_002_V3",
+      "old_semantic_hash": "sha256:02d9cf0d4b41322f86508873ce5a74c3f2403d1c9ebf7c60461105f751091b99",
+      "new_semantic_hash": "sha256:aee5cac07621b728ef08507ba06c3f1122e58104f860bc79723461c917a43bca",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_SC_012_V3",
+      "old_semantic_hash": "sha256:ba53e0287de0a25729341e2288b9f97b18b2f1e9a4d58d1ce41714564cb9b87c",
+      "new_semantic_hash": "sha256:cd62e23e6959184b02548afb025bcc1d2e56e7829c72956e19a1db53660c1e95",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_TF_019_V3",
+      "old_semantic_hash": "sha256:b646c418fbb5490cbe120af45a4798506c2e98471efa95900a369b561849fc52",
+      "new_semantic_hash": "sha256:c95b57dca1f10e64db6470c7157b5ec373554692710dbcca4f483932a2104a8d",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M4_TF_022_V3",
+      "old_semantic_hash": "sha256:b646c418fbb5490cbe120af45a4798506c2e98471efa95900a369b561849fc52",
+      "new_semantic_hash": "sha256:ff8775de6fd714228d1ce77ce85ac82273c70d18a4e3de301a999f635aed784c",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_DG_033_V3",
+      "old_semantic_hash": "sha256:aed9f8d18688cb56d8b37c6a86564e1fb0ba8f36578597f2388a4d48a1f7b9da",
+      "new_semantic_hash": "sha256:2cac071c9ccf5bcc5da2c434551b5b0f6d02c1a15bead0e564ff664b555fc2b5",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_DG_034_V3",
+      "old_semantic_hash": "sha256:bff464ffe87db63d78f605c42198e688d4520e06bbd49b3c3e282ad90dfa0302",
+      "new_semantic_hash": "sha256:a1ae778bb1a2833f9130130bf13bcf42c88b73b723272603421dac9dff7789ea",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_DG_036_V3",
+      "old_semantic_hash": "sha256:97ddd65b5205dd9f413b10c0ca962a5b7be0016a7fb6fbfefd33c25483022ef1",
+      "new_semantic_hash": "sha256:27d8e92d9317afacca42b166668640476813801566ba50893a09b70dbb949abe",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_DG_037_V3",
+      "old_semantic_hash": "sha256:9247825891a7d222395efb3fe0c21d42582c877ed49101004bf28ea5b9863d85",
+      "new_semantic_hash": "sha256:ed06c5fe38b50ac6c4125defe4fc34540e40b361fbced5d0989d142aeaa06123",
+      "required_review_tracks": [
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_DG_038_V3",
+      "old_semantic_hash": "sha256:41f3e557921686cad62a0d7652b2a45f08d28f4ad8231a0dbc50cb7ffe066ffd",
+      "new_semantic_hash": "sha256:45391f0b2425062ef00e9c4e364119617a0e77bb856d508ebdda409918ff06a5",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_040_V3",
+      "old_semantic_hash": "sha256:0e5ac63dbc18917a3c7bcbc58ed0593a5655edfc1c2b00f565569dcf6fc1a97b",
+      "new_semantic_hash": "sha256:c9c18e42c3d08adc8bfda1530ab739b0b556baff838fff2191513c18f551ae40",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_041_V3",
+      "old_semantic_hash": "sha256:b169e269f65e148a88d46ec65c345a4db452fc2c16ae9269e7486bce0180f264",
+      "new_semantic_hash": "sha256:9a4303a756134e50870ac7eafef247e5330afcf6c4408a481070f15a3ccdd714",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_042_V3",
+      "old_semantic_hash": "sha256:d4716c3f122da58d04fd28b5690037e56dfe01f135900fd040839cdb93e66a90",
+      "new_semantic_hash": "sha256:1fffb946b1cd913c26d2f9bad9b22ebcaf32d5bfbfd4540977cd7eb9641e197e",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_043_V3",
+      "old_semantic_hash": "sha256:7b6d78ddd3b1d976d421df324e49dc063593c7cc5974d6449c15d327eeb7571a",
+      "new_semantic_hash": "sha256:8443d14c875f154273b87a20f087247035ddd6259d2f47f189667f2fb69d8b3e",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_044_V3",
+      "old_semantic_hash": "sha256:1c872dbe287260a0f118c81aa94c9b50312b5e55a56f28de5144b2728625254a",
+      "new_semantic_hash": "sha256:2cc6f9d04c0f61e3aeab87cc6332ae01c4c8cbcc37f49fb810f658b58ca2b616",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_045_V3",
+      "old_semantic_hash": "sha256:93e465a45c259c76a2a1e9370a0028f69c86c58d8f5c7fbaeb85341109a0592e",
+      "new_semantic_hash": "sha256:85ff23223b8ae8225f8f871933fee7f1cfe35321dd871774b347784f513d40bb",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_046_V3",
+      "old_semantic_hash": "sha256:9d5c5520513d20ba0d3878010537d3801375282d4ff2e90eab342c3e438843f4",
+      "new_semantic_hash": "sha256:6286105de5b53b24c2c8ccff3e0281ab45965ab208eecb2479b7d0c39fc59820",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_047_V3",
+      "old_semantic_hash": "sha256:30ed6cf656eb4534000d101c23fd8a761dc9c2a839991b4d2d92f0cb3e7a8fd0",
+      "new_semantic_hash": "sha256:cba8bba09914288d92fb9807265c0fcfd94505ec2d57bc2ae533b66ddbc8107f",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_049_V3",
+      "old_semantic_hash": "sha256:079b9bee59fd83912f127bf145b11bbd8e786bfce6ee8c7d1ba52f0153fb70b3",
+      "new_semantic_hash": "sha256:4eb269716cb0cb0573337d8ac0f7315fd142e9bf2635e955f5e3fa8579d703e7",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_050_V3",
+      "old_semantic_hash": "sha256:e16d830b6b5171ae12edbbdd43caa2e909b6b811a2251701adca3a89c3a619e6",
+      "new_semantic_hash": "sha256:5cce5ed36efb48b0034876453100b3fb22741e6ba1c3cb4f3b7038e3ef0e490e",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_051_V3",
+      "old_semantic_hash": "sha256:8c4435d681a6db588734978f7249582f76bc25d4138a10d9a9e7fc224fb5a759",
+      "new_semantic_hash": "sha256:9eccded3ef6ca79d1a35783bf1bb1b2ebd2cbc47b11af857e3206e8ade25c6b0",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_052_V3",
+      "old_semantic_hash": "sha256:8f349401ae9d0d183083e5246c2187857e5a19b8007c31e54217a75ef1864aef",
+      "new_semantic_hash": "sha256:4add7730d65061cfbb49c2de91d68232f247278a14bc215a95c5768b0e0f9215",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_053_V3",
+      "old_semantic_hash": "sha256:9f4f6ae4f9645994ce89d072d7d19402bbc592849ffcc20c08249374ec72ecff",
+      "new_semantic_hash": "sha256:d06b4d792842ef7a4cba68201ebd57333bb41fa5e5460ddfd90233e91ec8533b",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_OP_054_V3",
+      "old_semantic_hash": "sha256:f0a0ab4a680d403b636da3db66752be5b9bdca4029559a2dc14cbaef12aa41e7",
+      "new_semantic_hash": "sha256:deb49c8df6a5e9383f6b044b0bcdf787d6f0374aa0e6167beed5e43f8758441a",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_SC_003_V3",
+      "old_semantic_hash": "sha256:c6576fcc2d795efe6dba4efbce08b959a140db24e2330fdbd5aca7cb31a4087f",
+      "new_semantic_hash": "sha256:4f0dcb9ab7a3af36ddf089809becb5fb13214c5b9979951120a764c86b218045",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_SC_005_V3",
+      "old_semantic_hash": "sha256:8c812dfb1d22fb574c34c6d646843d525bbcd7be43d0ab961a1e7cf84dfee21f",
+      "new_semantic_hash": "sha256:8db08fdaeb6e5cec9e47cca25683b6d3a484f68e613ef4e8eb451514652bee1d",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_SC_006_V3",
+      "old_semantic_hash": "sha256:3c418e11fd90544792dc6c4e85a580bcad94887863a96a87561731344b7bf70e",
+      "new_semantic_hash": "sha256:d2cd3702a08427cab0a4ba81a853da5d95906e040c6f779fcc2722b23b4f3aa8",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_SC_007_V3",
+      "old_semantic_hash": "sha256:12c81cea9fa02655c7e2f4ba6ffef82f5b2e1fd4888d909638f31c8d94ab932a",
+      "new_semantic_hash": "sha256:e1acd230688777a1d94ef48fdabb81b6c63d6a8a74cd32ef694dab533c616951",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_SC_013_V3",
+      "old_semantic_hash": "sha256:6afd6f89ab041448afb1abeedc94b1aac4187c5e91f3d2cdc29b47595d6f347b",
+      "new_semantic_hash": "sha256:7617bb476e4dad268f78ce51a5e7a527d587981e92458026bf8511f71e0b3165",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_SC_015_V3",
+      "old_semantic_hash": "sha256:373ba73276ecd654caab77f95dda3bb5e772906be77f24e7585bb1695c402a4d",
+      "new_semantic_hash": "sha256:25be621a6877c3ddbd8b8e71192674041210dd4e9414b36dc08475f607600f79",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_SC_017_V3",
+      "old_semantic_hash": "sha256:9e562a9dc75941763fe6485331d988df833f6c2136adfcb87170cb7d2fc10052",
+      "new_semantic_hash": "sha256:5443509be674cd0c56f77b6c2f6d5c411fc2c238a7276a8f1a782a13adeef24b",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_SC_018_V3",
+      "old_semantic_hash": "sha256:e128157ec49da17f1e84fbf8ac90620af381a5a81c91dc391b75771b8ad476df",
+      "new_semantic_hash": "sha256:6f3f01dcd187a3e38299e25792146cd086bd6c0e720d9ebffd5ca9c7ca7eef72",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_SC_019_V3",
+      "old_semantic_hash": "sha256:94a04a300482effc252a90b6671f56b36029c028085bee51e334fa885c0cd625",
+      "new_semantic_hash": "sha256:b9e484455927ac0ac01f2a663fd7d898a96b07b1756c981af21a5470eefc1831",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_TF_023_V3",
+      "old_semantic_hash": "sha256:edc4111753f4fa23bcf50b28bc15275f0bf550cf6389d4f3e4f5a10d6f633639",
+      "new_semantic_hash": "sha256:829cd03725224229a2e958ff08daaeebb91862a096104c6aeddfb4c0f58fbb9f",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M5_TF_027_V3",
+      "old_semantic_hash": "sha256:edc4111753f4fa23bcf50b28bc15275f0bf550cf6389d4f3e4f5a10d6f633639",
+      "new_semantic_hash": "sha256:7587be882706800846be9f0edbab53897c289d4c241fb7b886abf96395a06b16",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_DG_027_V3",
+      "old_semantic_hash": "sha256:d88c5338a7e530bab0317a614171587f9ae1a77e0253c96d7e82d8de61fc8cdc",
+      "new_semantic_hash": "sha256:297603dcacbc63c84d3cc494e6c244d93856601aef4329b977556e5a41751ac1",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_DG_030_V3",
+      "old_semantic_hash": "sha256:740300a9ae683e5e5224d8b8f403c56885e5e47724a82e829cd03c144922afb5",
+      "new_semantic_hash": "sha256:0680685921565cd1fbf13ccec23d39833daf259cb8e106c6e208a385f1311970",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_DG_033_V3",
+      "old_semantic_hash": "sha256:ec74d9a1044371269208096d7e5a04acc34c6857d80ab898eec92b2e94937986",
+      "new_semantic_hash": "sha256:e5b10efd0fdf77fbde7258cd8be740291548431a653bd47c3b53ff42b80ce11e",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_034_V3",
+      "old_semantic_hash": "sha256:6f787e5142906fcde57a532adc83df3a12659d9ba5947cdf1cced5ff7e8f94e0",
+      "new_semantic_hash": "sha256:0cc6588df4dc7b20cb54a8047646a4069426c1eb38b1adaf028fd2cda89058dc",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_036_V3",
+      "old_semantic_hash": "sha256:b1171eb7850860df9a63677e195bb3fbfdc5794fdb828354208801cbb4eb2b74",
+      "new_semantic_hash": "sha256:94d45e5ba72f5cd597562404fc4a320685bb7ab87c1e6f168fd0a520199d87de",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_037_V3",
+      "old_semantic_hash": "sha256:3d7b035fcaef4b5793537350ec1fc0b9349fd0b812fc54261ccc3e645ff16b92",
+      "new_semantic_hash": "sha256:342150b34a000402b9eab8481491a6675c5708dd03ac4de6ba1c04af531863b8",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_038_V3",
+      "old_semantic_hash": "sha256:043745bb0d99f017f6ad47575750f0e112605b1287896b7d31fc5883af60323c",
+      "new_semantic_hash": "sha256:971581077e9d437b3941160a6b2faf9dd604333591183c9216390cd483821524",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_039_V3",
+      "old_semantic_hash": "sha256:b5c95325adda346524a8f475e8b4010d3ebf929d2fce2d4bea0c50f79df1dd94",
+      "new_semantic_hash": "sha256:27a0dbfda874d898fbe4faf80a0f0e3d1e41ed273be448b5e6fd354de15a3af9",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_040_V3",
+      "old_semantic_hash": "sha256:04ad18e1cbf3cd284c9f97f1df55de2152933065bb314da1758e6cadfe475495",
+      "new_semantic_hash": "sha256:c3dab70d3bbdf1734327a6be86dfe25768208b23ccf85b8deab959906032f770",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_041_V3",
+      "old_semantic_hash": "sha256:4071d76a02ab2307b762d6a89b4d8796166dce0ac0540d949725a5f8b864d1c6",
+      "new_semantic_hash": "sha256:4b8fd4712b1014746924a75cd86920f5e24c352778dc0c581d1d650d7a2f2701",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_042_V3",
+      "old_semantic_hash": "sha256:65d83e698ceab1a3edd0e006c50fe1e8642e9fbb0849955554fac1e72c91c1ac",
+      "new_semantic_hash": "sha256:027d2c2dbe4d9aa69f1bad63e543bb72a8867532b01e3c9a7ac65bc685cd418b",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_043_V3",
+      "old_semantic_hash": "sha256:8f29fa56b7ee1859ad2721963137d96653176e7cfe70bc87b3ad6cc0271cde58",
+      "new_semantic_hash": "sha256:26b56db72dc117fd463755851542bfd0568319fcc1cc30ca095c8ea54090bdf1",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_044_V3",
+      "old_semantic_hash": "sha256:58e743787cd271aee7b0544a2c1798dba94da73d998d6e717dc9b31a34e56b80",
+      "new_semantic_hash": "sha256:067c2546f55c0f3906246f6598f6a8a98fcaf0476183d5b49f58e2e8688b530b",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_045_V3",
+      "old_semantic_hash": "sha256:fc1703bb0f03ffa1c02ced3af9de50019bcdb1a2c2d4aec941c91fb6593729cf",
+      "new_semantic_hash": "sha256:a62593ccd15ef63ee2285cc5a77e91d4d299301bd8ccd6547bde25e54abb2d91",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_046_V3",
+      "old_semantic_hash": "sha256:309a5997931a6d0101e6a926f760aa30c37cd84bd132b89b71d345e03bb754f8",
+      "new_semantic_hash": "sha256:468444377e9f30b40e92db182f29c6578dc13abb5773f99c730be16a40008faf",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_047_V3",
+      "old_semantic_hash": "sha256:850569ad153b556a734cab37fdb78cff9f60bc7f6b155152d44de4d7df8358a0",
+      "new_semantic_hash": "sha256:88c2c96cd107982e56e6c954112583ad52276859aa660d5045fd04f0a80f4f99",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_OP_048_V3",
+      "old_semantic_hash": "sha256:db3df6e63c5c6ea6b16d7f9eeee03a800c54e29db8696e1fdc663d7b8d16a8c9",
+      "new_semantic_hash": "sha256:4b3514745551c38a092028c6b08bf85b84e1f4510b7690cf13d4549346fdb55d",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_SC_001_V3",
+      "old_semantic_hash": "sha256:1d67ea4492bbec7d8de76dc4dc70c46e53caa1c6f7a91daae0dc1eb2eb9cafe2",
+      "new_semantic_hash": "sha256:5bf377f9438764b8fe89b7e278aaea46da769dc94487bd6a7bbd40694d7a442e",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_SC_002_V3",
+      "old_semantic_hash": "sha256:6fc62410729e2578dcea0cbe2aeb0438a00421299c8755a35fce3d15edcf5c7c",
+      "new_semantic_hash": "sha256:2360ae0e7895d27d6b2ca98c5c15d2b44d1962407122d140e11f061e232b3d7d",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_SC_004_V3",
+      "old_semantic_hash": "sha256:7a69789fdb904223fde8a125403326b33710c0f960c2b832cb46b5dde0bf1dba",
+      "new_semantic_hash": "sha256:b3f312db366caca90f3fcd26b3b4ad22c879514ff13cf9fa252db26c281740de",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_SC_006_V3",
+      "old_semantic_hash": "sha256:1748df673727adabd2285176f77c3a063485ecd31e0f83a46f74328672ea912f",
+      "new_semantic_hash": "sha256:5fa053207e61e6de1a0a38dec71c3c5274fa3269f03835d5ffea77f6f518ceaf",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_SC_010_V3",
+      "old_semantic_hash": "sha256:917afa12ea061f832e0ed41cb5d85c7f148873fbaa471201cd0aa71742c87a61",
+      "new_semantic_hash": "sha256:c89ea2099ceb59aca91ccca464f43e7a0b0a5b775ccfe1ca268832bb9a0121dd",
+      "required_review_tracks": [
+        "CONTENT"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "question_id": "M6_SC_013_V3",
+      "old_semantic_hash": "sha256:c08bb4c8cce2d3092faa2da0e2305f78e69a510e09e2372f75a5bca16e382edf",
+      "new_semantic_hash": "sha256:c1d4750a250b3404fbb2202051e94dbb8f4b7dc8daddc83f148a8587187239c5",
+      "required_review_tracks": [
+        "CONTENT",
+        "SAFETY_TECHNICAL"
+      ],
+      "status": "PENDING"
+    }
+  ],
+  "gate_hash": "sha256:354ee9956a582760e4be05173c99cc62eebb61824d45e3141126c56218512bd6"
+}

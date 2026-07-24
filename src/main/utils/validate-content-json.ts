@@ -222,6 +222,32 @@ export function validateContentJson(
   if (input.rubric_criteria.length === 0) {
     return { ok: false, reason: 'rubric_criteria must be a non-empty array for OFFLINE_OPERATION' }
   }
+  if (input.offline_setup != null) {
+    if (!isRecord(input.offline_setup)) {
+      return { ok: false, reason: 'offline_setup must be an object when provided' }
+    }
+    const offlineSetup = input.offline_setup
+    if (
+      typeof offlineSetup.setup_id !== 'string' ||
+      !/^setup_[a-z0-9_]+$/.test(offlineSetup.setup_id)
+    ) {
+      return { ok: false, reason: 'offline_setup.setup_id must be a stable setup ID' }
+    }
+    for (const field of ['item_ids', 'asset_ids'] as const) {
+      const ids = offlineSetup[field]
+      if (
+        !Array.isArray(ids) ||
+        new Set(ids).size !== ids.length ||
+        !ids.every((id) => typeof id === 'string')
+      ) {
+        return { ok: false, reason: `offline_setup.${field} must be a unique string array` }
+      }
+    }
+    const itemIds = offlineSetup.item_ids
+    if (!Array.isArray(itemIds) || itemIds.length === 0) {
+      return { ok: false, reason: 'offline_setup.item_ids must not be empty' }
+    }
+  }
   const criterionIds = new Set<string>()
   for (let i = 0; i < input.rubric_criteria.length; i++) {
     const criterion = input.rubric_criteria[i]

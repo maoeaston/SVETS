@@ -1,5 +1,7 @@
 [TEMPLATE_ID: damaged-product]
-[VERSION: v1.2.2]
+[VERSION: v1.3.0]
+[CONTRACT: asset-manifest-v0.5.0]
+Compile this template only from the asset manifest fields for the selected asset: description, target_cue, current_question_ids, required_overlay, forbidden_visual_cues, reference_asset_ids, and question_authority.
 
 Photorealistic damaged or abnormal product derived from the approved normal product master.
 Keep package shape, camera angle, lighting, scale, and base color identical to the normal master.

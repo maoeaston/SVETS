@@ -223,6 +223,18 @@ describe('submitOperationScores — TASK_OPERATION M2 阶段与原子性', () =>
         WHERE source_aggregate_id = ? AND result_type = 'OPERATION_PASS_RATE' AND is_current = 1`,
       sessionId
     )).toBe(1)
+    const resultRow = db
+      .prepare(
+        `SELECT strategy_id, strategy_type, module_type
+           FROM result_record
+          WHERE source_aggregate_id = ? AND result_type = 'OPERATION_PASS_RATE' AND is_current = 1`
+      )
+      .get(sessionId) as { strategy_id: string | null; strategy_type: string | null; module_type: string | null }
+    expect(resultRow).toMatchObject({
+      strategy_id: strategyId,
+      strategy_type: 'BASELINE_ASSESSMENT',
+      module_type: null
+    })
     expect(countRows(
       `SELECT COUNT(*) AS n FROM domain_event_projection
         WHERE aggregate_id = ? AND event_type = 'SESSION_COMPLETED'`,

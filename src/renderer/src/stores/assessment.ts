@@ -24,6 +24,8 @@ import type {
   ListSessionsParams,
   EmotionInterruptParams,
   EmotionResumeParams,
+  PauseSittingParams,
+  StartNextSittingParams,
   AbortSessionParams,
   TriggerRedlineParams,
   TriggerRedlineResult,
@@ -319,6 +321,40 @@ export const useAssessmentStore = defineStore('assessment', () => {
     }
   }
 
+  async function pauseSitting(
+    params: PauseSittingParams
+  ): Promise<{ ok: true } | { ok: false; errorCode: AssessmentErrorCode }> {
+    try {
+      const res = await window.api.assessment.pauseSitting(params)
+      if (!res.success) {
+        errorMsg.value = mapError(res.errorCode)
+        return { ok: false, errorCode: res.errorCode }
+      }
+      return { ok: true }
+    } catch (err) {
+      console.error('[assessment store] pauseSitting failed:', err)
+      errorMsg.value = '系统异常'
+      return { ok: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
+    }
+  }
+
+  async function startNextSitting(
+    params: StartNextSittingParams
+  ): Promise<{ ok: true } | { ok: false; errorCode: AssessmentErrorCode }> {
+    try {
+      const res = await window.api.assessment.startNextSitting(params)
+      if (!res.success) {
+        errorMsg.value = mapError(res.errorCode)
+        return { ok: false, errorCode: res.errorCode }
+      }
+      return { ok: true }
+    } catch (err) {
+      console.error('[assessment store] startNextSitting failed:', err)
+      errorMsg.value = '系统异常'
+      return { ok: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
+    }
+  }
+
   async function calculateResult(
     params: CalculateResultParams
   ): Promise<CalculateResultResult> {
@@ -444,6 +480,8 @@ export const useAssessmentStore = defineStore('assessment', () => {
     abortSession,
     triggerRedline,
     emotionResume,
+    pauseSitting,
+    startNextSitting,
     calculateResult,
     clearCurrent,
     mapError,

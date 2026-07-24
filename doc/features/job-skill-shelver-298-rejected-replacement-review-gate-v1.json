@@ -1,0 +1,29 @@
+{
+  "schema_version": "job-skill-shelver-298-rejected-replacement-review-gate-v1",
+  "gate_id": "job-skill-shelver-298-rejected-replacement-review-gate-v1",
+  "status": "PENDING_REPLACEMENT_REVIEW",
+  "generated_at": "2026-07-21T10:30:00+08:00",
+  "candidate_set": {
+    "path": "doc/features/job-skill-shelver-298-rejected-replacement-candidates-v2.json",
+    "candidate_set_hash": "sha256:28a1d072fb81ed85dd3ee923f40c04a569a2b18248f1092684bf2faef2bd34ab"
+  },
+  "required_review_tracks": [
+    "CONTENT",
+    "SAFETY_TECHNICAL"
+  ],
+  "merge_rule": "Each replacement V2 must pass content and safety-technical review before any separate authority amendment. Original V1 questions remain REJECTED.",
+  "summary": {
+    "total": 11,
+    "pending": 11,
+    "passed": 0,
+    "returned": 0
+  },
+  "boundaries": {
+    "existing_287_unchanged": true,
+    "rejected_originals_11_unchanged": true,
+    "phase4_authority_unchanged": true,
+    "runtime_database_unchanged": true,
+    "activation_sql_not_generated": true
+  },
+  "gate_hash": "sha256:2d2b002946fc201839cbc8565471e7825eab729898f814ca1e5b904d4ca0c884"
+}

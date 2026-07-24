@@ -257,12 +257,42 @@ export interface EmotionInterruptParams {
   reason?: string | null
 }
 
-// --- emotionResume（TEACHER 恢复，impl.md Step 7）---
+// --- emotionResume（学生或教师恢复，impl.md Step 7）---
 export interface EmotionResumeParams {
   callerUserId: string
   callerRole: string
   sessionId: string
   resumeFromQuestionOrder?: number | null
+}
+
+// --- pause / next sitting（TEACHER）---
+export interface PauseSittingParams {
+  callerUserId: string
+  callerRole: string
+  sessionId: string
+  currentQuestionOrder?: number | null
+}
+
+export interface StartNextSittingParams {
+  callerUserId: string
+  callerRole: string
+  sessionId: string
+}
+
+export interface SittingTransitionSuccess {
+  success: true
+  sittingNo: number
+}
+
+export interface RecordEmotionCollapseParams {
+  callerUserId: string
+  callerRole: string
+  sessionId: string
+  currentQuestionOrder?: number | null
+}
+
+export interface RecordEmotionCollapseSuccess extends SittingTransitionSuccess {
+  thresholdReached: boolean
 }
 
 // --- abortSession（TEACHER）---
@@ -278,8 +308,8 @@ export interface TriggerRedlineParams {
   callerUserId: string
   callerRole: string
   sessionId: string
-  reasonCode: string
-  contextPhase: string
+  reasonCode?: string
+  contextPhase?: string
 }
 
 export interface TriggerRedlineSuccess {
@@ -311,6 +341,9 @@ export type StartSessionResult = StartSessionSuccess | AssessmentOpError
 export type ListMySessionsResult = ListMySessionsSuccess | AssessmentOpError
 export type EmotionInterruptResult = { success: true } | AssessmentOpError
 export type EmotionResumeResult = { success: true } | AssessmentOpError
+export type PauseSittingResult = SittingTransitionSuccess | AssessmentOpError
+export type StartNextSittingResult = SittingTransitionSuccess | AssessmentOpError
+export type RecordEmotionCollapseResult = RecordEmotionCollapseSuccess | AssessmentOpError
 export type AbortSessionResult = { success: true } | AssessmentOpError
 export type TriggerRedlineResult = TriggerRedlineSuccess | AssessmentOpError
 export type CalculateResultResult = CalculateResultSuccess | AssessmentOpError

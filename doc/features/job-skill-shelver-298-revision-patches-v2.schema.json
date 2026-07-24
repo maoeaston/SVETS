@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Job Skill Shelver 298 Targeted Revision Patches V2",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "patch_set_id",
+    "status",
+    "summary",
+    "preserved_v2_without_semantic_change",
+    "patches",
+    "patch_set_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "job-skill-shelver-298-revision-patches-v2"
+    },
+    "patch_set_id": {
+      "type": "string"
+    },
+    "status": {
+      "const": "LOCKED_INPUT_TO_V3_GENERATION"
+    },
+    "summary": {
+      "type": "object"
+    },
+    "preserved_v2_without_semantic_change": {
+      "type": "array",
+      "minItems": 66,
+      "maxItems": 66
+    },
+    "patches": {
+      "type": "array",
+      "minItems": 145,
+      "maxItems": 145,
+      "items": {
+        "type": "object",
+        "required": [
+          "patch_id",
+          "base_question_id",
+          "old_semantic_hash",
+          "operations",
+          "patch_record_hash"
+        ]
+      }
+    },
+    "patch_set_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  }
+}

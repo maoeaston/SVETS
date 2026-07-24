@@ -21,6 +21,9 @@
 --   2. delegated_access_grant and business_session_assignment are now part of the full baseline.
 --   3. D1 enforces the full delivery_phase forward-only state machine.
 --   4. D9-D11 enforce grant self-consistency, assignment-grant consistency, and active assignment grant status.
+-- F6 patch notes (scoring framework — score scope contract):
+--   1. offline_score_record.score_scope no longer defaults to OFFLINE_ABILITY;
+--      every scoring writer must pass an explicit scope.
 -- v0.1.14 patch notes (multi-device M2 — business session foundation):
 --   Ref: doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md §7.5 D2-D6/D8
 --   1. business_session parent table is now enforced for assessment/training child sessions.
@@ -362,6 +365,9 @@ CREATE TABLE IF NOT EXISTS asset_resource (
                            'REPORT_FILE',
                            'VOICE_PROMPT',
                            'UI_ASSET',
+                           'ROLE_PLAY_SCRIPT',
+                           'SEALED_ADMIN_CONFIG',
+                           'OFFLINE_SETUP_GUIDE',
                            'DATA_SNAPSHOT',
                            'OTHER'
                          )),
@@ -604,6 +610,34 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_assessment_one_open_session_per_student_tas
 CREATE INDEX IF NOT EXISTS idx_assessment_session_last_event
   ON assessment_session(last_applied_event_id);
 
+-- F4：坐次是 assessment_session 内一次连续施测的可追溯单位。
+CREATE TABLE IF NOT EXISTS assessment_sitting (
+  sitting_id              TEXT PRIMARY KEY,
+  session_id              TEXT NOT NULL REFERENCES assessment_session(session_id) ON DELETE RESTRICT,
+  sitting_no              INTEGER NOT NULL CHECK (sitting_no >= 1),
+  started_at              TEXT NOT NULL,
+  started_by              TEXT NOT NULL REFERENCES user_account(user_id),
+  ended_at                TEXT,
+  ended_by                TEXT REFERENCES user_account(user_id),
+  end_reason              TEXT CHECK (end_reason IS NULL OR end_reason IN (
+                           'COMPLETED_NORMALLY', 'PAUSED_BY_PLAN', 'ENDED_BY_COLLAPSE'
+                         )),
+  current_question_order  INTEGER CHECK (current_question_order IS NULL OR current_question_order >= 1),
+  started_event_id        TEXT NOT NULL UNIQUE REFERENCES domain_event_projection(event_id),
+  ended_event_id          TEXT UNIQUE REFERENCES domain_event_projection(event_id),
+  created_at              TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at              TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (session_id, sitting_no),
+  CHECK ((ended_at IS NULL AND ended_by IS NULL AND end_reason IS NULL AND ended_event_id IS NULL)
+      OR (ended_at IS NOT NULL AND ended_by IS NOT NULL AND end_reason IS NOT NULL AND ended_event_id IS NOT NULL))
+);
+
+CREATE INDEX IF NOT EXISTS idx_assessment_sitting_session_order
+  ON assessment_sitting(session_id, sitting_no);
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_assessment_one_open_sitting
+  ON assessment_sitting(session_id) WHERE ended_at IS NULL;
+
 CREATE UNIQUE INDEX IF NOT EXISTS ux_assessment_business_session
   ON assessment_session(business_session_id);
 
@@ -715,7 +749,7 @@ CREATE TABLE IF NOT EXISTS offline_score_record (
   offline_score_id          TEXT PRIMARY KEY,
   session_id                TEXT NOT NULL REFERENCES assessment_session(session_id) ON DELETE RESTRICT,
   question_id               TEXT REFERENCES question_bank(question_id),
-  score_scope               TEXT NOT NULL DEFAULT 'OFFLINE_ABILITY' CHECK (score_scope IN (
+  score_scope               TEXT NOT NULL CHECK (score_scope IN (
                               'OFFLINE_ABILITY',
                               'JOB_SKILL',
                               'TASK_OPERATION',
@@ -879,7 +913,9 @@ BEGIN
       RAISE(ABORT, 'OFFLINE_SCORING can only advance to OBSERVATION or READY_TO_FINALIZE')
     WHEN OLD.delivery_phase = 'ONLINE_COMPLETED' AND NEW.delivery_phase <> 'OFFLINE_SCORING' THEN
       RAISE(ABORT, 'ONLINE_COMPLETED can only advance to OFFLINE_SCORING')
-    WHEN OLD.delivery_phase = 'ONLINE_IN_PROGRESS' AND NEW.delivery_phase <> 'ONLINE_COMPLETED' THEN
+    WHEN OLD.delivery_phase = 'ONLINE_IN_PROGRESS'
+      AND NEW.delivery_phase <> 'ONLINE_COMPLETED'
+      AND NOT (NEW.delivery_phase = 'FINALIZED' AND NEW.status = 'COMPLETED') THEN
       RAISE(ABORT, 'ONLINE_IN_PROGRESS can only advance to ONLINE_COMPLETED')
     WHEN OLD.delivery_phase = 'STUDENT_CONFIRMED' AND NEW.delivery_phase <> 'ONLINE_IN_PROGRESS' THEN
       RAISE(ABORT, 'STUDENT_CONFIRMED can only advance to ONLINE_IN_PROGRESS')
@@ -2171,6 +2207,21 @@ INSERT OR IGNORE INTO schema_migration (
   '2026-07-15_mvp_schema_v0_1_15_multi_device_m3_grant_assignment',
   '0.1.15-multi-device-m3-grant-assignment',
   'M3: grant assignment tables and delivery phase forward-only guards'
+),
+(
+  '2026-07-20_job_skill_phase4_asset_roles',
+  '0.1.15-multi-device-m3-grant-assignment',
+  'Job skill phase 4: add role-play, sealed-admin and offline-setup asset roles'
+),
+(
+  '2026-07-23_f4_assessment_sitting',
+  '0.1.15-multi-device-m3-grant-assignment',
+  'F4: assessment sitting projection for pause, resume and collapse history'
+),
+(
+  '2026-07-24_f6_offline_score_scope_required',
+  '0.1.15-multi-device-m3-grant-assignment',
+  'F6: require explicit offline_score_record.score_scope'
 );
 
 -- ============================================================================

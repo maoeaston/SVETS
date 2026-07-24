@@ -1,0 +1,1370 @@
+{
+  "result_package_id": "job-skill-shelver-298-targeted-v3-content-rereview-result-chen-xiaoqing-v2",
+  "source_package_id": "job-skill-shelver-298-targeted-v3-content-rereview-packet-v1",
+  "candidate_set_hash": "sha256:709df136bcbfe6c64dbc9b63d9cdeccc8a2e3925def1158ee6c73cb7db627c4b",
+  "reviewer": "陈晓青",
+  "review_track": "CONTENT",
+  "review_date": "2026-07-20",
+  "review_scope": {
+    "included": {
+      "SINGLE_CHOICE": "审核题干、选项与唯一答案",
+      "TRUE_FALSE": "审核判断标准与安全边界；不以现有视频脚本或素材状态作为退回理由，视频按阶段二锁定答案反推脚本",
+      "DRAG": "审核行为描述及符合规范/不符合规范的唯一映射",
+      "OFFLINE_OPERATION": "审核逐题rubric、0/1/2分锚点与安全停止条件"
+    },
+    "excluded_as_return_reasons": [
+      "media_asset_id是否已填写",
+      "图片或视频文件是否已生产",
+      "工具编号、setup ID、文件路径和hash",
+      "角色脚本文件是否已落盘",
+      "66道保留V2的纯图片、视频绑定题"
+    ]
+  },
+  "count_reconciliation": {
+    "source_package_total": 144,
+    "requested_counts": {
+      "SINGLE_CHOICE": 34,
+      "TRUE_FALSE": 12,
+      "DRAG": 16,
+      "OFFLINE_OPERATION": 83,
+      "sum": 145
+    },
+    "actual_counts_in_source_package": {
+      "SINGLE_CHOICE": 34,
+      "TRUE_FALSE": 12,
+      "DRAG": 15,
+      "OFFLINE_OPERATION": 83,
+      "sum": 144
+    },
+    "note": "用户清单写16道拖拽题，但源复审包实际只有15道；本结果按源包144道、其中15道拖拽题审核，未虚构第16题。"
+  },
+  "allowed_conclusions": [
+    "通过",
+    "退回复修"
+  ],
+  "summary": {
+    "total": 144,
+    "passed": 8,
+    "returned_for_revision": 136,
+    "by_question_type": {
+      "SINGLE_CHOICE": {
+        "total": 34,
+        "passed": 4,
+        "returned_for_revision": 30
+      },
+      "TRUE_FALSE": {
+        "total": 12,
+        "passed": 4,
+        "returned_for_revision": 8
+      },
+      "DRAG": {
+        "total": 15,
+        "passed": 0,
+        "returned_for_revision": 15
+      },
+      "OFFLINE_OPERATION": {
+        "total": 83,
+        "passed": 0,
+        "returned_for_revision": 83
+      }
+    }
+  },
+  "results": [
+    {
+      "question_id": "M1_DG_028_V3",
+      "previous_question_id": "M1_DG_028_V2",
+      "source_question_id": "M1_DG_028",
+      "question_type": "DRAG",
+      "candidate_record_hash": "sha256:c5ec5a9a091ea603e7a5c09e4da29debb4af841819b61420547bd09d55a6cbad",
+      "review_conclusion": "退回复修",
+      "review_note": "拖拽项不是学生在超市情境中可以观察或选择的具体行为，而是把审核意见直接当成题目内容。“符合规范”项写为：“应增加冷链区并修正映射，或改用常温饮料。”；“不符合规范”项写为：“忽略上述岗位要求，直接沿用原题指出的不规范做法”。后者直接出现“忽略”“不规范”等答案提示，映射虽形式唯一但属于明显泄题。需重写为两条自然、具体、表面中性的岗位行为，再分别映射到符合规范/不符合规范。"
+    },
+    {
+      "question_id": "M1_DG_029_V3",
+      "previous_question_id": "M1_DG_029_V2",
+      "source_question_id": "M1_DG_029",
+      "question_type": "DRAG",
+      "candidate_record_hash": "sha256:d5cababaf8d6e0055f8a8c229716d789bde4c5934c69f8a6fd8a37bc36961a64",
+      "review_conclusion": "退回复修",
+      "review_note": "拖拽项不是学生在超市情境中可以观察或选择的具体行为，而是把审核意见直接当成题目内容。“符合规范”项写为：“应改为考查竖直放稳、不超边并按门店排面归位，或补充明确货架条件。”；“不符合规范”项写为：“忽略上述岗位要求，直接沿用原题指出的不规范做法”。后者直接出现“忽略”“不规范”等答案提示，映射虽形式唯一但属于明显泄题。需重写为两条自然、具体、表面中性的岗位行为，再分别映射到符合规范/不符合规范。"
+    },
+    {
+      "question_id": "M1_DG_032_V3",
+      "previous_question_id": "M1_DG_032_V2",
+      "source_question_id": "M1_DG_032",
+      "question_type": "DRAG",
+      "candidate_record_hash": "sha256:a739acdaf613e0f5a02efadae7cc11914eca980bd2ee344abdaef06eb67dcddd",
+      "review_conclusion": "退回复修",
+      "review_note": "拖拽项不是学生在超市情境中可以观察或选择的具体行为，而是把审核意见直接当成题目内容。“符合规范”项写为：“应补充无污染、无漏气、无异常鼓胀并符合门店标准的边界。”；“不符合规范”项写为：“忽略上述岗位要求，直接沿用原题指出的不规范做法”。后者直接出现“忽略”“不规范”等答案提示，映射虽形式唯一但属于明显泄题。需重写为两条自然、具体、表面中性的岗位行为，再分别映射到符合规范/不符合规范。"
+    },
+    {
+      "question_id": "M1_OP_034_V3",
+      "previous_question_id": "M1_OP_034_V2",
+      "source_question_id": "M1_OP_034",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:98c26ecf01a6931673ec4217e3e421b790c0389afa9608a120abce83632e0c9e",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“5”，rubric列出2项可观察指标（价签放在对应商品正下方；无错配（品名与价签一一对应）），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M1_OP_035_V3",
+      "previous_question_id": "M1_OP_035_V2",
+      "source_question_id": "M1_OP_035",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:1b8bb0f18275d7317cfdb2ef76278e2b977174b0973135f8ebb710f3cc54c4bf",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“3”，rubric列出2项可观察指标（3件商品全部扶正；扶正后正面朝外），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M1_OP_036_V3",
+      "previous_question_id": "M1_OP_036_V2",
+      "source_question_id": "M1_OP_036",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:6a5d60ad8846bb4dfd3409ad95d7ea396e274ee30dc2eda6346f16e610e58834",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出2项可观察指标（找到被遮挡的价签；移开商品使价签完全可见），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M1_OP_037_V3",
+      "previous_question_id": "M1_OP_037_V2",
+      "source_question_id": "M1_OP_037",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:5c9977cac5787b7943d74f27186ad486be8c6c70e4dd63537323769f9e513ed1",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出1项可观察指标（商品从左到右依次由大到小），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“按商品大小从左到右排序不是通用Facing或排面规则，应改为按价签/排面图归位并保持同SKU成面。”，需改写为学员实际应做的步骤或判定条件。 题干仍要求按大小从左到右排列，与按排面图、SKU和价签归位的真实陈列规则冲突。"
+    },
+    {
+      "question_id": "M1_OP_038_V3",
+      "previous_question_id": "M1_OP_038_V2",
+      "source_question_id": "M1_OP_038",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:d518bd5eb3495e118a64748070927850db3278dbdbb68152b5dee83c1e271e0a",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出1项可观察指标（层板上无明显杂物和污渍），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“应完整执行并核验：移货、隔离、清洁、干燥、复位和复查步骤。”，需改写为学员实际应做的步骤或判定条件。 “移货、隔离、清洁、干燥、复位、复查”仍作为审核句子附在rubric中，尚未拆成可逐项评分的动作；安全停止条件也在描述题目缺口，而非直接规定何时停止。"
+    },
+    {
+      "question_id": "M1_OP_039_V3",
+      "previous_question_id": "M1_OP_039_V2",
+      "source_question_id": "M1_OP_039",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:baca742bad37165ec873a58c9397a9c0e2524e08e29d9bec7c397073ea366c39",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出2项可观察指标（找到错位价签；放回对应商品正下方），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“应先核对条码、品名、规格和价格，再按权限归位或上报。”，需改写为学员实际应做的步骤或判定条件。 题干仍要求直接把价签放回，未把核对条码、品名、规格、价格及按权限归位/上报写入任务步骤。"
+    },
+    {
+      "question_id": "M1_OP_040_V3",
+      "previous_question_id": "M1_OP_040_V2",
+      "source_question_id": "M1_OP_040",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:f95b56fb167d914c3a95f77d8c05a0e373d60052d109ac6c07bf536f8efcda6e",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“6”，rubric列出3项可观察指标（重物（大桶水等）放下层；轻小件放上层；无严重错层），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M1_OP_041_V3",
+      "previous_question_id": "M1_OP_041_V2",
+      "source_question_id": "M1_OP_041",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:f83462a7bed57cd59ea4fa6a8c2041ec97b6e7558902014b55d9ab8c19068e8a",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“2”，rubric列出2项可观察指标（2件商品补入对应空位；商品与价签对应），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M1_OP_043_V3",
+      "previous_question_id": "M1_OP_043_V2",
+      "source_question_id": "M1_OP_043",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:6a5c56c018c188a633103f4149c89be4cc6788696a4ee47241c7579847aecc45",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“8”，rubric列出2项可观察指标（商品位置与示例图一致；价签与商品一一对应），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M1_OP_044_V3",
+      "previous_question_id": "M1_OP_044_V2",
+      "source_question_id": "M1_OP_044",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:78962acdb569f98eb1f00ce052e832ebee743c7c6e42432d83497d4e096db077",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出3项可观察指标（同类商品归拢到一起；同类内从大到小排列；商品正面朝外），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：““同类内从大到小”不是通用门店标准，应以SKU、规格价签和排面图为准。”，需改写为学员实际应做的步骤或判定条件。 题干仍保留“同类内从大到小”，与按排面图、SKU和规格价签整理的真实规则冲突。"
+    },
+    {
+      "question_id": "M1_OP_045_V3",
+      "previous_question_id": "M1_OP_045_V2",
+      "source_question_id": "M1_OP_045",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:7f5e1d6de03e26c15f2c4cd556950358f31986d02e8ed69f09639f64e05b4391",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“3”，rubric列出2项可观察指标（找出全部3处问题；逐一修正所有问题），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M1_OP_046_V3",
+      "previous_question_id": "M1_OP_046_V2",
+      "source_question_id": "M1_OP_046",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:047897a0d5dbda0c8ef99ed2bd9eadb47cc662ab580014b8794e76a113b13b4d",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“4”，rubric列出2项可观察指标（4件新品全部放入货架；原有商品和价签未被遮挡或移位），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“应明确同款/不同款、旧货移出、新货后置及价签对应。”，需改写为学员实际应做的步骤或判定条件。 新品是否为同款、是否已有货位与价签、旧货是否前置和新品是否后置均未写入题干，FIFO答案仍不唯一。"
+    },
+    {
+      "question_id": "M1_OP_047_V3",
+      "previous_question_id": "M1_OP_047_V2",
+      "source_question_id": "M1_OP_047",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:cb5a89413a3020e4a51054b6e7b7c0929c4bface4ca002e08ea93d6a7728cee5",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出4项可观察指标（第1步：清理杂物完成；第2步：商品扶正规整；第3步：价签核对（挪开遮挡、发现错价）；第4步：整体复查无遗漏），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M1_SC_005_V3",
+      "previous_question_id": "M1_SC_005_V2",
+      "source_question_id": "M1_SC_005",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:f80ba184a8ee3383b400d9ed222cb416049218d327509618adff3aa049b4b08c",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“应先核对系统价、隔离错误价签并按门店权限补打/更换，是否停售由门店规则或负责人决定。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M1_SC_012_V3",
+      "previous_question_id": "M1_SC_012_V2",
+      "source_question_id": "M1_SC_012",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:941ff5f23cdd478a88ae777f8cc3396433fe6244916d5cbcdcff65ca3e1d891e",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“玻璃瓶饮料固定放中层”不是通用陈列规则，实际应优先服从门店排面图、层板承重和防跌落要求。题目应改为考查“竖直放稳、不叠放、不超边、按排面和承重要求摆放”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M1_TF_025_V3",
+      "previous_question_id": "M1_TF_025_V2",
+      "source_question_id": "M1_TF_025",
+      "question_type": "TRUE_FALSE",
+      "candidate_record_hash": "sha256:4ca9162c1b84257d90994254b82d0bf9e42c722728e40c85c71b1dbd0e203790",
+      "review_conclusion": "退回复修",
+      "review_note": "判断题题干仍夹有“应统一为……”的改题说明，不是自然的学生题干；同时“小件糖果应以排面图和价签为准”的判断标准应直接写成完整门店规则，不能把审核意见嵌入判断标准。"
+    },
+    {
+      "question_id": "M2_DG_026_V3",
+      "previous_question_id": "M2_DG_026_V2",
+      "source_question_id": "M2_DG_026",
+      "question_type": "DRAG",
+      "candidate_record_hash": "sha256:18b78517dcd0a79d0b17e680eb7f4934cc94e354246869af4db388c9ab1dfca6",
+      "review_conclusion": "退回复修",
+      "review_note": "拖拽项不是学生在超市情境中可以观察或选择的具体行为，而是把审核意见直接当成题目内容。“符合规范”项写为：“把“褶皱但封口完好品”直接判为可补货过于绝对，应补充门店外观验收边界和异常复核条件”；“不符合规范”项写为：“忽略上述岗位要求，直接沿用原题指出的不规范做法”。后者直接出现“忽略”“不规范”等答案提示，映射虽形式唯一但属于明显泄题。需重写为两条自然、具体、表面中性的岗位行为，再分别映射到符合规范/不符合规范。"
+    },
+    {
+      "question_id": "M2_OP_028_V3",
+      "previous_question_id": "M2_OP_028_V2",
+      "source_question_id": "M2_OP_028",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:b317c15a0ea2bfaa3861dfe96049b581087370dd88038ca0c6408ece19b42c39",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出2项可观察指标（找出破损商品；放入问题商品区），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 本题已标为安全敏感，但没有写明触发立即停止、隔离和上报的具体行为或现场条件，安全停止边界仍未闭环。"
+    },
+    {
+      "question_id": "M2_OP_029_V3",
+      "previous_question_id": "M2_OP_029_V2",
+      "source_question_id": "M2_OP_029",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:4411ababfb88b322ac80d85ed2c988d291f71116660d882f8fa1bb3dc95cbd7a",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“5”，rubric列出2项可观察指标（新商品放后排；旧商品（日期早）保留在前排），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M2_OP_030_V3",
+      "previous_question_id": "M2_OP_030_V2",
+      "source_question_id": "M2_OP_030",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:72d3eefbbd8d4d3bfebeacd8c183a5446e32970db1f67fef08965d634db8c3b1",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出2项可观察指标（纸箱折叠压扁；放到指定回收位置），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M2_OP_031_V3",
+      "previous_question_id": "M2_OP_031_V2",
+      "source_question_id": "M2_OP_031",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:145363dd23ea44d2cedacc1616bf733740c9eba61c7bfab04d55934f0b6908a8",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“2”，rubric列出2项可观察指标（找出日期最早的2件；将其移至前排），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M2_OP_032_V3",
+      "previous_question_id": "M2_OP_032_V2",
+      "source_question_id": "M2_OP_032",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:f16a13715235657a7b16dd9776e7b7780abcdd1a2c5974b9fa0e7613188806fc",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“3”，rubric列出2项可观察指标（3件新品放入对应空位；商品与价签对应），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M2_OP_033_V3",
+      "previous_question_id": "M2_OP_033_V2",
+      "source_question_id": "M2_OP_033",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:b2b17b5e4d300d44dd9c2d20fb494e95b1a132b39470df02c2dd7c888f2371b2",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“5”，rubric列出2项可观察指标（按从后往前顺序摆放；下层先于上层），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“应删除固定方向或改为门店明确SOP。”，需改写为学员实际应做的步骤或判定条件。 “从后往前、从下往上”不是跨门店通用补货顺序，题干未声明这是本门店明确SOP。"
+    },
+    {
+      "question_id": "M2_OP_034_V3",
+      "previous_question_id": "M2_OP_034_V2",
+      "source_question_id": "M2_OP_034",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:92e163b30f695d2f06d99894057d7845919896b03e83a6a619b610499d861b3b",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出2项可观察指标（找出真破损品并放入问题区；褶皱封口完好品判定为可上架（不误放入问题区）），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M2_OP_035_V3",
+      "previous_question_id": "M2_OP_035_V2",
+      "source_question_id": "M2_OP_035",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:dfcf578178a980cf09dae6ce1432fee74fb66a768ec6b187e38b04b75793a9f9",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出3项可观察指标（逐件清点数量；与送货单比对；发现并指出数量不符（预埋差错检出）），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M2_OP_036_V3",
+      "previous_question_id": "M2_OP_036_V2",
+      "source_question_id": "M2_OP_036",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:6fc7535951675917931245c1a96adcb0afaead75265eb13b9cc0a27fb23b1d7d",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出2项可观察指标（旧货移至前排；新货放入后排），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M2_OP_037_V3",
+      "previous_question_id": "M2_OP_037_V2",
+      "source_question_id": "M2_OP_037",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:e15bd66ba31acd5228458f63a379c5db81dd764c0eab386db6af8a7e1f199976",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“5”，rubric列出5项可观察指标（第1步：检查外箱完好；第2步：安全拆箱；第3步：逐件检查日期完好度；第4步：按FIFO上架；第5步：空箱折叠回收），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“线下材料不足以执行评分锚点中的“安全拆箱”；需明确安全刀具、切割方向、刀刃伸出长度、手部位置和空箱处置。”，需改写为学员实际应做的步骤或判定条件。 安全拆箱步骤未把开箱工具使用方法、切割方向、手部位置和刀刃控制拆成可评分动作。"
+    },
+    {
+      "question_id": "M2_OP_038_V3",
+      "previous_question_id": "M2_OP_038_V2",
+      "source_question_id": "M2_OP_038",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:84d925dcd3141c18935c5341d7df1fc6539947d5f87f4fe1f2052ad06516f90b",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“8”，rubric列出1项可观察指标（8件商品按日期从早（前排）到晚（后排）排列正确），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M2_OP_039_V3",
+      "previous_question_id": "M2_OP_039_V2",
+      "source_question_id": "M2_OP_039",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:0172507d5fba68b53e03de971a8c5f585204e7bbf42c1abaaf4d93a541d243c5",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“6”，rubric列出3项可观察指标（正常商品放绿区；破损商品放红区；临期商品放黄区（临期专区）），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“应在题干明确“按本门店模拟规则：剩余≤15天”。”，需改写为学员实际应做的步骤或判定条件。 本题已标为安全敏感，但没有写明触发立即停止、隔离和上报的具体行为或现场条件，安全停止边界仍未闭环。 临期区判定未在题干中声明本门店模拟阈值，三个区域的唯一分类标准仍不完整。"
+    },
+    {
+      "question_id": "M2_OP_040_V3",
+      "previous_question_id": "M2_OP_040_V2",
+      "source_question_id": "M2_OP_040",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:c348285807f0325b46a9f6fec7ab52a70c524ad278bc5c753a468a7e528d6d9b",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“5”，rubric列出5项可观察指标（核对商品与送货单数量；检查商品完好度；发现异常停止收货上报；入库登记；签字确认（向评估员扮演的负责人）），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“应完整执行并核验：异常分支和签收权限说明；发现异常后不能继续入库签收，且应明确由谁签字、学员是提交还是签署。”，需改写为学员实际应做的步骤或判定条件。 发现异常后的停收分支与无异常后的登记签收分支仍写在同一流程中，未说明本轮是否预置异常及由谁拥有签收权限。"
+    },
+    {
+      "question_id": "M2_OP_041_V3",
+      "previous_question_id": "M2_OP_041_V2",
+      "source_question_id": "M2_OP_041",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:ca69e95f6d0cf53b373039d82a2f5a26677e673b28e55249cfb416e77daa659e",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“10”，rubric列出2项可观察指标（10件商品全部按日期早→晚从前排到后排排列正确；中断后能接续不重排（单独编码，不扣分）），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M2_SC_001_V3",
+      "previous_question_id": "M2_SC_001_V2",
+      "source_question_id": "M2_SC_001",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:47c75f1151660960399ee334bcebab2d02b53710efa5b8cbdfbeb718c77c21d8",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“题目问“拆箱补货第一步”，候选答案却直接检查箱内商品；在未开箱前应先检查外箱、箱唛/补货单和作业环境，再安全开箱。当前题干、选项与M2拆箱流程不一致。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M2_SC_007_V3",
+      "previous_question_id": "M2_SC_007_V2",
+      "source_question_id": "M2_SC_007",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:ee76166f9f3b1bb5a2d02a6f2c2179b6b5b81f591e45e3ec751927572a86666d",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“拆箱补货”与“收货核单”混在一起。门店前场从库房补货未必持送货单；若考查收货应明确单据，若考查补货应核对补货单/品名数量及破损效期”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M2_TF_018_V3",
+      "previous_question_id": "M2_TF_018_V2",
+      "source_question_id": "M2_TF_018",
+      "question_type": "TRUE_FALSE",
+      "candidate_record_hash": "sha256:11daa6a07ac06e019b246922ec1b57585dd8a2cd85b317697bb7d51f89aa16c5",
+      "review_conclusion": "退回复修",
+      "review_note": "“符合门店外观标准”没有给出可观察边界，仅凭“褶皱、封口完好”仍可能出现两种合理判断。需明确无污染、无漏气、无异常鼓胀以及是否需要复核，形成唯一判断标准。"
+    },
+    {
+      "question_id": "M2_TF_022_V3",
+      "previous_question_id": "M2_TF_022_V2",
+      "source_question_id": "M2_TF_022",
+      "question_type": "TRUE_FALSE",
+      "candidate_record_hash": "sha256:f5845232156e21b2da949088872525f825f503cacdde309b486f6ae7d565e828",
+      "review_conclusion": "退回复修",
+      "review_note": "题干仍包含“应统一为……”和“应改为……”等改题说明。需直接写成学生可理解的判断标准，例如只能使用易开结构或门店批准的安全开箱工具，不得把审核指令作为题干内容。"
+    },
+    {
+      "question_id": "M3_DG_038_V3",
+      "previous_question_id": "M3_DG_038_V2",
+      "source_question_id": "M3_DG_038",
+      "question_type": "DRAG",
+      "candidate_record_hash": "sha256:f21e09c08f724b23ee8bed3ca4dea65f79b5db8693b56b7e64c35c7e2de1e15f",
+      "review_conclusion": "退回复修",
+      "review_note": "拖拽项不是学生在超市情境中可以观察或选择的具体行为，而是把审核意见直接当成题目内容。“符合规范”项写为：“褶皱封口完好=正常”和“胀袋奶粉=报损”均需同款正常样或更明确异常特征；否则图片/文字难以稳定区分”；“不符合规范”项写为：“忽略上述岗位要求，直接沿用原题指出的不规范做法”。后者直接出现“忽略”“不规范”等答案提示，映射虽形式唯一但属于明显泄题。需重写为两条自然、具体、表面中性的岗位行为，再分别映射到符合规范/不符合规范。"
+    },
+    {
+      "question_id": "M3_DG_041_V3",
+      "previous_question_id": "M3_DG_041_V2",
+      "source_question_id": "M3_DG_041",
+      "question_type": "DRAG",
+      "candidate_record_hash": "sha256:7b29a955cbd7f8c38a90c0c8fc534a4a9d6a9044dc64e21fca21ea4968401a5e",
+      "review_conclusion": "退回复修",
+      "review_note": "拖拽项不是学生在超市情境中可以观察或选择的具体行为，而是把审核意见直接当成题目内容。“符合规范”项写为：“应完整执行并核验：隔离、登记、上报和授权处置，且理货员通常无权直接完成报损。”；“不符合规范”项写为：“忽略上述岗位要求，直接沿用原题指出的不规范做法”。后者直接出现“忽略”“不规范”等答案提示，映射虽形式唯一但属于明显泄题。需重写为两条自然、具体、表面中性的岗位行为，再分别映射到符合规范/不符合规范。"
+    },
+    {
+      "question_id": "M3_OP_044_V3",
+      "previous_question_id": "M3_OP_044_V2",
+      "source_question_id": "M3_OP_044",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:7a3079e539a990e8a6f5185e76008afb7dccb9ee531d715a9ad4e887ffa4cec1",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“6”，rubric列出1项可观察指标（6件商品全部按到期日从早到晚排列正确），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M3_OP_045_V3",
+      "previous_question_id": "M3_OP_045_V2",
+      "source_question_id": "M3_OP_045",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:d6492452e014b7aabd6c5f1b55b757c03b97236f4c8a177fcafd698261aba8b8",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“10、15”，rubric列出2项可观察指标（全部临期商品找出（无漏检）；临期商品移入临期专区），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“临期阈值固定为15天但未声明为本门店模拟规则；不同商品、供应商和门店阈值不同。”，需改写为学员实际应做的步骤或判定条件。 “不足15天”未明确为本门店模拟规则，无法作为所有商品通用临期阈值。"
+    },
+    {
+      "question_id": "M3_OP_046_V3",
+      "previous_question_id": "M3_OP_046_V2",
+      "source_question_id": "M3_OP_046",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:e2f599d4b1b11c9b6cdcf75404216c7dd4e194bb538cab70246b8a73f8349184",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“5”，rubric列出4项可观察指标（正常品放正常区；临期品（还有9天）放临期区；破损品和过期品放报损区；褶皱封口完好品判定为正常可上架（R9边界判据）），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“正常/临期/报损分类依赖未声明的固定临期阈值，且破损和过期不应直接等同于已批准报损。”，需改写为学员实际应做的步骤或判定条件。 临期阈值未声明；破损品、过期品也不能未经授权直接等同于已批准报损。"
+    },
+    {
+      "question_id": "M3_OP_047_V3",
+      "previous_question_id": "M3_OP_047_V2",
+      "source_question_id": "M3_OP_047",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:91aea6661cc187b9e203df9b46d1b2eaf7d5399188db23bef3bd1a32dd1f7e6b",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“3”，rubric列出2项可观察指标（3件商品剩余天数计算结果正确；能正确读出三种格式日期标签），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“剩余天数计算必须固定模拟工作日、计日口径和标准答案，并允许批准的日期计算工具。”，需改写为学员实际应做的步骤或判定条件。 未固定模拟工作日、是否包含当天的计日口径和标准答案，剩余天数无法唯一评分。"
+    },
+    {
+      "question_id": "M3_OP_048_V3",
+      "previous_question_id": "M3_OP_048_V2",
+      "source_question_id": "M3_OP_048",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:4c6e85901d034aa005001075a0176815e5841324b552f90de4b6f9194a4f7f8f",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“8”，rubric列出2项可观察指标（2件破损品全部找出；放入问题商品区），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：““凹陷罐必定不可上架”需按凹陷部位/程度及门店问题品标准设定样品，不能用任意轻微凹陷。”，需改写为学员实际应做的步骤或判定条件。 本题已标为安全敏感，但没有写明触发立即停止、隔离和上报的具体行为或现场条件，安全停止边界仍未闭环。 凹陷罐样品的凹陷部位和程度未写入判定规则，轻微凹陷与不可售严重凹陷可能被混判。"
+    },
+    {
+      "question_id": "M3_OP_049_V3",
+      "previous_question_id": "M3_OP_049_V2",
+      "source_question_id": "M3_OP_049",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:8c8a1125226e357e15c1f4f8195525a3b02f3aa200a31e4af8c01d73816fc4f3",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“5”，rubric列出5项可观察指标（漏气袋：不可上架；凹陷罐：不可上架；松盖瓶：不可上架；褶皱封口完好袋：可上架（R9核心甄别点）；胀袋奶粉：不可上架），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“五件边界样品必须定义同款正常样、异常程度和门店判据；充氮包装、轻微凹陷和褶皱不能只凭名称判定。”，需改写为学员实际应做的步骤或判定条件。 五类边界样品缺少同款正常样和异常程度定义；充氮包装、轻微凹陷和褶皱不能仅凭名称判定。"
+    },
+    {
+      "question_id": "M3_OP_050_V3",
+      "previous_question_id": "M3_OP_050_V2",
+      "source_question_id": "M3_OP_050",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:6ef3e3a79a4ee53bfd3cffb1e635c4ab7cb856c9d1eb75fe1e6de0c24c205a8d",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“3”，rubric列出3项可观察指标（确认保质期天数（≤15天）；从原货架移出；放入临期专区），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“把“≤15天”作为临期标准但未写明是本门店模拟规则，无法作为通用岗位判据。”，需改写为学员实际应做的步骤或判定条件。 “≤15天”未明确为本门店模拟临期规则，临期判定不具跨题一致性。"
+    },
+    {
+      "question_id": "M3_OP_051_V3",
+      "previous_question_id": "M3_OP_051_V2",
+      "source_question_id": "M3_OP_051",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:9d951d199df8d7b4489ebbfb5df2242960e2de129d262230403a0f4335437125",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“3”，rubric列出3项可观察指标（确认破损类型；单独分拣放入问题商品区；在记录本登记），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 本题已标为安全敏感，但没有写明触发立即停止、隔离和上报的具体行为或现场条件，安全停止边界仍未闭环。"
+    },
+    {
+      "question_id": "M3_OP_052_V3",
+      "previous_question_id": "M3_OP_052_V2",
+      "source_question_id": "M3_OP_052",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:97b972e5126480b5b44e1d27fc61957871cc1a4319c2c34c15ec4eb33ac04b32",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“10”，rubric列出3项可观察指标（2件临期商品全部找出并移入临期区；1件破损商品找出并放入问题区；正常商品未被误移），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 本题已标为安全敏感，但没有写明触发立即停止、隔离和上报的具体行为或现场条件，安全停止边界仍未闭环。"
+    },
+    {
+      "question_id": "M3_OP_053_V3",
+      "previous_question_id": "M3_OP_053_V2",
+      "source_question_id": "M3_OP_053",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:ca8e1ec7710dc7195a2b6a37b1192b612b1b61c2e27258875c812db018dc8a94",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“3、15”，rubric列出4项可观察指标（3分钟内完成全部15件分类；临期商品全部找出；破损商品全部找出；正常商品未被误分），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“应把时间作为观察指标，正确率和安全优先，不能时间到即以未达标判定。”，需改写为学员实际应做的步骤或判定条件。 3分钟不能直接作为未达标门槛；需明确时间仅记录，还是在正确率达到何种条件后参与评分。"
+    },
+    {
+      "question_id": "M3_OP_054_V3",
+      "previous_question_id": "M3_OP_054_V2",
+      "source_question_id": "M3_OP_054",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:60015a21191e29c80324121375fc6997f2630f13e49eba97e2dcde053151d2c6",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“3”，rubric列出2项可观察指标（正确读出3件商品的到期日期；正确说出哪件最先到期），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“工具描述称第三种为“生产日期见瓶身”，但题干要求读到期日；若需计算还必须提供保质期和固定计算规则。”，需改写为学员实际应做的步骤或判定条件。 第三件商品只有生产日期时，题干未提供保质期和计算规则，无法唯一得出到期日。"
+    },
+    {
+      "question_id": "M3_OP_055_V3",
+      "previous_question_id": "M3_OP_055_V2",
+      "source_question_id": "M3_OP_055",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:d7d690181eecd024268348d73a102ca2bda44dd784a61fe4fa7f0f24d39ebcd4",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出2项可观察指标（临期商品不应在货架（应已移入临期专区）；余下商品按日期从早到晚前排到后排），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“应统一为移入临期专区，再对正常库存按FIFO排列。”，需改写为学员实际应做的步骤或判定条件。 题干要求把临期品放最前排，rubric却要求临期品移出货架，两者仍相互矛盾。"
+    },
+    {
+      "question_id": "M3_OP_057_V3",
+      "previous_question_id": "M3_OP_057_V2",
+      "source_question_id": "M3_OP_057",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:a302d6cb9a6a54981b41c4a75f44c4964687ae755e024c7b13eac549421379d8",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“4”，rubric列出4项可观察指标（第1步：逐件翻看日期标签；第2步：计算剩余天数（允许使用辅具）；第3步：找出临期商品；第4步：移出临期商品放入临期专区），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M3_OP_058_V3",
+      "previous_question_id": "M3_OP_058_V2",
+      "source_question_id": "M3_OP_058",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:b2690047cc42e8ae0754d367a50fd2bf575014b9154004e4d5a54c2a59298c27",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“20”，rubric列出3项可观察指标（前10件问题检出率；后10件问题检出率；褶皱封口完好品不误判为破损（R9甄别）），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“工具说明称“共4件问题”，但其中“褶皱封口完好品”又被设为不应误判的问题陷阱，数量表述自相矛盾。”，需改写为学员实际应做的步骤或判定条件。 本题已标为安全敏感，但没有写明触发立即停止、隔离和上报的具体行为或现场条件，安全停止边界仍未闭环。 工具说明中的问题商品总数与“褶皱封口完好品不应误判”的陷阱设置仍未统一。"
+    },
+    {
+      "question_id": "M3_SC_003_V3",
+      "previous_question_id": "M3_SC_003_V2",
+      "source_question_id": "M3_SC_003",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:5239d94e77ff4c4c97ab408d919ed370cd5e695274df355a8856e8e82e17eb34",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“生产日期加30天存在是否包含生产当日的口径差异。题目必须给出统一计算规则，或直接提供“到期日/有效期至”标签，避免把法规和门店口径差异当作学生错误。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M3_SC_004_V3",
+      "previous_question_id": "M3_SC_004_V2",
+      "source_question_id": "M3_SC_004",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:7e72f1b91b5b3e89aa0d4370481363d8df4c576c50f9e45b85af70b215f8e0b5",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“还有几天”未说明是否包含今天和到期当天。候选8天采用日期差口径，但题目未声明，无法保证唯一判分。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M3_SC_006_V3",
+      "previous_question_id": "M3_SC_006_V2",
+      "source_question_id": "M3_SC_006",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:2757fd720e89664960f60e48d543101c806bca5f770b4db5feb77c5533ece1cd",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“应明确“按到期日减今天，不含今天”并修正文案。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M3_SC_007_V3",
+      "previous_question_id": "M3_SC_007_V2",
+      "source_question_id": "M3_SC_007",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:721a0ba23dddc8584d168f1eb8d7dc3461ecf431a3b8d9710ea31df91cdcbf18",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“题干引号异常；按月保质期的到期日计算和是否包含当天需在题目规则中明确，不能默认所有门店采用同一口径。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M3_SC_008_V3",
+      "previous_question_id": "M3_SC_008_V2",
+      "source_question_id": "M3_SC_008",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:a96463e81ada250ba094f7aad8f9a7db8354fe3d2dbbe774b24c7a4652d34926",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“题干引号异常；270天计算必须明确起算规则并允许使用批准的日期计算工具，否则易测成纯算术而非效期巡检能力。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M3_SC_009_V3",
+      "previous_question_id": "M3_SC_009_V2",
+      "source_question_id": "M3_SC_009",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:e0d20a86c15c8cf8d0b7185fd245ed859c35bbdbb26cbaee1a8d3fdb7099c190",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“题干引号异常；“还有59天”采用不含今天的日期差，应在题干中写明计算口径，并说明可使用门店批准的计算工具。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M3_SC_010_V3",
+      "previous_question_id": "M3_SC_010_V2",
+      "source_question_id": "M3_SC_010",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:0c4868dc8bc23147d3b338e4ddcbeb47ae236d0febbf12aa8c322ebcaadb9993",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“题干引号异常。若只考查先后，应直接比较两件商品的到期日，不必夹带“还有21/45天”这一未声明计日口径。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M3_SC_012_V3",
+      "previous_question_id": "M3_SC_012_V2",
+      "source_question_id": "M3_SC_012",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:dc86e0c0d54dc7df11dce5762785e18687e82ba5fd163f55efb2cafb7246ed10",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“罐体凹陷是否不可售取决于凹陷位置、深度及是否涉及卷边/接缝。当前把所有“明显侧面凹陷”一律判不可上架过于绝对，应改成严重凹陷、接缝受损或按门店问题品标准隔离复核”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M3_SC_014_V3",
+      "previous_question_id": "M3_SC_014_V2",
+      "source_question_id": "M3_SC_014",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:0ca10142146730ed0eddd1b50bb590397c63dc617aa58db6333086068ceeb70f",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“应改为“无破口、无漏气、无污染且符合门店外观标准；有疑问隔离复核”。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M3_SC_015_V3",
+      "previous_question_id": "M3_SC_015_V2",
+      "source_question_id": "M3_SC_015",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:58aff9a67188711e6f9426359ad47cda29ac4a6ecf75f44ed57266c15919b610",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“应提供同款正常样对照或明确“异常鼓胀、异味/渗漏”等异常特征”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M3_SC_021_V3",
+      "previous_question_id": "M3_SC_021_V2",
+      "source_question_id": "M3_SC_021",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:ac0bc12b2d682afcbfd59175528abf8ff90e9d49889c66e7658d2d7950ecb23c",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“应把情境改为“破裂玻璃/泄漏商品”并明确先隔离危险”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M3_SC_022_V3",
+      "previous_question_id": "M3_SC_022_V2",
+      "source_question_id": "M3_SC_022",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:348f45618a46490d4f2fac3de39573202ec0ee14571104ef8c25f1287ea04f11",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“临期品移区后原位价签是否保留取决于该SKU是否仍有正常库存和门店价签制度。当前答案不能跨门店通用，应补充“仍有正常库存”或明确门店SOP。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M3_SC_023_V3",
+      "previous_question_id": "M3_SC_023_V2",
+      "source_question_id": "M3_SC_023",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:8f38a7c12a75c2d3b0a3a9d501b117c8172013874fb02d6108b17f64a6c5efea",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“当天到期必须移入临期专区”依赖门店临期阈值及停售时间。题干应重申本题门店规则，并区分“当日可售至何时”和“过期后不得销售”。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M3_TF_025_V3",
+      "previous_question_id": "M3_TF_025_V2",
+      "source_question_id": "M3_TF_025",
+      "question_type": "TRUE_FALSE",
+      "candidate_record_hash": "sha256:17372cbf933a90e127bb94a0354860faadd9460e994ca8db7dddb724d7a6623a",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只说当天到期品的处理时间“须引用明确门店SOP”，但没有给出本题采用的具体SOP。学生无法判断当天到期商品应继续销售、移入临期区还是下架，答案不具唯一性。"
+    },
+    {
+      "question_id": "M3_TF_028_V3",
+      "previous_question_id": "M3_TF_028_V2",
+      "source_question_id": "M3_TF_028",
+      "question_type": "TRUE_FALSE",
+      "candidate_record_hash": "sha256:d7e8c852bd1d2f47ed3efbedc806dd5276fda0d89e917a64a933782a2240611a",
+      "review_conclusion": "退回复修",
+      "review_note": "题干使用“须增加……”的改题语言，且“符合门店外观标准”仍未具体化。需直接列出无污染、无漏气、无异常鼓胀等可观察条件，才能形成唯一判断。"
+    },
+    {
+      "question_id": "M3_TF_030_V3",
+      "previous_question_id": "M3_TF_030_V2",
+      "source_question_id": "M3_TF_030",
+      "question_type": "TRUE_FALSE",
+      "candidate_record_hash": "sha256:358e3dbc26983dfd979f2d8540ac94605e8004155e756c18bca4b82fe16c9ed4",
+      "review_conclusion": "通过",
+      "review_note": "通过"
+    },
+    {
+      "question_id": "M3_TF_033_V3",
+      "previous_question_id": "M3_TF_033_V2",
+      "source_question_id": "M3_TF_033",
+      "question_type": "TRUE_FALSE",
+      "candidate_record_hash": "sha256:b2a4416a0fb9c01190241e444c575bf4394b67823c07176b557bd6d9c38c02ea",
+      "review_conclusion": "通过",
+      "review_note": "通过"
+    },
+    {
+      "question_id": "M3_TF_034_V3",
+      "previous_question_id": "M3_TF_034_V2",
+      "source_question_id": "M3_TF_034",
+      "question_type": "TRUE_FALSE",
+      "candidate_record_hash": "sha256:b1839da65a8d597538640df1affc07a9f277bcfc3fdf39706bd6c7f8d0e93d71",
+      "review_conclusion": "通过",
+      "review_note": "通过"
+    },
+    {
+      "question_id": "M4_DG_023_V3",
+      "previous_question_id": "M4_DG_023_V2",
+      "source_question_id": "M4_DG_023",
+      "question_type": "DRAG",
+      "candidate_record_hash": "sha256:dec23e9f1dbf7cc11f076f58a9f3da2d5284d42632d1052a7f220f3a428b725f",
+      "review_conclusion": "退回复修",
+      "review_note": "拖拽项不是学生在超市情境中可以观察或选择的具体行为，而是把审核意见直接当成题目内容。“符合规范”项写为：“应设计为有异常/无异常两条路径。”；“不符合规范”项写为：“忽略上述岗位要求，直接沿用原题指出的不规范做法”。后者直接出现“忽略”“不规范”等答案提示，映射虽形式唯一但属于明显泄题。需重写为两条自然、具体、表面中性的岗位行为，再分别映射到符合规范/不符合规范。"
+    },
+    {
+      "question_id": "M4_DG_025_V3",
+      "previous_question_id": "M4_DG_025_V2",
+      "source_question_id": "M4_DG_025",
+      "question_type": "DRAG",
+      "candidate_record_hash": "sha256:9c9ae93ec4ab556b3526bf583778791f954269291ce08bc6925190814248d05c",
+      "review_conclusion": "退回复修",
+      "review_note": "拖拽项不是学生在超市情境中可以观察或选择的具体行为，而是把审核意见直接当成题目内容。“符合规范”项写为：“冷冻与冷藏是不同储存区和温度范围，必须分别设置“冷冻区”和“冷藏区”，不能合并评分。”；“不符合规范”项写为：“忽略上述岗位要求，直接沿用原题指出的不规范做法”。后者直接出现“忽略”“不规范”等答案提示，映射虽形式唯一但属于明显泄题。需重写为两条自然、具体、表面中性的岗位行为，再分别映射到符合规范/不符合规范。"
+    },
+    {
+      "question_id": "M4_OP_028_V3",
+      "previous_question_id": "M4_OP_028_V2",
+      "source_question_id": "M4_OP_028",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:c7c806b4a556e8a93f742c00ed2731eb89c3dad8c99e51b8e91cd752b0a10579",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“6”，rubric列出3项可观察指标（重货（大桶水）放下层；轻货放上层；无严重错层），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M4_OP_030_V3",
+      "previous_question_id": "M4_OP_030_V2",
+      "source_question_id": "M4_OP_030",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:8a350ca1a25ff3b284f7c892c9e4e0f96e2dc87e9939b8d85db5e0e443de82b6",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“5”，rubric列出2项可观察指标（日期早的商品放前排；日期晚的商品放后排），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M4_OP_031_V3",
+      "previous_question_id": "M4_OP_031_V2",
+      "source_question_id": "M4_OP_031",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:2a845c602d43bd8be1b1d24497e4ad5637b3cb44d57c5dd0a03bdab763dc41be",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“3、2、6”，rubric列出3项可观察指标（3个品类全部拣出；每品类数量与送货单一致；无多拣无少拣），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“单题结果不能直接写入岗位推荐意见，应与多题表现、安全结果和支持条件综合判断。”，需改写为学员实际应做的步骤或判定条件。 “岗位推荐意见”属于报告层结论，不应作为本题线下操作rubric指标。"
+    },
+    {
+      "question_id": "M4_OP_032_V3",
+      "previous_question_id": "M4_OP_032_V2",
+      "source_question_id": "M4_OP_032",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:4d88682202fdc4a79b6d513389939a8528233b7f21af9c9353809756f339de3a",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出2项可观察指标（找出所有阻挡通道的物品；全部移至指定存放区），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“真实流程应先停止通行、隔离并评估物品性质和重量，能安全搬移的才归位，不能处理的立即上报求助。”，需改写为学员实际应做的步骤或判定条件。 任务仍要求搬走所有障碍物，没有把重物、危险品、失稳堆垛的隔离和求助分支写入题干。"
+    },
+    {
+      "question_id": "M4_OP_033_V3",
+      "previous_question_id": "M4_OP_033_V2",
+      "source_question_id": "M4_OP_033",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:555af520f84b99696db9764e0e857b1d17ad68fc3c4effbec9d1592e1eaad784",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出3项可观察指标（逐件清点与送货单核对；发现数量不符；停止收货上报（向扮演负责人的评估员）），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M4_OP_034_V3",
+      "previous_question_id": "M4_OP_034_V2",
+      "source_question_id": "M4_OP_034",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:8b3b73c2c9bfd740f656dc7c65cdab2e0bb35cde5b1889eb26b231623d8f3a21",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“6”，rubric列出2项可观察指标（商品位置与示例照片一致；标签朝外），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M4_OP_035_V3",
+      "previous_question_id": "M4_OP_035_V2",
+      "source_question_id": "M4_OP_035",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:6cbd2bc61d357814ff5a73e196ac62375fe1cd963fdead63f1734e226fe3397f",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“1”，rubric列出3项可观察指标（逐件清点数量；与送货单逐行比对；发现并指出数量不符（差错检出）），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M4_OP_036_V3",
+      "previous_question_id": "M4_OP_036_V2",
+      "source_question_id": "M4_OP_036",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:e12d42ed6b8ed8ebaa6355b88bf7a46a7be7553aaaef146d62b58788a4c7444b",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“8”，rubric列出2项可观察指标（同品类商品全部归拢到对应区域；无错区），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M4_OP_037_V3",
+      "previous_question_id": "M4_OP_037_V2",
+      "source_question_id": "M4_OP_037",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:4020f7330a88f2f53eff3fd0e6d1a96b0ac7b018d8fb7c70e4a575974914e86c",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“5”，rubric列出5项可观察指标（第1步：核对数量与送货单；第2步：检查商品完好度；第3步：未发现异常继续（或发现异常停收）；第4步：入库登记；第5步：签字确认（向扮演负责人的评估员）），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“r3同时写“未发现异常继续/发现异常停收”，但未说明本轮是否预置异常，评分人无法采用同一标准。”，需改写为学员实际应做的步骤或判定条件。 是否预置异常未确定；发现异常停收与无异常登记签收必须拆成互斥分支。"
+    },
+    {
+      "question_id": "M4_OP_038_V3",
+      "previous_question_id": "M4_OP_038_V2",
+      "source_question_id": "M4_OP_038",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:ad686b669ec0aee9709a7d5b1bb192fa82a91fb7e2197171767c74521cfaa493",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“4、3、12”，rubric列出2项可观察指标（品类全部正确；数量与送货单完全一致），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M4_OP_039_V3",
+      "previous_question_id": "M4_OP_039_V2",
+      "source_question_id": "M4_OP_039",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:3eb434e2c3dc92191f7c8feb199580853bbd0dd5aadd614dbc11c4ad0e862504",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出3项可观察指标（同品类商品归拢；重货在下层轻货在上层；通道无阻挡），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“按品类分区、重下轻上、通道畅通符合库房整理原则；需先补齐安全工具条件。”，需改写为学员实际应做的步骤或判定条件。"
+    },
+    {
+      "question_id": "M4_OP_040_V3",
+      "previous_question_id": "M4_OP_040_V2",
+      "source_question_id": "M4_OP_040",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:faf9ea427970fd51eb143151389e81e3d89ba4f1c61b92d455a157d689964f5d",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出2项可观察指标（全部临期商品找出无漏检；移至临期专区），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“未给出本门店临期阈值和商品类型，无法唯一判断“所有临期商品”。”，需改写为学员实际应做的步骤或判定条件。 没有给出本门店临期阈值和适用商品范围，无法唯一判断“所有临期商品”。"
+    },
+    {
+      "question_id": "M4_OP_041_V3",
+      "previous_question_id": "M4_OP_041_V2",
+      "source_question_id": "M4_OP_041",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:410f777c3bb81720dca9f186cb777d04a30b891d33fdcf3c10d0b954024e79de",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“4”，rubric列出3项可观察指标（逐件清点总数量正确；数量记录在记录本上；中断后能接续不重做（单独编码，不扣分）），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M4_OP_042_V3",
+      "previous_question_id": "M4_OP_042_V2",
+      "source_question_id": "M4_OP_042",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:1622e5b93d9d907dc355b6b941985cb7417b5634a9044f1f958024dc9e6a5ea6",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出4项可观察指标（重新清点复核；确认差异属实；上报负责人；在记录本填写差异），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M4_SC_002_V3",
+      "previous_question_id": "M4_SC_002_V2",
+      "source_question_id": "M4_SC_002",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:b4f9eed609b5af19b672915e7ef8d62f2e958c7205792154ed927b284ad80712",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“应改为遵守层板承重、箱体标识、门店限高线和稳定码放要求”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M4_SC_012_V3",
+      "previous_question_id": "M4_SC_012_V2",
+      "source_question_id": "M4_SC_012",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:75eb074aa97da2b3743e7c2a3a5e24816d2fb93ca2023e6e5e61d53045e8240f",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“签字表示完成核对并对记录真实性负责，不等于签字人承担全部商品数量和质量责任。候选A责任表述过宽。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M4_TF_019_V3",
+      "previous_question_id": "M4_TF_019_V2",
+      "source_question_id": "M4_TF_019",
+      "question_type": "TRUE_FALSE",
+      "candidate_record_hash": "sha256:902b7528709c4b2d241aa17fe60ce1c49358177a0c01980868f35dbf42afa3de",
+      "review_conclusion": "退回复修",
+      "review_note": "判断标准仍夹有“应统一为……”的编辑说明。应改成直接、完整的岗位规则：发现拣货数量差异后重新清点、标注，并按异常流程上报或交接。"
+    },
+    {
+      "question_id": "M4_TF_022_V3",
+      "previous_question_id": "M4_TF_022_V2",
+      "source_question_id": "M4_TF_022",
+      "question_type": "TRUE_FALSE",
+      "candidate_record_hash": "sha256:2f1a5be92d4dd1fcd4d070401e45556d0e99dce18b1919d76748e08edf1d25f4",
+      "review_conclusion": "通过",
+      "review_note": "通过"
+    },
+    {
+      "question_id": "M5_DG_033_V3",
+      "previous_question_id": "M5_DG_033_V2",
+      "source_question_id": "M5_DG_033",
+      "question_type": "DRAG",
+      "candidate_record_hash": "sha256:8357a6185795964c81986f0da4f6ed32f170d80df6028837cba90010998ae153",
+      "review_conclusion": "退回复修",
+      "review_note": "拖拽项不是学生在超市情境中可以观察或选择的具体行为，而是把审核意见直接当成题目内容。“符合规范”项写为：“隔离危险区只能在确保自身安全时进行；部分隐患应先撤离并立即报警/上报。当前把所有隐患套入单一固定顺序过于绝对”；“不符合规范”项写为：“忽略上述岗位要求，直接沿用原题指出的不规范做法”。后者直接出现“忽略”“不规范”等答案提示，映射虽形式唯一但属于明显泄题。需重写为两条自然、具体、表面中性的岗位行为，再分别映射到符合规范/不符合规范。"
+    },
+    {
+      "question_id": "M5_DG_034_V3",
+      "previous_question_id": "M5_DG_034_V2",
+      "source_question_id": "M5_DG_034",
+      "question_type": "DRAG",
+      "candidate_record_hash": "sha256:90301b993a51b3b72e08a7d28d4511488534dafa7a6f6f220a4155798b2b253b",
+      "review_conclusion": "退回复修",
+      "review_note": "拖拽项不是学生在超市情境中可以观察或选择的具体行为，而是把审核意见直接当成题目内容。“符合规范”项写为：“应完整执行并核验：呼叫急救电话/受训急救员、AED和现场安全判断，不能只等负责人到场”；“不符合规范”项写为：“忽略上述岗位要求，直接沿用原题指出的不规范做法”。后者直接出现“忽略”“不规范”等答案提示，映射虽形式唯一但属于明显泄题。需重写为两条自然、具体、表面中性的岗位行为，再分别映射到符合规范/不符合规范。"
+    },
+    {
+      "question_id": "M5_DG_036_V3",
+      "previous_question_id": "M5_DG_036_V2",
+      "source_question_id": "M5_DG_036",
+      "question_type": "DRAG",
+      "candidate_record_hash": "sha256:a7400a2c1912f8e45a998164f7c5a9fcaaa74e41782675ef8fa25750406d2aa0",
+      "review_conclusion": "退回复修",
+      "review_note": "拖拽项不是学生在超市情境中可以观察或选择的具体行为，而是把审核意见直接当成题目内容。“符合规范”项写为：“地面水渍不能仅归为“自己处理”，应先警示隔离并通知清洁/负责人；顾客晕倒也需急救呼叫而非只上报负责人”；“不符合规范”项写为：“忽略上述岗位要求，直接沿用原题指出的不规范做法”。后者直接出现“忽略”“不规范”等答案提示，映射虽形式唯一但属于明显泄题。需重写为两条自然、具体、表面中性的岗位行为，再分别映射到符合规范/不符合规范。"
+    },
+    {
+      "question_id": "M5_DG_038_V3",
+      "previous_question_id": "M5_DG_038_V2",
+      "source_question_id": "M5_DG_038",
+      "question_type": "DRAG",
+      "candidate_record_hash": "sha256:f29225efe7b1fda1fd172561c16f3ecbd6931389f22db9ace050042c0a8e2157",
+      "review_conclusion": "退回复修",
+      "review_note": "拖拽项不是学生在超市情境中可以观察或选择的具体行为，而是把审核意见直接当成题目内容。“符合规范”项写为：“应完整执行并核验：PPE、同步上报和最终复查；“清理后再报告”不是通用安全流程”；“不符合规范”项写为：“忽略上述岗位要求，直接沿用原题指出的不规范做法”。后者直接出现“忽略”“不规范”等答案提示，映射虽形式唯一但属于明显泄题。需重写为两条自然、具体、表面中性的岗位行为，再分别映射到符合规范/不符合规范。"
+    },
+    {
+      "question_id": "M5_OP_040_V3",
+      "previous_question_id": "M5_OP_040_V2",
+      "source_question_id": "M5_OP_040",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:a152a2a01b87cdcd53067def524ccfa685c9904717c1c218edd859eb3a9008ed",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出2项可观察指标（腰背保持挺直无明显弯腰；使用腿部力量蹲下搬起），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“搬运评分只看“腰背挺直、用腿发力”不足；还需评估重量、贴近身体、避免扭转、放置路线及是否需要两人/工具。”，需改写为学员实际应做的步骤或判定条件。 搬运rubric仍未把重量评估、贴近身体、避免扭转、路线检查及需要两人/工具协作写成评分动作。"
+    },
+    {
+      "question_id": "M5_OP_041_V3",
+      "previous_question_id": "M5_OP_041_V2",
+      "source_question_id": "M5_OP_041",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:05a84a15406b1a2b2947ba0d468d612e0d06853c917cba0f871380d978a0a091",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出3项可观察指标（全部3件召回商品找出；从货架全部取下；集中放到召回区域标识处），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“应完整执行并核验：核对通知、停售隔离标识、清点记录和上报闭环。”，需改写为学员实际应做的步骤或判定条件。 召回流程未把核对通知中的名称、规格、条码、批次及停售隔离、清点记录、交接上报拆成可评分步骤。"
+    },
+    {
+      "question_id": "M5_OP_042_V3",
+      "previous_question_id": "M5_OP_042_V2",
+      "source_question_id": "M5_OP_042",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:892296b8c0405917e84959571ec5a66efd2b04bfd88926703293124aba264e5e",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出3项可观察指标（立即放置警示牌；阻止他人进入危险区；使用工具（非徒手）清理碎片），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“应完整执行并核验：PPE、上报、检查残留碎片和模拟物控制；不能把清理动作仅简化为扫把铲子。”，需改写为学员实际应做的步骤或判定条件。 玻璃清理rubric未完整列出PPE、硬质专用容器、上报和残留复查，所谓“全流程”仍不完整。"
+    },
+    {
+      "question_id": "M5_OP_043_V3",
+      "previous_question_id": "M5_OP_043_V2",
+      "source_question_id": "M5_OP_043",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:d98820413c2e81d4a8c5f4eeb339cce951bbcad65ce260c56e62ee9027cf7ccd",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出3项可观察指标（立即停止该区域作业；放置警示牌隔离该区域；通知负责人（向扮演负责人的评估员）），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 安全停止条件写成“应使用固定牢靠的视觉模拟缺陷”，这不是学员操作中可触发的停止条件。"
+    },
+    {
+      "question_id": "M5_OP_044_V3",
+      "previous_question_id": "M5_OP_044_V2",
+      "source_question_id": "M5_OP_044",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:f422b8c6234a1567656787c0b2edc31dbeded685cee1dbcd89b63a7bfcb514d1",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出3项可观察指标（保持冷静无激烈回应；告知顾客会请负责人处理；实际向扮演负责人的评估员寻求帮助），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 本题已标为安全敏感，但没有写明触发立即停止、隔离和上报的具体行为或现场条件，安全停止边界仍未闭环。"
+    },
+    {
+      "question_id": "M5_OP_045_V3",
+      "previous_question_id": "M5_OP_045_V2",
+      "source_question_id": "M5_OP_045",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:a752025d2e528fdecd1446bd74716539782ea1ce1088554aaa54bc91f9732a2b",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出3项可观察指标（立即停止当前工作；告知旁边顾客需要疏散；按指定疏散路线撤离），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“疏散题必须引用学校/门店固定应急预案、集合点和评估员停止机制，不能临场让受测者承担未授权的顾客疏导职责。”，需改写为学员实际应做的步骤或判定条件。 疏散任务未写清不延误自身撤离、最近安全出口、集合点和禁止返回等关键边界。"
+    },
+    {
+      "question_id": "M5_OP_046_V3",
+      "previous_question_id": "M5_OP_046_V2",
+      "source_question_id": "M5_OP_046",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:af19a3cb3deb494c93a9676f4144bb767d615eec3a8fcc6a74009695fd73926e",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“3”，rubric列出2项可观察指标（找出全部3处安全隐患；逐一处置或正确上报），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“三种隐患的处置边界不同：水渍可警示并通知清洁；梯子可在安全时归位；尖角不得自行维修。”，需改写为学员实际应做的步骤或判定条件。 水渍、梯子和破损尖角的处置权限不同，不能统一写成“处置或上报”；需逐项规定唯一动作。"
+    },
+    {
+      "question_id": "M5_OP_047_V3",
+      "previous_question_id": "M5_OP_047_V2",
+      "source_question_id": "M5_OP_047",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:61cb20671ebad7b13f6a10c56abfc931501988da483f99a9849bc3ee75c82dca",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出2项可观察指标（将超高商品移下；重新摆放至规定高度以内），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“面对超高堆放应先隔离、评估稳定性并寻求协助，不能要求受测者直接搬动可能倒塌的货物。”，需改写为学员实际应做的步骤或判定条件。 题干仍要求直接拆解超高堆放，未把先隔离、评估稳定性和寻求协助作为前置动作。"
+    },
+    {
+      "question_id": "M5_OP_049_V3",
+      "previous_question_id": "M5_OP_049_V2",
+      "source_question_id": "M5_OP_049",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:bcc67091fcd4bcb2866f5de85e705e77908dff681de52ad0c20dec885950de10",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出3项可观察指标（未自行处理伤口（徒手接触血液）；立即通知负责人或寻求急救帮助；安抚受伤同事等候帮助），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“应区分受训急救员与普通员工；普通员工避免血液接触并呼救，受训人员可在PPE下实施急救。当前“一律不自行处理”过于笼统。”，需改写为学员实际应做的步骤或判定条件。 “不自行处理伤口”过于绝对；应区分普通员工避免徒手接触与受训急救员佩戴PPE实施急救。"
+    },
+    {
+      "question_id": "M5_OP_050_V3",
+      "previous_question_id": "M5_OP_050_V2",
+      "source_question_id": "M5_OP_050",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:2dff9c66ccd6e885feadb187e9fc0bf4575826348638ea34aa82adde1c5cd51c",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出2项可观察指标（全部4处隐患找出；每处均有处置或上报行为），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“隐患内容、正确处置和评分锚点均不具体，不能实际复现或一致评分。”，需改写为学员实际应做的步骤或判定条件。 四处隐患的类型、位置及每类唯一处置没有列明，无法形成一致答案键和安全停止条件。"
+    },
+    {
+      "question_id": "M5_OP_051_V3",
+      "previous_question_id": "M5_OP_051_V2",
+      "source_question_id": "M5_OP_051",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:845ea1539bc585977d510d3e96ab6564c79b3cc9cd9c7bdda7fade3f3077beb1",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出3项可观察指标（未自行编造回答（识别超出职权范围的专业问题）；表示自己不清楚；建议顾客咨询专业人员或找负责人），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 本题已标为安全敏感，但没有写明触发立即停止、隔离和上报的具体行为或现场条件，安全停止边界仍未闭环。"
+    },
+    {
+      "question_id": "M5_OP_052_V3",
+      "previous_question_id": "M5_OP_052_V2",
+      "source_question_id": "M5_OP_052",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:607ad35f8346873eb1fb4b7a1c2129f3de2c9ced8d40cc9cc2cfe8a706d27c77",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出3项可观察指标（用规范话术说明问题（话术1分）；找到并告知正确的负责人（找人2分）；完成交接（交接2分）），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“评分候选最高分为2，但指标写成1+2+2=5分，数据合同冲突；“奇怪噪声”也需明确停止作业、隔离和报告边界。”，需改写为学员实际应做的步骤或判定条件。 指标仍使用1分+2分+2分的五分结构，与本题最高2分冲突；发现货架异常噪声还应先停工、远离和隔离，不能只执行通用求助话术。"
+    },
+    {
+      "question_id": "M5_OP_053_V3",
+      "previous_question_id": "M5_OP_053_V2",
+      "source_question_id": "M5_OP_053",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:b16bcbac4db74a051b47eb97e7554bd1b6aa353c7d703aa268d3c55ad6167df0",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出3项可观察指标（未贸然触碰陌生设备；识别为不熟悉情况；主动报告或询问负责人），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：““一台无说明的新设备正在运行”风险类型、距离和正确动作不明确，难以标准化且可能诱导靠近真实设备。”，需改写为学员实际应做的步骤或判定条件。 所谓“无说明的新设备正在运行”风险类型和安全距离不明确；当前安全停止条件写成制作要求，不是学员可执行的停止规则。"
+    },
+    {
+      "question_id": "M5_OP_054_V3",
+      "previous_question_id": "M5_OP_054_V2",
+      "source_question_id": "M5_OP_054",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:5f48b1ff3c9776a082b9901bf2629292fe37988696b0720e66ba98c5c9aa84cd",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出3项可观察指标（话术完整：说明情况（话术1分）；找到正确负责人（找人2分）；完成交接由负责人处理（交接2分）），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“评分候选最高分为2，但指标写成总分5分，必须统一计分结构；退款情境还需固定顾客台词和升级边界。”，需改写为学员实际应做的步骤或判定条件。 指标仍使用1分+2分+2分的五分结构，与本题最高2分冲突；退款情境的固定台词、转交对象和升级边界也未写明。"
+    },
+    {
+      "question_id": "M5_SC_003_V3",
+      "previous_question_id": "M5_SC_003_V2",
+      "source_question_id": "M5_SC_003",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:f583797e3d495a2636c78a35ed7bc73b24da42a513af90c0b379f8c5261b35cc",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“应先远离火源风险、立即通知负责人/安保并按门店消防流程处置；只有在确保自身安全时才口头提醒”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M5_SC_005_V3",
+      "previous_question_id": "M5_SC_005_V2",
+      "source_question_id": "M5_SC_005",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:20aa9af7e2003fe133cab6aa12f4d39040995f24eda33babf988c53a0dec3ee0",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“应先警示并通知收银员按现金遗失流程处理。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M5_SC_006_V3",
+      "previous_question_id": "M5_SC_006_V2",
+      "source_question_id": "M5_SC_006",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:a44295faace3a7221a992964d3028930737901ebb7eb9b77e357da4efa9bcc1d",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“应先确认现场安全，立即呼叫急救/受训急救员，按门店程序取AED并避免随意移动，除非现场存在继续危险”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M5_SC_007_V3",
+      "previous_question_id": "M5_SC_007_V2",
+      "source_question_id": "M5_SC_007",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:1aee3209bc19c4e212a1df402adcbb707903e4425bb040a978c6ee833b569914",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“召回应先核对通知及适用商品/批次，再立即停售下架、隔离标识、清点记录并上报；“全部下架并上报”不具备对象核验和可追溯闭环。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M5_SC_013_V3",
+      "previous_question_id": "M5_SC_013_V2",
+      "source_question_id": "M5_SC_013",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:c3dbea8d549dbb25e25edfb066cedf8cd89a85ab809c43cbc3e2f2203949ea2d",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“应先找到正确负责人，再简洁说明事实、已采取的控制措施和需要的支持。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M5_SC_015_V3",
+      "previous_question_id": "M5_SC_015_V2",
+      "source_question_id": "M5_SC_015",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:3cab88c0224af3d79d391a6990be054b61b112120a5f90d3b342274ee05aa644",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“腰背挺直、用腿部力量”过于简化。真实搬运还需先评估重量、保持货物贴近身体、避免扭转，必要时用搬运工具或两人协作”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M5_SC_017_V3",
+      "previous_question_id": "M5_SC_017_V2",
+      "source_question_id": "M5_SC_017",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:9efcdbd58d3ba933ad1ca1294df2552f74d69d01affea7380f8b94c6c8247384",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“应客观说明外观检查结果，提供更换选择；涉及质量疑问时按门店流程请负责人处理”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M5_SC_018_V3",
+      "previous_question_id": "M5_SC_018_V2",
+      "source_question_id": "M5_SC_018",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:1c4cf05c2e50701ec130d9c41be61f43975c7667a508fa696dc5d353e7a00062",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“安全隐患即使超出职责，也应在自身安全范围内先警示或隔离，再上报；“上报后等候”遗漏即时风险控制”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M5_SC_019_V3",
+      "previous_question_id": "M5_SC_019_V2",
+      "source_question_id": "M5_SC_019",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:03f046527af48024f3641f7e219d7725bf938241a42b776687ab36a2ca05b21f",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“题干引号混乱。可直接读取包装产地并如实回答，但应避免把包装标注的“产地/生产商地址”混为一谈。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M5_TF_023_V3",
+      "previous_question_id": "M5_TF_023_V2",
+      "source_question_id": "M5_TF_023",
+      "question_type": "TRUE_FALSE",
+      "candidate_record_hash": "sha256:a4d6c489e36b0cba5dcaf0efe17c55cfd7e84519a91d5ead01814a44db73d504",
+      "review_conclusion": "退回复修",
+      "review_note": "顾客晕倒的判断标准仍不完整且分支不清。需先明确确认环境安全、判断意识和呼吸、呼叫急救电话/受训急救员；AED应根据无正常呼吸等条件使用，不能把取AED写成所有情形都必须完成的固定动作。"
+    },
+    {
+      "question_id": "M5_TF_027_V3",
+      "previous_question_id": "M5_TF_027_V2",
+      "source_question_id": "M5_TF_027",
+      "question_type": "TRUE_FALSE",
+      "candidate_record_hash": "sha256:707a24c9800b7789c6a6294b4e49b8fa24723d9807252f07e96cf9b45ea5d005",
+      "review_conclusion": "退回复修",
+      "review_note": "题干仍含“应统一为……”等编辑说明；玻璃处置标准也未完整列出隔离、非徒手清理、PPE、硬质容器、上报和残留复查的闭环。当前判断边界仍可能因脚本细节不同而变化。"
+    },
+    {
+      "question_id": "M6_DG_027_V3",
+      "previous_question_id": "M6_DG_027_V2",
+      "source_question_id": "M6_DG_027",
+      "question_type": "DRAG",
+      "candidate_record_hash": "sha256:a4728e9a16705fe54936e00aae26d0cb3acd374c034cb6061fa15d7fa8e82c0a",
+      "review_conclusion": "退回复修",
+      "review_note": "拖拽项不是学生在超市情境中可以观察或选择的具体行为，而是把审核意见直接当成题目内容。“符合规范”项写为：“酸奶被映射到饮品区，实际通常应进入冷藏乳品/冷链区。需新增冷链区并修正答案”；“不符合规范”项写为：“忽略上述岗位要求，直接沿用原题指出的不规范做法”。后者直接出现“忽略”“不规范”等答案提示，映射虽形式唯一但属于明显泄题。需重写为两条自然、具体、表面中性的岗位行为，再分别映射到符合规范/不符合规范。"
+    },
+    {
+      "question_id": "M6_DG_030_V3",
+      "previous_question_id": "M6_DG_030_V2",
+      "source_question_id": "M6_DG_030",
+      "question_type": "DRAG",
+      "candidate_record_hash": "sha256:bc8f035067ff12fdff990888bc5ffb1761de06dfedb133a72d1989cfe25ae088",
+      "review_conclusion": "退回复修",
+      "review_note": "拖拽项不是学生在超市情境中可以观察或选择的具体行为，而是把审核意见直接当成题目内容。“符合规范”项写为：“应按条码是否可用、系统是否有商品资料和文字是否可识别设计分支。”；“不符合规范”项写为：“忽略上述岗位要求，直接沿用原题指出的不规范做法”。后者直接出现“忽略”“不规范”等答案提示，映射虽形式唯一但属于明显泄题。需重写为两条自然、具体、表面中性的岗位行为，再分别映射到符合规范/不符合规范。"
+    },
+    {
+      "question_id": "M6_DG_033_V3",
+      "previous_question_id": "M6_DG_033_V2",
+      "source_question_id": "M6_DG_033",
+      "question_type": "DRAG",
+      "candidate_record_hash": "sha256:f9065674e82892b4493f2d0b1c407cc7ab06047fbca32adaac9d5142b72a08c6",
+      "review_conclusion": "退回复修",
+      "review_note": "拖拽项不是学生在超市情境中可以观察或选择的具体行为，而是把审核意见直接当成题目内容。“符合规范”项写为：“应标注重量或改用明确重物”；“不符合规范”项写为：“忽略上述岗位要求，直接沿用原题指出的不规范做法”。后者直接出现“忽略”“不规范”等答案提示，映射虽形式唯一但属于明显泄题。需重写为两条自然、具体、表面中性的岗位行为，再分别映射到符合规范/不符合规范。"
+    },
+    {
+      "question_id": "M6_OP_034_V3",
+      "previous_question_id": "M6_OP_034_V2",
+      "source_question_id": "M6_OP_034",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:7cdc7f4ecb3596f4806321df167618afcbcf7be1ee6521f809994b21ae49eaa7",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“5”，rubric列出1项可观察指标（5件商品全部与正确区域配对），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M6_OP_036_V3",
+      "previous_question_id": "M6_OP_036_V2",
+      "source_question_id": "M6_OP_036",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:3663f5aa18f7415200c6b8baf6faa4fc1b8a1bf814b02a2f2db2140ccd3d290d",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“8”，rubric列出2项可观察指标（找出全部2件错放商品；放回正确区域），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M6_OP_037_V3",
+      "previous_question_id": "M6_OP_037_V2",
+      "source_question_id": "M6_OP_037",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:313c35b4109e9da5c7225b841f726aa4c1338d9f7336558a53b3649db575d9a8",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“4”，rubric列出2项可观察指标（4对商品全部正确区分；放入正确货架位置），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M6_OP_038_V3",
+      "previous_question_id": "M6_OP_038_V2",
+      "source_question_id": "M6_OP_038",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:b2b0d3dc034a18ce4ff9546cb3ad77b06edfa6c9ba98c1136746c9daf555053f",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“5”，rubric列出1项可观察指标（5件商品品名全部正确读出），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“必须提供能返回固定品名的离线扫码设备/数据库，并定义扫码失败时的替代流程。”，需改写为学员实际应做的步骤或判定条件。 扫码失败、无法识别或数据库无记录时的替代流程和评分方式未定义。"
+    },
+    {
+      "question_id": "M6_OP_039_V3",
+      "previous_question_id": "M6_OP_039_V2",
+      "source_question_id": "M6_OP_039",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:7d25f501a7379893d0511924eda4107dbdc76094056969f19a4659ecbded0f79",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“5”，rubric列出1项可观察指标（5件商品全部归到正确区域），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：““说出/指出/写出”只能表达分类判断，不等同于把实物归位；题干和允许通道需拆开设计。”，需改写为学员实际应做的步骤或判定条件。 “说出/指出/写出”只证明分类判断，不等同于完成实物归位，题干和评分对象不一致。"
+    },
+    {
+      "question_id": "M6_OP_040_V3",
+      "previous_question_id": "M6_OP_040_V2",
+      "source_question_id": "M6_OP_040",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:d1a318b38020523c02d8c62ad85918814c2ec257d92db984f877f05cf7571c3b",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“8”，rubric列出2项可观察指标（商品位置与示例照片一致；标签朝外），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M6_OP_041_V3",
+      "previous_question_id": "M6_OP_041_V2",
+      "source_question_id": "M6_OP_041",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:986275c4a6c8df63e96c2822577fbb73cf87f6c8bb2965e22a52b2295c04093e",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出2项可观察指标（找出2件错放商品并归位；找出2张错位价签并归位），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M6_OP_042_V3",
+      "previous_question_id": "M6_OP_042_V2",
+      "source_question_id": "M6_OP_042",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:13688f85b9fb8fd974477de1404c3863dcb7f0a43c99fe41536aeb859b735b8a",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“10”，rubric列出2项可观察指标（全部3件错放商品找出（无漏检）；放回正确区域），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M6_OP_043_V3",
+      "previous_question_id": "M6_OP_043_V2",
+      "source_question_id": "M6_OP_043",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:57ea725b73b195b7a4a81499194ab739597ddbadd1bbc9c93d5c986a7396aaae",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“6”，rubric列出3项可观察指标（大规格2件放入大规格对应位置；中规格2件放入中规格对应位置；小规格2件放入小规格对应位置），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。"
+    },
+    {
+      "question_id": "M6_OP_044_V3",
+      "previous_question_id": "M6_OP_044_V2",
+      "source_question_id": "M6_OP_044",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:3915dde01ab77b40b42114c5accf4947499c6872345fff6e358be62558cbda39",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“2、10”，rubric列出2项可观察指标（2分钟内完成全部10件归区；归区全部正确（允许±1件）），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“应完整执行并核验：岗位依据。”，需改写为学员实际应做的步骤或判定条件。 “全部10件正确”与“允许±1件”互相冲突；2分钟的计分作用也未明确。"
+    },
+    {
+      "question_id": "M6_OP_045_V3",
+      "previous_question_id": "M6_OP_045_V2",
+      "source_question_id": "M6_OP_045",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:6025bd552e036b69fa13399c0ff4cd8937c7eb395c31b48ca073a8306eec28f2",
+      "review_conclusion": "退回复修",
+      "review_note": "题干涉及数量“8、3”，rubric列出2项可观察指标（正确读出8件商品日期；找出到期最早的3件），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“需固定模拟工作日、日期格式、答案键和是否允许计算工具；仅“识别到期日”不应混入未声明的日期计算。”，需改写为学员实际应做的步骤或判定条件。 未固定日期格式、答案键和是否允许计算工具；若仅识别到期日，不应混入未声明的日期计算。"
+    },
+    {
+      "question_id": "M6_OP_046_V3",
+      "previous_question_id": "M6_OP_046_V2",
+      "source_question_id": "M6_OP_046",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:76ab2382581d1117a74195d6d28ecc843ca75602799f7079a53dc65273af2fab",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出3项可观察指标（3件冷链商品全部找出；归入冷链区；常温商品未被误移），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“冷链题应使用仿真空包装或图片卡，避免真实冷链商品离开温控；并明确冷藏与冷冻分区。”，需改写为学员实际应做的步骤或判定条件。 题干只写冷链区，未区分冷藏与冷冻，三件商品的唯一归区标准不完整。"
+    },
+    {
+      "question_id": "M6_OP_047_V3",
+      "previous_question_id": "M6_OP_047_V2",
+      "source_question_id": "M6_OP_047",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:070fb04d3ddb3ee8fa73a36357b628df0c4f2fa27f1573c14185e8f8d76ddb71",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出3项可观察指标（商品按品类归区；重物在下轻物在上；标签全部朝外），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 本题已标为安全敏感，但没有写明触发立即停止、隔离和上报的具体行为或现场条件，安全停止边界仍未闭环。"
+    },
+    {
+      "question_id": "M6_OP_048_V3",
+      "previous_question_id": "M6_OP_048_V2",
+      "source_question_id": "M6_OP_048",
+      "question_type": "OFFLINE_OPERATION",
+      "candidate_record_hash": "sha256:97813d797e8de0874e1818bb86c39e1f9275d99b7cdfbe0efeb8509c78f8d896",
+      "review_conclusion": "退回复修",
+      "review_note": "rubric列出3项可观察指标（找出错放商品并归位；找出错位价签并归位；找出破损商品并放入问题区），但0分中的“核心任务未完成/关键对象判断错误”与1分中的“至少一项漏项、错配”存在交叉。当前未明确完成多少个对象或多少项指标计1分、错配达到什么程度计0分，也未规定两次及以上提示的计分结果；不同教师仍可能对同一表现判0分或1分。需将0/1/2分改成互斥的数量阈值和提示阈值。 rubric中还保留了审核说明而不是可直接观察的动作：“破损商品可能涉及泄漏或割伤，需增加隔离、PPE和停止条件，不能只写“放入问题区”。”，需改写为学员实际应做的步骤或判定条件。 本题已标为安全敏感，但没有写明触发立即停止、隔离和上报的具体行为或现场条件，安全停止边界仍未闭环。 破损商品处置未写明泄漏、尖锐破损时先隔离、停止操作、使用PPE并上报的安全分支。"
+    },
+    {
+      "question_id": "M6_SC_001_V3",
+      "previous_question_id": "M6_SC_001_V2",
+      "source_question_id": "M6_SC_001",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:36296446cf598cfea855f5ab4c29c72b51dc843e37eb5501b265171998634507",
+      "review_conclusion": "通过",
+      "review_note": "通过"
+    },
+    {
+      "question_id": "M6_SC_002_V3",
+      "previous_question_id": "M6_SC_002_V2",
+      "source_question_id": "M6_SC_002",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:89ee0553290ada50575870ea6a161f08158d1b4925c48f7b9739bd527607a120",
+      "review_conclusion": "通过",
+      "review_note": "通过"
+    },
+    {
+      "question_id": "M6_SC_004_V3",
+      "previous_question_id": "M6_SC_004_V2",
+      "source_question_id": "M6_SC_004",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:04098739ed17ffd8a49b23b776824e3664a8157bf0009dbf493552daa2fe0bb4",
+      "review_conclusion": "通过",
+      "review_note": "通过"
+    },
+    {
+      "question_id": "M6_SC_006_V3",
+      "previous_question_id": "M6_SC_006_V2",
+      "source_question_id": "M6_SC_006",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:53475547c0ec89dea142f1310eb0c63aae9136671bc3703aa3663f793084ab2e",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“答案取决于具体条形码图片，当前未绑定唯一素材和可读区域。必须锁定图片、分辨率、号码及答案，且不得用可扫描真实商品码造成外部依赖。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    },
+    {
+      "question_id": "M6_SC_010_V3",
+      "previous_question_id": "M6_SC_010_V2",
+      "source_question_id": "M6_SC_010",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:05bac70847ddfbe552edde6032ea83b5766832ceaa794a4a338650f5931c77d8",
+      "review_conclusion": "通过",
+      "review_note": "通过"
+    },
+    {
+      "question_id": "M6_SC_013_V3",
+      "previous_question_id": "M6_SC_013_V2",
+      "source_question_id": "M6_SC_013",
+      "question_type": "SINGLE_CHOICE",
+      "candidate_record_hash": "sha256:8f85686fe9e9f71a0f349d6ea3192305e3ed4554dc456954b2fafd7d5e302bc3",
+      "review_conclusion": "退回复修",
+      "review_note": "题干只写“根据题目情境和门店岗位流程”，但没有提供实际情境、对象或前置条件，学生无法仅凭题干理解要判断的问题；预设正确选项又是审核意见或改题说明，而不是与其他选项同层级的岗位行为，措辞和长度也直接暴露答案。当前预设正确选项为：“应改为“有扫码设备时优先扫码；无设备时核对品名、规格和条形码数字”。”。需恢复完整情境，并把三个选项改成自然、同风格且只有一个最优答案的行为表述。"
+    }
+  ]
+}

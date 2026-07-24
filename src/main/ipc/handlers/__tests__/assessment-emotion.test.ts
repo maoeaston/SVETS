@@ -74,6 +74,10 @@ import {
   createSession,
   emotionInterrupt,
   emotionResume,
+  pauseSitting,
+  startNextSitting,
+  startSession,
+  recordEmotionCollapse,
   abortSession,
   submitAnswer,
   seedAssessmentErrorCodes
@@ -92,6 +96,9 @@ import type {
   EmotionInterruptParams,
   EmotionResumeParams,
   AbortSessionParams,
+  PauseSittingParams,
+  StartNextSittingParams,
+  RecordEmotionCollapseParams,
   SessionQuestionView
 } from '../../../../shared/types/assessment'
 
@@ -216,6 +223,15 @@ function resumeParams(sessionId: string, over: Partial<EmotionResumeParams> = {}
 function abortParamsSession(sessionId: string, over: Partial<AbortSessionParams> = {}): AbortSessionParams {
   return { callerUserId: callerId, callerRole: 'TEACHER', sessionId, ...over }
 }
+function pauseParams(sessionId: string, over: Partial<PauseSittingParams> = {}): PauseSittingParams {
+  return { callerUserId: callerId, callerRole: 'TEACHER', sessionId, ...over }
+}
+function nextSittingParams(sessionId: string, over: Partial<StartNextSittingParams> = {}): StartNextSittingParams {
+  return { callerUserId: callerId, callerRole: 'TEACHER', sessionId, ...over }
+}
+function collapseParams(sessionId: string, over: Partial<RecordEmotionCollapseParams> = {}): RecordEmotionCollapseParams {
+  return { callerUserId: callerId, callerRole: 'TEACHER', sessionId, ...over }
+}
 
 /** 计 event_type 在某 aggregate 上的命中数。 */
 function countEvents(sessionId: string, eventType: string): number {
@@ -246,6 +262,7 @@ afterAll(() => {
 beforeEach(() => {
   db.exec('DELETE FROM answer_record')
   db.exec('DELETE FROM assessment_session_question')
+  db.exec('DELETE FROM assessment_sitting')
   db.exec('DELETE FROM safety_incident_binding')
   db.exec('DELETE FROM result_record')
   db.exec('DELETE FROM assessment_session')
@@ -375,12 +392,24 @@ describe('assessment:emotionResume 正常路径', () => {
 })
 
 describe('assessment:emotionResume 拒绝路径', () => {
-  it('STUDENT 调用 → FORBIDDEN', () => {
+  it('学生可恢复自己的中断测评', () => {
     const { sessionId } = setupSession()
     emotionInterrupt(db, interruptParams(sessionId))
     const result = emotionResume(
       db,
       resumeParams(sessionId, { callerUserId: studentId, callerRole: 'STUDENT' })
+    )
+    expect(result).toEqual({ success: true })
+    expect(sessionStatus(sessionId).status).toBe('ACTIVE')
+  })
+
+  it('学生不可恢复他人的测评', () => {
+    const { sessionId } = setupSession()
+    emotionInterrupt(db, interruptParams(sessionId))
+    const anotherStudentId = seedStudent(db)
+    const result = emotionResume(
+      db,
+      resumeParams(sessionId, { callerUserId: anotherStudentId, callerRole: 'STUDENT' })
     )
     expect(result).toEqual({ success: false, errorCode: 'FORBIDDEN' })
   })
@@ -394,6 +423,49 @@ describe('assessment:emotionResume 拒绝路径', () => {
     const { sessionId } = setupSession()
     const result = emotionResume(db, resumeParams(sessionId))
     expect(result).toEqual({ success: false, errorCode: 'SESSION_NOT_ACTIVE' })
+  })
+})
+
+describe('assessment:sitting 暂停与下一坐次', () => {
+  it('旧 ACTIVE 会话补坐次后可按计划暂停，并由教师开始下一坐次', () => {
+    const { sessionId } = setupSession()
+    const resumed = startSession(db, { callerUserId: studentId, callerRole: 'STUDENT', sessionId })
+    expect(resumed.success).toBe(true)
+    expect(db.prepare('SELECT sitting_no FROM assessment_sitting WHERE session_id = ?').all(sessionId))
+      .toEqual([{ sitting_no: 1 }])
+
+    expect(pauseSitting(db, pauseParams(sessionId, { currentQuestionOrder: 1 })))
+      .toEqual({ success: true, sittingNo: 1 })
+    expect(sessionStatus(sessionId).status).toBe('SUSPENDED_REVIEW_REQUIRED')
+    expect(startNextSitting(db, nextSittingParams(sessionId))).toEqual({ success: true, sittingNo: 2 })
+    expect(sessionStatus(sessionId).status).toBe('ACTIVE')
+    expect(db.prepare('SELECT sitting_no, end_reason FROM assessment_sitting WHERE session_id = ? ORDER BY sitting_no').all(sessionId))
+      .toEqual([
+        { sitting_no: 1, end_reason: 'PAUSED_BY_PLAN' },
+        { sitting_no: 2, end_reason: null }
+      ])
+  })
+
+  it('情绪崩溃只结束当前坐次，达到阈值才完成测评并强制不合格', () => {
+    const { sessionId } = setupSession()
+    startSession(db, { callerUserId: studentId, callerRole: 'STUDENT', sessionId })
+    emotionInterrupt(db, interruptParams(sessionId, { currentQuestionOrder: 1 }))
+    expect(recordEmotionCollapse(db, collapseParams(sessionId, { currentQuestionOrder: 1 })))
+      .toEqual({ success: true, sittingNo: 1, thresholdReached: false })
+    expect(sessionStatus(sessionId).status).toBe('SUSPENDED_REVIEW_REQUIRED')
+    expect(countEvents(sessionId, 'EMOTION_COLLAPSE_RECORDED')).toBe(1)
+
+    expect(startNextSitting(db, nextSittingParams(sessionId)).success).toBe(true)
+    emotionInterrupt(db, interruptParams(sessionId, { currentQuestionOrder: 1 }))
+    expect(recordEmotionCollapse(db, collapseParams(sessionId, { currentQuestionOrder: 1 })))
+      .toEqual({ success: true, sittingNo: 2, thresholdReached: false })
+    expect(startNextSitting(db, nextSittingParams(sessionId)).success).toBe(true)
+    emotionInterrupt(db, interruptParams(sessionId, { currentQuestionOrder: 1 }))
+    const terminalCollapse = recordEmotionCollapse(db, collapseParams(sessionId, { currentQuestionOrder: 1 }))
+    expect(terminalCollapse).toEqual({ success: true, sittingNo: 3, thresholdReached: true })
+    expect(db.prepare('SELECT status, level_result FROM assessment_session WHERE session_id = ?').get(sessionId))
+      .toEqual({ status: 'COMPLETED', level_result: 'LEVEL_NOT_COMPETENT' })
+    expect(countEvents(sessionId, 'EMOTION_COLLAPSE_THRESHOLD_REACHED')).toBe(1)
   })
 })
 

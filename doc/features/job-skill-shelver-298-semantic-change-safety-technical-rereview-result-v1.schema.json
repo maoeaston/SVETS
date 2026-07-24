@@ -1,0 +1,287 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Job Skill 298 Semantic Change Safety Technical Re-review Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "result_id",
+    "status",
+    "package",
+    "candidate_set",
+    "reviewer",
+    "source_files",
+    "summary",
+    "questions"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "job-skill-shelver-298-semantic-change-safety-technical-rereview-result-v1"
+    },
+    "result_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "const": "INGESTED_REVIEWER_MARKDOWN"
+    },
+    "package": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package_id",
+        "package_version"
+      ],
+      "properties": {
+        "package_id": {
+          "const": "job-skill-shelver-298-semantic-change-safety-technical-rereview-packet-he-dong-v1"
+        },
+        "package_version": {
+          "const": 1
+        }
+      }
+    },
+    "candidate_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_set_id",
+        "candidate_set_hash",
+        "candidate_set_file",
+        "candidate_set_file_hash"
+      ],
+      "properties": {
+        "candidate_set_id": {
+          "const": "job-skill-shelver-298-question-revision-candidates-v1"
+        },
+        "candidate_set_hash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "candidate_set_file": {
+          "const": "doc/features/job-skill-shelver-298-question-revision-candidates-v1.json"
+        },
+        "candidate_set_file_hash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        }
+      }
+    },
+    "reviewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "role",
+        "reviewed_date",
+        "submitted_at"
+      ],
+      "properties": {
+        "name": {
+          "const": "赫东"
+        },
+        "role": {
+          "const": "安全与技术复审"
+        },
+        "reviewed_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "submitted_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "source_files": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "role"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "sha256": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+          "role": { "enum": ["reviewer_submitted_markdown", "candidate_set"] }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total",
+        "pass",
+        "return_for_revision",
+        "by_type",
+        "by_module"
+      ],
+      "properties": {
+        "total": {
+          "const": 232
+        },
+        "pass": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "return_for_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "by_type": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/countSummary" }
+        },
+        "by_module": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/countSummary" }
+        }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 232,
+      "maxItems": 232,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "question_id",
+          "previous_question_id",
+          "question_version",
+          "source_question_id",
+          "source_record_hash",
+          "candidate_record_hash",
+          "reviewer",
+          "reviewed_date",
+          "result_source_file",
+          "rereview_conclusion",
+          "safety_conclusion",
+          "technical_conclusion",
+          "renderer_review",
+          "data_contract_review",
+          "material_tool_review",
+          "safety_sensitive_decision",
+          "stop_conditions",
+          "technical_note",
+          "safety_note",
+          "renderer_note",
+          "data_contract_note",
+          "material_tool_note",
+          "minimum_rereview_requirement"
+        ],
+        "properties": {
+          "question_id": {
+            "type": "string",
+            "pattern": "^M[1-6]_[A-Z]+_\\d+_V2$"
+          },
+          "previous_question_id": {
+            "type": "string",
+            "pattern": "^M[1-6]_[A-Z]+_\\d+$"
+          },
+          "question_version": {
+            "const": 2
+          },
+          "source_question_id": {
+            "type": "string",
+            "pattern": "^M[1-6]_[A-Z]+_\\d+$"
+          },
+          "source_record_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "candidate_record_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "reviewer": {
+            "type": "string"
+          },
+          "reviewed_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "result_source_file": { "type": "string", "minLength": 1 },
+          "rereview_conclusion": { "enum": ["PASS", "RETURN_FOR_REVISION"] },
+          "safety_conclusion": {
+            "enum": [
+              "PASS",
+              "RETURN_FOR_REVISION"
+            ]
+          },
+          "technical_conclusion": {
+            "enum": [
+              "PASS",
+              "RETURN_FOR_REVISION"
+            ]
+          },
+          "renderer_review": {
+            "enum": [
+              "PASS",
+              "RETURN_FOR_REVISION"
+            ]
+          },
+          "data_contract_review": {
+            "enum": [
+              "PASS",
+              "RETURN_FOR_REVISION"
+            ]
+          },
+          "material_tool_review": {
+            "enum": [
+              "PASS",
+              "RETURN_FOR_REVISION"
+            ]
+          },
+          "safety_sensitive_decision": {
+            "enum": [
+              "SENSITIVE",
+              "NOT_SENSITIVE"
+            ]
+          },
+          "stop_conditions": {
+            "type": "string",
+            "minLength": 1
+          },
+          "technical_note": {
+            "type": "string",
+            "minLength": 1
+          },
+          "safety_note": {
+            "type": "string",
+            "minLength": 1
+          },
+          "renderer_note": {
+            "type": "string",
+            "minLength": 1
+          },
+          "data_contract_note": {
+            "type": "string",
+            "minLength": 1
+          },
+          "material_tool_note": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minimum_rereview_requirement": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "countSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "pass", "return_for_revision"],
+      "properties": {
+        "total": { "type": "integer", "minimum": 0 },
+        "pass": { "type": "integer", "minimum": 0 },
+        "return_for_revision": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

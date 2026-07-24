@@ -7,9 +7,10 @@ const MODULE_TYPES = [
   'SAFETY_OPERATION'
 ]
 
-const ONLINE_QUESTION_TYPES = ['TRUE_FALSE', 'SINGLE_CHOICE', 'DRAG']
+const ONLINE_QUESTION_TYPES = ['TRUE_FALSE', 'SINGLE_CHOICE', 'DRAG', 'SOFTWARE_TASK']
 const ALL_QUESTION_TYPES = [...ONLINE_QUESTION_TYPES, 'OFFLINE_OPERATION']
 const DEFAULT_JOB_CODE = 'SUPERMARKET_SHELVER'
+const DEFAULT_BANK_DOMAIN = 'BASE_ABILITY'
 const REQUIRED_ONLINE_PER_MODULE = 7
 const REQUIRED_OFFLINE_COUNT = 8
 
@@ -45,7 +46,8 @@ function parseContentJson(contentJsonText) {
 
 export function checkQuestionBankLaunchGate(rows, options = {}) {
   const jobCode = options.jobCode ?? DEFAULT_JOB_CODE
-  const scopedRows = rows.filter((row) => row.job_code === jobCode)
+  const bankDomain = options.bankDomain ?? DEFAULT_BANK_DOMAIN
+  const scopedRows = rows.filter((row) => row.job_code === jobCode && row.bank_domain === bankDomain)
   const summary = {
     totalRows: scopedRows.length,
     byModule: buildModuleSummary(),
@@ -131,9 +133,9 @@ export function checkQuestionBankLaunchGate(rows, options = {}) {
 
   return {
     jobCode,
+    bankDomain,
     passed: issues.length === 0,
     issues,
     summary
   }
 }
-

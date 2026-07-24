@@ -1,0 +1,30 @@
+{
+  "schema_version": "job-skill-shelver-298-targeted-v5-safety-technical-rereview-result-v1",
+  "package_id": "job-skill-shelver-298-targeted-v5-safety-technical-rereview-packet-v1",
+  "candidate_set_hash": "sha256:55b761ed6cf8b62460a79006d10ec37fa25a41702ab61b25fd26f185b8c403a7",
+  "reviewer": "赫东",
+  "submitted_at": "2026-07-20T10:07:50.985Z",
+  "summary": {
+    "total": 2,
+    "pass": 2,
+    "return_for_revision": 0
+  },
+  "questions": [
+    {
+      "question_id": "M1_OP_037_V5",
+      "previous_question_id": "M1_OP_037_V4",
+      "new_semantic_hash": "sha256:4f5375fc90a5d2c9c35af89c9771652615c4a2e69a0bd9778b4a7735eb55a65b",
+      "candidate_record_hash": "sha256:1fe18e6630bc9583f030ebe359f7fbf4f8b2217eef28a37121d04998f9d85b72",
+      "conclusion": "PASS",
+      "review_note": ""
+    },
+    {
+      "question_id": "M1_OP_038_V5",
+      "previous_question_id": "M1_OP_038_V4",
+      "new_semantic_hash": "sha256:5d0154bf9b8874e0b223d3c0df8e3bde7809ad984074c507ade6966331fb242c",
+      "candidate_record_hash": "sha256:b9e1ee8d66fc51b010abb426fe5200b1831e3f5dcdc590a0b8e1274f781e44f0",
+      "conclusion": "PASS",
+      "review_note": ""
+    }
+  ]
+}

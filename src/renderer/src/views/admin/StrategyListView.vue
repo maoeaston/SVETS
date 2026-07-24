@@ -40,16 +40,12 @@
       </div>
     </header>
 
-    <p
-      v-if="errorMsg"
-      class="error-msg"
-      role="alert"
-    >
-      {{ errorMsg }}
-    </p>
+    <PageState v-if="loading" kind="loading" title="正在读取策略配置" description="加载完成前不会显示空数据结论。" />
+    <PageState v-else-if="errorMsg" :kind="errorMsg === '无权限' ? 'forbidden' : 'error'" title="策略配置没有加载成功" :description="errorMsg" action-label="重新加载" @action="fetchStrategies" />
+    <PageState v-else-if="groups.length === 0" kind="empty" title="当前没有策略" description="可以新建策略，或调整筛选条件。" action-label="新建策略" @action="goCreate" />
 
     <table
-      v-if="!loading"
+      v-if="!loading && !errorMsg && groups.length > 0"
       class="table"
     >
       <thead>
@@ -65,14 +61,6 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-if="groups.length === 0">
-          <td
-            colspan="6"
-            class="empty"
-          >
-            暂无策略
-          </td>
-        </tr>
         <tr
           v-for="g in groups"
           :key="g.strategyId"
@@ -93,12 +81,6 @@
         </tr>
       </tbody>
     </table>
-    <p
-      v-else
-      class="loading"
-    >
-      加载中…
-    </p>
 
     <footer
       v-if="!loading && items.length > 0"
@@ -127,6 +109,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
+import PageState from '../../components/PageState.vue'
 import type { StrategySummary, StrategyType } from '@shared/types/strategy'
 
 const router = useRouter()

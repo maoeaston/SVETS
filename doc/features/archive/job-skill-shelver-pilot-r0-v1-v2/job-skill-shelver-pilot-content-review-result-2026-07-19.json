@@ -1,0 +1,231 @@
+{
+  "schema_version": "job-skill-content-review-result-v1",
+  "result_id": "job-skill-review-2026-07-19-20260719020039",
+  "status": "SUBMITTED",
+  "package": {
+    "package_id": "job-skill-shelver-pilot-content-review-packet-v1",
+    "package_version": 1,
+    "manifest_id": "strategy_job_skill_shelver_v1@1-pilot-r0",
+    "manifest_version": 1
+  },
+  "strategy": {
+    "strategy_id": "strategy_job_skill_shelver_v1",
+    "strategy_version": 1
+  },
+  "reviewer": {
+    "name": "陈晓青",
+    "role": "CONTENT_VOCATIONAL_REVIEWER",
+    "reviewed_date": "2026-07-19",
+    "submitted_at": "2026-07-19T02:00:39Z"
+  },
+  "summary": {
+    "total": 24,
+    "online_total": 18,
+    "offline_total": 6,
+    "approved": 11,
+    "return_for_revision": 13,
+    "rejected": 0,
+    "text_only_approved": 18,
+    "asset_required": 0
+  },
+  "questions": [
+    {
+      "question_id": "M1_SC_001", "question_version": 1, "candidate_record_hash": "sha256:c109e88917b0e2693b7c01b47d329228d5ee5750dbffa851bc64c8c925d90d10", "question_type": "SINGLE_CHOICE",
+      "content_conclusion": "APPROVED", "review_note": "基础陈列姿态明确，A为唯一最佳答案。后续图片素材应呈现正面朝客、竖直、同排前沿基本齐平，避免只画出朝向而漏掉整齐度。",
+      "prompt_review": "PASS", "options_review": "UNIQUE_BEST", "answer_review": "CONFIRMED", "candidate_answer": "A", "reviewed_answer": "A",
+      "review_basis": "基础陈列要求是商品正面面向顾客、站立稳定、同排整齐；侧放、斜靠、标签朝下均不符合正常货架陈列。题目考查陈列姿态，不宜把Facing数量混入本题。",
+      "material_decision": "TEXT_ONLY_APPROVED", "material_requirement": null
+    },
+    {
+      "question_id": "M1_SC_004", "question_version": 1, "candidate_record_hash": "sha256:e744f295e8ffcf6dcdc01f7e7a1d019b604a09a988cdb826beddeae2f4c2689c", "question_type": "SINGLE_CHOICE",
+      "content_conclusion": "APPROVED", "review_note": "作为重下轻上的基础规则题可以通过；培训时应说明实际层位仍以门店货架承重、品类区位和陈列图为准。",
+      "prompt_review": "PASS", "options_review": "UNIQUE_BEST", "answer_review": "CONFIRMED", "candidate_answer": "B", "reviewed_answer": "B",
+      "review_basis": "大桶水重量大，放低层可降低坠落和搬取风险；小袋糖果较轻，可置于较高层位。门店实际执行还需服从品类分区和陈列图。",
+      "material_decision": "TEXT_ONLY_APPROVED", "material_requirement": null
+    },
+    {
+      "question_id": "M1_SC_007", "question_version": 1, "candidate_record_hash": "sha256:27e1995130642b207119bf54d49a1dbab531a2e235a2cb8ab9b7c89ca8a16825", "question_type": "SINGLE_CHOICE",
+      "content_conclusion": "RETURN_FOR_REVISION", "review_note": "价签核对不能只概括为名称和价格。建议改为核对商品与价签是否一一对应（品名、规格/条码）以及销售价格/促销有效期是否正确，并重新设计选项。",
+      "prompt_review": "RETURN", "options_review": "UNIQUE_BEST", "answer_review": "CONFIRMED", "candidate_answer": "A", "reviewed_answer": "A",
+      "review_basis": "现场核价至少要完成货签对应和价格正确两类检查；仅看名称可能无法区分同品牌不同规格，促销价还需核对生效与截止时间。A是现有选项中唯一正确项，但职业口径不完整。",
+      "material_decision": "TEXT_ONLY_APPROVED", "material_requirement": null
+    },
+    {
+      "question_id": "M1_OP_033", "question_version": 1, "candidate_record_hash": "sha256:d7b99fc4a3ea57c426bb319ff350d9685cd20033b4b7487b9f971ed8c920c1d2", "question_type": "OFFLINE_OPERATION",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "task_executable": "YES", "tools_complete": "YES", "criteria_sufficient": "NO",
+      "proposed_anchors": {
+        "score_0": "5件中有3件及以上未放在中层，或有3件及以上未正面朝外/倒放，任务整体未形成合格陈列。",
+        "score_1": "5件均放到中层，但有1—2件未正面朝外、倾斜不稳或前沿明显未对齐；经一次口头提示后完成也记1分。",
+        "score_2": "5件全部放在中层，均正面朝外、竖直稳定，同排商品前沿基本对齐，且全程无需提示。"
+      },
+      "safety_note": "商品应为轻型、无尖锐边角的训练道具；货架稳定，禁止攀爬或踩踏取放。",
+      "review_note": "任务可实施、材料基本够用，但当前指标漏掉同排前沿整齐和5件全数达标的判分边界；建议采用本次锚点后重建候选记录。"
+    },
+    {
+      "question_id": "M2_SC_002", "question_version": 1, "candidate_record_hash": "sha256:e7340e010b96a8b91fa1970958976429725296d4874f38a1595f7dc3f7396b5a", "question_type": "SINGLE_CHOICE",
+      "content_conclusion": "RETURN_FOR_REVISION", "review_note": "A中“早到货日期早”语病且把到货顺序与效期顺序混为一谈。建议明确本课程采用FIFO还是食品零售更常用的先到期先出（FEFO），再分别描述旧批前移、新批后置。",
+      "prompt_review": "RETURN", "options_review": "UNIQUE_BEST", "answer_review": "CONFIRMED", "candidate_answer": "A", "reviewed_answer": "A",
+      "review_basis": "FIFO通常指先入库批次先出；食品现场还必须结合生产日期、保质期和到期日执行临期优先。现有A方向正确，但术语和句式不足以形成稳定培训口径。",
+      "material_decision": "TEXT_ONLY_APPROVED", "material_requirement": null
+    },
+    {
+      "question_id": "M2_SC_003", "question_version": 1, "candidate_record_hash": "sha256:265a18fb3e06881d13f6b249f1c65aab804a77b0a01434df3e5be55c9c486d33", "question_type": "SINGLE_CHOICE",
+      "content_conclusion": "APPROVED", "review_note": "内容可通过。技术/安全复核时应把本题标记为安全敏感，并在培训材料中加入刀刃方向、下刀深度、手部位置和停用破损刀具。",
+      "prompt_review": "PASS", "options_review": "UNIQUE_BEST", "answer_review": "CONFIRMED", "candidate_answer": "A", "reviewed_answer": "A",
+      "review_basis": "刀具拆箱的首要风险是下刀过深导致商品破损，并可能因失控造成伤害；速度和纸箱回收便利性不能优先于安全。",
+      "material_decision": "TEXT_ONLY_APPROVED", "material_requirement": null
+    },
+    {
+      "question_id": "M2_SC_005", "question_version": 1, "candidate_record_hash": "sha256:b65e89ac336ed693c3cd9b2823f7626327211b79bf1213e13755e266a24e85da", "question_type": "SINGLE_CHOICE",
+      "content_conclusion": "RETURN_FOR_REVISION", "review_note": "“日期早/晚”没有说明是到货日期、生产日期还是到期日。建议给出两个清晰批次标签，并规定先核对到期日；旧批/较早到期批前移，新批后置。",
+      "prompt_review": "RETURN", "options_review": "UNIQUE_BEST", "answer_review": "CONFIRMED", "candidate_answer": "A", "reviewed_answer": "A",
+      "review_basis": "同款补货应先核对批次和效期，再把较早应售出的商品放在顾客先拿取的位置。若日期类型不明确，可能出现先到货但到期更晚的冲突。",
+      "material_decision": "TEXT_ONLY_APPROVED", "material_requirement": null
+    },
+    {
+      "question_id": "M2_OP_027", "question_version": 1, "candidate_record_hash": "sha256:39fd7d9383ac4f42732b2fa7072bbbec2fa8dcd9bfd1ed315bd32e923171f9d6", "question_type": "OFFLINE_OPERATION",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "task_executable": "YES", "tools_complete": "NO", "criteria_sufficient": "NO",
+      "proposed_anchors": {
+        "score_0": "无法在规定方式下打开纸箱，或出现踩箱、抛掷、强拉导致商品跌落/破损等不安全行为；触发停止条件直接记0分。",
+        "score_1": "能打开纸箱并取出商品，但有漏取、商品跌落、箱体严重撕裂，或需一次以上动作提示；未触发安全停止条件。",
+        "score_2": "在稳定台面上徒手沿胶带或预设开口安全拆箱，商品全部平稳取出且无破损、无遗漏，过程无需提示。"
+      },
+      "safety_note": "本题不得提供刀具。出现用牙咬、踩踏纸箱、猛拉朝向身体、商品泄漏或玻璃破裂时立即停止；箱体和内装物重量须预先限定。",
+      "review_note": "可作为徒手拆箱题，但应统一箱型、胶带强度和内装物，补充不抛掷、不踩箱、不撕坏内装商品及整理纸箱等可观察动作。"
+    },
+    {
+      "question_id": "M3_SC_001", "question_version": 1, "candidate_record_hash": "sha256:8633ff8f0cb993a524c68dbbf023bc17170dae86bb808766842635d9795fb62e", "question_type": "SINGLE_CHOICE",
+      "content_conclusion": "RETURN_FOR_REVISION", "review_note": "存在异常引号，且“生产日期+12个月”并不能在未声明门店/标签计算口径时唯一推出A或B。“必须卖出”也不等同于保质期截止。建议直接给出“保质期至YYYY-MM-DD”再考判断。",
+      "prompt_review": "RETURN", "options_review": "AMBIGUOUS", "answer_review": "UNABLE", "candidate_answer": "A", "reviewed_answer": null,
+      "review_basis": "现场理货应读取包装明确标注的到期/保质期至日期，并按门店下架规则执行。按月计算是否含生产当日、销售截止是否早于保质期末，均需预设口径，因此现题无法稳定确认候选答案。",
+      "material_decision": "TEXT_ONLY_APPROVED", "material_requirement": null
+    },
+    {
+      "question_id": "M3_SC_005", "question_version": 1, "candidate_record_hash": "sha256:4394fb249f63ce9f1e208dd4f6cf6f3b4f7685dc48bfb7e33febc774c22d8a9a", "question_type": "SINGLE_CHOICE",
+      "content_conclusion": "APPROVED", "review_note": "题目自带临期门槛和基准日期，B为唯一答案。应把基准日期固定为测评环境日期或题干日期，避免随系统当天变化。",
+      "prompt_review": "PASS", "options_review": "UNIQUE_BEST", "answer_review": "CONFIRMED", "candidate_answer": "B", "reviewed_answer": "B",
+      "review_basis": "题干明确“不足15天”，11天符合，16天和37天不符合。该门槛属于本题给定门店规则，不外推为所有门店统一标准。",
+      "material_decision": "TEXT_ONLY_APPROVED", "material_requirement": null
+    },
+    {
+      "question_id": "M3_SC_019", "question_version": 1, "candidate_record_hash": "sha256:689fb511285ee13b4cf6388d7287c7a01cc1fadedee18b63ab639e771f9df562", "question_type": "SINGLE_CHOICE",
+      "content_conclusion": "RETURN_FOR_REVISION", "review_note": "临期商品并非一律“移入临期专区等候上级处理”。建议改成“停止正常补货—隔离/醒目标识—登记并按门店流程报告处理”，且区分临期销售区与后台待处理区。",
+      "prompt_review": "RETURN", "options_review": "UNIQUE_BEST", "answer_review": "CONFIRMED", "candidate_answer": "B", "reviewed_answer": "B",
+      "review_basis": "临期处置取决于门店制度和商品类别，核心是识别、隔离或醒目标识、记录、报告并防止与正常商品混淆；直接丢弃和继续留置均不合适。B方向最接近，但流程用语不充分。",
+      "material_decision": "TEXT_ONLY_APPROVED", "material_requirement": null
+    },
+    {
+      "question_id": "M3_OP_043", "question_version": 1, "candidate_record_hash": "sha256:f1c77eb774cef2d100db56212405dc11d9bfb423713758605f9a13ef96151890", "question_type": "OFFLINE_OPERATION",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "task_executable": "NO", "tools_complete": "NO", "criteria_sufficient": "NO",
+      "proposed_anchors": {
+        "score_0": "未找出当天到期品或已过期品，任一过期品仍留在正常货架/被放入可售临期区，或两类商品均放错区域。",
+        "score_1": "正确识别两件目标商品，但其中1件分区错误，或需一次日期判断提示后才完成；不得把过期品放入可售区域。",
+        "score_2": "依据固定模拟日期独立找出当天到期品和已过期品，分别放入预先定义的临期待处理区与报损隔离区，且其余3件不误判。"
+      },
+      "safety_note": "训练品必须明显标注“教具/不可食用”，真实过期食品不得再次进入销售或食用链；日期标签脱落、模糊时停止评分并更换材料。",
+      "review_note": "“今天到期即放临期区”需先锁定门店口径；材料还缺固定模拟日期、清晰日期类型和5件商品的标准答案清单。建议把临期销售区改为后台临期待处理区以免混淆。"
+    },
+    {
+      "question_id": "M4_SC_001", "question_version": 1, "candidate_record_hash": "sha256:714ac74a48b1b89f86b69a05b7824f40a921c6614f30d74ac9c38b9dbb404078", "question_type": "SINGLE_CHOICE",
+      "content_conclusion": "APPROVED", "review_note": "可作为基础库位和重下轻上规则题通过；正式培训再补充批次、效期、离地离墙和通道要求。",
+      "prompt_review": "PASS", "options_review": "UNIQUE_BEST", "answer_review": "CONFIRMED", "candidate_answer": "B", "reviewed_answer": "B",
+      "review_basis": "入库应按品类/库位管理，并考虑承重和取放安全，重物下层、轻物上层。随意堆放或只按到货先后堆放不能保证安全和可追溯。",
+      "material_decision": "TEXT_ONLY_APPROVED", "material_requirement": null
+    },
+    {
+      "question_id": "M4_SC_003", "question_version": 1, "candidate_record_hash": "sha256:e60fc3875e4ece2ddb8a75960d009f77fc53a75bdee258af861dac2d3d4a1a43", "question_type": "SINGLE_CHOICE",
+      "content_conclusion": "APPROVED", "review_note": "A覆盖数量一致性与外观完好两项核心基础核对。后续课程可另设品项/规格、批次效期和温控题，不必全部塞入本题。",
+      "prompt_review": "PASS", "options_review": "UNIQUE_BEST", "answer_review": "CONFIRMED", "candidate_answer": "A", "reviewed_answer": "A",
+      "review_basis": "收货基础验收需比对单据数量并检查包装或商品是否破损；价格、品牌知名度和外观美观不是此环节的首要两项。",
+      "material_decision": "TEXT_ONLY_APPROVED", "material_requirement": null
+    },
+    {
+      "question_id": "M4_SC_005", "question_version": 1, "candidate_record_hash": "sha256:ac08e25f39a9dd9dd9a3977b4dbeea98eb9fa9646ed71d05e92eaf954cab1223", "question_type": "SINGLE_CHOICE",
+      "content_conclusion": "RETURN_FOR_REVISION", "review_note": "B的“停止收货”过度绝对。建议改为暂停该品项核验、复点、在单据上记录差异并报告负责人，按授权决定差异签收、拒收或补送；不要默认停止整批收货。",
+      "prompt_review": "RETURN", "options_review": "UNIQUE_BEST", "answer_review": "CONFIRMED", "candidate_answer": "B", "reviewed_answer": "B",
+      "review_basis": "数量短少必须当场复核、留痕并上报，不能无记录签收；但是否停止整车/整批收货取决于门店授权和供应商流程。B方向正确，动作范围需修正。",
+      "material_decision": "TEXT_ONLY_APPROVED", "material_requirement": null
+    },
+    {
+      "question_id": "M4_OP_029", "question_version": 1, "candidate_record_hash": "sha256:78b9a9bc9e7035d18c0afcb9155814b620e9b35a13b6760ab0913fd9bd1babcf", "question_type": "OFFLINE_OPERATION",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "task_executable": "YES", "tools_complete": "NO", "criteria_sufficient": "NO",
+      "proposed_anchors": {
+        "score_0": "记录数量与标准答案相差2件及以上，或未形成可识别记录；存在明显漏区、重复计数且未自查。",
+        "score_1": "完成清点和记录，但数量与标准答案相差1件，或经一次提示复点后才得到正确数量。",
+        "score_2": "按固定顺序逐件清点所有目标商品，无漏数、无重复，记录本上的品类/数量清楚且与标准答案一致，全程无需提示。"
+      },
+      "safety_note": "货架和商品需稳定、轻量且位于安全触达高度；禁止攀爬、钻入货架或搬动超出个人能力的箱件。",
+      "review_note": "任务可实施，但材料应补笔、固定商品数量与标准答案；指标要覆盖按库位顺序清点、避免重复/漏数以及记录可识别。"
+    },
+    {
+      "question_id": "M5_SC_001", "question_version": 1, "candidate_record_hash": "sha256:2e7999af625e5210580e505513dfe7514057a235c3c106cd34ab69b194b9cc79", "question_type": "SINGLE_CHOICE",
+      "content_conclusion": "APPROVED", "review_note": "内容通过。技术/安全复核应将本题标记为安全敏感；现场口径可补充先守护/隔离区域，再取警示牌，避免离开时无人看守。",
+      "prompt_review": "PASS", "options_review": "UNIQUE_BEST", "answer_review": "CONFIRMED", "candidate_answer": "B", "reviewed_answer": "B",
+      "review_basis": "水渍构成滑倒风险，应立即警示和隔离并通知清洁处理；忽视或把水踢入货架下都会扩大风险。",
+      "material_decision": "TEXT_ONLY_APPROVED", "material_requirement": null
+    },
+    {
+      "question_id": "M5_SC_002", "question_version": 1, "candidate_record_hash": "sha256:1c9ca58ff9d06fc7d244b02b9197462e440e7240dc08e151c6462437acc49d8b", "question_type": "SINGLE_CHOICE",
+      "content_conclusion": "APPROVED", "review_note": "内容通过。安全复核应标为安全敏感；现场还应封控危险区域，未经授权不得自行扶正或继续取货。",
+      "prompt_review": "PASS", "options_review": "UNIQUE_BEST", "answer_review": "CONFIRMED", "candidate_answer": "B", "reviewed_answer": "B",
+      "review_basis": "疑似倒塌的货架属于结构性危险，应立即停止区域作业、隔离并通知负责人或维修人员；临时支撑或继续理货不可接受。",
+      "material_decision": "TEXT_ONLY_APPROVED", "material_requirement": null
+    },
+    {
+      "question_id": "M5_SC_009", "question_version": 1, "candidate_record_hash": "sha256:a76f0177d52b6771e414b4551032e558bd9dc070f62a392f18326e07ace91789", "question_type": "SINGLE_CHOICE",
+      "content_conclusion": "APPROVED", "review_note": "内容通过。安全复核应标为安全敏感；专用工具建议明确为扫帚、簸箕/夹取工具及防割容器，并检查是否有遗漏碎片。",
+      "prompt_review": "PASS", "options_review": "UNIQUE_BEST", "answer_review": "CONFIRMED", "candidate_answer": "B", "reviewed_answer": "B",
+      "review_basis": "碎玻璃必须先警示隔离，再用专用工具清理并报告，禁止徒手拾取或踢到角落。B为唯一安全答案。",
+      "material_decision": "TEXT_ONLY_APPROVED", "material_requirement": null
+    },
+    {
+      "question_id": "M5_OP_039", "question_version": 1, "candidate_record_hash": "sha256:72849591ae2f8e0c67315eb19ab9ebaf437e5cd3715f616905c0410dbb2b1904", "question_type": "OFFLINE_OPERATION",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "task_executable": "YES", "tools_complete": "NO", "criteria_sufficient": "NO",
+      "proposed_anchors": {
+        "score_0": "未先警示隔离危险区域，直接跨越/踩入水渍，或在地面仍湿滑时撤牌；任一安全停止条件触发即记0分。",
+        "score_1": "完成警示、通知、确认、撤牌4步中的2—3步，或顺序基本正确但需一次提示；全过程未触发安全停止条件。",
+        "score_2": "发现后立即警示并隔离，准确通知指定人员，持续保持警示直至确认地面清洁干燥，复检后撤牌，4步顺序正确且无需提示。"
+      },
+      "safety_note": "优先使用防滑仿真水渍垫或封闭小区域，不建议在受试者行走路径放真实水。若受试者进入湿滑区、搬牌时失稳或现场无法隔离，监督员立即停止。",
+      "review_note": "题干要求4步，现有指标只评2步，无法判定闭环。建议用防滑仿真水渍垫替代真实水，补通知对象/话术、清洁完成确认和撤牌前复检。"
+    },
+    {
+      "question_id": "M6_SC_003", "question_version": 1, "candidate_record_hash": "sha256:ce435dea2d58b09a12d661ef3c54b2c4bb0a271dbe70208f9bd41032a7f2b5df", "question_type": "SINGLE_CHOICE",
+      "content_conclusion": "APPROVED", "review_note": "在常见商品和标签说明前提下，B为唯一答案。正式素材应显示酸奶包装上的冷藏条件，避免把所有酸奶类型一概而论。",
+      "prompt_review": "PASS", "options_review": "UNIQUE_BEST", "answer_review": "CONFIRMED", "candidate_answer": "B", "reviewed_answer": "B",
+      "review_basis": "常见低温酸奶需按包装标示冷藏，薯片和洗衣液通常常温存放；实际作业始终以商品标签标注的储存条件为准。",
+      "material_decision": "TEXT_ONLY_APPROVED", "material_requirement": null
+    },
+    {
+      "question_id": "M6_SC_009", "question_version": 1, "candidate_record_hash": "sha256:aa0310c16783856d32454d226c5625ffa73b30c37136775a1bba4aedf21b51c6", "question_type": "SINGLE_CHOICE",
+      "content_conclusion": "APPROVED", "review_note": "B为唯一最佳答案。后续训练宜进一步要求核对品名、规格、口味和条码，不依赖包装颜色或原摆放位置。",
+      "prompt_review": "PASS", "options_review": "UNIQUE_BEST", "answer_review": "CONFIRMED", "candidate_answer": "B", "reviewed_answer": "B",
+      "review_basis": "相似包装商品应依据稳定标识信息区分，至少核对文字名称和规格，必要时扫描或核对条码；颜色和位置不能作为可靠依据。",
+      "material_decision": "TEXT_ONLY_APPROVED", "material_requirement": null
+    },
+    {
+      "question_id": "M6_SC_012", "question_version": 1, "candidate_record_hash": "sha256:445b250d706dd28ce616d1742540cb5f136a7d27a9d9f33cffa0af88c2a2a4d8", "question_type": "SINGLE_CHOICE",
+      "content_conclusion": "RETURN_FOR_REVISION", "review_note": "B把条码说成直接包含品名/规格/厂家，不够准确。建议答案改为“识别一个贸易项目/商品编码，扫描后由系统调取对应商品资料”，并重写三个选项。",
+      "prompt_review": "RETURN", "options_review": "AMBIGUOUS", "answer_review": "UNABLE", "candidate_answer": "B", "reviewed_answer": null,
+      "review_basis": "零售条码通常承载用于唯一识别贸易项目的编码；品名、规格、厂家和价格等资料一般由门店系统按编码关联查询，并非都直接编码在条纹中。",
+      "material_decision": "TEXT_ONLY_APPROVED", "material_requirement": null
+    },
+    {
+      "question_id": "M6_OP_035", "question_version": 1, "candidate_record_hash": "sha256:11f5afcabb6f268b5b7a7cc0ef737f7ef2aa9169d1322a47853c20f3c6f0a256", "question_type": "OFFLINE_OPERATION",
+      "content_conclusion": "RETURN_FOR_REVISION",
+      "task_executable": "YES", "tools_complete": "NO", "criteria_sufficient": "NO",
+      "proposed_anchors": {
+        "score_0": "6件中有3件及以上错区，或出现危险放置（重物高位、商品不稳易坠落），未形成基本归区结果。",
+        "score_1": "6件中有1—2件错区，或虽全部归区但有倒放、反面朝外、不稳定等1—2处陈列错误；经一次提示后完成也记1分。",
+        "score_2": "6件全部按标准映射放入正确区域，无错放，均正面朝外、放置稳定并符合区域内基本陈列要求，全程无需提示。"
+      },
+      "safety_note": "使用轻型训练商品和稳定货架；重物不得设置在高位，禁止攀爬或把商品抛入货架。",
+      "review_note": "任务可实施，但必须提供6件商品与货架区域的标准映射、清晰区域标识及摆放规则；当前r1与r2实质重复，需加入正面、稳定和位置要求。"
+    }
+  ]
+}

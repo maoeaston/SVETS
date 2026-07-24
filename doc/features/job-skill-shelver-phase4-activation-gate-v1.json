@@ -1,0 +1,74 @@
+{
+  "schema_version": "job-skill-shelver-phase4-activation-gate-v1",
+  "gate_id": "job-skill-shelver-phase4-activation-gate-v1",
+  "status": "BLOCKED_ASSET_DELIVERY_AND_PILOT_GATE",
+  "generated_at": "2026-07-22T15:00:00+08:00",
+  "runtime_authority": {
+    "path": "doc/features/job-skill-shelver-runtime-authority-v1.json",
+    "authority_hash": "sha256:8fe7ee801122eaa30407d1d533c5827ce27cb6a68d7364370e5a911d22bd5519",
+    "semantic_root_hash": "sha256:38ba2d9be5e4cbef61697a4a02af0650737122eafe3bf3e2b03524692700243f"
+  },
+  "delivery_lock": {
+    "path": "doc/features/job-skill-shelver-question-delivery-lock-v1.json",
+    "file_sha256": "sha256:b0b6889a38340bc19e7527741182455fb52c27d635be917b9ec3dfb60c3be6b2",
+    "lock_hash": "sha256:7342df1386e4d10a48939f9efb3e2a14c7172d5f58db4ad41c0e48b98d471dd6"
+  },
+  "review_gate": {
+    "path": "doc/features/job-skill-shelver-298-targeted-v6-rereview-merged-gate-v1.json",
+    "file_sha256": "sha256:22c365073051606d6be82ea261c072c5d5762f59a24145f602d554d52a207319",
+    "gate_hash": "sha256:e8519cc08f611d141e8f45be7faead2a4a768aca603d2f67c9b6e3b39c9573d5",
+    "targeted_total": 145,
+    "passed": 145,
+    "returned": 0
+  },
+  "replacement_review_gate": {
+    "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v4-rereview-merged-gate-v1.json",
+    "file_sha256": "sha256:6b3fa4573ba9ed149ebbfbbe83692a1f2ffe52298e7de472648c86ddf41b0a87",
+    "gate_hash": "sha256:395aa1d1426a8177f66142953a508b35d0b7f158eb811e26885c5562a1bcdfff",
+    "replacement_total": 11,
+    "passed": 11,
+    "returned": 0
+  },
+  "asset_gate": {
+    "path": "doc/assets/asset-manifest.json",
+    "file_sha256": "sha256:cf2ff17fb4899073c0cd9369ee926737ac6fe578f7f4d9c0a96b4cfa669a2628",
+    "total": 270,
+    "approved": 0,
+    "unresolved": 270,
+    "lifecycle": {
+      "planned": 270,
+      "generated": 0,
+      "composited": 0,
+      "reviewing": 0,
+      "approved": 0,
+      "retired": 0
+    }
+  },
+  "pilot_gate": {
+    "path": "doc/features/job-skill-shelver-pilot-activation-manifest-v3.json",
+    "file_sha256": "sha256:9abd3671f44709b5d59ea6b3c8384a2c7d17965acb800d142217fa2658947170",
+    "status": "PENDING",
+    "activation_authorized": false
+  },
+  "authority": {
+    "may_compile_draft_seed": true,
+    "may_generate_activation_sql": false,
+    "may_activate": false,
+    "may_create_session": false,
+    "phase_4_executed": true,
+    "runtime_database_unchanged": true
+  },
+  "blockers": [
+    {
+      "code": "PILOT_GATE_PENDING",
+      "count": 24,
+      "message": "Pilot 24题的独立激活门禁尚未通过。"
+    },
+    {
+      "code": "ASSET_DELIVERY_INCOMPLETE",
+      "count": 270,
+      "message": "270项资产尚未全部批准并校验文件。"
+    }
+  ],
+  "gate_hash": "sha256:7488098fd04f120600b17a5c52ebf2f9339914b2fcf970247656193ebb83252d"
+}

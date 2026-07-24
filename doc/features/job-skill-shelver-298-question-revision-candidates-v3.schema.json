@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Job Skill Shelver 298 Targeted V3 Candidates",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "candidate_set_id",
+    "status",
+    "summary",
+    "authority",
+    "questions",
+    "candidate_set_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "job-skill-shelver-298-question-revision-candidates-v3"
+    },
+    "status": {
+      "const": "DRAFT_TARGETED_REREVIEW_REQUIRED_NO_ACTIVATION_AUTHORITY"
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 145,
+      "maxItems": 145,
+      "items": {
+        "type": "object",
+        "required": [
+          "question_id",
+          "previous_question_id",
+          "old_semantic_hash",
+          "new_semantic_hash",
+          "applied_patch_id",
+          "required_review_tracks"
+        ]
+      }
+    }
+  }
+}

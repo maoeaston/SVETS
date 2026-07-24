@@ -1,4 +1,37 @@
-/* 全局基础样式 — 仅设定 box-model 和字体，不引入组件级样式 */
+:root {
+  --color-canvas: oklch(0.965 0.012 105);
+  --color-surface: oklch(0.995 0.004 105);
+  --color-surface-muted: oklch(0.94 0.014 105);
+  --color-ink: oklch(0.29 0.027 112);
+  --color-text: oklch(0.28 0.02 105);
+  --color-text-muted: oklch(0.5 0.018 105);
+  --color-text-faint: oklch(0.66 0.012 105);
+  --color-border: oklch(0.82 0.017 105);
+  --color-border-subtle: oklch(0.89 0.012 105);
+  --color-accent: oklch(0.64 0.105 115);
+  --color-accent-dark: oklch(0.45 0.075 115);
+  --color-accent-ink: oklch(0.18 0.025 115);
+  --color-accent-soft: oklch(0.88 0.055 115);
+  --color-danger: oklch(0.5 0.15 42);
+  --color-danger-soft: oklch(0.93 0.045 42);
+  --color-warning: oklch(0.55 0.12 70);
+  --color-warning-soft: oklch(0.94 0.05 76);
+  --color-success: oklch(0.46 0.1 145);
+  --color-success-soft: oklch(0.93 0.04 145);
+  --color-sidebar-text: oklch(0.87 0.012 105);
+  --color-sidebar-muted: oklch(0.68 0.018 105);
+  --color-sidebar-active: oklch(0.4 0.045 112);
+  --color-sidebar-hover: oklch(0.35 0.032 112);
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+  --shadow-divider: 0 1px 0 oklch(0.82 0.017 105 / .72);
+  --shadow-surface: 0 1px 3px oklch(0.28 0.02 105 / .12), 0 10px 28px oklch(0.28 0.02 105 / .045);
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+}
+
 *,
 *::before,
 *::after {
@@ -15,10 +48,26 @@ body,
 }
 
 body {
-  font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Noto Sans SC', sans-serif;
   font-size: 16px;
-  line-height: 1.5;
-  color: #1a1a1a;
-  background-color: #f5f5f5;
+  line-height: 1.7;
+  color: var(--color-text);
+  background-color: var(--color-canvas);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  touch-action: manipulation;
+}
+
+button,
+input,
+select,
+textarea { font: inherit; }
+
+button,
+a { -webkit-tap-highlight-color: transparent; }
+
+:focus-visible { outline: 3px solid oklch(0.64 0.105 115 / .42); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }

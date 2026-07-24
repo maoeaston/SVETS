@@ -1,0 +1,46 @@
+{
+  "schema_version": "job-skill-shelver-298-targeted-v6-content-rereview-result-v1",
+  "package_id": "job-skill-shelver-298-targeted-v6-content-rereview-packet-v1",
+  "candidate_set_hash": "sha256:2c0f5d1a32414c8ad323f19ba72aba2e418f75e9b94bf1f1f61b150a525f211c",
+  "reviewer": "陈晓青",
+  "submitted_at": "2026-07-20T10:47:08.396Z",
+  "summary": {
+    "total": 4,
+    "pass": 4,
+    "return_for_revision": 0
+  },
+  "questions": [
+    {
+      "question_id": "M2_OP_031_V6",
+      "previous_question_id": "M2_OP_031_V5",
+      "new_semantic_hash": "sha256:3e7de10bf361b2dc99f16fc000e277543273192784a1ace913e1dac06eb70de0",
+      "candidate_record_hash": "sha256:f1b3fa3ab750bad1b0ff0bd60542ef5c7608402fcc8b6bb2688160af7fc5e646",
+      "conclusion": "PASS",
+      "review_note": ""
+    },
+    {
+      "question_id": "M2_OP_038_V6",
+      "previous_question_id": "M2_OP_038_V5",
+      "new_semantic_hash": "sha256:5a5d9fd49650579fa055aafc9bef43582988c3639ce23a89cb6b9304acf4461e",
+      "candidate_record_hash": "sha256:e9063ef9782b80bca4c769fc3074768352e05d405daa7db3829dc005198251cc",
+      "conclusion": "PASS",
+      "review_note": ""
+    },
+    {
+      "question_id": "M2_OP_041_V6",
+      "previous_question_id": "M2_OP_041_V5",
+      "new_semantic_hash": "sha256:23244edbec021c42b9edb4527992495a34cb30675be9052ea53636b08e1c754a",
+      "candidate_record_hash": "sha256:cc4bd345d1062fc9cb19e9d7cb6e05a34cf2f70e4cd8d0c8fa42b7738ee7c2f3",
+      "conclusion": "PASS",
+      "review_note": ""
+    },
+    {
+      "question_id": "M5_DG_034_V6",
+      "previous_question_id": "M5_DG_034_V5",
+      "new_semantic_hash": "sha256:2ff9ab3ae0c10b21ec3f24f547d4e9c6edf3f521bf24b8f259da54685650b7f1",
+      "candidate_record_hash": "sha256:900a61822f76485a8d1face53d99beac8a6080c4770310419a8a27cab6ca8d4d",
+      "conclusion": "PASS",
+      "review_note": ""
+    }
+  ]
+}

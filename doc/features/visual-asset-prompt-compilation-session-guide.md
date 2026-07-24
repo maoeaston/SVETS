@@ -1,10 +1,13 @@
 # 逐资产 Prompt 编译新会话指南
 
-**版本：** v1.0.0
+> [!IMPORTANT]
+> 编译素材 Prompt 前，先读取 `job-skill-shelver-current-contracts.md`、`job-skill-shelver-runtime-authority-v1.json` 和 `asset-manifest.json`。旧 Pilot 文档和旧审核包只作门禁追溯，不得覆盖当前 298 题运行时题号与素材约束。
+
+**版本：** v1.1.0
 
 **目标：** 在不调用生成 API 的前提下，把 Manifest 中 AI 资产的模板、描述、参考资产和约束编译为可审核的逐资产 `prompt_text`。
 
-当前 196 个 AI 图片/视频资产都绑定了模板，但 `prompt_text` 仍为空。不要在一个会话里一次编译 196 条，应按小批次完成并人工复核。
+当前 213 个 AI/复合图片和视频资产都绑定了模板，但 `prompt_text` 仍为空。不要在一个会话里一次编译 213 条，应按小批次完成并人工复核。
 
 ## 1. 推荐批次
 
@@ -16,6 +19,7 @@
 6. F 类 26 个 AI 图片资产。
 7. A 类视频，按 A-F 六个场景模板分别编译。
 8. G 类 6 个视频、6 个流程条和 12 个工具卡。
+9. DELIVERY 17 张唯一答案图。
 
 每批建议 6 至 20 条。上一批没有完成人工复核前，不进入下一批。
 
@@ -35,7 +39,8 @@
 4. doc/features/question-bank-image-integration-checklist.md
 5. doc/features/visual-asset-video-production-sop.md
 6. doc/features/visual-asset-prompt-compilation-session-guide.md
-7. doc/assets/prompt-templates/ 下对应模板
+7. doc/features/job-skill-shelver-current-contracts.md
+8. doc/assets/prompt-templates/ 下对应模板
 
 本批范围：Manifest 中 category=REFERENCE 的 R1-R6 六项。
 
@@ -63,6 +68,7 @@ R1-R6 之后，新开会话使用以下提示词，并替换 `本批范围`：
 - doc/features/question-bank-image-integration-checklist.md
 - doc/features/visual-asset-video-production-sop.md
 - doc/features/visual-asset-prompt-compilation-session-guide.md
+- doc/features/job-skill-shelver-current-contracts.md
 - doc/assets/prompt-templates/ 下对应模板
 
 本批范围：[填写 category、asset_id 前缀或明确 asset_id 列表，建议 6 至 20 条]

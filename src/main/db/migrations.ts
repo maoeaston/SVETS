@@ -6,6 +6,9 @@ export const M2_SCHEMA_VERSION = '0.1.14-multi-device-m2-session-foundation'
 export const M2_MIGRATION_ID = '2026-07-15_mvp_schema_v0_1_14_multi_device_m2_session_foundation'
 export const CURRENT_SCHEMA_VERSION = '0.1.15-multi-device-m3-grant-assignment'
 export const CURRENT_MIGRATION_ID = '2026-07-15_mvp_schema_v0_1_15_multi_device_m3_grant_assignment'
+export const PHASE4_ASSET_ROLE_MIGRATION_ID = '2026-07-20_job_skill_phase4_asset_roles'
+export const F4_SITTING_MIGRATION_ID = '2026-07-23_f4_assessment_sitting'
+export const F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID = '2026-07-24_f6_offline_score_scope_required'
 
 type MigrationOptions = {
   beforeMigrate?: (migrationIds: string[]) => void
@@ -600,7 +603,16 @@ const FUTURE_MULTI_DEVICE_TABLES = [
 
 function m3TriggerMatches(database: DBAdapter, triggerName: string): boolean {
   const expected = M3_TRIGGER_SQL_BY_NAME.get(triggerName)
-  return Boolean(expected) && sqlMatches(database, 'trigger', triggerName, expected!)
+  if (!expected) return false
+  if (sqlMatches(database, 'trigger', triggerName, expected)) return true
+  // F4 在不放宽常规单调推进的前提下，为累计情绪崩溃兜底增加
+  // ONLINE_IN_PROGRESS → FINALIZED 的受限终止分支。该升级后的触发器仍满足 M3 的全部约束。
+  if (triggerName === 'trg_assessment_delivery_phase_forward_only') {
+    const actual = normalizeSql(sqliteObjectSql(database, 'trigger', triggerName))
+    return actual.includes("new.delivery_phase = 'finalized' and new.status = 'completed'") &&
+      actual.includes("old.delivery_phase = 'online_in_progress'")
+  }
+  return false
 }
 
 function assessmentDeliveryPhaseAllowsM3(database: DBAdapter): boolean {
@@ -820,6 +832,33 @@ function existingAssessmentIndexSql(database: DBAdapter): string[] {
   return rows.map((row) => row.sql)
 }
 
+function existingIndexSqlForTable(database: DBAdapter, tableName: string): string[] {
+  return database
+    .prepare(`
+      SELECT sql
+        FROM sqlite_master
+       WHERE type = 'index'
+         AND tbl_name = ?
+         AND sql IS NOT NULL
+       ORDER BY name
+    `)
+    .all(tableName)
+    .map((row) => (row as { sql: string }).sql)
+}
+
+function existingTriggersForTable(database: DBAdapter, tableName: string): Array<{ name: string; sql: string }> {
+  return database
+    .prepare(`
+      SELECT name, sql
+        FROM sqlite_master
+       WHERE type = 'trigger'
+         AND tbl_name = ?
+         AND sql IS NOT NULL
+       ORDER BY name
+    `)
+    .all(tableName) as Array<{ name: string; sql: string }>
+}
+
 function selectSnapshotRows(database: DBAdapter, tableName: string, preferredColumns: string[]): unknown[] {
   const columns = columnNames(database, tableName)
   const selected = preferredColumns.filter((column) => columns.has(column))
@@ -1014,6 +1053,209 @@ function applyM3Migration(database: DBAdapter): void {
   database.exec(M3_TRIGGER_SQL)
 }
 
+const PHASE4_ASSET_ROLE_SQL = `asset_role TEXT CHECK (asset_role IS NULL OR asset_role IN (
+  'QUESTION_MEDIA',
+  'TOOL_CHECKLIST',
+  'REPORT_FILE',
+  'VOICE_PROMPT',
+  'UI_ASSET',
+  'ROLE_PLAY_SCRIPT',
+  'SEALED_ADMIN_CONFIG',
+  'OFFLINE_SETUP_GUIDE',
+  'DATA_SNAPSHOT',
+  'OTHER'
+))`
+
+function isPhase4AssetRoleApplied(database: DBAdapter): boolean {
+  if (!tableExists(database, 'asset_resource')) return true
+  const sql = normalizeSql(sqliteObjectSql(database, 'table', 'asset_resource'))
+  return ['role_play_script', 'sealed_admin_config', 'offline_setup_guide']
+    .every((role) => sql.includes(`'${role}'`))
+}
+
+function applyPhase4AssetRoleMigration(database: DBAdapter): void {
+  if (!tableExists(database, 'asset_resource') || isPhase4AssetRoleApplied(database)) return
+  const originalSql = sqliteObjectSql(database, 'table', 'asset_resource')
+  if (!originalSql) throw new Error('[DB] asset_resource table is missing before phase 4 role migration')
+  const nextSql = originalSql.replace(
+    /asset_role\s+TEXT\s+CHECK\s*\(\s*asset_role\s+IS\s+NULL\s+OR\s+asset_role\s+IN\s*\([\s\S]*?\)\s*\)/i,
+    PHASE4_ASSET_ROLE_SQL
+  )
+  if (nextSql === originalSql || !normalizeSql(nextSql).includes("'sealed_admin_config'")) {
+    throw new Error('[DB] Unable to expand asset_resource.asset_role CHECK for phase 4')
+  }
+  const rowsBefore = database.prepare('SELECT * FROM asset_resource ORDER BY asset_id').all()
+  const columns = Array.from(columnNames(database, 'asset_resource'))
+  const indexes = database
+    .prepare(`SELECT sql FROM sqlite_master WHERE type='index' AND tbl_name='asset_resource' AND sql IS NOT NULL ORDER BY name`)
+    .all() as Array<{ sql: string }>
+  const createSql = replaceCreateTableName(nextSql, 'asset_resource', 'asset_resource__phase4_new')
+  const columnList = columns.join(', ')
+  database.exec(`
+ALTER TABLE asset_resource RENAME TO asset_resource__phase4_old;
+${createSql};
+INSERT INTO asset_resource__phase4_new (${columnList}) SELECT ${columnList} FROM asset_resource__phase4_old;
+DROP TABLE asset_resource__phase4_old;
+ALTER TABLE asset_resource__phase4_new RENAME TO asset_resource;
+`)
+  for (const index of indexes) database.exec(index.sql)
+  const rowsAfter = database.prepare('SELECT * FROM asset_resource ORDER BY asset_id').all()
+  if (JSON.stringify(rowsBefore) !== JSON.stringify(rowsAfter)) {
+    throw new Error('[DB] Phase 4 asset role migration changed asset rows')
+  }
+}
+
+function isF4SittingStructurallyApplied(database: DBAdapter): boolean {
+  return (
+    tableExists(database, 'assessment_sitting') &&
+    ['sitting_id', 'session_id', 'sitting_no', 'started_event_id', 'ended_event_id'].every((column) =>
+      columnNames(database, 'assessment_sitting').has(column)
+    ) &&
+    indexExists(database, 'idx_assessment_sitting_session_order') &&
+    indexExists(database, 'ux_assessment_one_open_sitting')
+  )
+}
+
+function applyF4SittingMigration(database: DBAdapter): void {
+  database.exec(`
+CREATE TABLE IF NOT EXISTS assessment_sitting (
+  sitting_id              TEXT PRIMARY KEY,
+  session_id              TEXT NOT NULL REFERENCES assessment_session(session_id) ON DELETE RESTRICT,
+  sitting_no              INTEGER NOT NULL CHECK (sitting_no >= 1),
+  started_at              TEXT NOT NULL,
+  started_by              TEXT NOT NULL REFERENCES user_account(user_id),
+  ended_at                TEXT,
+  ended_by                TEXT REFERENCES user_account(user_id),
+  end_reason              TEXT CHECK (end_reason IS NULL OR end_reason IN (
+                           'COMPLETED_NORMALLY', 'PAUSED_BY_PLAN', 'ENDED_BY_COLLAPSE'
+                         )),
+  current_question_order  INTEGER CHECK (current_question_order IS NULL OR current_question_order >= 1),
+  started_event_id        TEXT NOT NULL UNIQUE REFERENCES domain_event_projection(event_id),
+  ended_event_id          TEXT UNIQUE REFERENCES domain_event_projection(event_id),
+  created_at              TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at              TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (session_id, sitting_no),
+  CHECK ((ended_at IS NULL AND ended_by IS NULL AND end_reason IS NULL AND ended_event_id IS NULL)
+      OR (ended_at IS NOT NULL AND ended_by IS NOT NULL AND end_reason IS NOT NULL AND ended_event_id IS NOT NULL))
+);
+CREATE INDEX IF NOT EXISTS idx_assessment_sitting_session_order
+  ON assessment_sitting(session_id, sitting_no);
+    CREATE UNIQUE INDEX IF NOT EXISTS ux_assessment_one_open_sitting
+      ON assessment_sitting(session_id) WHERE ended_at IS NULL;
+
+    DROP TRIGGER IF EXISTS trg_assessment_delivery_phase_forward_only;
+    CREATE TRIGGER trg_assessment_delivery_phase_forward_only
+    BEFORE UPDATE OF delivery_phase ON assessment_session
+    FOR EACH ROW
+    WHEN OLD.delivery_phase IS NOT NULL AND NEW.delivery_phase IS NOT NULL
+      AND OLD.delivery_phase <> NEW.delivery_phase
+    BEGIN
+      SELECT CASE
+        WHEN OLD.delivery_phase = 'FINALIZED' THEN RAISE(ABORT, 'delivery_phase FINALIZED is terminal')
+        WHEN OLD.delivery_phase = 'READY_TO_FINALIZE' AND NEW.delivery_phase <> 'FINALIZED' THEN RAISE(ABORT, 'READY_TO_FINALIZE can only advance to FINALIZED')
+        WHEN OLD.delivery_phase = 'OBSERVATION' AND NEW.delivery_phase <> 'READY_TO_FINALIZE' THEN RAISE(ABORT, 'OBSERVATION can only advance to READY_TO_FINALIZE')
+        WHEN OLD.delivery_phase = 'OFFLINE_SCORING' AND NEW.delivery_phase NOT IN ('OBSERVATION','READY_TO_FINALIZE') THEN RAISE(ABORT, 'OFFLINE_SCORING can only advance to OBSERVATION or READY_TO_FINALIZE')
+        WHEN OLD.delivery_phase = 'ONLINE_COMPLETED' AND NEW.delivery_phase <> 'OFFLINE_SCORING' THEN RAISE(ABORT, 'ONLINE_COMPLETED can only advance to OFFLINE_SCORING')
+        WHEN OLD.delivery_phase = 'ONLINE_IN_PROGRESS'
+          AND NEW.delivery_phase <> 'ONLINE_COMPLETED'
+          AND NOT (NEW.delivery_phase = 'FINALIZED' AND NEW.status = 'COMPLETED') THEN RAISE(ABORT, 'ONLINE_IN_PROGRESS can only advance to ONLINE_COMPLETED')
+        WHEN OLD.delivery_phase = 'STUDENT_CONFIRMED' AND NEW.delivery_phase <> 'ONLINE_IN_PROGRESS' THEN RAISE(ABORT, 'STUDENT_CONFIRMED can only advance to ONLINE_IN_PROGRESS')
+        WHEN OLD.delivery_phase = 'ASSIGNED' AND NEW.delivery_phase <> 'STUDENT_CONFIRMED' THEN RAISE(ABORT, 'ASSIGNED can only advance to STUDENT_CONFIRMED')
+        WHEN OLD.delivery_phase = 'PREPARED' AND NEW.delivery_phase <> 'ASSIGNED' THEN RAISE(ABORT, 'PREPARED can only advance to ASSIGNED')
+      END;
+    END;
+  `)
+}
+
+function isF6ScoreScopeRequiredStructurallyApplied(database: DBAdapter): boolean {
+  if (!tableExists(database, 'offline_score_record')) return false
+  const columns = database.prepare('PRAGMA table_info(offline_score_record)').all() as Array<{
+    name: string
+    notnull: number
+    dflt_value: string | null
+  }>
+  const row = columns.find((column) => column.name === 'score_scope')
+  return Boolean(row && row.notnull === 1 && row.dflt_value == null)
+}
+
+function applyF6ScoreScopeRequiredMigration(database: DBAdapter): void {
+  if (isF6ScoreScopeRequiredStructurallyApplied(database)) return
+
+  const originalSql = sqliteObjectSql(database, 'table', 'offline_score_record')
+  if (!originalSql) throw new Error('[DB] offline_score_record table is missing before F6 rebuild')
+
+  const nextSql = originalSql.replace(
+    /score_scope\s+TEXT\s+NOT\s+NULL\s+DEFAULT\s+(?:'OFFLINE_ABILITY'|"OFFLINE_ABILITY")\s+CHECK\s*\(/i,
+    'score_scope               TEXT NOT NULL CHECK ('
+  )
+  if (
+    nextSql === originalSql ||
+    /score_scope\s+TEXT\s+NOT\s+NULL\s+DEFAULT\s+(?:'OFFLINE_ABILITY'|"OFFLINE_ABILITY")/i.test(nextSql)
+  ) {
+    throw new Error('[DB] Unable to remove offline_score_record.score_scope DEFAULT for F6')
+  }
+
+  const beforeRows = selectSnapshotRows(database, 'offline_score_record', [
+    'offline_score_id',
+    'session_id',
+    'question_id',
+    'score_scope',
+    'task_operation_code',
+    'response_status',
+    'score',
+    'scoring_rubric_json',
+    'observation_note',
+    'observation_payload_json',
+    'scored_by',
+    'scored_event_id',
+    'scored_at',
+    'tool_checklist_confirmed',
+    'revision_no',
+    'status'
+  ])
+  const indexes = existingIndexSqlForTable(database, 'offline_score_record')
+  const triggers = existingTriggersForTable(database, 'offline_score_record')
+  const columns = Array.from(columnNames(database, 'offline_score_record'))
+  const columnList = columns.join(', ')
+  const createNewSql = replaceCreateTableName(nextSql, 'offline_score_record', 'offline_score_record__f6_new')
+  const dropTriggers = triggers.map((trigger) => `DROP TRIGGER ${trigger.name};`).join('\n')
+
+  database.exec(`
+${dropTriggers}
+ALTER TABLE offline_score_record RENAME TO offline_score_record__f6_old;
+${createNewSql};
+INSERT INTO offline_score_record__f6_new (${columnList})
+SELECT ${columnList} FROM offline_score_record__f6_old;
+DROP TABLE offline_score_record__f6_old;
+ALTER TABLE offline_score_record__f6_new RENAME TO offline_score_record;
+`)
+
+  for (const indexSql of indexes) database.exec(indexSql)
+  for (const trigger of triggers) database.exec(trigger.sql)
+
+  const afterRows = selectSnapshotRows(database, 'offline_score_record', [
+    'offline_score_id',
+    'session_id',
+    'question_id',
+    'score_scope',
+    'task_operation_code',
+    'response_status',
+    'score',
+    'scoring_rubric_json',
+    'observation_note',
+    'observation_payload_json',
+    'scored_by',
+    'scored_event_id',
+    'scored_at',
+    'tool_checklist_confirmed',
+    'revision_no',
+    'status'
+  ])
+  if (JSON.stringify(afterRows) !== JSON.stringify(beforeRows)) {
+    throw new Error('[DB] F6 offline_score_record rebuild changed score rows')
+  }
+}
+
 const migrations: Migration[] = [
   {
     id: M1_MIGRATION_ID,
@@ -1045,6 +1287,29 @@ const migrations: Migration[] = [
       'M3: grant assignment tables and delivery phase forward-only guards',
     isStructurallyApplied: isM3StructurallyApplied,
     up: applyM3Migration,
+    rebuildsReferencedTables: true
+  },
+  {
+    id: PHASE4_ASSET_ROLE_MIGRATION_ID,
+    version: CURRENT_SCHEMA_VERSION,
+    description: 'Job skill phase 4: add role-play, sealed-admin and offline-setup asset roles',
+    isStructurallyApplied: isPhase4AssetRoleApplied,
+    up: applyPhase4AssetRoleMigration,
+    rebuildsReferencedTables: true
+  },
+  {
+    id: F4_SITTING_MIGRATION_ID,
+    version: CURRENT_SCHEMA_VERSION,
+    description: 'F4: assessment sitting projection for pause, resume and collapse history',
+    isStructurallyApplied: isF4SittingStructurallyApplied,
+    up: applyF4SittingMigration
+  },
+  {
+    id: F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID,
+    version: CURRENT_SCHEMA_VERSION,
+    description: 'F6: require explicit offline_score_record.score_scope',
+    isStructurallyApplied: isF6ScoreScopeRequiredStructurallyApplied,
+    up: applyF6ScoreScopeRequiredMigration,
     rebuildsReferencedTables: true
   }
 ]
@@ -1164,6 +1429,9 @@ export function currentSchemaIssues(database: DBAdapter): string[] {
   if (!isM1StructurallyApplied(database)) issues.push('migration:multi-device-m1-identity')
   if (!isM2StructurallyApplied(database)) issues.push('migration:multi-device-m2-session-foundation')
   if (!isM3StructurallyApplied(database)) issues.push('migration:multi-device-m3-grant-assignment')
+  if (!isPhase4AssetRoleApplied(database)) issues.push('migration:job-skill-phase4-asset-roles')
+  if (!isF4SittingStructurallyApplied(database)) issues.push('migration:f4-assessment-sitting')
+  if (!isF6ScoreScopeRequiredStructurallyApplied(database)) issues.push('migration:f6-score-scope-required')
   if (!tableExists(database, 'schema_migration')) {
     issues.push('table:schema_migration')
   } else {
@@ -1179,6 +1447,18 @@ export function currentSchemaIssues(database: DBAdapter): string[] {
       .prepare('SELECT 1 AS present FROM schema_migration WHERE migration_id = ?')
       .get(CURRENT_MIGRATION_ID) as { present: number } | undefined
     if (!row) issues.push(`migration-record:${CURRENT_MIGRATION_ID}`)
+    const phase4Row = database
+      .prepare('SELECT 1 AS present FROM schema_migration WHERE migration_id = ?')
+      .get(PHASE4_ASSET_ROLE_MIGRATION_ID) as { present: number } | undefined
+    if (!phase4Row) issues.push(`migration-record:${PHASE4_ASSET_ROLE_MIGRATION_ID}`)
+    const f4Row = database
+      .prepare('SELECT 1 AS present FROM schema_migration WHERE migration_id = ?')
+      .get(F4_SITTING_MIGRATION_ID) as { present: number } | undefined
+    if (!f4Row) issues.push(`migration-record:${F4_SITTING_MIGRATION_ID}`)
+    const f6Row = database
+      .prepare('SELECT 1 AS present FROM schema_migration WHERE migration_id = ?')
+      .get(F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID) as { present: number } | undefined
+    if (!f6Row) issues.push(`migration-record:${F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID}`)
   }
   return issues
 }

@@ -1,0 +1,72 @@
+{
+  "$schema": "./job-skill-shelver-298-source-manifest-v1.schema.json",
+  "schema_version": "job-skill-shelver-298-source-manifest-v1",
+  "manifest_id": "job-skill-shelver-298-source-manifest-v1",
+  "status": "ACCEPTED_INPUT_HASHES",
+  "accepted_at": "2026-07-20T14:00:00+08:00",
+  "artifacts": [
+    {
+      "artifact_id": "source_snapshot_298",
+      "path": "doc/reference/专业岗位能力测评题库-M1-M6-数据库导出-298条.json",
+      "sha256": "sha256:7af29b8ab55edfa07f5931fce4721a6777fbf0f5d0f9d68e7028ac8228f4bc98",
+      "role": "SOURCE_SNAPSHOT",
+      "immutable": true
+    },
+    {
+      "artifact_id": "review_scope_packet_274",
+      "path": "doc/features/job-skill-shelver-298-question-content-review-packet-remaining-274-v1.md",
+      "sha256": "sha256:0e0ecff42485c7c97db2eb72a0b0036f3b56dea1854c4e0cf2da5af304bcda87",
+      "role": "REVIEW_SCOPE_PACKET",
+      "immutable": true
+    },
+    {
+      "artifact_id": "first_content_review_original",
+      "path": "doc/features/job-skill-shelver-298-content-review-result-2026-07-19.md",
+      "sha256": "sha256:aef622f931e48009accd23ee9dae88493fe00d20494a96266511e0d7334c3609",
+      "role": "FIRST_REVIEW_ORIGINAL",
+      "immutable": true
+    },
+    {
+      "artifact_id": "first_safety_review_original",
+      "path": "doc/features/job-skill-shelver-298-safety-technical-review-result-2026-07-19.md",
+      "sha256": "sha256:da30b736c613630ab58fe403cc3f571844fcabdd10b7699bb23f0f99f350eb1e",
+      "role": "FIRST_REVIEW_ORIGINAL",
+      "immutable": true
+    },
+    {
+      "artifact_id": "m5_dg_035_conflict_resolution_original",
+      "path": "doc/features/job-skill-shelver-298-review-conflict-resolution-m5-dg-035-2026-07-20.md",
+      "sha256": "sha256:2e76f620632b76439a3f607ea2487f65ed28087085a5c0ae52470e229288e141",
+      "role": "CONFLICT_RESOLUTION_ORIGINAL",
+      "immutable": true
+    },
+    {
+      "artifact_id": "pilot_current_candidate_v3",
+      "path": "doc/features/job-skill-shelver-pilot-revision-candidates-v3.json",
+      "sha256": "sha256:9d4eec169ed601cc25af0b00741f09415c808f5fbb150c8ac867031be697219f",
+      "role": "PILOT_CURRENT_CANDIDATE",
+      "immutable": true
+    },
+    {
+      "artifact_id": "pilot_activation_gate_v3",
+      "path": "doc/features/job-skill-shelver-pilot-activation-manifest-v3.json",
+      "sha256": "sha256:9abd3671f44709b5d59ea6b3c8384a2c7d17965acb800d142217fa2658947170",
+      "role": "PILOT_ACTIVATION_GATE",
+      "immutable": true
+    },
+    {
+      "artifact_id": "content_rereview_original",
+      "path": "doc/features/job-skill-shelver-298-semantic-change-content-rereview-result-chen-xiaoqing-2026-07-20.md",
+      "sha256": "sha256:e13475a46993091cf5c4680bebaf2e7e14994289ee7084b7f485873a5fdee37c",
+      "role": "REREVIEW_ORIGINAL",
+      "immutable": true
+    },
+    {
+      "artifact_id": "safety_rereview_original",
+      "path": "doc/features/job-skill-shelver-298-semantic-change-safety-technical-rereview-result-he-dong-2026-07-20.md",
+      "sha256": "sha256:7dc23963b4a78cde4241ae45a242359ebc39d58b84fbb6b18aa1f39e7234abf4",
+      "role": "REREVIEW_ORIGINAL",
+      "immutable": true
+    }
+  ]
+}

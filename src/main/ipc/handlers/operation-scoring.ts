@@ -65,7 +65,8 @@ export function submitOperationScores(
   // 3. 读 session，校验 OFFLINE_PENDING
   const session = db
     .prepare(
-      `SELECT session_id, status, student_id, job_code, task_code, strategy_id, strategy_version
+      `SELECT session_id, status, student_id, job_code, task_code,
+              strategy_id, strategy_type, strategy_version
          FROM assessment_session
         WHERE session_id = ?`
     )
@@ -77,6 +78,7 @@ export function submitOperationScores(
         job_code: string
         task_code: string
         strategy_id: string
+        strategy_type: ResultCalculatedPayload['strategy_type']
         strategy_version: number
       }
     | undefined
@@ -232,8 +234,11 @@ export function submitOperationScores(
         source_type: 'ASSESSMENT_SESSION',
         source_id: params.sessionId,
         student_id: session.student_id,
+        strategy_id: session.strategy_id,
+        strategy_type: session.strategy_type,
         job_code: session.job_code,
         task_code: session.task_code,
+        module_type: null,
         raw_score: rawScore,
         max_score: maxScore,
         normalized_score: normalizedScore,

@@ -5,6 +5,9 @@
 依据：PRD v1.0.9 §2.5 / §5.3.13 / §5.3.14 / 附录 D  
 数据源：`doc/reference/专业岗位能力测评题库-M1-M6-数据库导出-298条.json`
 
+> [!WARNING]
+> 本文件是2026-07-07的历史选卷设计，不再是当前 Pilot 题目或素材生产输入。当前 JOB_SKILL 298 题与 270 项素材入口以 `doc/features/job-skill-shelver-current-contracts.md` 为准；Pilot 24 题门禁追溯再读 `doc/features/job-skill-shelver-pilot-current-question-authority.md`。下文旧题号仅用于追溯当时的选型过程。
+
 ---
 
 ## 1. 设计目标与约束

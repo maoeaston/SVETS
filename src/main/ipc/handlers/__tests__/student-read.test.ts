@@ -83,6 +83,52 @@ describe('student:get', () => {
     expect(r.student.sensoryProfile).toBeNull()
   })
 
+  it('档案 ID 与账号 ID 不同 → 通过 student_profile.user_id 读取绑定账号', () => {
+    const accountId = 'linked-account'
+    const profileId = 'linked-profile'
+    db.prepare(
+      `INSERT INTO user_account
+         (user_id, username, password_hash, role, display_name, status)
+       VALUES (?, 'linked_user', 'hash', 'STUDENT', '显式关联学生', 'ACTIVE')`
+    ).run(accountId)
+    db.prepare(
+      `INSERT INTO student_profile
+         (student_id, student_name, user_id, status)
+       VALUES (?, '显式关联学生', ?, 'ACTIVE')`
+    ).run(profileId, accountId)
+
+    const r = getStudent(db, {
+      callerUserId: callerId,
+      callerRole: 'TEACHER',
+      studentId: profileId
+    })
+    expect(r.success).toBe(true)
+    if (!r.success) return
+    expect(r.student.username).toBe('linked_user')
+  })
+
+  it('无账号档案 → 详情可读且列表可见，username 为 null', () => {
+    const profileId = 'accountless-readable-profile'
+    db.prepare(
+      `INSERT INTO student_profile (student_id, student_name, user_id, status)
+       VALUES (?, '无账号可读学生', NULL, 'ACTIVE')`
+    ).run(profileId)
+
+    const detail = getStudent(db, {
+      callerUserId: callerId,
+      callerRole: 'TEACHER',
+      studentId: profileId
+    })
+    expect(detail.success).toBe(true)
+    if (!detail.success) return
+    expect(detail.student.username).toBeNull()
+
+    const listed = listStudents(db, { callerUserId: callerId, callerRole: 'TEACHER' })
+    expect(listed.success).toBe(true)
+    if (!listed.success) return
+    expect(listed.items.some((item) => item.studentId === profileId)).toBe(true)
+  })
+
   it('不存在 → NOT_FOUND', () => {
     const r = getStudent(db, {
       callerUserId: callerId,

@@ -1,0 +1,3062 @@
+{
+  "$schema": "./offline-toolkit-manifest-v1.schema.json",
+  "schema_version": "offline-toolkit-manifest-v1",
+  "manifest_id": "job-skill-shelver-offline-toolkit-v2.2",
+  "toolkit_version": "2.2",
+  "status": "LOCKED_FOR_PRODUCTION",
+  "generated_at": "2026-07-22T14:50:00+08:00",
+  "source_files": [
+    {
+      "path": "doc/reference/offline-toolkit-procurement-spec.md",
+      "sha256": "sha256:48b46e2899f2792b084221cbc70fad479a82815004d17a82aef6344b28e04f0a"
+    },
+    {
+      "path": "doc/features/job-skill-shelver-298-disposition-authority-v1.json",
+      "sha256": "sha256:dcb41700a19a1a9de6345b52f902519843fd1ee00976d10ed2fba985db4fa7e8"
+    },
+    {
+      "path": "doc/features/job-skill-shelver-298-question-revision-candidates-v1.json",
+      "sha256": "sha256:070d0f18a3e2d7ad7446626a7c5d4cd8019f6013842f32b28b920387a2f6a588"
+    },
+    {
+      "path": "doc/features/job-skill-shelver-298-question-revision-candidates-v3.json",
+      "sha256": "sha256:3facf23ba4502ab23a00c20c6dab281ac56d3dcd447599f5524d22a9a2d62064"
+    },
+    {
+      "path": "doc/features/job-skill-shelver-298-question-revision-candidates-v4.json",
+      "sha256": "sha256:cc717f9d7f062929f83244d1fa676c4d761a9d3dc1851a0a161261033c464f2d"
+    },
+    {
+      "path": "doc/features/job-skill-shelver-298-question-revision-candidates-v5.json",
+      "sha256": "sha256:b652cb833a00f351f30825865ebb1df5b8142b6e37c7a0466d45d59a9301cf93"
+    },
+    {
+      "path": "doc/features/job-skill-shelver-298-question-revision-candidates-v6.json",
+      "sha256": "sha256:35b138d3dc291de3518f42ddbc287587813ad5f09e30fb795abf73ad5dbb26d9"
+    },
+    {
+      "path": "doc/features/job-skill-shelver-298-targeted-v6-rereview-merged-gate-v1.json",
+      "sha256": "sha256:22c365073051606d6be82ea261c072c5d5762f59a24145f602d554d52a207319"
+    },
+    {
+      "path": "doc/features/job-skill-shelver-298-rejected-replacement-candidates-v2.json",
+      "sha256": "sha256:36a7c8fd3f48799c66804586e30fbc849cd62f9dba7090a355a7b6c156008f97"
+    },
+    {
+      "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-candidates-v3.json",
+      "sha256": "sha256:25bbed1f1f3eca7a24f797afd70727077f8f5581812c2003dfe12d5590d1a257"
+    },
+    {
+      "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-candidates-v4.json",
+      "sha256": "sha256:826c0e0f28a4f22a26fab5c2334ad04c8f05b9c086626d3991f531c26f40156c"
+    },
+    {
+      "path": "doc/features/job-skill-shelver-298-rejected-replacement-targeted-v4-rereview-merged-gate-v1.json",
+      "sha256": "sha256:6b3fa4573ba9ed149ebbfbbe83692a1f2ffe52298e7de472648c86ddf41b0a87"
+    },
+    {
+      "path": "doc/features/job-skill-shelver-pilot-revision-candidates-v3.json",
+      "sha256": "sha256:9d4eec169ed601cc25af0b00741f09415c808f5fbb150c8ac867031be697219f"
+    },
+    {
+      "path": "doc/assets/asset-manifest.json",
+      "sha256": "sha256:cf2ff17fb4899073c0cd9369ee926737ac6fe578f7f4d9c0a96b4cfa669a2628"
+    }
+  ],
+  "summary": {
+    "offline_question_total": 100,
+    "inventory_item_total": 22,
+    "by_module": {
+      "M1": 16,
+      "M2": 15,
+      "M3": 16,
+      "M4": 21,
+      "M5": 17,
+      "M6": 15
+    },
+    "date_question_total": 20,
+    "script_question_total": 13,
+    "example_image_total": 4
+  },
+  "inventory": [
+    {
+      "item_id": "station_stable_work_surface",
+      "kind": "PHYSICAL",
+      "description": "稳定工作台面和评测站位",
+      "quantity_contract": "每站位 1 套",
+      "safety_contract": "无松动、无锐边、通道无遮挡"
+    },
+    {
+      "item_id": "kit_reset_checklist",
+      "kind": "DOCUMENT",
+      "description": "工具包 v2.2 逐题复位清单",
+      "quantity_contract": "每站位 1 份覆膜件",
+      "safety_contract": "只展示材料复位，不展示密封答案"
+    },
+    {
+      "item_id": "shelf_three_tier",
+      "kind": "PHYSICAL",
+      "description": "三层可调迷你陈列货架",
+      "quantity_contract": "每站位 1 组",
+      "safety_contract": "固定防倾倒，操作高度不得要求攀爬"
+    },
+    {
+      "item_id": "products_general_set",
+      "kind": "PHYSICAL",
+      "description": "G01-G20 通用商品及近邻/规格副本",
+      "quantity_contract": "按 v2.2 固定编号和数量",
+      "safety_contract": "全部标注教学评测专用，禁止食用或使用"
+    },
+    {
+      "item_id": "products_fixed_date_set_g01_g12_g15_g16",
+      "kind": "PHYSICAL",
+      "description": "G01-G12、G15-G16 共 14 件固定模拟日期商品",
+      "quantity_contract": "每站位 14 件",
+      "safety_contract": "标签模糊或脱落时停止评分并更换"
+    },
+    {
+      "item_id": "simulated_work_date_sign",
+      "kind": "DOCUMENT",
+      "description": "固定模拟工作日 2026-09-10 日期牌",
+      "quantity_contract": "每站位 1 张",
+      "safety_contract": "不得替换为现实日期"
+    },
+    {
+      "item_id": "zone_expiry_handling",
+      "kind": "PHYSICAL",
+      "description": "临期待处理区和报损隔离区标识",
+      "quantity_contract": "各 1 个",
+      "safety_contract": "区域边界清晰且不阻挡通道"
+    },
+    {
+      "item_id": "boundary_samples_d01_d05",
+      "kind": "PHYSICAL",
+      "description": "D01-D05 无伤害边界样品",
+      "quantity_contract": "每站位 5 件",
+      "safety_contract": "无腐败物、无液体、无锐边和真实压力"
+    },
+    {
+      "item_id": "zone_problem_goods",
+      "kind": "PHYSICAL",
+      "description": "问题商品区及周转箱",
+      "quantity_contract": "每站位 1 套",
+      "safety_contract": "与正常商品区物理分离"
+    },
+    {
+      "item_id": "ppe_cut_resistant_gloves",
+      "kind": "PHYSICAL",
+      "description": "防割手套",
+      "quantity_contract": "每站位 1 双，按尺码备选",
+      "safety_contract": "破损或不合手时不得使用"
+    },
+    {
+      "item_id": "safe_box_cutter",
+      "kind": "PHYSICAL",
+      "description": "自动回弹安全开箱刀",
+      "quantity_contract": "每站位 1 把",
+      "safety_contract": "仅用于明确允许刀具的场景；徒手拆箱题不得提供"
+    },
+    {
+      "item_id": "cartons_b01_b03",
+      "kind": "PHYSICAL",
+      "description": "B01-B03 标准训练纸箱",
+      "quantity_contract": "每站位 3 个",
+      "safety_contract": "重量和封装方式按逐题清单复位"
+    },
+    {
+      "item_id": "delivery_document_set",
+      "kind": "DOCUMENT",
+      "description": "送货单、库存表、差异版文件及答案封套",
+      "quantity_contract": "每站位 1 套",
+      "safety_contract": "学员材料与密封答案分开存放"
+    },
+    {
+      "item_id": "recording_stationery_set",
+      "kind": "PHYSICAL",
+      "description": "记录表、记录本、笔和计算器",
+      "quantity_contract": "每站位 1 套",
+      "safety_contract": "书写工具无尖锐破损"
+    },
+    {
+      "item_id": "offline_scanner_with_sku_json",
+      "kind": "PHYSICAL",
+      "description": "离线扫码设备、本地 SKU JSON 与纸面编号回退表",
+      "quantity_contract": "每站位 1 套",
+      "safety_contract": "不得联网；技术故障不按答错处理"
+    },
+    {
+      "item_id": "cold_chain_samples_and_zone_labels",
+      "kind": "PHYSICAL",
+      "description": "3 件唯一可判断冷链样品及冷藏/冷冻标签",
+      "quantity_contract": "每站位 1 套",
+      "safety_contract": "使用安全空包装，不使用需真实冷藏的食品"
+    },
+    {
+      "item_id": "role_play_badges",
+      "kind": "PHYSICAL",
+      "description": "负责人、顾客和同事角色胸牌",
+      "quantity_contract": "每站位 1 套",
+      "safety_contract": "评估员按锁定脚本表演，不即兴改变评分条件"
+    },
+    {
+      "item_id": "safe_cleanup_set",
+      "kind": "CONSUMABLE",
+      "description": "警示牌、钝边碎片、吸水垫和清洁工具",
+      "quantity_contract": "每站位 1 套",
+      "safety_contract": "不得使用真实玻璃、刺激性液体或锐器"
+    },
+    {
+      "item_id": "recall_marker_set",
+      "kind": "DOCUMENT",
+      "description": "3 件召回标记、召回通知和密封答案键",
+      "quantity_contract": "每站位 1 套",
+      "safety_contract": "召回标识仅用于教具，避免与真实商品混用"
+    },
+    {
+      "item_id": "software_visible_timer",
+      "kind": "SOFTWARE",
+      "description": "软件可视计时器",
+      "quantity_contract": "每评测终端 1 个",
+      "safety_contract": "正确率和安全优先于速度；技术中断暂停计时"
+    },
+    {
+      "item_id": "powered_off_equipment_prop",
+      "kind": "PHYSICAL",
+      "description": "断电设备外壳或设备图片卡",
+      "quantity_contract": "每站位 1 件",
+      "safety_contract": "不得接电、不得制造真实机械风险"
+    },
+    {
+      "item_id": "folding_step_stool",
+      "kind": "PHYSICAL",
+      "description": "折叠两步踏脚凳",
+      "quantity_contract": "每站位 1 个",
+      "safety_contract": "仅作场景道具；需要攀爬时由评估员接管"
+    }
+  ],
+  "setups": [
+    {
+      "setup_id": "setup_m1_ob_048_v3",
+      "source_question_id": "M1_OB_048",
+      "current_question_id": "M1_OB_048_V3",
+      "module": "M1",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "role_play_badges",
+        "safe_cleanup_set",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_09"
+      ],
+      "public_instruction": "按清单布置“补货时发现通道中央有一处不明液体（使用蓝色防滑仿真水渍标识片模拟）。请按门店流程处置。”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:69446237a9205182a4fb54d8e922ab4b9a5f83080441de8199abead5dcf5229f"
+    },
+    {
+      "setup_id": "setup_m1_op_033_v2",
+      "source_question_id": "M1_OP_033",
+      "current_question_id": "M1_OP_033_V2",
+      "module": "M1",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“将5件轻型训练商品摆到货架中层，做到正面朝外、竖直稳定并使同排前沿基本对齐。”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:b7336382e133e22caa53d4d84662c740ee07e29642ef13970b75255ee299bb92"
+    },
+    {
+      "setup_id": "setup_m1_op_034_v4",
+      "source_question_id": "M1_OP_034",
+      "current_question_id": "M1_OP_034_V4",
+      "module": "M1",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_05"
+      ],
+      "public_instruction": "按清单布置“把5张价签放到对应商品的正下方”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:ba2170a161318ab22e206e4c7df358ecd19b8fa87e869ab08d300a73607b2eb6"
+    },
+    {
+      "setup_id": "setup_m1_op_035_v4",
+      "source_question_id": "M1_OP_035",
+      "current_question_id": "M1_OP_035_V4",
+      "module": "M1",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“把3件歪倒的商品扶正摆好”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:02cc160dba8a4caeedc01665c43975e84b1ee2ef0c1ad98590388e9e04221c75"
+    },
+    {
+      "setup_id": "setup_m1_op_036_v4",
+      "source_question_id": "M1_OP_036",
+      "current_question_id": "M1_OP_036_V4",
+      "module": "M1",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_05"
+      ],
+      "public_instruction": "按清单布置“找出货架上被商品遮挡的价签，把它露出来”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:60671135d19f804d5ca4a346aaadab3531adb1455ea87f4e8acebe80f7d2b29e"
+    },
+    {
+      "setup_id": "setup_m1_op_037_v5",
+      "source_question_id": "M1_OP_037",
+      "current_question_id": "M1_OP_037_V5",
+      "module": "M1",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_05"
+      ],
+      "public_instruction": "按清单布置“依据唯一答案排面图、SKU和价签，把5件不同SKU或规格的商品归到对应位置，并使商品正面朝外、价签清晰”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:88116978504ab53fe4544eb26535a5400f38d46b7bc5c5d29b3d280dcd5b476e"
+    },
+    {
+      "setup_id": "setup_m1_op_038_v5",
+      "source_question_id": "M1_OP_038",
+      "current_question_id": "M1_OP_038_V5",
+      "module": "M1",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "safe_cleanup_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_09",
+        "asset_offline_tool_10"
+      ],
+      "public_instruction": "按清单布置“按“移货、警示隔离、清洁、干燥、复位、复查”顺序清洁1层货架层板”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:64d021412d46862080fecdfe679d5b174fcb112e0c96a58d66170ab829f9e11f"
+    },
+    {
+      "setup_id": "setup_m1_op_039_v4",
+      "source_question_id": "M1_OP_039",
+      "current_question_id": "M1_OP_039_V4",
+      "module": "M1",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "software_visible_timer",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_05"
+      ],
+      "public_instruction": "按清单布置“核对1张错位价签的条码、品名、规格和价格；四项一致且获授权时归位，不一致或无权限时隔离价签并上报”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:88fec3213d6e9aa7b82aeea2ebf322cc51d03a080fc27d1ee5fb7483312bc567"
+    },
+    {
+      "setup_id": "setup_m1_op_040_v4",
+      "source_question_id": "M1_OP_040",
+      "current_question_id": "M1_OP_040_V4",
+      "module": "M1",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“把6件标明模拟重量的轻质空包装按“重下轻上”摆到已固定货架的下、中、上层”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:82cd1722fcf038fc215d547c9503d44f3789e5b2f74773cf84a003b569c6e41c"
+    },
+    {
+      "setup_id": "setup_m1_op_041_v4",
+      "source_question_id": "M1_OP_041",
+      "current_question_id": "M1_OP_041_V4",
+      "module": "M1",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "boundary_samples_d01_d05",
+        "kit_reset_checklist",
+        "ppe_cut_resistant_gloves",
+        "products_general_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface",
+        "zone_problem_goods"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“为2个空位补货：逐件核对品名、规格/条码、包装和效期，同SKU旧货前置、新货后置；异常品隔离上报”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:845484132fde8e713af7f3df38428f6e8937bf31fad6cb113f4d4ad11c4aeebf"
+    },
+    {
+      "setup_id": "setup_m1_op_042_v4",
+      "source_question_id": "M1_OP_042",
+      "current_question_id": "M1_OP_042_V4",
+      "module": "M1",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_05"
+      ],
+      "public_instruction": "按清单布置“依据补货任务单、唯一排面图、价签和批次标签，将8件轻质商品补入4个指定货位。每个SKU各有1件旧批次和1件新批次。完成第4件后，评估员按固定脚本中断20秒；中断前放置进度标记，恢复后从未完成项继续，最后复查。”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:f4868a4c0c264abd7623e5fe405869581e0a979a3c33777b0704df74850e202e"
+    },
+    {
+      "setup_id": "setup_m1_op_043_v4",
+      "source_question_id": "M1_OP_043",
+      "current_question_id": "M1_OP_043_V4",
+      "module": "M1",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_delivery_answer_image_m1_op_043",
+        "asset_offline_tool_05"
+      ],
+      "public_instruction": "按清单布置“按示例图把8件商品和对应价签还原到货架上”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:0b2adf9c62635cf04647915fd57396591803c6c8c0a84623f61221bf991da8d1"
+    },
+    {
+      "setup_id": "setup_m1_op_044_v4",
+      "source_question_id": "M1_OP_044",
+      "current_question_id": "M1_OP_044_V4",
+      "module": "M1",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_05"
+      ],
+      "public_instruction": "按清单布置“依据排面图、SKU和规格价签整理乱架，使同SKU商品连续成面并正面朝外”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:5ba0d93c94c484e7b6708f7fad0b6aa69201d4c48ecda57b5b5bf5ea1f4625a8"
+    },
+    {
+      "setup_id": "setup_m1_op_045_v4",
+      "source_question_id": "M1_OP_045",
+      "current_question_id": "M1_OP_045_V4",
+      "module": "M1",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“找出货架上的3处问题并把它修正好”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:a54b0151d64038dc8b5c156d4cd060e999285a3c436a6d2f3950b30a97cd6e45"
+    },
+    {
+      "setup_id": "setup_m1_op_046_v4",
+      "source_question_id": "M1_OP_046",
+      "current_question_id": "M1_OP_046_V4",
+      "module": "M1",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_05"
+      ],
+      "public_instruction": "按清单布置“将4件同SKU新品补入已有排面：核对条码和效期，旧货前置、新货后置，保持原价签与货位不变”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:5eb398fa520b0a8d640fdf23d2012b3839bc0a16a4538f819dfa1f9fe237150e"
+    },
+    {
+      "setup_id": "setup_m1_op_047_v4",
+      "source_question_id": "M1_OP_047",
+      "current_question_id": "M1_OP_047_V4",
+      "module": "M1",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_05"
+      ],
+      "public_instruction": "按清单布置“按“清理、扶正、核签、复查”整理货架；发现价签与系统价或商品不一致时，暂停该价签使用、隔离并报告，获授权后更换并复查”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:b5f8a8dbd325d2a697b270e8f7c4bc463080ab04fbddafce46e6e3f6d1870bb7"
+    },
+    {
+      "setup_id": "setup_m2_op_027_v2",
+      "source_question_id": "M2_OP_027",
+      "current_question_id": "M2_OP_027_V2",
+      "module": "M2",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "boundary_samples_d01_d05",
+        "cartons_b01_b03",
+        "kit_reset_checklist",
+        "ppe_cut_resistant_gloves",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface",
+        "zone_problem_goods"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_04"
+      ],
+      "public_instruction": "按清单布置“在稳定台面上，徒手沿预设易撕开口安全拆开标准训练纸箱，平稳取出全部商品并整理纸箱。”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:24771bcc712f3dd15fe88dc181f7b7c5e085bbca0d2b3fb62bac53f6be27d780"
+    },
+    {
+      "setup_id": "setup_m2_op_028_v4",
+      "source_question_id": "M2_OP_028",
+      "current_question_id": "M2_OP_028_V4",
+      "module": "M2",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "boundary_samples_d01_d05",
+        "cartons_b01_b03",
+        "kit_reset_checklist",
+        "ppe_cut_resistant_gloves",
+        "products_general_set",
+        "recording_stationery_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface",
+        "zone_problem_goods"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“检查5件安全模拟商品，找出1件破损品并完成停止接触、隔离标识、登记和上报交接”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:cc3973c9f415b836e2362503c3895231ca3119cd537ac0160f5d89d17d9e19d8"
+    },
+    {
+      "setup_id": "setup_m2_op_029_v4",
+      "source_question_id": "M2_OP_029",
+      "current_question_id": "M2_OP_029_V4",
+      "module": "M2",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“把5件新商品按先进先出的规则摆上货架（日期早的放前排）”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:722e264e1182fc5ba9c450fc8acfc622f86b3cf3f7478cc980d51eef6e34c569"
+    },
+    {
+      "setup_id": "setup_m2_op_030_v4",
+      "source_question_id": "M2_OP_030",
+      "current_question_id": "M2_OP_030_V4",
+      "module": "M2",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "cartons_b01_b03",
+        "kit_reset_checklist",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_04"
+      ],
+      "public_instruction": "按清单布置“把用完的空纸箱折叠好放到指定回收位置”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:07ed7e1ee738c3d291c007cc4df0764bbfa6060636882cb702c11b952101b9bd"
+    },
+    {
+      "setup_id": "setup_m2_op_031_v6",
+      "source_question_id": "M2_OP_031",
+      "current_question_id": "M2_OP_031_V6",
+      "module": "M2",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“在5件同SKU不同批次的合格商品中，按固定到期日找出最早到期的2件并放到前排”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:719709245031a3dce6bb3d2e52dca341515c02f01f4aa2338b5d942e961ec90c"
+    },
+    {
+      "setup_id": "setup_m2_op_032_v4",
+      "source_question_id": "M2_OP_032",
+      "current_question_id": "M2_OP_032_V4",
+      "module": "M2",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "boundary_samples_d01_d05",
+        "kit_reset_checklist",
+        "ppe_cut_resistant_gloves",
+        "products_general_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface",
+        "zone_problem_goods"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“将3件同SKU新品补到对应空位：核对品名、规格/条码、包装和效期，旧货前置、新货后置；异常时停止上架并隔离上报”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:04c4160af21d2f7766593fd1bb498220e6e0ce183cdc0986ae38c3b3fc7b98c2"
+    },
+    {
+      "setup_id": "setup_m2_op_033_v4",
+      "source_question_id": "M2_OP_033",
+      "current_question_id": "M2_OP_033_V4",
+      "module": "M2",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“依据现场“下层先补、同一层由里向外”的门店模拟SOP，将5件商品补入指定货位”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:8d1017f0b8b71d31974a7f8b3a56136ef98eb7300df20c9c4bba15765906690b"
+    },
+    {
+      "setup_id": "setup_m2_op_034_v4",
+      "source_question_id": "M2_OP_034",
+      "current_question_id": "M2_OP_034_V4",
+      "module": "M2",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "boundary_samples_d01_d05",
+        "kit_reset_checklist",
+        "ppe_cut_resistant_gloves",
+        "products_general_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface",
+        "zone_problem_goods"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“对照同款正常样检查6件商品：找出1件真破损品隔离；褶皱样仅在无破口、无泄漏、无污染、无异常鼓胀且符合门店外观标准时判为可上架”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:b6a2843538ecd319f4d986ae8d1a7bd36a17354b88835001808d76517ef5ba02"
+    },
+    {
+      "setup_id": "setup_m2_op_035_v4",
+      "source_question_id": "M2_OP_035",
+      "current_question_id": "M2_OP_035_V4",
+      "module": "M2",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "cartons_b01_b03",
+        "delivery_document_set",
+        "kit_reset_checklist",
+        "products_general_set",
+        "recording_stationery_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_07"
+      ],
+      "public_instruction": "按清单布置“核对本次尚未入库的到货实物与送货单，复核并记录1处数量差异后上报负责人”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:4a4fcb9104d7f8ea8dce931b5e5a8afcc42e7bd4716e84dd56cf5f6c299bf48a"
+    },
+    {
+      "setup_id": "setup_m2_op_036_v4",
+      "source_question_id": "M2_OP_036",
+      "current_question_id": "M2_OP_036_V4",
+      "module": "M2",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“把货架上的旧货全部移到前排再把新货放到后排”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:8ff48bd998051026d6ed5c2bcf0d1137d2be686d89a0933337118f3e4acd24e0"
+    },
+    {
+      "setup_id": "setup_m2_op_037_v4",
+      "source_question_id": "M2_OP_037",
+      "current_question_id": "M2_OP_037_V4",
+      "module": "M2",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "boundary_samples_d01_d05",
+        "kit_reset_checklist",
+        "ppe_cut_resistant_gloves",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "recording_stationery_set",
+        "safe_box_cutter",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling",
+        "zone_problem_goods"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_01"
+      ],
+      "public_instruction": "按清单布置“使用批准的安全开箱器完成“查箱、开箱、查货、FIFO上架、空箱回收”五步补货”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:8fa84cc97d8cf1dcc4a8fc1cca451fc81ddf9246be18046a608dbf122d7c158f"
+    },
+    {
+      "setup_id": "setup_m2_op_038_v6",
+      "source_question_id": "M2_OP_038",
+      "current_question_id": "M2_OP_038_V6",
+      "module": "M2",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“将8件同SKU、不同批次的合格商品按到期日由早到晚从前排到后排排列”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:1f62b8fad3b6cc362659ac7874b168ccf7d786b2b995948d8d58dfa48354007a"
+    },
+    {
+      "setup_id": "setup_m2_op_039_v4",
+      "source_question_id": "M2_OP_039",
+      "current_question_id": "M2_OP_039_V4",
+      "module": "M2",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "boundary_samples_d01_d05",
+        "kit_reset_checklist",
+        "ppe_cut_resistant_gloves",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling",
+        "zone_problem_goods"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“按本门店模拟规则“距到期日不超过15天为临期”，将6件安全模拟商品分到正常区、临期区和问题品区”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:addb71fd99873c2239826fe90b7e0d9de503521479b36f8b8fa3f54edd4a514d"
+    },
+    {
+      "setup_id": "setup_m2_op_040_v4",
+      "source_question_id": "M2_OP_040",
+      "current_question_id": "M2_OP_040_V4",
+      "module": "M2",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "cartons_b01_b03",
+        "delivery_document_set",
+        "kit_reset_checklist",
+        "products_general_set",
+        "recording_stationery_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_delivery_script_m2_op_040"
+      ],
+      "public_instruction": "按清单布置“模拟收货：核对数量和完好度；本轮预置1处数量异常，发现后暂停该项目入库，记录并提交负责人确认，学员不得自行改单或签收”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:2827bbfa5e56f0adcd024a71bfedddaec78d6f710888ca06a3d0e3f349045ef0"
+    },
+    {
+      "setup_id": "setup_m2_op_041_v6",
+      "source_question_id": "M2_OP_041",
+      "current_question_id": "M2_OP_041_V6",
+      "module": "M2",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "recording_stationery_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling"
+      ],
+      "asset_ids": [
+        "asset_delivery_script_m2_op_041"
+      ],
+      "public_instruction": "按清单布置“将10件同SKU不同批次的合格商品按到期日执行FIFO；中断时标记当前位置，恢复后接续，完成时间单独记录”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:e4b64fe46cee3b915b9011cdff89e4c8bcdad3fe7cc68175a51e30f4d93cfd19"
+    },
+    {
+      "setup_id": "setup_m3_op_043_v2",
+      "source_question_id": "M3_OP_043",
+      "current_question_id": "M3_OP_043_V2",
+      "module": "M3",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "boundary_samples_d01_d05",
+        "kit_reset_checklist",
+        "ppe_cut_resistant_gloves",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling",
+        "zone_problem_goods"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“以模拟工作日2026年09月10日为准，从5件训练商品中找出1件当天到期品和1件已过期品，分别放入临期待处理区和报损隔离区。”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:289294333e554111c8f0a153394e756adb06b2d590634e0b88fa190813e9236f"
+    },
+    {
+      "setup_id": "setup_m3_op_044_v4",
+      "source_question_id": "M3_OP_044",
+      "current_question_id": "M3_OP_044_V4",
+      "module": "M3",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "recording_stationery_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "software_visible_timer",
+        "station_stable_work_surface",
+        "zone_expiry_handling"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“将6件同SKU不同批次的合格商品按到期日由早到晚排列，最早到期放最前”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:927cfa98e6c7ae63383a9478e468c78205a10e1fc08e7e3e020259e5e20d0ac6"
+    },
+    {
+      "setup_id": "setup_m3_op_045_v4",
+      "source_question_id": "M3_OP_045",
+      "current_question_id": "M3_OP_045_V4",
+      "module": "M3",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "recording_stationery_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "software_visible_timer",
+        "station_stable_work_surface",
+        "zone_expiry_handling"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“按本门店模拟规则“距到期日不超过15天为临期”，从10件商品中找出3件临期品并移入临期专区”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:f8877606c4033cfe829d64525ee45ced8151a572c50a618c5514b86aa008634e"
+    },
+    {
+      "setup_id": "setup_m3_op_046_v4",
+      "source_question_id": "M3_OP_046",
+      "current_question_id": "M3_OP_046_V4",
+      "module": "M3",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "boundary_samples_d01_d05",
+        "kit_reset_checklist",
+        "ppe_cut_resistant_gloves",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling",
+        "zone_problem_goods"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“按本门店模拟规则“剩余≤15天为临期”，将5件安全模拟商品分到正常区、临期区、待复核问题区；学员无权批准报损”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:413eb9d142678298e8335dcc2e5687d88d53d659acd77e52150d60fa7a911851"
+    },
+    {
+      "setup_id": "setup_m3_op_047_v4",
+      "source_question_id": "M3_OP_047",
+      "current_question_id": "M3_OP_047_V4",
+      "module": "M3",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“以模拟工作日2026-07-20为第0天，按“到期日减工作日、不含当天”计算3件商品剩余天数，可用纸笔或批准的日期计算器”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:e858de891f3a3142b1d781e01b2c0944abc6b6d5fb164452a368c82f8a89d6d4"
+    },
+    {
+      "setup_id": "setup_m3_op_048_v4",
+      "source_question_id": "M3_OP_048",
+      "current_question_id": "M3_OP_048_V4",
+      "module": "M3",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "boundary_samples_d01_d05",
+        "kit_reset_checklist",
+        "ppe_cut_resistant_gloves",
+        "products_general_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface",
+        "zone_problem_goods"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“在8件安全模拟商品中找出2件明确问题品：罐体卷封处重度凹陷1件、无内容物漏气袋1件；隔离、标识并上报”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:5c3922eeb37a3e91316455b441dfd6bb75e147d7531f9866e50585bcccc6a5a3"
+    },
+    {
+      "setup_id": "setup_m3_op_049_v4",
+      "source_question_id": "M3_OP_049",
+      "current_question_id": "M3_OP_049_V4",
+      "module": "M3",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“对照同款正常样和门店包装判据，判断5件安全模拟样品“可上架”或“隔离复核””所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:ed5b345cfb01719a68a8ae44ac01dfc4f072164fa8ca2990930a5c468ea0f283"
+    },
+    {
+      "setup_id": "setup_m3_op_050_v4",
+      "source_question_id": "M3_OP_050",
+      "current_question_id": "M3_OP_050_V4",
+      "module": "M3",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "recording_stationery_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“按本门店模拟规则“剩余≤15天为临期”，处置1件临期商品：核对日期、移出原架、放入临期专区并记录”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:5c1d330437e339b7c87c1feed434128cde3f99c7663aa7dea3e18d3e7811103a"
+    },
+    {
+      "setup_id": "setup_m3_op_051_v4",
+      "source_question_id": "M3_OP_051",
+      "current_question_id": "M3_OP_051_V4",
+      "module": "M3",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "boundary_samples_d01_d05",
+        "kit_reset_checklist",
+        "ppe_cut_resistant_gloves",
+        "products_general_set",
+        "recording_stationery_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface",
+        "zone_problem_goods"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“处置1件无泄漏、无尖锐、无污染的安全模拟破损品：确认、隔离标识、登记、上报并交接”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:678800f00d5ecf9f6d660ee439806fd9b70c5042203d02bfdcf815e047c16c68"
+    },
+    {
+      "setup_id": "setup_m3_op_052_v4",
+      "source_question_id": "M3_OP_052",
+      "current_question_id": "M3_OP_052_V4",
+      "module": "M3",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "boundary_samples_d01_d05",
+        "kit_reset_checklist",
+        "ppe_cut_resistant_gloves",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "recording_stationery_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling",
+        "zone_problem_goods"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“按固定工作日及“剩余≤15天为临期”规则巡检10件安全模拟商品，处置2件临期品和1件破损品并记录上报”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:7855ea00d3ba87c2a542c98afb6d297a9707ee31dca38456caefa15cd015f75e"
+    },
+    {
+      "setup_id": "setup_m3_op_053_v4",
+      "source_question_id": "M3_OP_053",
+      "current_question_id": "M3_OP_053_V4",
+      "module": "M3",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "boundary_samples_d01_d05",
+        "kit_reset_checklist",
+        "ppe_cut_resistant_gloves",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "recording_stationery_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "software_visible_timer",
+        "station_stable_work_surface",
+        "zone_expiry_handling",
+        "zone_problem_goods"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“准确性优先，将15件安全模拟商品分为临期、问题品、正常三类；3分钟仅记录，不作为得分门槛”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:2b4c831621fa38d86808f16ed4385496b3d74a344c27281b0bbc857d8db3c6ce"
+    },
+    {
+      "setup_id": "setup_m3_op_054_v4",
+      "source_question_id": "M3_OP_054",
+      "current_question_id": "M3_OP_054_V4",
+      "module": "M3",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“读取3件商品已直接标注的到期日，并指出最早到期的1件；本题不计算生产日期”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:f0a55e185cc974e35bef02b8493876ac9aa2d4e33122a348a2ac9eb805030e11"
+    },
+    {
+      "setup_id": "setup_m3_op_055_v4",
+      "source_question_id": "M3_OP_055",
+      "current_question_id": "M3_OP_055_V4",
+      "module": "M3",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“先按本门店“剩余≤15天”规则把1件临期品移入临期专区，再将其余5件同SKU正常品按到期日早前晚后排列”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:eefa69def7ce2124f3178ce53df2c522521e4caa35e34c4b2d214db993db5c1e"
+    },
+    {
+      "setup_id": "setup_m3_op_056_v4",
+      "source_question_id": "M3_OP_056",
+      "current_question_id": "M3_OP_056_V4",
+      "module": "M3",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "recording_stationery_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_05"
+      ],
+      "public_instruction": "按清单布置“逐件翻看8件同SKU商品底部或背面的到期日，将每件商品编号和到期日写入8行核验记录表；找出最早到期的2件并前置，其余按日期顺序后置；最后把8件商品恢复正面朝外，并保持价签可见。”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:8e0ee488007e49b5f70a95e427160113538681975764548e1248bc36d57dcc19"
+    },
+    {
+      "setup_id": "setup_m3_op_057_v4",
+      "source_question_id": "M3_OP_057",
+      "current_question_id": "M3_OP_057_V4",
+      "module": "M3",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "recording_stationery_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“按固定工作日和“剩余≤15天”规则完成10件商品效期巡检：核验、计算、移区、记录上报、复查”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:9ff6aaf13921ad1692665b267083e19b0103566c8160cefa2458dbb844e5bf16"
+    },
+    {
+      "setup_id": "setup_m3_op_058_v4",
+      "source_question_id": "M3_OP_058",
+      "current_question_id": "M3_OP_058_V4",
+      "module": "M3",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“逐一检查20件安全模拟商品，找出2件临期品和1件无内容物漏气袋；仅褶皱且密封完好的样品不是问题品”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:73a58148d5cd62c1e9cc1dfa048a78d52d557a2fee60b15afa3b93b390bb769b"
+    },
+    {
+      "setup_id": "setup_m4_op_028_v4",
+      "source_question_id": "M4_OP_028",
+      "current_question_id": "M4_OP_028_V4",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“把6件标明模拟重量的轻质货物按“重下轻上”摆到已固定库房货架”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:d919dff347e25262e57ca4c92b1bd03ffe98f20285bcaf6213bd82c501a17259"
+    },
+    {
+      "setup_id": "setup_m4_op_029_v2",
+      "source_question_id": "M4_OP_029",
+      "current_question_id": "M4_OP_029_V2",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "recording_stationery_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“按固定库位顺序清点货架上的12件目标商品，并把品类和总数量清楚地写在记录表上。”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:0edd858bc3b981ee35e7f0fba192d441d291a3f56d1287dd59ba94ea03065699"
+    },
+    {
+      "setup_id": "setup_m4_op_030_v4",
+      "source_question_id": "M4_OP_030",
+      "current_question_id": "M4_OP_030_V4",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“将5件同SKU不同批次的合格库存按到期日早前晚后摆入同一货位”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:6e9363799b4b504fe347be1e21ed29b1944b43c4224409fcaa0b9e72ce88d57f"
+    },
+    {
+      "setup_id": "setup_m4_op_031_v4",
+      "source_question_id": "M4_OP_031",
+      "current_question_id": "M4_OP_031_V4",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "delivery_document_set",
+        "kit_reset_checklist",
+        "products_general_set",
+        "recording_stationery_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“按拣货指令单拣出3个品类各2件商品，逐件核对品名、规格、条码和数量；差异时暂停并上报”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:7cd6bd025985dd81dfc4f147db8b26f1cd0a0fdc83e5009dcdafea05cd3bd3d4"
+    },
+    {
+      "setup_id": "setup_m4_op_032_v4",
+      "source_question_id": "M4_OP_032",
+      "current_question_id": "M4_OP_032_V4",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_09"
+      ],
+      "public_instruction": "按清单布置“发现库房通道3件障碍物后，先停止通行并警示隔离；评估重量和性质，仅搬移可安全处理的轻质物，其余上报求助”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:ca5e441779e55b0565dd35b5851cec3d6bbad1f50965641addb70481b24c2623"
+    },
+    {
+      "setup_id": "setup_m4_op_033_v4",
+      "source_question_id": "M4_OP_033",
+      "current_question_id": "M4_OP_033_V4",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "delivery_document_set",
+        "kit_reset_checklist",
+        "products_general_set",
+        "recording_stationery_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_delivery_script_m4_op_033",
+        "asset_offline_tool_07"
+      ],
+      "public_instruction": "按清单布置“核对送货单与实物，发现数量不符后按规程处理”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:cf5b7d31a9e4f28e6358f28080b194b3b5bd77d244a8914b0ac44979071278d4"
+    },
+    {
+      "setup_id": "setup_m4_op_034_v4",
+      "source_question_id": "M4_OP_034",
+      "current_question_id": "M4_OP_034_V4",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_delivery_answer_image_m4_op_034"
+      ],
+      "public_instruction": "按清单布置“按示例照片把6件商品还原摆放到库房货架上”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:eca27c5898161fd02f5424cd6fff468b9f3dd8c180d904ac06b6303a910a329c"
+    },
+    {
+      "setup_id": "setup_m4_op_035_v4",
+      "source_question_id": "M4_OP_035",
+      "current_question_id": "M4_OP_035_V4",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "delivery_document_set",
+        "kit_reset_checklist",
+        "products_general_set",
+        "recording_stationery_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_07"
+      ],
+      "public_instruction": "按清单布置“清点本次到货并与送货单逐行核对；发现1处数量差异后复核、记录、暂停流转并提交负责人确认”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:526cb0e357957c7e47890934af814862dc485c2ea04475b920858530e68c8645"
+    },
+    {
+      "setup_id": "setup_m4_op_036_v4",
+      "source_question_id": "M4_OP_036",
+      "current_question_id": "M4_OP_036_V4",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“把8件混放商品按品类分区摆好”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:bf50053995c6d6546dde0738ffe734846d3c6e37194d19ec028382537fa6a41d"
+    },
+    {
+      "setup_id": "setup_m4_op_037_v4",
+      "source_question_id": "M4_OP_037",
+      "current_question_id": "M4_OP_037_V4",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "boundary_samples_d01_d05",
+        "cartons_b01_b03",
+        "delivery_document_set",
+        "kit_reset_checklist",
+        "ppe_cut_resistant_gloves",
+        "products_general_set",
+        "recording_stationery_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface",
+        "zone_problem_goods"
+      ],
+      "asset_ids": [
+        "asset_delivery_script_m4_op_037"
+      ],
+      "public_instruction": "按清单布置“完成含1件仿真破损品的入库检查：核数、查损、暂停异常项目、记录上报；学员只提交单据，由负责人决定签收”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:4382ec8eb52e3bbb63653196555f8b01a1339b51fe95d656a948c0eb9d1dd07b"
+    },
+    {
+      "setup_id": "setup_m4_op_038_v4",
+      "source_question_id": "M4_OP_038",
+      "current_question_id": "M4_OP_038_V4",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "delivery_document_set",
+        "kit_reset_checklist",
+        "products_general_set",
+        "recording_stationery_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“按出库拣货单拣取4个品类各3件，核对品名、规格、条码和数量，复核后交接；差异时停止出库并上报”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:b1be4a69eaeb64e86a8ecc16e3581b5a7b803e7590e7d8c75efba09011ec5dd6"
+    },
+    {
+      "setup_id": "setup_m4_op_039_v4",
+      "source_question_id": "M4_OP_039",
+      "current_question_id": "M4_OP_039_V4",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“整理已固定库房货架：按品类归区、轻质仿真重货下置轻货上置，并保持通道畅通”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:60fe4520b8a916b47fa0d20a9fb7803c80709ef3af693a9f2ffa7b92c7cc77a9"
+    },
+    {
+      "setup_id": "setup_m4_op_040_v4",
+      "source_question_id": "M4_OP_040",
+      "current_question_id": "M4_OP_040_V4",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "recording_stationery_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "software_visible_timer",
+        "station_stable_work_surface",
+        "zone_expiry_handling"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“按本门店模拟规则“剩余≤15天为临期”，从库存中找出2件临期品，移入临期专区并记录”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:9cd2b40e7d8bdc5b0bd1fcf03e770fad12fd0a0fd28f8d0ed274a242401b29c8"
+    },
+    {
+      "setup_id": "setup_m4_op_041_v4",
+      "source_question_id": "M4_OP_041",
+      "current_question_id": "M4_OP_041_V4",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "recording_stationery_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_delivery_audio_inventory_interruption",
+        "asset_delivery_script_m4_op_041",
+        "asset_offline_tool_08"
+      ],
+      "public_instruction": "按清单布置“完成库存盘点四步：标识并冻结范围、逐件清点记录、与库存表比对、复核差异并上报；中断恢复单独观察”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:403fc67d8f1b500f8e05f27f9fe2e59849d2cef5913aee4923ec2206f58c44ab"
+    },
+    {
+      "setup_id": "setup_m4_op_042_v4",
+      "source_question_id": "M4_OP_042",
+      "current_question_id": "M4_OP_042_V4",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "recording_stationery_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_delivery_script_m4_op_042"
+      ],
+      "public_instruction": "按清单布置“发现库存差异后完整处置（复核→确认→上报→记录）”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:3142ce40e59cb29111ff1896a092b726e225feeb34f69da5e093f40162e116a6"
+    },
+    {
+      "setup_id": "setup_m4_op_043_v2",
+      "source_question_id": "M4_OP_043",
+      "current_question_id": "M4_OP_043_V2",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "boundary_samples_d01_d05",
+        "cartons_b01_b03",
+        "kit_reset_checklist",
+        "ppe_cut_resistant_gloves",
+        "products_general_set",
+        "safe_cleanup_set",
+        "shelf_three_tier",
+        "station_stable_work_surface",
+        "zone_problem_goods"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_04",
+        "asset_offline_tool_10",
+        "asset_offline_tool_12"
+      ],
+      "public_instruction": "按清单布置“补货结束后，将6件待处理物品分别放入“纸箱回收区”“塑料膜回收区”“问题商品暂存区”。”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:550185f77e3c5ddb18a61cf755ab636454226638ada589082c44e0e7bcb72ef4"
+    },
+    {
+      "setup_id": "setup_m4_op_044_v2",
+      "source_question_id": "M4_OP_044",
+      "current_question_id": "M4_OP_044_V2",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“根据“通道号→货架号→层位号”的补货路线规则，把8件轻质商品按第一站到最后一站排列到周转车上。”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:c40c848088e2286f9404380a5b37cf6f21d871a7c698b56eec400fd8860504bd"
+    },
+    {
+      "setup_id": "setup_m4_op_045_v4",
+      "source_question_id": "M4_OP_045",
+      "current_question_id": "M4_OP_045_V4",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "safe_cleanup_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_10"
+      ],
+      "public_instruction": "按清单布置“三个周转箱分别标注“零食区”“常温饮品区”“洗护清洁区”。其中有1件商品放错箱，请核对商品和区域标签，找出并移入正确周转箱，随后复查其余商品。”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:77644a88357733d213f847f156970704c12743ae9314796fd3c99544f809de80"
+    },
+    {
+      "setup_id": "setup_m4_op_046_v4",
+      "source_question_id": "M4_OP_046",
+      "current_question_id": "M4_OP_046_V4",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“核对补货清单与6件轻质商品。6件实物中有且仅有1件商品的条码与补货清单不符，其余5件的品名、规格和条码均与清单一致。请找出该商品，停止其上架，贴上问题标识并报告负责人。”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:61effa8aad939607d03f291b4d0172eb599795c10ad3efe46ac8e08e95d38dec"
+    },
+    {
+      "setup_id": "setup_m4_op_047_v3",
+      "source_question_id": "M4_OP_047",
+      "current_question_id": "M4_OP_047_V3",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "station_stable_work_surface",
+        "zone_expiry_handling"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“将8件同SKU合格商品按到期日由早到晚排列。日期统一采用YYYY-MM-DD格式；到期日相同的商品按本题锁定的门店次级规则，将4位纯数字批次号由小到大排列。”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:74f4a69a5ab1a3b7e6a8f38c47c837fbab6656c9f5aaeb4433a6155bc6757985"
+    },
+    {
+      "setup_id": "setup_m4_op_048_v4",
+      "source_question_id": "M4_OP_048",
+      "current_question_id": "M4_OP_048_V4",
+      "module": "M4",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_05"
+      ],
+      "public_instruction": "按清单布置“按补货任务单处理10件轻质商品，其中9件为合格补货品，1件为条码与任务单不符的安全仿真异常品。将9件合格品补入唯一正确货位，将异常品放入问题暂存区。完成第5件时，评估员按固定脚本中断20秒；中断时放置进度标记，恢复后从标记处接续，最后复查。”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:8b51522dd1f47ba33930ccb09e359b334b833b72f2db932f81210e8203bf8733"
+    },
+    {
+      "setup_id": "setup_m5_op_039_v2",
+      "source_question_id": "M5_OP_039",
+      "current_question_id": "M5_OP_039_V2",
+      "module": "M5",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "safe_cleanup_set",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_09",
+        "asset_offline_tool_10"
+      ],
+      "public_instruction": "按清单布置“发现模拟水渍后，依次完成警示隔离、通知指定人员、确认清洁干燥和复检撤牌。”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:8cb279fbe86e8cdde63680102dca2950229f5fe0ec38b5de5efc2758ed8fe757"
+    },
+    {
+      "setup_id": "setup_m5_op_040_v4",
+      "source_question_id": "M5_OP_040",
+      "current_question_id": "M5_OP_040_V4",
+      "module": "M5",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "cartons_b01_b03",
+        "kit_reset_checklist",
+        "products_general_set",
+        "role_play_badges",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“先评估1箱8kg轻质模拟货物和路线；可单人搬运时屈膝、贴近身体、避免扭转，搬到指定位置；不能安全搬运时求助”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:4af215e99bdc5c32d2728b68b85ff80ed20735b5bd4048cd3b0d3d3211c10f77"
+    },
+    {
+      "setup_id": "setup_m5_op_041_v4",
+      "source_question_id": "M5_OP_041",
+      "current_question_id": "M5_OP_041_V4",
+      "module": "M5",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "recall_marker_set",
+        "recording_stationery_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“依据固定召回通知核对批次，立即停售并隔离3件召回商品，清点记录后上报交接”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:d86ee00e136d39ea619fa999ad6008a959914836769481af7454ff03633f556f"
+    },
+    {
+      "setup_id": "setup_m5_op_042_v4",
+      "source_question_id": "M5_OP_042",
+      "current_question_id": "M5_OP_042_V4",
+      "module": "M5",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "boundary_samples_d01_d05",
+        "kit_reset_checklist",
+        "ppe_cut_resistant_gloves",
+        "role_play_badges",
+        "safe_cleanup_set",
+        "station_stable_work_surface",
+        "zone_problem_goods"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_09"
+      ],
+      "public_instruction": "按清单布置“按模拟碎玻璃SOP处置塑料安全碎片：停止通行、警示隔离、穿戴PPE用工具清理、检查残留、上报确认”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:7dd66ef28a8c764ce5d1fa0eb8ecd1184a18399575b3402b22d81553c8296cc8"
+    },
+    {
+      "setup_id": "setup_m5_op_043_v4",
+      "source_question_id": "M5_OP_043",
+      "current_question_id": "M5_OP_043_V4",
+      "module": "M5",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_delivery_script_m5_op_043",
+        "asset_offline_tool_09"
+      ],
+      "public_instruction": "按清单布置“看到货架“支架松动”视觉缺陷标识后，立即停工远离、警示隔离并上报，禁止触碰或自行维修”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:241ee1afdd62f2b572a839627eb816fee9616ccebf1a765efc34a8dd155c31fe"
+    },
+    {
+      "setup_id": "setup_m5_op_044_v4",
+      "source_question_id": "M5_OP_044",
+      "current_question_id": "M5_OP_044_V4",
+      "module": "M5",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "role_play_badges",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_delivery_script_m5_op_044"
+      ],
+      "public_instruction": "按清单布置“角色扮演：顾客按固定台词激动投诉。理货员保持距离，不承诺退款赔偿，不争辩接触，说明将请负责人处理并实际呼叫；出现威胁时停止对话并请求安保”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:8acddbb8b61be0433225463277f8b7859280a83ff9f29fe96696d5d0a14b77b6"
+    },
+    {
+      "setup_id": "setup_m5_op_045_v4",
+      "source_question_id": "M5_OP_045",
+      "current_question_id": "M5_OP_045_V4",
+      "module": "M5",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "role_play_badges",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_delivery_audio_evacuation_signal",
+        "asset_delivery_script_m5_op_045"
+      ],
+      "public_instruction": "按清单布置“听到模拟疏散信号后，按张贴预案停止工作，经指定路线到集合点并向负责人报到；只提醒身边顾客跟随标识，不承担未授权疏导”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:9c15884bf6bd70ab8e9bd3e17d31130594ba197e7c378bc85b728c013fa4ee2b"
+    },
+    {
+      "setup_id": "setup_m5_op_046_v4",
+      "source_question_id": "M5_OP_046",
+      "current_question_id": "M5_OP_046_V4",
+      "module": "M5",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "role_play_badges",
+        "safe_cleanup_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_09",
+        "asset_offline_tool_10"
+      ],
+      "public_instruction": "按清单布置“识别水渍、未归位梯子、货架尖角3处隐患：水渍先警示并通知清洁；梯子仅在稳定且通道安全时归位；尖角隔离上报不得自行维修”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:b2b9d319f4478be5f46b2b42a661ff4f3928c607d005917cf1bccf3c170ee542"
+    },
+    {
+      "setup_id": "setup_m5_op_047_v4",
+      "source_question_id": "M5_OP_047",
+      "current_question_id": "M5_OP_047_V4",
+      "module": "M5",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "folding_step_stool",
+        "kit_reset_checklist",
+        "products_general_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_09"
+      ],
+      "public_instruction": "按清单布置“发现超高堆放后先停止靠近、警示隔离并观察稳定性；只有负责人确认稳定且轻质时才协助降高，否则保持隔离并求助”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:82303cca14acd75b8453a691f2723f949b241a1e6e977ea6f0be97c1b1b3c1ac"
+    },
+    {
+      "setup_id": "setup_m5_op_048_v4",
+      "source_question_id": "M5_OP_048",
+      "current_question_id": "M5_OP_048_V4",
+      "module": "M5",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "cartons_b01_b03",
+        "kit_reset_checklist",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_04",
+        "asset_offline_tool_09"
+      ],
+      "public_instruction": "按清单布置“补货时发现通道内散落3个轻质空纸箱和1段塑料包装膜。请按门店安全流程恢复通道。”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:f6a09c29c5a266d02d084e24a562af7d5fcfa5ee9e255eb1adff54d1b53c2c6e"
+    },
+    {
+      "setup_id": "setup_m5_op_049_v4",
+      "source_question_id": "M5_OP_049",
+      "current_question_id": "M5_OP_049_V4",
+      "module": "M5",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "role_play_badges",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_delivery_script_m5_op_049"
+      ],
+      "public_instruction": "按清单布置“角色扮演：普通员工发现同事流血，避免接触血液，立即呼叫负责人和受训急救员，保护现场并安抚等待；仅受训人员可在PPE下急救”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:ecb9b465f3df5a03afed22021f8d15c66c24df5fb00106e7b1ee1e6908113492"
+    },
+    {
+      "setup_id": "setup_m5_op_050_v4",
+      "source_question_id": "M5_OP_050",
+      "current_question_id": "M5_OP_050_V4",
+      "module": "M5",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "boundary_samples_d01_d05",
+        "cartons_b01_b03",
+        "kit_reset_checklist",
+        "ppe_cut_resistant_gloves",
+        "products_general_set",
+        "recording_stationery_set",
+        "role_play_badges",
+        "safe_cleanup_set",
+        "shelf_three_tier",
+        "station_stable_work_surface",
+        "zone_problem_goods"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_04",
+        "asset_offline_tool_09"
+      ],
+      "public_instruction": "按清单布置“巡检4处固定隐患：仿真水渍、通道轻质纸箱、货架松动视觉标识、无泄漏破损空包装；逐处警示、隔离、处置或上报”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:82e075ecc9a12ad82e9d73529d88e15818cf7b465fdd99732ab55bbd9d06ef87"
+    },
+    {
+      "setup_id": "setup_m5_op_051_v4",
+      "source_question_id": "M5_OP_051",
+      "current_question_id": "M5_OP_051_V4",
+      "module": "M5",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "role_play_badges",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_delivery_script_m5_op_051"
+      ],
+      "public_instruction": "按清单布置“角色扮演：顾客问专业医疗问题（这种奶粉适合乳糖不耐受的人吗？）”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:431bac18a264510cd21dd74596782da6b5a2eb2f109c8ecf104aae7fe01a8707"
+    },
+    {
+      "setup_id": "setup_m5_op_052_v4",
+      "source_question_id": "M5_OP_052",
+      "current_question_id": "M5_OP_052_V4",
+      "module": "M5",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "powered_off_equipment_prop",
+        "products_general_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_delivery_script_m5_op_052",
+        "asset_offline_tool_09"
+      ],
+      "public_instruction": "按清单布置“听到货架区域持续异响后，执行求助流程：停止作业并远离、警示隔离、向负责人说明位置和现象、完成交接，禁止自行检查”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:e48586ad1f63f2c22f8e3938b010a7be1a5a3f58abe46e59cb7e844d8a4616bf"
+    },
+    {
+      "setup_id": "setup_m5_op_053_v4",
+      "source_question_id": "M5_OP_053",
+      "current_question_id": "M5_OP_053_V4",
+      "module": "M5",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "powered_off_equipment_prop",
+        "role_play_badges",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_delivery_audio_abnormal_equipment_noise",
+        "asset_offline_tool_09"
+      ],
+      "public_instruction": "按清单布置“看到“新增设备运行中、未经培训禁止操作”模拟图卡后，保持安全距离、警示隔离并报告负责人，禁止触碰”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:04b25ee9fad6c0f0a2519aacb8f29ff711c4a7e98b2bde742c9f9bf206dd2fd4"
+    },
+    {
+      "setup_id": "setup_m5_op_054_v4",
+      "source_question_id": "M5_OP_054",
+      "current_question_id": "M5_OP_054_V4",
+      "module": "M5",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "recording_stationery_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_delivery_script_m5_op_054"
+      ],
+      "public_instruction": "按清单布置“角色扮演：顾客按固定台词要求退款。理货员说明无退款权限，不作承诺，联系负责人并交接商品问题和顾客诉求”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:692f9d77040d553e6bb57422e11042b5d93ccea0653cd712806349c21bfeb954"
+    },
+    {
+      "setup_id": "setup_m5_op_055_v3",
+      "source_question_id": "M5_OP_055",
+      "current_question_id": "M5_OP_055_V3",
+      "module": "M5",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“负责人说：“把那边的货补一下。”现场有两个货架、三种SKU和两个优先级标识，指令不能唯一确定任务。请在移动商品前澄清四个维度：目标位置、商品身份、数量和优先级；随后复述完整任务并等待负责人确认。确认后本题结束，不开始补货。”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:4c37cbccebbc1099bb7b3a1f94d7bef42dc6e198e5c5b4689bd43e41b30d3267"
+    },
+    {
+      "setup_id": "setup_m6_op_034_v4",
+      "source_question_id": "M6_OP_034",
+      "current_question_id": "M6_OP_034_V4",
+      "module": "M6",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "cold_chain_samples_and_zone_labels",
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“把5件商品图片卡与对应的货架区域标签配对”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:eab12a849d3e3d499fd9c7b58004fe1983aa9fe9451ed73115d366db256a8500"
+    },
+    {
+      "setup_id": "setup_m6_op_035_v2",
+      "source_question_id": "M6_OP_035",
+      "current_question_id": "M6_OP_035_V2",
+      "module": "M6",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“依据货架区域标识和标准映射，将6件轻型训练商品放回正确区域，并做到正面朝外、放置稳定。”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:a0733a18a26afe284d88492c555b3e6904812824669b70050f5e34c00a0e7795"
+    },
+    {
+      "setup_id": "setup_m6_op_036_v4",
+      "source_question_id": "M6_OP_036",
+      "current_question_id": "M6_OP_036_V4",
+      "module": "M6",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“从8件商品中找出所有被放错区域的商品并归位”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:14197d668a94acd70c93ba6806a55b662aa26b84daee0b6be266c96e1e0f7db4"
+    },
+    {
+      "setup_id": "setup_m6_op_037_v4",
+      "source_question_id": "M6_OP_037",
+      "current_question_id": "M6_OP_037_V4",
+      "module": "M6",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“把4对近邻商品（外包装相似）逐一区分并放到正确位置”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:2a5927222538ad53ae05af439ca7cf46045e34fc07e491334c6d49a3514e9d5e"
+    },
+    {
+      "setup_id": "setup_m6_op_038_v4",
+      "source_question_id": "M6_OP_038",
+      "current_question_id": "M6_OP_038_V4",
+      "module": "M6",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "offline_scanner_with_sku_json",
+        "powered_off_equipment_prop",
+        "products_general_set",
+        "recording_stationery_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_06"
+      ],
+      "public_instruction": "按清单布置“用离线扫码设备识别5件商品品名；扫码失败时改用条码数字与离线对照表核验并记录失败，不得猜测”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:d70352cdaad7b347832f88290413540a0101256885aac2d57d876010c378404e"
+    },
+    {
+      "setup_id": "setup_m6_op_039_v4",
+      "source_question_id": "M6_OP_039",
+      "current_question_id": "M6_OP_039_V4",
+      "module": "M6",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "offline_scanner_with_sku_json",
+        "powered_off_equipment_prop",
+        "products_general_set",
+        "recording_stationery_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_06"
+      ],
+      "public_instruction": "按清单布置“把5件实物商品放到对应货架区域；可用说出、指出、写出或扫码辅助判断，但最终必须完成实物归位”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:99b2ce151177266678da7a38e31f90767a8af72749a4a6ca09162f81d8e39a26"
+    },
+    {
+      "setup_id": "setup_m6_op_040_v4",
+      "source_question_id": "M6_OP_040",
+      "current_question_id": "M6_OP_040_V4",
+      "module": "M6",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_delivery_answer_image_m6_op_040"
+      ],
+      "public_instruction": "按清单布置“按示例图把8件商品还原摆放到货架上”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:a03ef4c7470899e02185d3e30d3fdfe561230752dfa3725b6adbc942b5208cea"
+    },
+    {
+      "setup_id": "setup_m6_op_041_v4",
+      "source_question_id": "M6_OP_041",
+      "current_question_id": "M6_OP_041_V4",
+      "module": "M6",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_05"
+      ],
+      "public_instruction": "按清单布置“找出2件错放商品和2张错位价签；商品按SKU归位，价签先核对条码、品名、规格和价格，再按权限归位或隔离上报”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:9254b2deddd766dcb0adecde63d40cfc30d0cb0364d2831df819a2d526fedc57"
+    },
+    {
+      "setup_id": "setup_m6_op_042_v4",
+      "source_question_id": "M6_OP_042",
+      "current_question_id": "M6_OP_042_V4",
+      "module": "M6",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“从10件商品中找出所有不应该放在当前区域的商品”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:2bee13d47ade7163b726045861f7f0c43bf089064084e380384765c6a36559de"
+    },
+    {
+      "setup_id": "setup_m6_op_043_v4",
+      "source_question_id": "M6_OP_043",
+      "current_question_id": "M6_OP_043_V4",
+      "module": "M6",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“把6件外包装仅有细微差别的商品按规格（大/中/小）分别归位”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:3f47a9a24aa031210da06ad183d0ac01b4f95c08b097931434e0a35eda331c9d"
+    },
+    {
+      "setup_id": "setup_m6_op_044_v4",
+      "source_question_id": "M6_OP_044",
+      "current_question_id": "M6_OP_044_V4",
+      "module": "M6",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "recording_stationery_set",
+        "shelf_three_tier",
+        "software_visible_timer",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“准确性优先，把10件商品归到5个固定区域并复查；2分钟只记录，不作为得分门槛，超时继续完成”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:e45cde0b2712b9a0d73da9d7485cd2ab8bbaaf75e7223ce9f30bd85b76d87026"
+    },
+    {
+      "setup_id": "setup_m6_op_045_v4",
+      "source_question_id": "M6_OP_045",
+      "current_question_id": "M6_OP_045_V4",
+      "module": "M6",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_fixed_date_set_g01_g12_g15_g16",
+        "products_general_set",
+        "recording_stationery_set",
+        "shelf_three_tier",
+        "simulated_work_date_sign",
+        "software_visible_timer",
+        "station_stable_work_surface",
+        "zone_expiry_handling"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“读取8件商品已直接标注的到期日，从中找出最早到期的3件；本题不进行生产日期换算，可用格式说明卡”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:4ec09d3306faabf9cb54646e50ccf8c4ce10a69a9df62581460513fb41ab89da"
+    },
+    {
+      "setup_id": "setup_m6_op_046_v4",
+      "source_question_id": "M6_OP_046",
+      "current_question_id": "M6_OP_046_V4",
+      "module": "M6",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "cold_chain_samples_and_zone_labels",
+        "kit_reset_checklist",
+        "products_general_set",
+        "shelf_three_tier",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [],
+      "public_instruction": "按清单布置“使用空包装/图片卡，从12件商品中找出2件冷藏品和1件冷冻品，分别归入冷藏区、冷冻区，常温品不移动”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:a14f3eb43a514e44b0947e6eb62909df99ea8802d0e0d0572eb27fa05543250f"
+    },
+    {
+      "setup_id": "setup_m6_op_047_v4",
+      "source_question_id": "M6_OP_047",
+      "current_question_id": "M6_OP_047_V4",
+      "module": "M6",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "kit_reset_checklist",
+        "products_general_set",
+        "recording_stationery_set",
+        "shelf_three_tier",
+        "software_visible_timer",
+        "station_stable_work_surface"
+      ],
+      "asset_ids": [
+        "asset_delivery_answer_image_m6_op_047"
+      ],
+      "public_instruction": "按清单布置“参照示例图整理已固定货架：商品按品类归区、标明模拟重货下置轻货上置、标签朝外”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:82e1126e4b6215dad743f54ce0e6b80fc1c8064f3397e638e85f59f1c839bf2f"
+    },
+    {
+      "setup_id": "setup_m6_op_048_v4",
+      "source_question_id": "M6_OP_048",
+      "current_question_id": "M6_OP_048_V4",
+      "module": "M6",
+      "status": "LOCKED_FOR_PRODUCTION",
+      "item_ids": [
+        "boundary_samples_d01_d05",
+        "kit_reset_checklist",
+        "ppe_cut_resistant_gloves",
+        "products_general_set",
+        "recording_stationery_set",
+        "role_play_badges",
+        "shelf_three_tier",
+        "station_stable_work_surface",
+        "zone_problem_goods"
+      ],
+      "asset_ids": [
+        "asset_offline_tool_05"
+      ],
+      "public_instruction": "按清单布置“巡检货架的1件错放商品、1张错位价签和1件安全模拟破损品：分别归位、核签处置、隔离登记上报”所需材料；开始前确认数量、位置和安全状态。",
+      "reset_instruction": "按 item_ids 逐项复位并核对数量；一次性耗材按 v2.2 补充规则更换。",
+      "answer_contract_hash": "sha256:e8105cc0fbbfe5727f01c101294e8d548b48ac32b8b3a613925a8265a762b0a2"
+    }
+  ],
+  "reverse_index": {
+    "item_to_setup_ids": {
+      "boundary_samples_d01_d05": [
+        "setup_m1_op_041_v4",
+        "setup_m2_op_027_v2",
+        "setup_m2_op_028_v4",
+        "setup_m2_op_032_v4",
+        "setup_m2_op_034_v4",
+        "setup_m2_op_037_v4",
+        "setup_m2_op_039_v4",
+        "setup_m3_op_043_v2",
+        "setup_m3_op_046_v4",
+        "setup_m3_op_048_v4",
+        "setup_m3_op_051_v4",
+        "setup_m3_op_052_v4",
+        "setup_m3_op_053_v4",
+        "setup_m4_op_037_v4",
+        "setup_m4_op_043_v2",
+        "setup_m5_op_042_v4",
+        "setup_m5_op_050_v4",
+        "setup_m6_op_048_v4"
+      ],
+      "cartons_b01_b03": [
+        "setup_m2_op_027_v2",
+        "setup_m2_op_028_v4",
+        "setup_m2_op_030_v4",
+        "setup_m2_op_035_v4",
+        "setup_m2_op_040_v4",
+        "setup_m4_op_037_v4",
+        "setup_m4_op_043_v2",
+        "setup_m5_op_040_v4",
+        "setup_m5_op_048_v4",
+        "setup_m5_op_050_v4"
+      ],
+      "cold_chain_samples_and_zone_labels": [
+        "setup_m6_op_034_v4",
+        "setup_m6_op_046_v4"
+      ],
+      "delivery_document_set": [
+        "setup_m2_op_035_v4",
+        "setup_m2_op_040_v4",
+        "setup_m4_op_031_v4",
+        "setup_m4_op_033_v4",
+        "setup_m4_op_035_v4",
+        "setup_m4_op_037_v4",
+        "setup_m4_op_038_v4"
+      ],
+      "folding_step_stool": [
+        "setup_m5_op_047_v4"
+      ],
+      "kit_reset_checklist": [
+        "setup_m1_ob_048_v3",
+        "setup_m1_op_033_v2",
+        "setup_m1_op_034_v4",
+        "setup_m1_op_035_v4",
+        "setup_m1_op_036_v4",
+        "setup_m1_op_037_v5",
+        "setup_m1_op_038_v5",
+        "setup_m1_op_039_v4",
+        "setup_m1_op_040_v4",
+        "setup_m1_op_041_v4",
+        "setup_m1_op_042_v4",
+        "setup_m1_op_043_v4",
+        "setup_m1_op_044_v4",
+        "setup_m1_op_045_v4",
+        "setup_m1_op_046_v4",
+        "setup_m1_op_047_v4",
+        "setup_m2_op_027_v2",
+        "setup_m2_op_028_v4",
+        "setup_m2_op_029_v4",
+        "setup_m2_op_030_v4",
+        "setup_m2_op_031_v6",
+        "setup_m2_op_032_v4",
+        "setup_m2_op_033_v4",
+        "setup_m2_op_034_v4",
+        "setup_m2_op_035_v4",
+        "setup_m2_op_036_v4",
+        "setup_m2_op_037_v4",
+        "setup_m2_op_038_v6",
+        "setup_m2_op_039_v4",
+        "setup_m2_op_040_v4",
+        "setup_m2_op_041_v6",
+        "setup_m3_op_043_v2",
+        "setup_m3_op_044_v4",
+        "setup_m3_op_045_v4",
+        "setup_m3_op_046_v4",
+        "setup_m3_op_047_v4",
+        "setup_m3_op_048_v4",
+        "setup_m3_op_049_v4",
+        "setup_m3_op_050_v4",
+        "setup_m3_op_051_v4",
+        "setup_m3_op_052_v4",
+        "setup_m3_op_053_v4",
+        "setup_m3_op_054_v4",
+        "setup_m3_op_055_v4",
+        "setup_m3_op_056_v4",
+        "setup_m3_op_057_v4",
+        "setup_m3_op_058_v4",
+        "setup_m4_op_028_v4",
+        "setup_m4_op_029_v2",
+        "setup_m4_op_030_v4",
+        "setup_m4_op_031_v4",
+        "setup_m4_op_032_v4",
+        "setup_m4_op_033_v4",
+        "setup_m4_op_034_v4",
+        "setup_m4_op_035_v4",
+        "setup_m4_op_036_v4",
+        "setup_m4_op_037_v4",
+        "setup_m4_op_038_v4",
+        "setup_m4_op_039_v4",
+        "setup_m4_op_040_v4",
+        "setup_m4_op_041_v4",
+        "setup_m4_op_042_v4",
+        "setup_m4_op_043_v2",
+        "setup_m4_op_044_v2",
+        "setup_m4_op_045_v4",
+        "setup_m4_op_046_v4",
+        "setup_m4_op_047_v3",
+        "setup_m4_op_048_v4",
+        "setup_m5_op_039_v2",
+        "setup_m5_op_040_v4",
+        "setup_m5_op_041_v4",
+        "setup_m5_op_042_v4",
+        "setup_m5_op_043_v4",
+        "setup_m5_op_044_v4",
+        "setup_m5_op_045_v4",
+        "setup_m5_op_046_v4",
+        "setup_m5_op_047_v4",
+        "setup_m5_op_048_v4",
+        "setup_m5_op_049_v4",
+        "setup_m5_op_050_v4",
+        "setup_m5_op_051_v4",
+        "setup_m5_op_052_v4",
+        "setup_m5_op_053_v4",
+        "setup_m5_op_054_v4",
+        "setup_m5_op_055_v3",
+        "setup_m6_op_034_v4",
+        "setup_m6_op_035_v2",
+        "setup_m6_op_036_v4",
+        "setup_m6_op_037_v4",
+        "setup_m6_op_038_v4",
+        "setup_m6_op_039_v4",
+        "setup_m6_op_040_v4",
+        "setup_m6_op_041_v4",
+        "setup_m6_op_042_v4",
+        "setup_m6_op_043_v4",
+        "setup_m6_op_044_v4",
+        "setup_m6_op_045_v4",
+        "setup_m6_op_046_v4",
+        "setup_m6_op_047_v4",
+        "setup_m6_op_048_v4"
+      ],
+      "offline_scanner_with_sku_json": [
+        "setup_m6_op_038_v4",
+        "setup_m6_op_039_v4"
+      ],
+      "powered_off_equipment_prop": [
+        "setup_m5_op_052_v4",
+        "setup_m5_op_053_v4",
+        "setup_m6_op_038_v4",
+        "setup_m6_op_039_v4"
+      ],
+      "ppe_cut_resistant_gloves": [
+        "setup_m1_op_041_v4",
+        "setup_m2_op_027_v2",
+        "setup_m2_op_028_v4",
+        "setup_m2_op_032_v4",
+        "setup_m2_op_034_v4",
+        "setup_m2_op_037_v4",
+        "setup_m2_op_039_v4",
+        "setup_m3_op_043_v2",
+        "setup_m3_op_046_v4",
+        "setup_m3_op_048_v4",
+        "setup_m3_op_051_v4",
+        "setup_m3_op_052_v4",
+        "setup_m3_op_053_v4",
+        "setup_m4_op_037_v4",
+        "setup_m4_op_043_v2",
+        "setup_m5_op_042_v4",
+        "setup_m5_op_050_v4",
+        "setup_m6_op_048_v4"
+      ],
+      "products_fixed_date_set_g01_g12_g15_g16": [
+        "setup_m1_op_046_v4",
+        "setup_m2_op_029_v4",
+        "setup_m2_op_031_v6",
+        "setup_m2_op_037_v4",
+        "setup_m2_op_038_v6",
+        "setup_m2_op_039_v4",
+        "setup_m2_op_041_v6",
+        "setup_m3_op_043_v2",
+        "setup_m3_op_044_v4",
+        "setup_m3_op_045_v4",
+        "setup_m3_op_046_v4",
+        "setup_m3_op_047_v4",
+        "setup_m3_op_050_v4",
+        "setup_m3_op_052_v4",
+        "setup_m3_op_053_v4",
+        "setup_m3_op_054_v4",
+        "setup_m3_op_055_v4",
+        "setup_m3_op_056_v4",
+        "setup_m3_op_057_v4",
+        "setup_m3_op_058_v4",
+        "setup_m4_op_030_v4",
+        "setup_m4_op_040_v4",
+        "setup_m4_op_047_v3",
+        "setup_m6_op_045_v4"
+      ],
+      "products_general_set": [
+        "setup_m1_op_033_v2",
+        "setup_m1_op_034_v4",
+        "setup_m1_op_035_v4",
+        "setup_m1_op_036_v4",
+        "setup_m1_op_037_v5",
+        "setup_m1_op_038_v5",
+        "setup_m1_op_039_v4",
+        "setup_m1_op_040_v4",
+        "setup_m1_op_041_v4",
+        "setup_m1_op_042_v4",
+        "setup_m1_op_043_v4",
+        "setup_m1_op_044_v4",
+        "setup_m1_op_045_v4",
+        "setup_m1_op_046_v4",
+        "setup_m1_op_047_v4",
+        "setup_m2_op_027_v2",
+        "setup_m2_op_028_v4",
+        "setup_m2_op_029_v4",
+        "setup_m2_op_031_v6",
+        "setup_m2_op_032_v4",
+        "setup_m2_op_033_v4",
+        "setup_m2_op_034_v4",
+        "setup_m2_op_035_v4",
+        "setup_m2_op_036_v4",
+        "setup_m2_op_037_v4",
+        "setup_m2_op_038_v6",
+        "setup_m2_op_039_v4",
+        "setup_m2_op_040_v4",
+        "setup_m2_op_041_v6",
+        "setup_m3_op_043_v2",
+        "setup_m3_op_044_v4",
+        "setup_m3_op_045_v4",
+        "setup_m3_op_046_v4",
+        "setup_m3_op_047_v4",
+        "setup_m3_op_048_v4",
+        "setup_m3_op_049_v4",
+        "setup_m3_op_050_v4",
+        "setup_m3_op_051_v4",
+        "setup_m3_op_052_v4",
+        "setup_m3_op_053_v4",
+        "setup_m3_op_054_v4",
+        "setup_m3_op_055_v4",
+        "setup_m3_op_056_v4",
+        "setup_m3_op_057_v4",
+        "setup_m3_op_058_v4",
+        "setup_m4_op_028_v4",
+        "setup_m4_op_029_v2",
+        "setup_m4_op_030_v4",
+        "setup_m4_op_031_v4",
+        "setup_m4_op_033_v4",
+        "setup_m4_op_034_v4",
+        "setup_m4_op_035_v4",
+        "setup_m4_op_036_v4",
+        "setup_m4_op_037_v4",
+        "setup_m4_op_038_v4",
+        "setup_m4_op_039_v4",
+        "setup_m4_op_040_v4",
+        "setup_m4_op_041_v4",
+        "setup_m4_op_042_v4",
+        "setup_m4_op_043_v2",
+        "setup_m4_op_044_v2",
+        "setup_m4_op_045_v4",
+        "setup_m4_op_046_v4",
+        "setup_m4_op_047_v3",
+        "setup_m4_op_048_v4",
+        "setup_m5_op_040_v4",
+        "setup_m5_op_041_v4",
+        "setup_m5_op_043_v4",
+        "setup_m5_op_046_v4",
+        "setup_m5_op_047_v4",
+        "setup_m5_op_050_v4",
+        "setup_m5_op_052_v4",
+        "setup_m5_op_054_v4",
+        "setup_m5_op_055_v3",
+        "setup_m6_op_034_v4",
+        "setup_m6_op_035_v2",
+        "setup_m6_op_036_v4",
+        "setup_m6_op_037_v4",
+        "setup_m6_op_038_v4",
+        "setup_m6_op_039_v4",
+        "setup_m6_op_040_v4",
+        "setup_m6_op_041_v4",
+        "setup_m6_op_042_v4",
+        "setup_m6_op_043_v4",
+        "setup_m6_op_044_v4",
+        "setup_m6_op_045_v4",
+        "setup_m6_op_046_v4",
+        "setup_m6_op_047_v4",
+        "setup_m6_op_048_v4"
+      ],
+      "recall_marker_set": [
+        "setup_m5_op_041_v4"
+      ],
+      "recording_stationery_set": [
+        "setup_m2_op_028_v4",
+        "setup_m2_op_035_v4",
+        "setup_m2_op_037_v4",
+        "setup_m2_op_040_v4",
+        "setup_m2_op_041_v6",
+        "setup_m3_op_044_v4",
+        "setup_m3_op_045_v4",
+        "setup_m3_op_050_v4",
+        "setup_m3_op_051_v4",
+        "setup_m3_op_052_v4",
+        "setup_m3_op_053_v4",
+        "setup_m3_op_056_v4",
+        "setup_m3_op_057_v4",
+        "setup_m4_op_029_v2",
+        "setup_m4_op_031_v4",
+        "setup_m4_op_033_v4",
+        "setup_m4_op_035_v4",
+        "setup_m4_op_037_v4",
+        "setup_m4_op_038_v4",
+        "setup_m4_op_040_v4",
+        "setup_m4_op_041_v4",
+        "setup_m4_op_042_v4",
+        "setup_m5_op_041_v4",
+        "setup_m5_op_050_v4",
+        "setup_m5_op_054_v4",
+        "setup_m6_op_038_v4",
+        "setup_m6_op_039_v4",
+        "setup_m6_op_044_v4",
+        "setup_m6_op_045_v4",
+        "setup_m6_op_047_v4",
+        "setup_m6_op_048_v4"
+      ],
+      "role_play_badges": [
+        "setup_m1_ob_048_v3",
+        "setup_m1_op_039_v4",
+        "setup_m1_op_041_v4",
+        "setup_m1_op_042_v4",
+        "setup_m1_op_047_v4",
+        "setup_m2_op_028_v4",
+        "setup_m2_op_032_v4",
+        "setup_m2_op_034_v4",
+        "setup_m2_op_035_v4",
+        "setup_m2_op_040_v4",
+        "setup_m2_op_041_v6",
+        "setup_m3_op_048_v4",
+        "setup_m3_op_051_v4",
+        "setup_m3_op_052_v4",
+        "setup_m3_op_057_v4",
+        "setup_m4_op_031_v4",
+        "setup_m4_op_032_v4",
+        "setup_m4_op_035_v4",
+        "setup_m4_op_037_v4",
+        "setup_m4_op_038_v4",
+        "setup_m4_op_041_v4",
+        "setup_m4_op_042_v4",
+        "setup_m4_op_046_v4",
+        "setup_m4_op_048_v4",
+        "setup_m5_op_040_v4",
+        "setup_m5_op_041_v4",
+        "setup_m5_op_042_v4",
+        "setup_m5_op_043_v4",
+        "setup_m5_op_044_v4",
+        "setup_m5_op_045_v4",
+        "setup_m5_op_046_v4",
+        "setup_m5_op_047_v4",
+        "setup_m5_op_049_v4",
+        "setup_m5_op_050_v4",
+        "setup_m5_op_051_v4",
+        "setup_m5_op_052_v4",
+        "setup_m5_op_053_v4",
+        "setup_m5_op_054_v4",
+        "setup_m5_op_055_v3",
+        "setup_m6_op_041_v4",
+        "setup_m6_op_048_v4"
+      ],
+      "safe_box_cutter": [
+        "setup_m2_op_037_v4"
+      ],
+      "safe_cleanup_set": [
+        "setup_m1_ob_048_v3",
+        "setup_m1_op_038_v5",
+        "setup_m4_op_043_v2",
+        "setup_m4_op_045_v4",
+        "setup_m5_op_039_v2",
+        "setup_m5_op_042_v4",
+        "setup_m5_op_046_v4",
+        "setup_m5_op_050_v4"
+      ],
+      "shelf_three_tier": [
+        "setup_m1_op_033_v2",
+        "setup_m1_op_034_v4",
+        "setup_m1_op_035_v4",
+        "setup_m1_op_036_v4",
+        "setup_m1_op_037_v5",
+        "setup_m1_op_038_v5",
+        "setup_m1_op_039_v4",
+        "setup_m1_op_040_v4",
+        "setup_m1_op_041_v4",
+        "setup_m1_op_042_v4",
+        "setup_m1_op_043_v4",
+        "setup_m1_op_044_v4",
+        "setup_m1_op_045_v4",
+        "setup_m1_op_046_v4",
+        "setup_m1_op_047_v4",
+        "setup_m2_op_027_v2",
+        "setup_m2_op_028_v4",
+        "setup_m2_op_029_v4",
+        "setup_m2_op_031_v6",
+        "setup_m2_op_032_v4",
+        "setup_m2_op_033_v4",
+        "setup_m2_op_034_v4",
+        "setup_m2_op_035_v4",
+        "setup_m2_op_036_v4",
+        "setup_m2_op_037_v4",
+        "setup_m2_op_038_v6",
+        "setup_m2_op_039_v4",
+        "setup_m2_op_040_v4",
+        "setup_m2_op_041_v6",
+        "setup_m3_op_043_v2",
+        "setup_m3_op_044_v4",
+        "setup_m3_op_045_v4",
+        "setup_m3_op_046_v4",
+        "setup_m3_op_047_v4",
+        "setup_m3_op_048_v4",
+        "setup_m3_op_049_v4",
+        "setup_m3_op_050_v4",
+        "setup_m3_op_051_v4",
+        "setup_m3_op_052_v4",
+        "setup_m3_op_053_v4",
+        "setup_m3_op_054_v4",
+        "setup_m3_op_055_v4",
+        "setup_m3_op_056_v4",
+        "setup_m3_op_057_v4",
+        "setup_m3_op_058_v4",
+        "setup_m4_op_028_v4",
+        "setup_m4_op_029_v2",
+        "setup_m4_op_030_v4",
+        "setup_m4_op_031_v4",
+        "setup_m4_op_032_v4",
+        "setup_m4_op_033_v4",
+        "setup_m4_op_034_v4",
+        "setup_m4_op_035_v4",
+        "setup_m4_op_036_v4",
+        "setup_m4_op_037_v4",
+        "setup_m4_op_038_v4",
+        "setup_m4_op_039_v4",
+        "setup_m4_op_040_v4",
+        "setup_m4_op_041_v4",
+        "setup_m4_op_042_v4",
+        "setup_m4_op_043_v2",
+        "setup_m4_op_044_v2",
+        "setup_m4_op_045_v4",
+        "setup_m4_op_046_v4",
+        "setup_m4_op_047_v3",
+        "setup_m4_op_048_v4",
+        "setup_m5_op_041_v4",
+        "setup_m5_op_043_v4",
+        "setup_m5_op_046_v4",
+        "setup_m5_op_047_v4",
+        "setup_m5_op_050_v4",
+        "setup_m5_op_052_v4",
+        "setup_m5_op_054_v4",
+        "setup_m5_op_055_v3",
+        "setup_m6_op_034_v4",
+        "setup_m6_op_035_v2",
+        "setup_m6_op_036_v4",
+        "setup_m6_op_037_v4",
+        "setup_m6_op_038_v4",
+        "setup_m6_op_039_v4",
+        "setup_m6_op_040_v4",
+        "setup_m6_op_041_v4",
+        "setup_m6_op_042_v4",
+        "setup_m6_op_043_v4",
+        "setup_m6_op_044_v4",
+        "setup_m6_op_045_v4",
+        "setup_m6_op_046_v4",
+        "setup_m6_op_047_v4",
+        "setup_m6_op_048_v4"
+      ],
+      "simulated_work_date_sign": [
+        "setup_m1_op_046_v4",
+        "setup_m2_op_029_v4",
+        "setup_m2_op_031_v6",
+        "setup_m2_op_037_v4",
+        "setup_m2_op_038_v6",
+        "setup_m2_op_039_v4",
+        "setup_m2_op_041_v6",
+        "setup_m3_op_043_v2",
+        "setup_m3_op_044_v4",
+        "setup_m3_op_045_v4",
+        "setup_m3_op_046_v4",
+        "setup_m3_op_047_v4",
+        "setup_m3_op_050_v4",
+        "setup_m3_op_052_v4",
+        "setup_m3_op_053_v4",
+        "setup_m3_op_054_v4",
+        "setup_m3_op_055_v4",
+        "setup_m3_op_056_v4",
+        "setup_m3_op_057_v4",
+        "setup_m3_op_058_v4",
+        "setup_m4_op_030_v4",
+        "setup_m4_op_040_v4",
+        "setup_m4_op_047_v3",
+        "setup_m6_op_045_v4"
+      ],
+      "software_visible_timer": [
+        "setup_m1_op_039_v4",
+        "setup_m3_op_044_v4",
+        "setup_m3_op_045_v4",
+        "setup_m3_op_053_v4",
+        "setup_m4_op_040_v4",
+        "setup_m6_op_044_v4",
+        "setup_m6_op_045_v4",
+        "setup_m6_op_047_v4"
+      ],
+      "station_stable_work_surface": [
+        "setup_m1_ob_048_v3",
+        "setup_m1_op_033_v2",
+        "setup_m1_op_034_v4",
+        "setup_m1_op_035_v4",
+        "setup_m1_op_036_v4",
+        "setup_m1_op_037_v5",
+        "setup_m1_op_038_v5",
+        "setup_m1_op_039_v4",
+        "setup_m1_op_040_v4",
+        "setup_m1_op_041_v4",
+        "setup_m1_op_042_v4",
+        "setup_m1_op_043_v4",
+        "setup_m1_op_044_v4",
+        "setup_m1_op_045_v4",
+        "setup_m1_op_046_v4",
+        "setup_m1_op_047_v4",
+        "setup_m2_op_027_v2",
+        "setup_m2_op_028_v4",
+        "setup_m2_op_029_v4",
+        "setup_m2_op_030_v4",
+        "setup_m2_op_031_v6",
+        "setup_m2_op_032_v4",
+        "setup_m2_op_033_v4",
+        "setup_m2_op_034_v4",
+        "setup_m2_op_035_v4",
+        "setup_m2_op_036_v4",
+        "setup_m2_op_037_v4",
+        "setup_m2_op_038_v6",
+        "setup_m2_op_039_v4",
+        "setup_m2_op_040_v4",
+        "setup_m2_op_041_v6",
+        "setup_m3_op_043_v2",
+        "setup_m3_op_044_v4",
+        "setup_m3_op_045_v4",
+        "setup_m3_op_046_v4",
+        "setup_m3_op_047_v4",
+        "setup_m3_op_048_v4",
+        "setup_m3_op_049_v4",
+        "setup_m3_op_050_v4",
+        "setup_m3_op_051_v4",
+        "setup_m3_op_052_v4",
+        "setup_m3_op_053_v4",
+        "setup_m3_op_054_v4",
+        "setup_m3_op_055_v4",
+        "setup_m3_op_056_v4",
+        "setup_m3_op_057_v4",
+        "setup_m3_op_058_v4",
+        "setup_m4_op_028_v4",
+        "setup_m4_op_029_v2",
+        "setup_m4_op_030_v4",
+        "setup_m4_op_031_v4",
+        "setup_m4_op_032_v4",
+        "setup_m4_op_033_v4",
+        "setup_m4_op_034_v4",
+        "setup_m4_op_035_v4",
+        "setup_m4_op_036_v4",
+        "setup_m4_op_037_v4",
+        "setup_m4_op_038_v4",
+        "setup_m4_op_039_v4",
+        "setup_m4_op_040_v4",
+        "setup_m4_op_041_v4",
+        "setup_m4_op_042_v4",
+        "setup_m4_op_043_v2",
+        "setup_m4_op_044_v2",
+        "setup_m4_op_045_v4",
+        "setup_m4_op_046_v4",
+        "setup_m4_op_047_v3",
+        "setup_m4_op_048_v4",
+        "setup_m5_op_039_v2",
+        "setup_m5_op_040_v4",
+        "setup_m5_op_041_v4",
+        "setup_m5_op_042_v4",
+        "setup_m5_op_043_v4",
+        "setup_m5_op_044_v4",
+        "setup_m5_op_045_v4",
+        "setup_m5_op_046_v4",
+        "setup_m5_op_047_v4",
+        "setup_m5_op_048_v4",
+        "setup_m5_op_049_v4",
+        "setup_m5_op_050_v4",
+        "setup_m5_op_051_v4",
+        "setup_m5_op_052_v4",
+        "setup_m5_op_053_v4",
+        "setup_m5_op_054_v4",
+        "setup_m5_op_055_v3",
+        "setup_m6_op_034_v4",
+        "setup_m6_op_035_v2",
+        "setup_m6_op_036_v4",
+        "setup_m6_op_037_v4",
+        "setup_m6_op_038_v4",
+        "setup_m6_op_039_v4",
+        "setup_m6_op_040_v4",
+        "setup_m6_op_041_v4",
+        "setup_m6_op_042_v4",
+        "setup_m6_op_043_v4",
+        "setup_m6_op_044_v4",
+        "setup_m6_op_045_v4",
+        "setup_m6_op_046_v4",
+        "setup_m6_op_047_v4",
+        "setup_m6_op_048_v4"
+      ],
+      "zone_expiry_handling": [
+        "setup_m1_op_046_v4",
+        "setup_m2_op_029_v4",
+        "setup_m2_op_031_v6",
+        "setup_m2_op_037_v4",
+        "setup_m2_op_038_v6",
+        "setup_m2_op_039_v4",
+        "setup_m2_op_041_v6",
+        "setup_m3_op_043_v2",
+        "setup_m3_op_044_v4",
+        "setup_m3_op_045_v4",
+        "setup_m3_op_046_v4",
+        "setup_m3_op_047_v4",
+        "setup_m3_op_050_v4",
+        "setup_m3_op_052_v4",
+        "setup_m3_op_053_v4",
+        "setup_m3_op_054_v4",
+        "setup_m3_op_055_v4",
+        "setup_m3_op_056_v4",
+        "setup_m3_op_057_v4",
+        "setup_m3_op_058_v4",
+        "setup_m4_op_030_v4",
+        "setup_m4_op_040_v4",
+        "setup_m4_op_047_v3",
+        "setup_m6_op_045_v4"
+      ],
+      "zone_problem_goods": [
+        "setup_m1_op_041_v4",
+        "setup_m2_op_027_v2",
+        "setup_m2_op_028_v4",
+        "setup_m2_op_032_v4",
+        "setup_m2_op_034_v4",
+        "setup_m2_op_037_v4",
+        "setup_m2_op_039_v4",
+        "setup_m3_op_043_v2",
+        "setup_m3_op_046_v4",
+        "setup_m3_op_048_v4",
+        "setup_m3_op_051_v4",
+        "setup_m3_op_052_v4",
+        "setup_m3_op_053_v4",
+        "setup_m4_op_037_v4",
+        "setup_m4_op_043_v2",
+        "setup_m5_op_042_v4",
+        "setup_m5_op_050_v4",
+        "setup_m6_op_048_v4"
+      ]
+    },
+    "asset_to_setup_ids": {
+      "asset_delivery_answer_image_m1_op_043": [
+        "setup_m1_op_043_v4"
+      ],
+      "asset_delivery_answer_image_m4_op_034": [
+        "setup_m4_op_034_v4"
+      ],
+      "asset_delivery_answer_image_m6_op_040": [
+        "setup_m6_op_040_v4"
+      ],
+      "asset_delivery_answer_image_m6_op_047": [
+        "setup_m6_op_047_v4"
+      ],
+      "asset_delivery_audio_abnormal_equipment_noise": [
+        "setup_m5_op_053_v4"
+      ],
+      "asset_delivery_audio_evacuation_signal": [
+        "setup_m5_op_045_v4"
+      ],
+      "asset_delivery_audio_inventory_interruption": [
+        "setup_m4_op_041_v4"
+      ],
+      "asset_delivery_script_m2_op_040": [
+        "setup_m2_op_040_v4"
+      ],
+      "asset_delivery_script_m2_op_041": [
+        "setup_m2_op_041_v6"
+      ],
+      "asset_delivery_script_m4_op_033": [
+        "setup_m4_op_033_v4"
+      ],
+      "asset_delivery_script_m4_op_037": [
+        "setup_m4_op_037_v4"
+      ],
+      "asset_delivery_script_m4_op_041": [
+        "setup_m4_op_041_v4"
+      ],
+      "asset_delivery_script_m4_op_042": [
+        "setup_m4_op_042_v4"
+      ],
+      "asset_delivery_script_m5_op_043": [
+        "setup_m5_op_043_v4"
+      ],
+      "asset_delivery_script_m5_op_044": [
+        "setup_m5_op_044_v4"
+      ],
+      "asset_delivery_script_m5_op_045": [
+        "setup_m5_op_045_v4"
+      ],
+      "asset_delivery_script_m5_op_049": [
+        "setup_m5_op_049_v4"
+      ],
+      "asset_delivery_script_m5_op_051": [
+        "setup_m5_op_051_v4"
+      ],
+      "asset_delivery_script_m5_op_052": [
+        "setup_m5_op_052_v4"
+      ],
+      "asset_delivery_script_m5_op_054": [
+        "setup_m5_op_054_v4"
+      ],
+      "asset_offline_tool_01": [
+        "setup_m2_op_037_v4"
+      ],
+      "asset_offline_tool_04": [
+        "setup_m2_op_027_v2",
+        "setup_m2_op_030_v4",
+        "setup_m4_op_043_v2",
+        "setup_m5_op_048_v4",
+        "setup_m5_op_050_v4"
+      ],
+      "asset_offline_tool_05": [
+        "setup_m1_op_034_v4",
+        "setup_m1_op_036_v4",
+        "setup_m1_op_037_v5",
+        "setup_m1_op_039_v4",
+        "setup_m1_op_042_v4",
+        "setup_m1_op_043_v4",
+        "setup_m1_op_044_v4",
+        "setup_m1_op_046_v4",
+        "setup_m1_op_047_v4",
+        "setup_m3_op_056_v4",
+        "setup_m4_op_048_v4",
+        "setup_m6_op_041_v4",
+        "setup_m6_op_048_v4"
+      ],
+      "asset_offline_tool_06": [
+        "setup_m6_op_038_v4",
+        "setup_m6_op_039_v4"
+      ],
+      "asset_offline_tool_07": [
+        "setup_m2_op_035_v4",
+        "setup_m4_op_033_v4",
+        "setup_m4_op_035_v4"
+      ],
+      "asset_offline_tool_08": [
+        "setup_m4_op_041_v4"
+      ],
+      "asset_offline_tool_09": [
+        "setup_m1_ob_048_v3",
+        "setup_m1_op_038_v5",
+        "setup_m4_op_032_v4",
+        "setup_m5_op_039_v2",
+        "setup_m5_op_042_v4",
+        "setup_m5_op_043_v4",
+        "setup_m5_op_046_v4",
+        "setup_m5_op_047_v4",
+        "setup_m5_op_048_v4",
+        "setup_m5_op_050_v4",
+        "setup_m5_op_052_v4",
+        "setup_m5_op_053_v4"
+      ],
+      "asset_offline_tool_10": [
+        "setup_m1_op_038_v5",
+        "setup_m4_op_043_v2",
+        "setup_m4_op_045_v4",
+        "setup_m5_op_039_v2",
+        "setup_m5_op_046_v4"
+      ],
+      "asset_offline_tool_12": [
+        "setup_m4_op_043_v2"
+      ]
+    }
+  },
+  "manifest_hash": "sha256:089fd76ebe8a4fd05d36a1e81ab81b23eebc8e028912ef9c843d215e248428e6"
+}

@@ -97,6 +97,15 @@ export type ListTrainingSessionsResult =
   | ListTrainingSessionsSuccess
   | { success: false; errorCode: TrainingErrorCode }
 
+export interface ListMyTrainingSessionsParams {
+  callerUserId: string
+  callerRole: string
+  limit?: number
+  offset?: number
+}
+
+export type ListMyTrainingSessionsResult = ListTrainingSessionsResult
+
 // --- getSession ---
 export interface GetTrainingSessionParams {
   callerUserId: string

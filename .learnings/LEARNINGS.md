@@ -1,8 +1,170 @@
 # Learnings
 
+## [LRN-20260720-001] correction
+
+**Logged**: 2026-07-20T11:00:00+08:00
+**Priority**: high
+**Status**: resolved
+**Area**: docs
+
+### Summary
+`M5_DG_035` 的权威求助顺序是先找负责人、再说明问题、最后复述确认并执行指示。
+
+### Details
+用户确认原内容审核的“建议映射”沿用了错误顺序，而修改意见正确指出必须先找到沟通对象。即时安全风险还要求先采取本人权限内的现场控制措施，三项排序不能替代该前置安全动作。
+
+### Suggested Action
+独立保存人工裁决证据，将 `M5_DG_035_V2` 修订为 `i2 → i1 → i3`，把 `i3` 改为“复述确认并执行指示”，并将即时风险控制写入安全边界。
+
+### Metadata
+- Source: user_feedback
+- Related Files: doc/features/job-skill-shelver-298-review-conflict-resolution-m5-dg-035-2026-07-20.md, scripts/build-job-skill-shelver-298-revisions.mjs
+- Tags: human-review, conflict-resolution, safety-boundary
+
+### Resolution
+- **Resolved**: 2026-07-20T11:00:00+08:00
+- **Commit/PR**: working tree
+- **Notes**: 已将裁决纳入版本化构建输入并保留原审核文件不变。
+
+---
+
+## [LRN-20260722-A11] best_practice
+
+**Logged**: 2026-07-22T17:15:00+08:00
+**Priority**: medium
+**Status**: resolved
+**Area**: tests
+
+### Summary
+三档实操题除列出典型错误外，还要检查“1次非指向性提示加部分完成”是否有唯一计分归属。
+
+### Details
+只写“独立部分完成计1分”与“恰好1次非指向性提示后全部完成计1分”，会遗漏“1次非指向性提示后仍只完成部分要求”的表现。0分应包含“未达到1分最低条件”的失败关闭兜底，1分的独立分支应明确为0次提示。
+
+### Suggested Action
+审核0/1/2分规则时，交叉检查完成程度、关键动作、非关键错误和提示次数，不只检查典型动作组合。
+
+### Metadata
+- Source: error
+- Related Files: scripts/build-job-skill-shelver-298-rejected-replacement-targeted-v4.mjs, scripts/__tests__/job-skill-shelver-298-rejected-replacement-targeted-v4.test.mjs
+- Tags: assessment, rubric, exhaustive-scoring, fail-closed
+
+### Resolution
+- **Resolved**: 2026-07-22T17:15:00+08:00
+- **Commit/PR**: none
+- **Notes**: 6道V4均使用可穷尽的最低条件兜底，相关测试锁定该规则。
+
+---
+
+## [LRN-20260720-E31] best_practice
+
+**Logged**: 2026-07-20T15:10:00+08:00
+**Priority**: critical
+**Status**: pending
+**Area**: data
+
+### Summary
+人工复审退回数不能直接作为新版本数量，必须用显式语义投影与交付锁重新分流。
+
+### Details
+阶段三把211道历史退回题复算为145道真实语义变化和66道保留V2。56道视频、9道图片题只缺交付绑定；另1道只有审核标记分歧，安全专业结论未要求改变真实边界。若直接按退回状态升版，会再次制造无意义审核循环。
+
+### Suggested Action
+后续升版只能由题干、有效答案、选项/映射、逐题rubric、评分规则或真实安全边界的旧/新hash差异触发；素材、工具、setup、路径和文件hash走delivery lock。
+
+### Metadata
+- Source: conversation
+- Related Files: scripts/lib/job-skill-contract-hash.mjs, scripts/build-job-skill-shelver-298-targeted-v3.mjs
+- Tags: question-bank, semantic-hash, delivery-lock, rereview
+
+---
+
+## [LRN-20260720-P2H] best_practice
+
+**Logged**: 2026-07-20T14:48:00+08:00
+**Priority**: high
+**Status**: resolved
+**Area**: tests
+
+### Summary
+审核包生成器不得拥有已接收审核结果的 Schema，否则重建历史审核包会回滚后续合同。
+
+### Details
+`build-job-skill-shelver-298-rereview-packets.mjs` 同时生成审核入口和结果 Schema。人工 Markdown 接收后，结果 Schema 增加了来源、分组和逐题备注字段，但全量测试重建审核包时又把 Schema 写回早期网页导出形态，造成测试顺序相关的合同漂移。
+
+### Suggested Action
+按生命周期拆分产物所有权：packet builder 只生成填写入口，ingestion builder/固定 Schema 负责已接收结果；重建测试必须冻结不属于本构建器的文件 hash。
+
+### Metadata
+- Source: error
+- Related Files: scripts/build-job-skill-shelver-298-rereview-packets.mjs, scripts/__tests__/job-skill-shelver-298-rereview-packets.test.mjs
+- Tags: generated-artifact, schema-ownership, deterministic-build, contract-drift
+
+### Resolution
+- **Resolved**: 2026-07-20T14:48:00+08:00
+- **Commit/PR**: working tree
+- **Notes**: 审核包构建器不再写结果 Schema；测试断言两份 Schema 重建前后 hash 不变。
+
+---
+
 Corrections, insights, and knowledge gaps captured during development.
 
 **Categories**: correction | insight | knowledge_gap | best_practice
+
+---
+
+## [LRN-20260719-001] correction
+
+**Logged**: 2026-07-19T01:50:00+08:00
+**Priority**: high
+**Status**: resolved
+**Area**: docs
+
+### Summary
+面向非技术审核人的逐题审核包应优先提供交互式 HTML，不应把 Markdown 作为填写入口。
+
+### Details
+用户指出内容审核人陈晓青不是程序员，更习惯网页交互。此前生成的 Markdown 审核包适合留档，不适合作为主要填写界面。后续审核包应使用自包含 HTML 展示题目、校验必填项、自动保存进度，并通过提交按钮导出结构化审核结果和人类可读结论。
+
+### Suggested Action
+把 HTML 作为审核输入界面，JSON 作为机器可读的权威审核结果，Markdown 作为由 JSON 生成的留档摘要。提交动作不得直接激活题目或修改 manifest，应保留人工复核和 hash 校验门禁。
+
+### Metadata
+- Source: user_feedback
+- Related Files: AGENTS.md, doc/features/job-skill-shelver-pilot-content-review-packet-v1.html, doc/features/job-skill-shelver-pilot-review-result-v1.schema.json
+- Tags: reviewer-experience, html, audit-trail, human-review
+
+### Resolution
+- **Resolved**: 2026-07-19T02:08:00+08:00
+- **Commit/PR**: pending
+- **Notes**: 已实施自包含 HTML 审核入口、JSON 结果合同、自动保存、必填校验及 JSON/Markdown 导出，并将规则写入 AGENTS.md。
+
+---
+## [LRN-20260720-001] correction
+
+**Logged**: 2026-07-20T12:23:37+08:00
+**Priority**: high
+**Status**: promoted
+**Area**: docs
+
+### Summary
+SVETS 项目对用户沟通要先用普通话解释结论，再补技术细节。
+
+### Details
+用户明确反馈：上一轮用“门禁、DRAFT、hash、合同”等专业话解释时看不懂；当改成“哪些题因为缺视频、缺图片、缺工具所以没法审核”这种表达后，用户认为能看明白，并要求以后都用这种风格。
+
+### Suggested Action
+后续回复先说明“现在做到哪、为什么、下一步做什么”，需要时再给文件名、命令和技术名词。
+
+### Metadata
+- Source: user_feedback
+- Related Files: AGENTS.md, .continue-here.md
+- Tags: communication, handoff, user-facing-summary
+
+### Resolution
+- **Resolved**: 2026-07-20T12:23:37+08:00
+- **Commit/PR**: pending
+- **Notes**: 已提升到 `AGENTS.md` 的沟通规则。
 
 ---
 ## [LRN-20260714-001] correction
@@ -74,5 +236,28 @@ Corrections, insights, and knowledge gaps captured during development.
 - Source: user_feedback
 - Related Files: doc/features/question-bank-image-plan.md, doc/features/archive/question-bank-image-batch-plan-v001.json, doc/features/archive/question-bank-image-batch-pilot-v001.json, doc/features/question-bank-image-batch-pilot-acceptance.md
 - Tags: imagegen, localization, prompt, china-mainland, east-asian
+
+---
+
+## [LRN-20260720-D2E] correction
+
+**Logged**: 2026-07-20T13:02:26+08:00
+**Priority**: high
+**Status**: pending
+**Area**: docs
+
+### Summary
+题库素材缺口分析必须同时检索视觉资产合同和线下工具采购合同，不能把空 `tool_asset_ids` 等同于尚未规划工具。
+
+### Details
+用户指出 `doc/reference/offline-toolkit-procurement-spec.md` 已经完成线下工具包 v2.1 采购规划。此前只将 manifest G 类通用工具资产与83道线下题对账，遗漏了这份覆盖100道线下实操题、固定SKU、日期矩阵、场景包和验收清单的既有合同，因而低估了可复用工作。
+
+### Suggested Action
+以后生成题库候选、审核包或缺口报告前，先建立题目候选、视觉 manifest、线下采购规格三方索引；只有采购规格也无法覆盖时才标记为“未规划工具”。
+
+### Metadata
+- Source: user_feedback
+- Related Files: doc/reference/offline-toolkit-procurement-spec.md, doc/assets/asset-manifest.json, doc/features/job-skill-shelver-298-question-revision-candidates-v1.json
+- Tags: question-bank, offline-operation, procurement, contract-drift, duplicate-work
 
 ---

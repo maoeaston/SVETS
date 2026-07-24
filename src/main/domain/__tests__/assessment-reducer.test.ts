@@ -23,6 +23,8 @@ import type {
   AnswerSubmittedPayload,
   EmotionInterruptedPayload,
   EmotionResumedPayload,
+  SittingStartedPayload,
+  SittingEndedPayload,
   OfflineScoreSubmittedPayload,
   SessionCompletedPayload,
   SessionAbortedPayload,
@@ -834,13 +836,66 @@ describe('applyAssessmentEvent — RESULT_CALCULATED', () => {
     applyAssessmentEvent(db, event)
 
     const rr = db
-      .prepare('SELECT result_type, normalized_score, level_result, safety_overridden, redline_incident_id FROM result_record WHERE result_id = ?')
-      .get(resultId) as { result_type: string; normalized_score: number; level_result: string; safety_overridden: number; redline_incident_id: string | null }
+      .prepare(
+        `SELECT result_type, strategy_id, strategy_type, module_type,
+                normalized_score, level_result, safety_overridden, redline_incident_id
+           FROM result_record WHERE result_id = ?`
+      )
+      .get(resultId) as {
+      result_type: string
+      strategy_id: string | null
+      strategy_type: string | null
+      module_type: string | null
+      normalized_score: number
+      level_result: string
+      safety_overridden: number
+      redline_incident_id: string | null
+    }
     expect(rr.result_type).toBe('ABILITY_SCORE')
+    expect(rr.strategy_id).toBeNull()
+    expect(rr.strategy_type).toBeNull()
+    expect(rr.module_type).toBeNull()
     expect(rr.normalized_score).toBe(85)
     expect(rr.level_result).toBe('LEVEL_COMPETENT')
     expect(rr.safety_overridden).toBe(0)
     expect(rr.redline_incident_id).toBeNull()
+  })
+
+  it('apply → result_record 写入 RESULT_CALCULATED 策略字段', () => {
+    const sessionId = uuidv4()
+    const startEvent = makeSessionStartedEvent(sessionId)
+    seedEvent(db, startEvent)
+    applyAssessmentEvent(db, startEvent)
+
+    const resultId = uuidv4()
+    const payload: ResultCalculatedPayload = {
+      result_id: resultId,
+      result_type: 'ABILITY_SCORE',
+      source_type: 'ASSESSMENT_SESSION',
+      source_id: sessionId,
+      student_id: studentId,
+      strategy_id: 'strategy_baseline_shelver_v1',
+      strategy_type: 'BASELINE_ASSESSMENT',
+      job_code: jobCode,
+      task_code: taskCode,
+      module_type: 'FINE_MOTOR',
+      normalized_score: 90,
+      level_result: 'LEVEL_COMPETENT',
+      calculated_at: '2026-07-01T02:00:00.000Z',
+      calculated_by: teacherId
+    }
+    const event = makeEvent('RESULT_CALCULATED', sessionId, payload as unknown as Record<string, unknown>, { event_sequence: 2 })
+    seedEvent(db, event)
+    applyAssessmentEvent(db, event)
+
+    const rr = db
+      .prepare('SELECT strategy_id, strategy_type, module_type FROM result_record WHERE result_id = ?')
+      .get(resultId) as { strategy_id: string | null; strategy_type: string | null; module_type: string | null }
+    expect(rr).toMatchObject({
+      strategy_id: 'strategy_baseline_shelver_v1',
+      strategy_type: 'BASELINE_ASSESSMENT',
+      module_type: 'FINE_MOTOR'
+    })
   })
 })
 
@@ -1433,5 +1488,48 @@ describe('applyAssessmentEvent — 孤儿事件恢复', () => {
       .get(sessionId) as { online_completed_count: number }
     expect(arCount.c).toBe(1)
     expect(sess.online_completed_count).toBe(1)
+  })
+})
+
+describe('applyAssessmentEvent — F4 坐次投影', () => {
+  it('计划暂停结束坐次并可开启下一坐次，不丢失 session', () => {
+    const sessionId = uuidv4()
+    const started = makeSessionStartedEvent(sessionId)
+    seedEvent(db, started)
+    applyAssessmentEvent(db, started)
+
+    const firstSittingPayload: SittingStartedPayload = {
+      session_id: sessionId, sitting_no: 1,
+      started_at: '2026-07-23T01:00:00.000Z', started_by: teacherId
+    }
+    const firstSitting = makeEvent('SITTING_STARTED', sessionId, firstSittingPayload as unknown as Record<string, unknown>, {
+      event_sequence: 2, actor_id: teacherId, actor_role: 'TEACHER'
+    })
+    const endedPayload: SittingEndedPayload = {
+      session_id: sessionId, sitting_no: 1, ended_at: '2026-07-23T01:10:00.000Z', ended_by: teacherId,
+      end_reason: 'PAUSED_BY_PLAN', current_question_order: 3
+    }
+    const ended = makeEvent('SITTING_ENDED', sessionId, endedPayload as unknown as Record<string, unknown>, {
+      event_sequence: 3, actor_id: teacherId, actor_role: 'TEACHER'
+    })
+    const secondSittingPayload: SittingStartedPayload = {
+      session_id: sessionId, sitting_no: 2,
+      started_at: '2026-07-24T01:00:00.000Z', started_by: teacherId
+    }
+    const secondSitting = makeEvent('SITTING_STARTED', sessionId, secondSittingPayload as unknown as Record<string, unknown>, {
+      event_sequence: 4, actor_id: teacherId, actor_role: 'TEACHER'
+    })
+    for (const event of [firstSitting, ended, secondSitting]) seedEvent(db, event)
+    for (const event of [firstSitting, ended, secondSitting]) applyAssessmentEvent(db, event)
+
+    expect(
+      db.prepare('SELECT status, last_interruption_reason FROM assessment_session WHERE session_id = ?').get(sessionId)
+    ).toEqual({ status: 'ACTIVE', last_interruption_reason: 'TEACHER_INTERVENTION' })
+    expect(
+      db.prepare('SELECT sitting_no, end_reason, current_question_order FROM assessment_sitting WHERE session_id = ? ORDER BY sitting_no').all(sessionId)
+    ).toEqual([
+      { sitting_no: 1, end_reason: 'PAUSED_BY_PLAN', current_question_order: 3 },
+      { sitting_no: 2, end_reason: null, current_question_order: null }
+    ])
   })
 })

@@ -15,6 +15,7 @@ import type { DBAdapter } from '../../db/interface'
 import { SqliteAdapter } from '../../db/sqlite-adapter'
 import { getDatabase } from '../../db/connection'
 import { assertCaller } from '../../utils/auth-context'
+import { resolveBoundAuthSession } from '../../utils/auth-session'
 import { validateQuestionPolicy } from '../../utils/validate-question-policy'
 import { validateScoringPolicy } from '../../utils/validate-scoring-policy'
 import type {
@@ -35,6 +36,7 @@ import type {
   QuestionPolicyJson,
   ScoringPolicyJson
 } from '../../../shared/types/strategy'
+import type { AuthRole } from '../../../shared/types/auth'
 
 const STRATEGY_TYPES: readonly StrategyType[] = [
   'BASELINE_ASSESSMENT',
@@ -42,6 +44,39 @@ const STRATEGY_TYPES: readonly StrategyType[] = [
   'TRAINING_PRACTICE',
   'JOB_SKILL_ASSESSMENT'
 ]
+
+type StrategyCallerParams = {
+  callerUserId: string
+  callerRole: string
+}
+
+/**
+ * 仅供 IPC 包装层使用：渲染进程传入的 caller 身份不可信，必须由绑定的
+ * auth_session 覆盖。策略读取允许 TEACHER / ADMIN，策略写入仍由纯函数
+ * 按 ADMIN-only 规则继续判定。
+ */
+export function resolveTrustedStrategyCaller<T extends StrategyCallerParams>(
+  db: DBAdapter,
+  senderId: number,
+  params: T
+): { ok: true; params: T } | { ok: false; errorCode: 'FORBIDDEN' } {
+  const session = resolveBoundAuthSession(db, senderId)
+  if (!session.success) {
+    return { ok: false, errorCode: 'FORBIDDEN' }
+  }
+  if (session.role !== 'TEACHER' && session.role !== 'ADMIN') {
+    return { ok: false, errorCode: 'FORBIDDEN' }
+  }
+
+  return {
+    ok: true,
+    params: {
+      ...params,
+      callerUserId: session.userId,
+      callerRole: session.role as AuthRole
+    }
+  }
+}
 
 // --- 错误码 seed + 审计 ---
 
@@ -828,28 +863,58 @@ export function registerStrategyHandlers(getDb: () => DBAdapter = defaultGetDb):
     return db
   }
 
-  ipcMain.handle('strategy:list', (_e, params: StrategyListParams) => {
-    return listStrategies(ensureSeeded(), params)
+  ipcMain.handle('strategy:list', (event, params: StrategyListParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedStrategyCaller(db, event.sender.id, params)
+    if (!trusted.ok) {
+      return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    }
+    return listStrategies(db, trusted.params)
   })
   ipcMain.handle(
     'strategy:get',
-    (_e, params: { callerUserId: string; callerRole: string; strategyId: string; version: number }) => {
-      return getStrategy(ensureSeeded(), params)
+    (event, params: { callerUserId: string; callerRole: string; strategyId: string; version: number }) => {
+      const db = ensureSeeded()
+      const trusted = resolveTrustedStrategyCaller(db, event.sender.id, params)
+      if (!trusted.ok) {
+        return { success: false as const, errorCode: 'FORBIDDEN' as const }
+      }
+      return getStrategy(db, trusted.params)
     }
   )
   ipcMain.handle(
     'strategy:listVersions',
-    (_e, params: { callerUserId: string; callerRole: string; strategyId: string }) => {
-      return listVersions(ensureSeeded(), params)
+    (event, params: { callerUserId: string; callerRole: string; strategyId: string }) => {
+      const db = ensureSeeded()
+      const trusted = resolveTrustedStrategyCaller(db, event.sender.id, params)
+      if (!trusted.ok) {
+        return { success: false as const, errorCode: 'FORBIDDEN' as const }
+      }
+      return listVersions(db, trusted.params)
     }
   )
-  ipcMain.handle('strategy:createVersion', (_e, params: CreateStrategyVersionParams) => {
-    return createVersion(ensureSeeded(), params)
+  ipcMain.handle('strategy:createVersion', (event, params: CreateStrategyVersionParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedStrategyCaller(db, event.sender.id, params)
+    if (!trusted.ok) {
+      return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    }
+    return createVersion(db, trusted.params)
   })
-  ipcMain.handle('strategy:update', (_e, params: UpdateStrategyParams) => {
-    return updateStrategy(ensureSeeded(), params)
+  ipcMain.handle('strategy:update', (event, params: UpdateStrategyParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedStrategyCaller(db, event.sender.id, params)
+    if (!trusted.ok) {
+      return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    }
+    return updateStrategy(db, trusted.params)
   })
-  ipcMain.handle('strategy:setActive', (_e, params: SetStrategyActiveParams) => {
-    return setActive(ensureSeeded(), params)
+  ipcMain.handle('strategy:setActive', (event, params: SetStrategyActiveParams) => {
+    const db = ensureSeeded()
+    const trusted = resolveTrustedStrategyCaller(db, event.sender.id, params)
+    if (!trusted.ok) {
+      return { success: false as const, errorCode: 'FORBIDDEN' as const }
+    }
+    return setActive(db, trusted.params)
   })
 }

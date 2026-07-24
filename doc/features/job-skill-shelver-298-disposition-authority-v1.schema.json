@@ -1,0 +1,219 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Job Skill Shelver 298 Disposition Authority",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "authority_id",
+    "status",
+    "generated_at",
+    "source_manifest",
+    "input_files",
+    "semantic_hash_contract",
+    "summary",
+    "release_gate",
+    "questions",
+    "semantic_root_hash",
+    "authority_hash"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "./job-skill-shelver-298-disposition-authority-v1.schema.json"
+    },
+    "schema_version": {
+      "const": "job-skill-shelver-298-disposition-authority-v1"
+    },
+    "authority_id": {
+      "const": "job-skill-shelver-298-disposition-authority-v1"
+    },
+    "status": {
+      "const": "BLOCKED_NO_RELEASE_AUTHORITY"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_manifest": {
+      "$ref": "#/$defs/fileRef"
+    },
+    "input_files": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "items": {
+        "allOf": [
+          { "$ref": "#/$defs/fileRef" },
+          {
+            "type": "object",
+            "required": ["role"],
+            "properties": {
+              "role": {
+                "enum": [
+                  "PILOT_CANDIDATE",
+                  "PILOT_ACTIVATION_GATE",
+                  "FIRST_REVIEW_DECISIONS",
+                  "REVISION_CANDIDATES",
+                  "REREVIEW_GATE",
+                  "SOURCE_MANIFEST",
+                  "REJECTED_REPLACEMENT_V2_CANDIDATES",
+                  "REJECTED_REPLACEMENT_V3_CANDIDATES",
+                  "REJECTED_REPLACEMENT_V4_CANDIDATES",
+                  "REJECTED_REPLACEMENT_MERGED_GATE"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "semantic_hash_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "excludes", "suffix_excludes"],
+      "properties": {
+        "algorithm": { "type": "string", "minLength": 1 },
+        "excludes": { "type": "array", "items": { "type": "string" } },
+        "suffix_excludes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_total",
+        "pilot_total",
+        "non_pilot_total",
+        "approved_unchanged",
+        "revised_total",
+        "rereview_passed",
+        "rereview_returned",
+        "rejected",
+        "replacement_review_passed",
+        "retained_total",
+        "by_disposition"
+      ],
+      "properties": {
+        "source_total": { "const": 298 },
+        "pilot_total": { "const": 24 },
+        "non_pilot_total": { "const": 274 },
+        "approved_unchanged": { "const": 31 },
+        "revised_total": { "const": 232 },
+        "rereview_passed": { "const": 21 },
+        "rereview_returned": { "const": 211 },
+        "rejected": { "const": 0 },
+        "replacement_review_passed": { "const": 11 },
+        "retained_total": { "const": 298 },
+        "by_disposition": {
+          "type": "object",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "release_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["releaseable", "may_generate_runtime_sql", "blockers"],
+      "properties": {
+        "releaseable": { "const": false },
+        "may_generate_runtime_sql": { "const": false },
+        "blockers": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "count", "message"],
+            "properties": {
+              "code": { "type": "string", "minLength": 1 },
+              "count": { "type": "integer", "minimum": 1 },
+              "message": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 298,
+      "maxItems": 298,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_question_id",
+          "source_question_version",
+          "source_record_hash",
+          "module",
+          "question_type",
+          "branch",
+          "disposition",
+          "current_question_id",
+          "current_question_version",
+          "semantic_hash",
+          "candidate_record_hash",
+          "review_gate_status",
+          "activation_authority"
+        ],
+        "properties": {
+          "source_question_id": { "type": "string", "pattern": "^M[1-6]_[A-Z]+_\\d+$" },
+          "source_question_version": { "type": "integer", "minimum": 1 },
+          "source_record_hash": { "$ref": "#/$defs/hash" },
+          "module": { "enum": ["M1", "M2", "M3", "M4", "M5", "M6"] },
+          "question_type": { "type": "string", "minLength": 1 },
+          "branch": { "enum": ["PILOT", "NON_PILOT"] },
+          "disposition": {
+            "enum": [
+              "PILOT_PENDING_GATE",
+              "APPROVED_UNCHANGED_PENDING_ACTIVATION",
+              "REVISED_REREVIEW_PASSED_PENDING_ACTIVATION",
+              "REVISED_RETURNED",
+              "REPLACEMENT_REVIEW_PASSED_PENDING_ACTIVATION",
+              "REJECTED"
+            ]
+          },
+          "current_question_id": {
+            "type": ["string", "null"],
+            "pattern": "^M[1-6]_[A-Z]+_\\d+(?:_V\\d+)?$"
+          },
+          "current_question_version": { "type": ["integer", "null"], "minimum": 1 },
+          "semantic_hash": {
+            "anyOf": [
+              { "$ref": "#/$defs/hash" },
+              { "type": "null" }
+            ]
+          },
+          "candidate_record_hash": {
+            "anyOf": [
+              { "$ref": "#/$defs/hash" },
+              { "type": "null" }
+            ]
+          },
+          "review_gate_status": {
+            "enum": ["PENDING", "NOT_REQUIRED", "PASSED", "RETURN_FOR_REVISION", "REJECTED", "PASSED_REVIEW_ONLY_NO_ACTIVATION_AUTHORITY"]
+          },
+          "activation_authority": { "enum": ["NONE", "NOT_APPLICABLE"] }
+        }
+      }
+    },
+    "semantic_root_hash": { "$ref": "#/$defs/hash" },
+    "authority_hash": { "$ref": "#/$defs/hash" }
+  },
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "fileRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/hash" },
+        "role": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

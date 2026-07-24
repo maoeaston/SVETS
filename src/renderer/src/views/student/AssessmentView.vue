@@ -57,14 +57,22 @@
       </p>
     </div>
 
-    <!-- 情绪中断中（教师未恢复） -->
+    <!-- 情绪中断中：学生可在状态稳定后自行从未提交题继续，也可等待教师协助。 -->
     <div
       v-else-if="session.status === 'EMOTION_INTERRUPTED'"
       class="paused-state"
     >
       <p class="state-msg state-paused">
-        已暂停 — 教师正赶来，请稍等
+        已暂停 — 请先确认自己可以继续
       </p>
+      <p class="state-hint">恢复后会从当前未提交题继续。</p>
+      <button
+        class="btn-primary"
+        :disabled="resuming"
+        @click="handleSelfResume"
+      >
+        {{ resuming ? '恢复中…' : '我可以继续答题' }}
+      </button>
     </div>
 
     <!-- 已结束（COMPLETED/ABORTED） -->
@@ -83,11 +91,21 @@
       class="all-answered-state"
     >
       <p class="state-msg">
-        已完成所有线上题目
+        线上题已完成，进入线下实操
       </p>
       <p class="state-hint">
-        请等待教师安排线下评分
+        请在教师安排下逐项操作。出现安全停止条件时立即停止，不要自行继续。
       </p>
+      <div v-if="offlineLoading" class="loading">正在加载线下实操说明…</div>
+      <div v-else class="offline-list">
+        <OfflineOperationCard
+          v-for="question in offlineQuestions"
+          :key="question.questionId"
+          :question="question"
+          :module-name="formatJobModule(question.jobModuleCode)"
+          mode="student"
+        />
+      </div>
     </div>
 
     <!-- M3 assignment gate：未分配或未确认时不得进入答题态 -->
@@ -252,10 +270,12 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import DragDropQuestion from '../../components/DragDropQuestion.vue'
+import OfflineOperationCard from '../../components/OfflineOperationCard.vue'
 import { useAuthStore } from '../../stores/auth'
 import { useAssessmentStore } from '../../stores/assessment'
 import type { AbilityTag } from '@shared/types/json-schemas'
 import type { AnswerPayloadDetail } from '@shared/types/event-payloads'
+import type { SessionScoringQuestion } from '@shared/types/job-skill-scoring'
 
 const route = useRoute()
 const auth = useAuthStore()
@@ -264,6 +284,9 @@ const store = useAssessmentStore()
 const starting = ref(false)
 const submitting = ref(false)
 const interrupting = ref(false)
+const resuming = ref(false)
+const offlineLoading = ref(false)
+const offlineQuestions = ref<SessionScoringQuestion[]>([])
 
 // 答题输入
 const tfAnswer = ref<boolean | null>(null)
@@ -325,8 +348,30 @@ async function loadCurrent(): Promise<void> {
   const sessionId = route.params.sessionId as string
   if (!sessionId) return
   await store.loadSession(auth.userId, auth.role, sessionId)
+  if (store.currentSession?.status === 'OFFLINE_PENDING') {
+    await loadOfflineQuestions(sessionId)
+  } else {
+    offlineQuestions.value = []
+  }
   // 切题后重置答题输入
   resetAnswerInputs()
+}
+
+async function loadOfflineQuestions(sessionId: string): Promise<void> {
+  if (!auth.userId || !auth.role) return
+  offlineLoading.value = true
+  try {
+    const result = await window.api.assessment.getSessionScoringQuestions({
+      callerUserId: auth.userId,
+      callerRole: auth.role,
+      sessionId
+    })
+    if (result.success) offlineQuestions.value = result.offlineQuestions
+  } catch (error) {
+    console.error('[AssessmentView] offline questions load failed:', error)
+  } finally {
+    offlineLoading.value = false
+  }
 }
 
 async function handleStart(): Promise<void> {
@@ -336,6 +381,20 @@ async function handleStart(): Promise<void> {
   await store.startSession(auth.userId, auth.role, sessionId)
   starting.value = false
   resetAnswerInputs()
+}
+
+async function handleSelfResume(): Promise<void> {
+  if (!auth.userId || !auth.role) return
+  const sessionId = route.params.sessionId as string
+  if (!sessionId) return
+  resuming.value = true
+  const result = await store.emotionResume({
+    callerUserId: auth.userId,
+    callerRole: auth.role,
+    sessionId
+  })
+  resuming.value = false
+  if (result.ok) resetAnswerInputs()
 }
 
 function buildPayload(): AnswerPayloadDetail | null {
@@ -410,6 +469,14 @@ function formatModule(m: AbilityTag): string {
 
 function formatPhase(p: 'ONLINE' | 'OFFLINE'): string {
   return p === 'ONLINE' ? '线上' : '线下'
+}
+
+function formatJobModule(module: string): string {
+  const names: Record<string, string> = {
+    M1: '货架整理与价签核对', M2: '拆箱补货与先进先出', M3: '临期破损商品分拣',
+    M4: '库房收纳与简易盘点', M5: '突发情况应对', M6: '商品识别与分类'
+  }
+  return names[module] ?? module
 }
 
 // 路由参数变化（同组件复用，如 /student/assessment/A → /student/assessment/B）
@@ -510,6 +577,18 @@ onMounted(() => {
 .state-hint {
   font-size: 14px;
   color: #6b7280;
+}
+.all-answered-state {
+  text-align: left;
+}
+.all-answered-state > .state-msg,
+.all-answered-state > .state-hint {
+  text-align: center;
+}
+.offline-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
 }
 .btn-large {
   margin-top: 24px;

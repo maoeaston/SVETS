@@ -43,7 +43,7 @@ export interface StudentDetail extends StudentSummary {
   birthDate: string | null
   guardianContact: string | null
   sensoryProfile: SensoryProfileJson | null
-  username: string // 来自 user_account（同 UUID 关联）
+  username: string | null // 无账号档案为 null；否则来自 student_profile.user_id 关联账号
 }
 
 // --- create ---

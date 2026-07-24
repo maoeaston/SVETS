@@ -5,6 +5,8 @@ import { MemoryAdapter } from '../memory-adapter'
 import {
   CURRENT_MIGRATION_ID,
   CURRENT_SCHEMA_VERSION,
+  F4_SITTING_MIGRATION_ID,
+  F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID,
   M1_MIGRATION_ID,
   M1_SCHEMA_VERSION,
   M2_MIGRATION_ID,
@@ -184,6 +186,26 @@ async function createMigratedM2Database(): Promise<MemoryAdapter> {
   return db
 }
 
+function schemaWithLegacyScoreScopeDefault(): string {
+  const schema = readFileSync(resolve(process.cwd(), 'src/main/db/schema.sql'), 'utf8')
+  const legacy = schema.replace(
+    'score_scope               TEXT NOT NULL CHECK (score_scope IN (',
+    "score_scope               TEXT NOT NULL DEFAULT 'OFFLINE_ABILITY' CHECK (score_scope IN ("
+  )
+  if (legacy === schema) {
+    throw new Error('test fixture failed to add legacy score_scope default')
+  }
+  return legacy
+}
+
+function scoreScopeDefault(db: MemoryAdapter): string | null | undefined {
+  const column = (db.prepare('PRAGMA table_info(offline_score_record)').all() as Array<{
+    name: string
+    dflt_value: string | null
+  }>).find((row) => row.name === 'score_scope')
+  return column?.dflt_value
+}
+
 describe('database migrations', () => {
   it('repairs a falsely recorded M1 migration and preserves v0.1.12 rows', async () => {
     const db = await MemoryAdapter.create()
@@ -249,8 +271,8 @@ describe('database migrations', () => {
       beforeMigrate: (migrationIds) => backupBatches.push(migrationIds)
     })
 
-    expect(applied).toEqual([M1_MIGRATION_ID, M2_MIGRATION_ID, CURRENT_MIGRATION_ID])
-    expect(backupBatches).toEqual([[M1_MIGRATION_ID, M2_MIGRATION_ID, CURRENT_MIGRATION_ID]])
+    expect(applied).toEqual([M1_MIGRATION_ID, M2_MIGRATION_ID, CURRENT_MIGRATION_ID, F4_SITTING_MIGRATION_ID])
+    expect(backupBatches).toEqual([[M1_MIGRATION_ID, M2_MIGRATION_ID, CURRENT_MIGRATION_ID, F4_SITTING_MIGRATION_ID]])
     expect(db.prepare('SELECT COUNT(*) AS count FROM assessment_session').get()).toMatchObject({ count: 5 })
     expect(db.prepare('SELECT COUNT(*) AS count FROM training_session').get()).toMatchObject({ count: 1 })
     expect(db.prepare('SELECT COUNT(*) AS count FROM business_session').get()).toMatchObject({ count: 6 })
@@ -336,9 +358,9 @@ describe('database migrations', () => {
 
     expect(runDatabaseMigrations(db, {
       beforeMigrate: (migrationIds) => backupBatches.push(migrationIds)
-    })).toEqual([CURRENT_MIGRATION_ID])
+    })).toEqual([CURRENT_MIGRATION_ID, F4_SITTING_MIGRATION_ID])
 
-    expect(backupBatches).toEqual([[CURRENT_MIGRATION_ID]])
+    expect(backupBatches).toEqual([[CURRENT_MIGRATION_ID, F4_SITTING_MIGRATION_ID]])
     expect(db.prepare(`
       SELECT session_id, business_session_id, student_id, job_code, task_code, status, delivery_phase
         FROM assessment_session
@@ -379,7 +401,7 @@ describe('database migrations', () => {
       END;
     `)
 
-    expect(runDatabaseMigrations(db)).toEqual([CURRENT_MIGRATION_ID])
+    expect(runDatabaseMigrations(db)).toEqual([CURRENT_MIGRATION_ID, F4_SITTING_MIGRATION_ID])
 
     expect(
       db.prepare(`
@@ -391,6 +413,86 @@ describe('database migrations', () => {
     // 恢复后的触发器仍生效：删除被拒。
     expect(() => db.prepare("DELETE FROM assessment_session WHERE session_id = 'a-m2'").run())
       .toThrow('assessment_session cannot be deleted')
+    expectDatabaseIntegrity(db)
+    assertCurrentDatabaseSchema(db)
+    db.close()
+  })
+
+  it('removes the legacy offline_score_record.score_scope default while preserving score rows', async () => {
+    const db = await MemoryAdapter.create()
+    db.exec(schemaWithLegacyScoreScopeDefault())
+    expect(scoreScopeDefault(db)).toBe("'OFFLINE_ABILITY'")
+    db.exec(`
+      INSERT INTO user_account
+        (user_id, username, password_hash, role, display_name, status)
+      VALUES ('u-f6', 'teacher-f6', 'hash', 'TEACHER', '教师F6', 'ACTIVE');
+      INSERT INTO student_profile (student_id, student_name, status)
+      VALUES ('s-f6', '学生F6', 'ACTIVE');
+      INSERT INTO question_bank
+        (question_id, job_code, bank_domain, module_type, question_type,
+         item_usage, difficulty_level, content_json, scoring_rule_json, status)
+      VALUES ('q-f6', 'SUPERMARKET_SHELVER', 'BASE_ABILITY', 'FINE_MOTOR',
+              'OFFLINE_OPERATION', 'SCORED_ITEM', 1, '{}', '{}', 'ACTIVE');
+      INSERT INTO business_session
+        (business_session_id, session_type, student_id, job_code, task_code, created_by)
+      VALUES ('bs-f6', 'ASSESSMENT', 's-f6', 'SUPERMARKET_SHELVER', 'UNBOX_AND_SHELF', 'u-f6');
+      INSERT INTO assessment_session
+        (session_id, business_session_id, student_id, strategy_id, strategy_type,
+         job_code, task_code, strategy_version, status, delivery_phase,
+         online_question_count, offline_question_count, created_by)
+      VALUES ('a-f6', 'bs-f6', 's-f6', 'strategy_baseline_shelver_v1',
+              'BASELINE_ASSESSMENT', 'SUPERMARKET_SHELVER', 'UNBOX_AND_SHELF',
+              1, 'OFFLINE_PENDING', 'PREPARED', 42, 8, 'u-f6');
+      INSERT INTO domain_event_projection
+        (event_id, aggregate_type, aggregate_id, event_type, event_sequence,
+         payload_json, checksum, source_log_path)
+      VALUES ('ev-f6', 'ASSESSMENT_SESSION', 'a-f6', 'OFFLINE_SCORE_SUBMITTED',
+              1, '{}', 'c-f6', 'log');
+      INSERT INTO offline_score_record
+        (offline_score_id, session_id, question_id, score_scope, score,
+         scoring_rubric_json, scored_by, scored_event_id)
+      VALUES ('os-f6', 'a-f6', 'q-f6', 'OFFLINE_ABILITY', 2, '{}', 'u-f6', 'ev-f6');
+    `)
+    const before = db
+      .prepare(
+        `SELECT offline_score_id, session_id, question_id, score_scope, score,
+                scoring_rubric_json, scored_by, scored_event_id
+           FROM offline_score_record
+          WHERE offline_score_id = 'os-f6'`
+      )
+      .get()
+
+    expect(runDatabaseMigrations(db)).toEqual([F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID])
+
+    expect(scoreScopeDefault(db)).toBeNull()
+    expect(
+      db.prepare(
+        `SELECT offline_score_id, session_id, question_id, score_scope, score,
+                scoring_rubric_json, scored_by, scored_event_id
+           FROM offline_score_record
+          WHERE offline_score_id = 'os-f6'`
+      ).get()
+    ).toEqual(before)
+    expect(
+      db.prepare(`
+        SELECT COUNT(*) AS count
+          FROM sqlite_master
+         WHERE type = 'index'
+           AND name IN (
+             'idx_offline_score_session_question',
+             'ux_offline_score_one_valid_score',
+             'ux_offline_score_one_valid_task_operation'
+           )
+      `).get()
+    ).toMatchObject({ count: 3 })
+    expect(() => {
+      db.prepare(
+        `INSERT INTO offline_score_record
+           (offline_score_id, session_id, question_id, score, scoring_rubric_json,
+            scored_by, scored_event_id)
+         VALUES ('os-f6-missing-scope', 'a-f6', 'q-f6', 2, '{}', 'u-f6', 'ev-f6')`
+      ).run()
+    }).toThrow()
     expectDatabaseIntegrity(db)
     assertCurrentDatabaseSchema(db)
     db.close()
@@ -414,7 +516,7 @@ describe('database migrations', () => {
       END;
     `)
 
-    expect(runDatabaseMigrations(db)).toEqual([CURRENT_MIGRATION_ID])
+    expect(runDatabaseMigrations(db)).toEqual([CURRENT_MIGRATION_ID, F4_SITTING_MIGRATION_ID])
 
     // 触发器 body 仍应引用真实表名，不带临时后缀。
     const triggerSql = db
@@ -544,6 +646,9 @@ describe('database migrations', () => {
     expect(
       db.prepare('SELECT schema_version FROM schema_migration WHERE migration_id = ?').get(M2_MIGRATION_ID)
     ).toMatchObject({ schema_version: M2_SCHEMA_VERSION })
+    expect(
+      db.prepare('SELECT schema_version FROM schema_migration WHERE migration_id = ?').get(F4_SITTING_MIGRATION_ID)
+    ).toMatchObject({ schema_version: CURRENT_SCHEMA_VERSION })
     expectDatabaseIntegrity(db)
     assertCurrentDatabaseSchema(db)
     db.close()

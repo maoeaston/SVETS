@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xuancan.example/schemas/job-skill-shelver-298-safety-technical-review-result-v1.schema.json",
+  "title": "超市理货员剩余274题安全与技术审核结果",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "result_id", "status", "reviewer", "scope", "source_files", "generated_at", "summary", "questions"],
+  "properties": {
+    "schema_version": { "const": "job-skill-shelver-298-safety-technical-review-result-v1" },
+    "result_id": { "type": "string", "minLength": 1 },
+    "status": { "const": "VALIDATED_MACHINE_AUTHORITY" },
+    "reviewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "reviewed_date"],
+      "properties": {
+        "name": { "const": "赫东" },
+        "reviewed_date": { "type": "string", "format": "date" }
+      }
+    },
+    "scope": { "$ref": "#/$defs/scope" },
+    "source_files": { "$ref": "#/$defs/sourceFiles" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "summary": { "type": "object" },
+    "questions": {
+      "type": "array",
+      "minItems": 274,
+      "maxItems": 274,
+      "items": { "$ref": "#/$defs/question" }
+    }
+  },
+  "$defs": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_total", "excluded_pilot_source_total", "reviewed_total"],
+      "properties": {
+        "source_total": { "const": 298 },
+        "excluded_pilot_source_total": { "const": 24 },
+        "reviewed_total": { "const": 274 }
+      }
+    },
+    "sourceFiles": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "sha256": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+        }
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["question_id", "question_version", "source_record_hash", "safety_conclusion", "safety_note", "technical_conclusion", "technical_note", "activation_recommendation", "minimum_re_review_requirement", "reviewer", "reviewed_date", "source_file"],
+      "properties": {
+        "question_id": { "type": "string", "pattern": "^M[1-6]_[A-Z]+_[0-9]{3}$" },
+        "question_version": { "type": "integer", "minimum": 1 },
+        "source_record_hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "safety_conclusion": { "enum": ["PASS", "RETURN_FOR_REVISION"] },
+        "safety_note": { "type": "string", "minLength": 1 },
+        "technical_conclusion": { "enum": ["PASS", "RETURN_FOR_REVISION"] },
+        "technical_note": { "type": "string", "minLength": 1 },
+        "activation_recommendation": { "enum": ["NEXT_GATE_ELIGIBLE", "RETURN_FOR_REVISION"] },
+        "minimum_re_review_requirement": { "type": ["string", "null"] },
+        "reviewer": { "const": "赫东" },
+        "reviewed_date": { "type": "string", "format": "date" },
+        "source_file": { "const": "doc/features/job-skill-shelver-298-safety-technical-review-result-2026-07-19.md" }
+      }
+    }
+  }
+}

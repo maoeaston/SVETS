@@ -58,7 +58,8 @@ import {
   failStep,
   retryStep,
   getTrainingSession,
-  listTrainingSessions
+  listTrainingSessions,
+  listMyTrainingSessions
 } from '../training'
 import { createTestDb, seedCaller, seedStudent } from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
@@ -145,6 +146,9 @@ describe('TRAINING_COMPLETED 闭环', () => {
     expect(rr!.level_result).toBe('LEVEL_COMPETENT')
     expect(rr!.result_type).toBe('TRAINING_COMPLETION')
     expect(rr!.source_aggregate_id).toBe(trainingSessionId)
+    expect(rr!.strategy_id).toBe(strategyId)
+    expect(rr!.strategy_type).toBe('TRAINING_PRACTICE')
+    expect(rr!.module_type).toBe('FINE_MOTOR')
   })
 
   it('3 COMPLETED + 1 SKIPPED → completion_rate=75，level=LEVEL_CONDITIONAL', () => {
@@ -232,6 +236,34 @@ describe('listTrainingSessions', () => {
     expect(result.success).toBe(false)
     if (result.success) return
     expect(result.errorCode).toBe('FORBIDDEN')
+  })
+})
+
+describe('listMyTrainingSessions', () => {
+  it('STUDENT 只返回本人训练，TEACHER 不能调用本人入口', () => {
+    const anotherStudentId = seedStudent(db)
+    const another = createTrainingSession(db, {
+      callerUserId: callerId,
+      callerRole: 'TEACHER',
+      studentId: anotherStudentId,
+      strategyId,
+      strategyVersion,
+      moduleType: 'COGNITION',
+      taskCode
+    })
+    expect(another.success).toBe(true)
+
+    const result = listMyTrainingSessions(db, {
+      callerUserId: studentId, callerRole: 'STUDENT'
+    })
+    expect(result.success).toBe(true)
+    if (!result.success) return
+    expect(result.sessions).toHaveLength(1)
+    expect(result.sessions[0].trainingSessionId).toBe(trainingSessionId)
+    expect(result.sessions.every((session) => session.studentId === studentId)).toBe(true)
+    expect(listMyTrainingSessions(db, {
+      callerUserId: callerId, callerRole: 'TEACHER'
+    })).toEqual({ success: false, errorCode: 'FORBIDDEN' })
   })
 })
 

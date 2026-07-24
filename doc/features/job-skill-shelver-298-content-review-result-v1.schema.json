@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xuancan.example/schemas/job-skill-shelver-298-content-review-result-v1.schema.json",
+  "title": "超市理货员剩余274题内容审核结果",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "result_id", "status", "reviewer", "scope", "source_files", "generated_at", "summary", "questions"],
+  "properties": {
+    "schema_version": { "const": "job-skill-shelver-298-content-review-result-v1" },
+    "result_id": { "type": "string", "minLength": 1 },
+    "status": { "const": "VALIDATED_MACHINE_AUTHORITY" },
+    "reviewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "role", "reviewed_date"],
+      "properties": {
+        "name": { "const": "陈晓青" },
+        "role": { "type": "string", "minLength": 1 },
+        "reviewed_date": { "type": "string", "format": "date" }
+      }
+    },
+    "scope": { "$ref": "#/$defs/scope" },
+    "source_files": { "$ref": "#/$defs/sourceFiles" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "summary": { "type": "object" },
+    "questions": {
+      "type": "array",
+      "minItems": 274,
+      "maxItems": 274,
+      "items": { "$ref": "#/$defs/question" }
+    }
+  },
+  "$defs": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_total", "excluded_pilot_source_total", "reviewed_total"],
+      "properties": {
+        "source_total": { "const": 298 },
+        "excluded_pilot_source_total": { "const": 24 },
+        "reviewed_total": { "const": 274 }
+      }
+    },
+    "sourceFiles": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "sha256": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+        }
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["question_id", "question_version", "source_record_hash", "question_type", "question_type_label", "content_conclusion", "prompt_review", "occupational_authenticity_review", "answer_or_rubric_review", "material_tool_review", "safety_marker_decision", "suggested_answer_or_behavior", "review_note", "material_tool_requirement", "reviewer", "reviewed_date", "source_file"],
+      "properties": {
+        "question_id": { "type": "string", "pattern": "^M[1-6]_[A-Z]+_[0-9]{3}$" },
+        "question_version": { "type": "integer", "minimum": 1 },
+        "source_record_hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "question_type": { "enum": ["SINGLE_CHOICE", "TRUE_FALSE", "DRAG", "OFFLINE_OPERATION"] },
+        "question_type_label": { "type": "string", "minLength": 1 },
+        "content_conclusion": { "enum": ["APPROVED", "RETURN_FOR_REVISION", "REJECTED"] },
+        "prompt_review": { "enum": ["PASS", "REVISION_REQUIRED"] },
+        "occupational_authenticity_review": { "enum": ["PASS", "REVISION_REQUIRED"] },
+        "answer_or_rubric_review": { "enum": ["PASS", "REVISION_REQUIRED"] },
+        "material_tool_review": { "enum": ["PASS", "REVISION_REQUIRED", "NOT_REQUIRED"] },
+        "safety_marker_decision": { "enum": ["KEEP", "ADD", "REMOVE"] },
+        "suggested_answer_or_behavior": { "type": "string", "minLength": 1 },
+        "review_note": { "type": "string", "minLength": 1 },
+        "material_tool_requirement": { "type": "string", "minLength": 1 },
+        "reviewer": { "const": "陈晓青" },
+        "reviewed_date": { "type": "string", "format": "date" },
+        "source_file": { "const": "doc/features/job-skill-shelver-298-content-review-result-2026-07-19.md" }
+      }
+    }
+  }
+}

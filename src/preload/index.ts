@@ -9,7 +9,13 @@ import { electronAPI } from '@electron-toolkit/preload'
 const api = {
   auth: {
     login: (params: { username: string; password: string }) =>
-      ipcRenderer.invoke('auth:login', params)
+      ipcRenderer.invoke('auth:login', params),
+    getCurrentSession: () => ipcRenderer.invoke('auth:getCurrentSession'),
+    logout: () => ipcRenderer.invoke('auth:logout'),
+    listAccounts: (params: unknown) => ipcRenderer.invoke('auth:listAccounts', params),
+    createTeacherAccount: (params: unknown) => ipcRenderer.invoke('auth:createTeacherAccount', params),
+    setTeacherAccountStatus: (params: unknown) =>
+      ipcRenderer.invoke('auth:setTeacherAccountStatus', params)
   },
   student: {
     list: (params: unknown) => ipcRenderer.invoke('student:list', params),
@@ -35,6 +41,9 @@ const api = {
     listMySessions: (params: unknown) => ipcRenderer.invoke('assessment:listMySessions', params),
     emotionInterrupt: (params: unknown) => ipcRenderer.invoke('assessment:emotionInterrupt', params),
     emotionResume: (params: unknown) => ipcRenderer.invoke('assessment:emotionResume', params),
+    pauseSitting: (params: unknown) => ipcRenderer.invoke('assessment:pauseSitting', params),
+    startNextSitting: (params: unknown) => ipcRenderer.invoke('assessment:startNextSitting', params),
+    recordEmotionCollapse: (params: unknown) => ipcRenderer.invoke('assessment:recordEmotionCollapse', params),
     abortSession: (params: unknown) => ipcRenderer.invoke('assessment:abortSession', params),
     triggerRedline: (params: unknown) => ipcRenderer.invoke('assessment:triggerRedline', params),
     calculateResult: (params: unknown) => ipcRenderer.invoke('assessment:calculateResult', params),
@@ -51,6 +60,15 @@ const api = {
     getTeacherObservations: (params: unknown) =>
       ipcRenderer.invoke('assessment:getTeacherObservations', params)
   },
+  safety: {
+    list: (params: unknown) => ipcRenderer.invoke('safety:list', params),
+    get: (params: unknown) => ipcRenderer.invoke('safety:get', params),
+    confirm: (params: unknown) => ipcRenderer.invoke('safety:confirm', params),
+    resolve: (params: unknown) => ipcRenderer.invoke('safety:resolve', params),
+    void: (params: unknown) => ipcRenderer.invoke('safety:void', params),
+    replaceForFactualCorrection: (params: unknown) =>
+      ipcRenderer.invoke('safety:replaceForFactualCorrection', params)
+  },
   assignment: {
     create: (params: unknown) => ipcRenderer.invoke('assignment:create', params),
     confirmStudent: (params: unknown) =>
@@ -63,12 +81,18 @@ const api = {
   training: {
     createSession: (params: unknown) => ipcRenderer.invoke('training:createSession', params),
     listSessions:  (params: unknown) => ipcRenderer.invoke('training:listSessions', params),
+    listMySessions: (params: unknown) => ipcRenderer.invoke('training:listMySessions', params),
     getSession:    (params: unknown) => ipcRenderer.invoke('training:getSession', params),
     startStep:     (params: unknown) => ipcRenderer.invoke('training:startStep', params),
     completeStep:  (params: unknown) => ipcRenderer.invoke('training:completeStep', params),
     skipStep:      (params: unknown) => ipcRenderer.invoke('training:skipStep', params),
     failStep:      (params: unknown) => ipcRenderer.invoke('training:failStep', params),
     retryStep:     (params: unknown) => ipcRenderer.invoke('training:retryStep', params)
+  },
+  foundation: {
+    getOverview: (params: unknown) => ipcRenderer.invoke('foundation:getOverview', params),
+    listExceptions: (params: unknown) => ipcRenderer.invoke('foundation:listExceptions', params),
+    getException: (params: unknown) => ipcRenderer.invoke('foundation:getException', params)
   }
 }
 

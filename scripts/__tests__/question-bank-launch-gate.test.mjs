@@ -21,6 +21,7 @@ function buildQuestionRow({
   return {
     question_id: questionId,
     job_code: jobCode,
+    bank_domain: 'BASE_ABILITY',
     module_type: moduleType,
     question_type: questionType,
     status,
@@ -61,12 +62,23 @@ function buildPassingRows() {
       onlineCounter += 1
     }
 
-    for (let i = 0; i < 2; i += 1) {
+    for (let i = 0; i < 1; i += 1) {
       rows.push(
         buildQuestionRow({
           questionId: `Q_BASE_${moduleType}_DRAG_${String(onlineCounter).padStart(3, '0')}`,
           moduleType,
           questionType: 'DRAG'
+        })
+      )
+      onlineCounter += 1
+    }
+
+    for (let i = 0; i < 1; i += 1) {
+      rows.push(
+        buildQuestionRow({
+          questionId: `Q_BASE_${moduleType}_SOFTWARE_${String(onlineCounter).padStart(3, '0')}`,
+          moduleType,
+          questionType: 'SOFTWARE_TASK'
         })
       )
       onlineCounter += 1
@@ -108,7 +120,8 @@ describe('question-bank launch gate', () => {
     expect(report.summary.byQuestionType).toMatchObject({
       TRUE_FALSE: 18,
       SINGLE_CHOICE: 12,
-      DRAG: 12,
+      DRAG: 6,
+      SOFTWARE_TASK: 6,
       OFFLINE_OPERATION: 8
     })
     expect(report.summary.byStatus).toMatchObject({
@@ -119,7 +132,7 @@ describe('question-bank launch gate', () => {
 
   it('FINE_MOTOR 只有 6 道 ACTIVE 线上题时失败并指出缺口', () => {
     const rows = buildPassingRows().filter(
-      (row) => !(row.module_type === 'FINE_MOTOR' && row.question_type === 'DRAG' && row.question_id.endsWith('007'))
+      (row) => !(row.module_type === 'FINE_MOTOR' && row.question_type === 'SOFTWARE_TASK' && row.question_id.endsWith('007'))
     )
     const report = checkQuestionBankLaunchGate(rows, {
       jobCode: 'SUPERMARKET_SHELVER'
@@ -198,6 +211,29 @@ describe('question-bank launch gate', () => {
       actual: 6,
       required: 7,
       missing: 1
+    })
+  })
+
+  it('同一 job_code 的 JOB_SPECIFIC 题不会计入基础能力门禁', () => {
+    const rows = buildPassingRows()
+    rows.push({
+      ...buildQuestionRow({
+        questionId: 'M1_TF_999',
+        moduleType: 'FINE_MOTOR',
+        questionType: 'TRUE_FALSE'
+      }),
+      bank_domain: 'JOB_SPECIFIC'
+    })
+
+    const report = checkQuestionBankLaunchGate(rows, {
+      jobCode: 'SUPERMARKET_SHELVER',
+      bankDomain: 'BASE_ABILITY'
+    })
+
+    expect(report.passed).toBe(true)
+    expect(report.summary.totalRows).toBe(50)
+    expect(report.summary.byStatus).toMatchObject({
+      ACTIVE: 50
     })
   })
 })
