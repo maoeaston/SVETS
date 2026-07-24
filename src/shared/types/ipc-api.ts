@@ -97,6 +97,12 @@ import type {
   GetExceptionResult
 } from './foundation'
 import type {
+  SubmitOfflineAbilityScoresParams,
+  SubmitOfflineAbilityScoresResult,
+  GetOfflineAbilityScoresParams,
+  GetOfflineAbilityScoresResult
+} from './ability-scoring'
+import type {
   SubmitOperationScoresParams,
   SubmitOperationScoresResult,
   GetOperationScoresParams,
@@ -191,6 +197,12 @@ export interface IpcApi {
     calculateResult: (
       params: CalculateResultParams
     ) => Promise<CalculateResultResult>
+    submitOfflineAbilityScores: (
+      params: SubmitOfflineAbilityScoresParams
+    ) => Promise<SubmitOfflineAbilityScoresResult>
+    getOfflineAbilityScores: (
+      params: GetOfflineAbilityScoresParams
+    ) => Promise<GetOfflineAbilityScoresResult>
     submitOperationScores: (params: SubmitOperationScoresParams) => Promise<SubmitOperationScoresResult>
     getOperationScores: (params: GetOperationScoresParams) => Promise<GetOperationScoresResult>
     submitJobSkillOfflineScores: (

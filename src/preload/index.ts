@@ -47,6 +47,10 @@ const api = {
     abortSession: (params: unknown) => ipcRenderer.invoke('assessment:abortSession', params),
     triggerRedline: (params: unknown) => ipcRenderer.invoke('assessment:triggerRedline', params),
     calculateResult: (params: unknown) => ipcRenderer.invoke('assessment:calculateResult', params),
+    submitOfflineAbilityScores: (params: unknown) =>
+      ipcRenderer.invoke('assessment:submitOfflineAbilityScores', params),
+    getOfflineAbilityScores: (params: unknown) =>
+      ipcRenderer.invoke('assessment:getOfflineAbilityScores', params),
     submitOperationScores: (params: unknown) => ipcRenderer.invoke('assessment:submitOperationScores', params),
     getOperationScores: (params: unknown) => ipcRenderer.invoke('assessment:getOperationScores', params),
     submitJobSkillOfflineScores: (params: unknown) =>
