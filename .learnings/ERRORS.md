@@ -35,6 +35,136 @@ Error: spawnSync /home/maoea/.nvm/versions/node/v24.14.1/bin/node EPERM
 
 ---
 
+## [ERR-20260724-RG2] rg-pattern-shell-command-substitution
+
+**Logged**: 2026-07-24T22:16:23+08:00
+**Priority**: low
+**Status**: resolved
+**Area**: docs
+
+### Summary
+双引号包裹的 `rg` 正则中含 Markdown 反引号，shell 将其误作命令替换。
+
+### Error
+```
+/bin/bash: line 1: task_closure: command not found
+```
+
+### Context
+- Command/operation attempted: 在双引号正则中搜索包含反引号的 Markdown 文本。
+- 搜索仍返回了部分结果，但退出状态和输出已被 shell 解析污染。
+
+### Suggested Fix
+包含 Markdown 反引号的 `rg` pattern 使用单引号，或删除不必要的反引号匹配。
+
+### Metadata
+- Reproducible: yes
+- Related Files: doc/features/report-page-framework-prd.md
+
+### Resolution
+- **Resolved**: 2026-07-24T22:16:23+08:00
+- **Commit/PR**: none
+- **Notes**: 后续命令改用单引号 pattern，并重新执行验证。
+
+---
+
+## [ERR-20260724-VAL1] punctuation-check-multiple-files
+
+**Logged**: 2026-07-24T22:20:00+08:00
+**Priority**: low
+**Status**: resolved
+**Area**: docs
+
+### Summary
+标点检查脚本一次只接受一个文件，却在单次调用中传入了多个文件。
+
+### Error
+```
+check_punctuation.py: error: unrecognized arguments
+```
+
+### Context
+- Command/operation attempted: 对五个 Markdown 文件执行一次 `check-punctuation.sh`。
+
+### Suggested Fix
+为每个文件单独调用脚本，可在工具编排层并行执行。
+
+### Metadata
+- Reproducible: yes
+- Related Files: doc/features/report-page-framework-prd.md
+
+### Resolution
+- **Resolved**: 2026-07-24T22:20:00+08:00
+- **Commit/PR**: none
+- **Notes**: 已改为逐文件调用。
+
+---
+
+## [ERR-20260724-VAL2] git-diff-no-index-exit-code
+
+**Logged**: 2026-07-24T22:20:00+08:00
+**Priority**: low
+**Status**: resolved
+**Area**: docs
+
+### Summary
+把 `git diff --no-index --check` 的正常差异退出码 1 误当成空白检查失败。
+
+### Error
+```
+Command exited with status 1 and no whitespace diagnostics.
+```
+
+### Context
+- Command/operation attempted: 对尚未跟踪的 Mini-PRD 执行 `git diff --no-index --check /dev/null <file>`。
+
+### Suggested Fix
+跟踪文件继续用 `git diff --check`；未跟踪文件单独用 `awk` 检查行尾空白，不把 no-index 的“有差异”状态当作错误。
+
+### Metadata
+- Reproducible: yes
+- Related Files: doc/features/report-page-framework-prd.md
+
+### Resolution
+- **Resolved**: 2026-07-24T22:20:00+08:00
+- **Commit/PR**: none
+- **Notes**: 后续验证改用明确的行尾空白检查。
+
+---
+
+## [ERR-20260724-VAL3] legacy-doc-punctuation-noise
+
+**Logged**: 2026-07-24T22:22:00+08:00
+**Priority**: low
+**Status**: resolved
+**Area**: docs
+
+### Summary
+对历史累积文档执行整文件标点检查时，被与本次新增内容无关的既有格式问题阻断。
+
+### Error
+```
+check-punctuation reported pre-existing dash, spacing, and half-width punctuation findings.
+```
+
+### Context
+- Affected legacy files: `doc/会话启动.md`、`doc/index.md`、`.learnings/ERRORS.md`。
+- 本次新建的 `doc/features/report-page-framework-prd.md` 单文件检查通过。
+
+### Suggested Fix
+功能任务只核对新增行和新建文件；历史整文件格式清理应单独立项，避免无关文档 churn。
+
+### Metadata
+- Reproducible: yes
+- Related Files: doc/会话启动.md, doc/index.md, .learnings/ERRORS.md
+
+### Resolution
+- **Resolved**: 2026-07-24T22:22:00+08:00
+- **Commit/PR**: none
+- **Notes**: 保留历史文本不动，改为核对本次 diff 和新建文档。
+
+---
+
 ## [ERR-20260724-RG1] rg-glob-path-pattern-slip
 
 **Logged**: 2026-07-24T19:05:00+08:00

@@ -15,7 +15,7 @@
 | JSON 字段规范 | ✅ 已完成 |
 | 事件载荷规范 | ✅ 已完成 |
 | Electron 脚手架 | ✅ 已就绪（typecheck + build 通过）|
-| 功能开发 | 🚧 进行中（已完成登录、学生档案、策略配置、基础能力测评、专业岗位固定卷/评分/观察/结果/报告核心链路、DRAG 渲染）|
+| 功能开发 | 🚧 进行中（已完成登录、学生档案、策略配置、基础能力测评、专业岗位固定卷/评分/观察/结果/报告生成核心、DRAG 渲染；报告页面与导出待 F7 实现）|
 | 教学素材 | 🚧 进行中（270 项资产合同已落地，当前 0 条 approved；待先制作 R1-R6 并编译 Prompt）|
 | 题库审核 | 🚧 进行中（BASE_ABILITY 96题与 JOB_SPECIFIC 298题均为 DRAFT；基础能力 42+8 和专业岗位 Pilot 门禁均未授予激活权）|
 
@@ -131,6 +131,7 @@ SVETS/
 | `doc/specs/题库分层架构说明.md` | 四层题库设计与 question_role 字段规划 |
 | `doc/features/base-ability-current-contracts.md` | 基础能力 96 道 DRAFT 候选题与 42+8 当前合同入口 |
 | `doc/features/job-skill-shelver-current-contracts.md` | 超市理货员 298 道 DRAFT 题与 270 项素材当前合同入口 |
+| `doc/features/report-page-framework-prd.md` | F7 报告列表、快照、锁定、导出和安全报告的已批准实现合同 |
 | `doc/reference/visual-asset-master-plan.md` | 视觉风格、资产范围、生产与审核规则唯一规划基线 |
 | `doc/assets/asset-manifest.json` | 270 项视觉、音频、脚本和工具卡生产机器合同 |
 | `doc/features/visual-asset-video-production-sop.md` | Seedance 视频生产、抽选和验收 SOP |
@@ -157,11 +158,12 @@ SVETS/
 
 安全事件（`safety_incident`）是学生+任务级独立聚合，触发后批量熔断同一学生同一任务下所有开放会话，直到管理员完成处理。
 
-### 三类结果（独立计算，不合并）
+### 四类结果（独立计算，不合并）
 
 - `ABILITY_SCORE` — 基础能力测评分（线上 42 题 0/2 自动判分 + 线下 8 题 0/1/2 教师评分）
 - `TRAINING_COMPLETION` — 四步训练完成率
 - `OPERATION_PASS_RATE` — 拆箱上架任务实操达标率（独立于基础能力线下 8 题）
+- `JOB_SKILL_SCORE` — 专业岗位知识、情境判断与线下实操的独立结果
 
 ---
 

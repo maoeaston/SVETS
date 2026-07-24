@@ -145,6 +145,7 @@ doc/
 | 测评流程 | `assessment-prd.md` | `assessment-impl.md` |
 | 训练流程 | `training-prd.md` | `training-impl.md` |
 | 实操评分 | `operation-scoring-prd.md` | `operation-scoring-impl.md` |
+| 报告页面框架 | `report-page-framework-prd.md` | 待 `/vibe-impl` 编写 |
 | DRAG 拖拽渲染 | `drag-render-prd.md` | `drag-render-impl.md` |
 
 ### 数据库运维
@@ -291,6 +292,7 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | `operation-scoring` | [features/operation-scoring-prd.md](features/operation-scoring-prd.md) | [features/operation-scoring-impl.md](features/operation-scoring-impl.md) |
 | `pause-recovery-safety` | [features/pause-recovery-safety-prd.md](features/pause-recovery-safety-prd.md) | [features/pause-recovery-safety-impl.md](features/pause-recovery-safety-impl.md) |
 | `question-bank-resources` | [features/question-bank-resources-prd.md](features/question-bank-resources-prd.md) | [features/question-bank-resources-impl.md](features/question-bank-resources-impl.md) |
+| `report-page-framework` | [features/report-page-framework-prd.md](features/report-page-framework-prd.md) | 缺失 |
 | `scoring-framework-dual-track` | [features/scoring-framework-dual-track-prd.md](features/scoring-framework-dual-track-prd.md) | [features/scoring-framework-dual-track-impl.md](features/scoring-framework-dual-track-impl.md) |
 | `strategy-config` | [features/strategy-config-prd.md](features/strategy-config-prd.md) | [features/strategy-config-impl.md](features/strategy-config-impl.md) |
 | `student-profile` | [features/student-profile-prd.md](features/student-profile-prd.md) | [features/student-profile-impl.md](features/student-profile-impl.md) |
