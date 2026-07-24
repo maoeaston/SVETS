@@ -97,6 +97,11 @@ const api = {
     getOverview: (params: unknown) => ipcRenderer.invoke('foundation:getOverview', params),
     listExceptions: (params: unknown) => ipcRenderer.invoke('foundation:listExceptions', params),
     getException: (params: unknown) => ipcRenderer.invoke('foundation:getException', params)
+  },
+  results: {
+    getCurrent: (params: unknown) => ipcRenderer.invoke('results:getCurrent', params),
+    listCurrentByStudent: (params: unknown) =>
+      ipcRenderer.invoke('results:listCurrentByStudent', params)
   }
 }
 

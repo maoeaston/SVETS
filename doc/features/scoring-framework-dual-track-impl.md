@@ -1,7 +1,7 @@
 # F6 评分计算框架与双轨隔离实现说明
 
 对应 Mini-PRD：`doc/features/scoring-framework-dual-track-prd.md`
-状态：READY_FOR_IMPLEMENTATION
+状态：IMPLEMENTED
 日期：2026-07-24
 
 ## 1. 目标和边界

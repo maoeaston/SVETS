@@ -61,7 +61,13 @@ import {
   listTrainingSessions,
   listMyTrainingSessions
 } from '../training'
-import { createTestDb, seedCaller, seedStudent } from '../../../db/test-helpers'
+import {
+  createTestDb,
+  seedAssessmentSessionFixture,
+  seedCaller,
+  seedQuestionBank,
+  seedStudent
+} from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
 
 let db: MemoryAdapter
@@ -93,6 +99,93 @@ function getResultRecord() {
         WHERE source_aggregate_type = 'TRAINING_SESSION' AND source_aggregate_id = ?`
     )
     .get(trainingSessionId) as Record<string, unknown> | undefined
+}
+
+function insertAssessmentProjectionEvent(sessionId: string, eventType: string): string {
+  const eventId = uuidv4()
+  const row = db
+    .prepare('SELECT MAX(event_sequence) AS max_seq FROM domain_event_projection WHERE aggregate_id = ?')
+    .get(sessionId) as { max_seq: number | null }
+  db.prepare(
+    `INSERT INTO domain_event_projection
+       (event_id, aggregate_type, aggregate_id, event_type, event_sequence,
+        payload_json, checksum, source_log_path, schema_version, created_at)
+     VALUES (?, 'ASSESSMENT_SESSION', ?, ?, ?, '{}', 'training-noise-checksum', 'training-noise.jsonl', 1, ?)`
+  ).run(eventId, sessionId, eventType, (row.max_seq ?? 0) + 1, new Date().toISOString())
+  return eventId
+}
+
+function seedAssessmentNoiseForTraining(): string {
+  seedQuestionBank(db)
+  const assessmentSessionId = seedAssessmentSessionFixture(db, {
+    studentId,
+    strategyId: 'strategy_baseline_shelver_v1',
+    strategyType: 'BASELINE_ASSESSMENT',
+    taskCode,
+    status: 'OFFLINE_PENDING',
+    deliveryPhase: 'OFFLINE_SCORING',
+    createdBy: callerId
+  })
+
+  const onlineQuestion = db
+    .prepare(
+      `SELECT question_id, module_type, question_type
+         FROM question_bank
+        WHERE bank_domain = 'BASE_ABILITY'
+          AND question_type = 'TRUE_FALSE'
+        LIMIT 1`
+    )
+    .get() as { question_id: string; module_type: string; question_type: string }
+  db.prepare(
+    `INSERT INTO assessment_session_question
+       (session_question_id, session_id, question_id, question_order, question_phase,
+        bank_domain, module_type, question_type, item_usage)
+     VALUES (?, ?, ?, 1, 'ONLINE',
+             'BASE_ABILITY', ?, ?, 'SCORED_ITEM')`
+  ).run(uuidv4(), assessmentSessionId, onlineQuestion.question_id, onlineQuestion.module_type, onlineQuestion.question_type)
+  db.prepare(
+    `INSERT INTO answer_record
+       (answer_id, session_id, question_id, question_type, answer_payload_json,
+        is_correct, score, submitted_event_id, status)
+     VALUES (?, ?, ?, ?, '{"answer":true}', 1, 2, ?, 'VALID')`
+  ).run(
+    uuidv4(),
+    assessmentSessionId,
+    onlineQuestion.question_id,
+    onlineQuestion.question_type,
+    insertAssessmentProjectionEvent(assessmentSessionId, 'ANSWER_SUBMITTED')
+  )
+
+  const offlineQuestion = db
+    .prepare(
+      `SELECT question_id, module_type
+         FROM question_bank
+        WHERE bank_domain = 'BASE_ABILITY'
+          AND question_type = 'OFFLINE_OPERATION'
+        LIMIT 1`
+    )
+    .get() as { question_id: string; module_type: string }
+  db.prepare(
+    `INSERT INTO assessment_session_question
+       (session_question_id, session_id, question_id, question_order, question_phase,
+        bank_domain, module_type, question_type, item_usage)
+     VALUES (?, ?, ?, 2, 'OFFLINE',
+             'BASE_ABILITY', ?, 'OFFLINE_OPERATION', 'SCORED_ITEM')`
+  ).run(uuidv4(), assessmentSessionId, offlineQuestion.question_id, offlineQuestion.module_type)
+  db.prepare(
+    `INSERT INTO offline_score_record
+       (offline_score_id, session_id, question_id, score_scope, task_operation_code,
+        score, scoring_rubric_json, scored_by, scored_event_id, tool_checklist_confirmed)
+     VALUES (?, ?, ?, 'OFFLINE_ABILITY', NULL, 2, '{}', ?, ?, 1)`
+  ).run(
+    uuidv4(),
+    assessmentSessionId,
+    offlineQuestion.question_id,
+    callerId,
+    insertAssessmentProjectionEvent(assessmentSessionId, 'OFFLINE_SCORE_SUBMITTED')
+  )
+
+  return assessmentSessionId
 }
 
 /** 完成指定步骤（start + complete） */
@@ -149,6 +242,29 @@ describe('TRAINING_COMPLETED 闭环', () => {
     expect(rr!.strategy_id).toBe(strategyId)
     expect(rr!.strategy_type).toBe('TRAINING_PRACTICE')
     expect(rr!.module_type).toBe('FINE_MOTOR')
+  })
+
+  it('双轨隔离：测评题和线下评分不会生成或污染 TRAINING_COMPLETION', () => {
+    const assessmentSessionId = seedAssessmentNoiseForTraining()
+    for (let i = 1; i <= 4; i++) doStep(i)
+
+    const rr = getResultRecord()
+    expect(rr).toBeDefined()
+    expect(rr!.result_type).toBe('TRAINING_COMPLETION')
+    expect(rr!.source_aggregate_type).toBe('TRAINING_SESSION')
+    expect(rr!.source_aggregate_id).toBe(trainingSessionId)
+    expect(rr!.normalized_score).toBe(100)
+    expect(rr!.completion_ratio).toBe(1)
+
+    const assessmentResultCount = db
+      .prepare(
+        `SELECT COUNT(*) AS n
+           FROM result_record
+          WHERE source_aggregate_type = 'ASSESSMENT_SESSION'
+            AND source_aggregate_id = ?`
+      )
+      .get(assessmentSessionId) as { n: number }
+    expect(assessmentResultCount.n).toBe(0)
   })
 
   it('3 COMPLETED + 1 SKIPPED → completion_rate=75，level=LEVEL_CONDITIONAL', () => {

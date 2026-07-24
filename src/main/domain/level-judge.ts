@@ -20,6 +20,7 @@ export interface JudgeLevelInput {
   competentThreshold: number        // 80
   conditionalThreshold: number      // 60
   safetyTriggered: boolean
+  normalizedScoreOverride?: number  // F6: threshold grade can use total 100-point score while module veto uses online modules.
 }
 
 export interface JudgeLevelOutput {
@@ -43,7 +44,8 @@ const ABILITY_TAG_ORDER: AbilityTag[] = [
 export function judgeLevel(input: JudgeLevelInput): JudgeLevelOutput {
   const totalRaw = input.moduleScores.reduce((s, m) => s + m.raw, 0)
   const totalMax = input.moduleScores.reduce((s, m) => s + m.max, 0)
-  const normalizedScore = totalMax > 0 ? (totalRaw / totalMax) * 100 : 0
+  const derivedNormalizedScore = totalMax > 0 ? (totalRaw / totalMax) * 100 : 0
+  const normalizedScore = input.normalizedScoreOverride ?? derivedNormalizedScore
 
   // 1. 红线优先（levelForcedBy=null，红线覆盖不属兜底）
   if (input.safetyTriggered) {

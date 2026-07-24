@@ -12,6 +12,7 @@ import { registerObservationHandlers } from './handlers/observation'
 import { registerAssignmentHandlers } from './handlers/assignment'
 import { registerSafetyHandlers } from './handlers/safety'
 import { registerFoundationHandlers } from './handlers/foundation'
+import { registerResultsHandlers } from './handlers/results'
 
 export function registerIpcHandlers(): void {
   registerAuthHandlers()
@@ -26,4 +27,5 @@ export function registerIpcHandlers(): void {
   registerAssignmentHandlers()
   registerSafetyHandlers()
   registerFoundationHandlers()
+  registerResultsHandlers()
 }

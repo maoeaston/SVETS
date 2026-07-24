@@ -190,7 +190,10 @@ export function submitJobSkillOfflineScores(
   const offlineQuestions = db
     .prepare(
       `SELECT question_id FROM assessment_session_question
-        WHERE session_id = ? AND question_phase = 'OFFLINE' AND item_usage = 'SCORED_ITEM'`
+        WHERE session_id = ?
+          AND bank_domain = 'JOB_SPECIFIC'
+          AND question_phase = 'OFFLINE'
+          AND item_usage = 'SCORED_ITEM'`
     )
     .all(params.sessionId) as { question_id: string }[]
   const validQuestionIds = new Set(offlineQuestions.map((r) => r.question_id))

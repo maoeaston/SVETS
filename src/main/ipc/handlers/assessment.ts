@@ -46,12 +46,13 @@ import type {
   SessionAbortedPayload,
   RedlineTriggeredPayload,
   ResultCalculatedPayload,
-  SafetyIncidentCreatedPayload,
-  AbilityScorePayload,
-  ModuleScore
+  SafetyIncidentCreatedPayload
 } from '@shared/types/event-payloads'
 
-import { judgeLevel, type ModuleScoreInput, type JudgeLevelInput } from '../../domain/level-judge'
+import {
+  calculateAbilityScore,
+  readOfflineAbilityScoringCompletion
+} from '../../domain/ability-scoring'
 import {
   SAFETY_REASON_CODES as SAFETY_REASON_CODES_SRC,
   SAFETY_CONTEXT_PHASES as SAFETY_CONTEXT_PHASES_SRC
@@ -162,18 +163,6 @@ const OPEN_SESSION_STATUSES = [
 // schema CHECK 是兜底；handler 前置校验避免脏 jsonl。
 const SAFETY_REASON_CODES = new Set<string>(SAFETY_REASON_CODES_SRC.map((r) => r.value))
 const SAFETY_CONTEXT_PHASES = new Set<string>(SAFETY_CONTEXT_PHASES_SRC.map((p) => p.value))
-
-// 每道 ONLINE 题的最高分（doc §2：TRUE_FALSE/SINGLE_CHOICE/DRAG 均为二值 2/0）。
-// 用于从 answer_record.score 反推题数（max_score = answered * MAX_SCORE_PER_QUESTION）。
-const MAX_SCORE_PER_QUESTION = 2
-const BASE_ABILITY_MODULES: AbilityTag[] = [
-  'FINE_MOTOR',
-  'COGNITION',
-  'RULE_EXECUTION',
-  'EMOTION_REGULATION',
-  'BASIC_SOCIAL',
-  'SAFETY_OPERATION'
-]
 
 /**
  * STUDENT 答题路径的 session.status → 错误码映射。
@@ -1445,165 +1434,21 @@ function readSessionForRedline(db: DBAdapter, sessionId: string): SessionForRedl
     .get(sessionId) as SessionForRedlineRow | undefined
 }
 
-/**
- * 计算红线场景的 moduleScores：从 answer_record 求每模块 raw / max。
- * 红线场景下 levelResult 强制 LEVEL_FAIL_BY_SAFETY，但 normalizedScore 仍需真实值
- * （写入 result_record.normalized_score CHECK 0-100）。
- *
- * 线下评分未到时不计入 OFFLINE_OPERATION；只统计 ONLINE 题已答记录。
- * 未答模块返回 raw=0/max=0（不进 moduleScores 数组，避免 max=0 除零）。
- */
-function computeRedlineModuleScores(
-  db: DBAdapter,
-  sessionId: string
-): ModuleScoreInput[] {
-  const rows = db
-    .prepare(
-      `SELECT sq.module_type,
-              COALESCE(SUM(ar.score), 0) AS raw,
-              COUNT(ar.question_id) AS answered
-         FROM assessment_session_question sq
-         LEFT JOIN answer_record ar
-           ON ar.session_id = sq.session_id
-          AND ar.question_id = sq.question_id
-          AND ar.status = 'VALID'
-        WHERE sq.session_id = ? AND sq.question_phase = 'ONLINE'
-        GROUP BY sq.module_type`
-    )
-    .all(sessionId) as { module_type: string; raw: number; answered: number }[]
-
-  const byModule = new Map(rows.map((r) => [r.module_type, r.raw]))
-  return BASE_ABILITY_MODULES.map((module) => ({
-    module,
-    raw: byModule.get(module) ?? 0,
-    max: 7 * MAX_SCORE_PER_QUESTION
-  }))
-}
-
-/**
- * 读红线 result_record 落盘所需的 strategy_config 字段（judgeLevel 全部入参）。
- * 红线场景下 safetyTriggered=true 直接返回 LEVEL_FAIL_BY_SAFETY，
- * 但 JudgeLevelInput 仍要求 emotionCollapseThreshold / moduleVetoThreshold 等。
- */
-function readStrategyForJudge(
-  db: DBAdapter,
-  strategyId: string,
-  strategyVersion: number
-): JudgeLevelInput | null {
-  const s = db
-    .prepare(
-      `SELECT module_veto_threshold, emotion_collapse_threshold,
-              competent_threshold, conditional_threshold
-         FROM strategy_config
-        WHERE strategy_id = ? AND version = ?`
-    )
-    .get(strategyId, strategyVersion) as
-    | {
-        module_veto_threshold: number
-        emotion_collapse_threshold: number
-        competent_threshold: number
-        conditional_threshold: number
-      }
-    | undefined
-  if (!s) return null
-  return {
-    moduleScores: [],
-    emotionCollapseCount: 0,
-    emotionCollapseThreshold: s.emotion_collapse_threshold,
-    moduleVetoThreshold: s.module_veto_threshold,
-    competentThreshold: s.competent_threshold,
-    conditionalThreshold: s.conditional_threshold,
-    safetyTriggered: true
-  }
-}
-
-/**
- * 落盘红线 result_record + 写 RESULT_CALCULATED 事件 + applyReducer。
- * **不开事务**——由调用方（triggerRedline / calculateResult）的 transaction 包裹。
- * 复用 reduce 路径 applyResultCalculated（幂等：result_id 存在则 skip）。
- *
- * 调用前置条件：session 已 REDLINE_HALTED + redline_incident_id 已填。
- *
- * result_payload_json 通过 ResultCalculatedPayload.breakdown 流入事件 payload，
- * reducer applyResultCalculated 在 INSERT 时一并写入（事件溯源原则：投影可从事件流
- * 重建，避免 handler 事务后 UPDATE 在回滚后留下 NULL 字段）。
- *
- * @returns resultId（用于 calculateResult 返回值）或抛错（事务由调用方回滚）。
- */
-function persistRedlineResult(
+function persistAbilityResult(
   db: DBAdapter,
   session: SessionForRedlineRow,
   sessionId: string,
-  triggeredBy: string
+  triggeredBy: string,
+  safetyTriggered: boolean
 ): string {
-  const strategyInput = readStrategyForJudge(db, session.strategy_id, session.strategy_version)
-  if (!strategyInput) {
-    throw new Error(
-      `persistRedlineResult: strategy_config (${session.strategy_id}, v${session.strategy_version}) missing`
-    )
-  }
-  // 注入真实 moduleScores（红线场景下 level 强制 FAIL_BY_SAFETY，但 normalizedScore 用真实分）
-  strategyInput.moduleScores = computeRedlineModuleScores(db, sessionId)
-
-  const judge = judgeLevel(strategyInput)
+  const calculation = calculateAbilityScore(db, {
+    sessionId,
+    strategyId: session.strategy_id,
+    strategyVersion: session.strategy_version,
+    safetyTriggered
+  })
   const resultId = uuidv4()
   const calculatedAt = new Date().toISOString()
-
-  // question_count 从 session 行读（红线可能在中途触发，已答题数 < 总题数）。
-  // completion_ratio 按 50 题总量计算，未答/未评计 0。
-  const sessionCounts = db
-    .prepare(
-      `SELECT (s.online_question_count + s.offline_question_count) AS total,
-              (SELECT COUNT(*) FROM answer_record ar
-                WHERE ar.session_id = s.session_id AND ar.status = 'VALID')
-              +
-              (SELECT COUNT(*) FROM offline_score_record os
-                WHERE os.session_id = s.session_id AND os.status = 'VALID'
-                  AND os.score_scope = 'OFFLINE_ABILITY') AS answered
-         FROM assessment_session s
-        WHERE s.session_id = ?`
-    )
-    .get(sessionId) as { total: number; answered: number } | undefined
-  if (!sessionCounts) {
-    throw new Error(`persistRedlineResult: session ${sessionId} missing during count`)
-  }
-  const offlineScore = db
-    .prepare(
-      `SELECT COALESCE(SUM(score), 0) AS raw
-         FROM offline_score_record
-        WHERE session_id = ?
-          AND status = 'VALID'
-          AND score_scope = 'OFFLINE_ABILITY'`
-    )
-    .get(sessionId) as { raw: number } | undefined
-  const offlineRawScore = offlineScore?.raw ?? 0
-
-  // result_payload_json（AbilityScorePayload）：红线场景下仍记真实模块分快照。
-  // 红线场景 judge.moduleVetoTriggeredBy 永远 null（safetyTriggered 优先级最高），
-  // module_scores 直接填充。
-  const onlineRawScore = strategyInput.moduleScores.reduce((s, m) => s + m.raw, 0)
-  const rawScore = onlineRawScore + offlineRawScore
-  const normalizedScore = Math.max(0, Math.min(100, rawScore))
-  const abilityPayload: AbilityScorePayload = {
-    result_type: 'ABILITY_SCORE',
-    module_scores: strategyInput.moduleScores.map(
-      (m): ModuleScore => ({
-        module_type: m.module,
-        raw_score: m.raw,
-        max_score: m.max,
-        normalized_score: m.max > 0 ? (m.raw / m.max) * 100 : 0
-      })
-    ),
-    online_raw_score: onlineRawScore,
-    // 仅计入基础能力线下评分；TASK_OPERATION 属 OPERATION_PASS_RATE，不进入 ABILITY_SCORE。
-    offline_raw_score: offlineRawScore,
-    question_count: sessionCounts.total,
-    answered_count: sessionCounts.answered,
-    completion_ratio: sessionCounts.total > 0 ? sessionCounts.answered / sessionCounts.total : 0,
-    emotion_collapse_count: 0,
-    module_veto_triggered_by: judge.moduleVetoTriggeredBy,
-    level_forced_by: judge.levelForcedBy
-  }
 
   const eventPayload: ResultCalculatedPayload = {
     result_id: resultId,
@@ -1616,14 +1461,14 @@ function persistRedlineResult(
     job_code: session.job_code,
     task_code: session.task_code,
     module_type: null,
-    raw_score: rawScore,
-    max_score: 100,
-    normalized_score: normalizedScore,
-    level_result: judge.levelResult,
-    completion_ratio: abilityPayload.completion_ratio,
+    raw_score: calculation.rawScore,
+    max_score: calculation.maxScore,
+    normalized_score: calculation.normalizedScore,
+    level_result: calculation.levelResult,
+    completion_ratio: calculation.completionRatio,
     calculated_at: calculatedAt,
     calculated_by: triggeredBy,
-    breakdown: abilityPayload
+    breakdown: calculation.payload
   }
 
   // writeEvent + reducer 都加入调用方事务（singleton connection / sql.js 同 conn）
@@ -1639,6 +1484,65 @@ function persistRedlineResult(
   // 写入 result_payload_json（来自 payload.breakdown）
   applyAssessmentEvent(db, event)
 
+  return resultId
+}
+
+/**
+ * 落盘红线 ABILITY_SCORE。调用前置条件：session 已 REDLINE_HALTED + redline_incident_id 已填。
+ */
+function persistRedlineResult(
+  db: DBAdapter,
+  session: SessionForRedlineRow,
+  sessionId: string,
+  triggeredBy: string
+): string {
+  return persistAbilityResult(db, session, sessionId, triggeredBy, true)
+}
+
+function countValidOnlineAbilityAnswers(db: DBAdapter, sessionId: string): number {
+  const row = db
+    .prepare(
+      `SELECT COUNT(*) AS n
+         FROM answer_record ar
+         JOIN assessment_session_question sq
+           ON sq.session_id = ar.session_id
+          AND sq.question_id = ar.question_id
+        WHERE ar.session_id = ?
+          AND ar.status = 'VALID'
+          AND ar.score IS NOT NULL
+          AND sq.bank_domain = 'BASE_ABILITY'
+          AND sq.question_phase = 'ONLINE'
+          AND sq.item_usage = 'SCORED_ITEM'`
+    )
+    .get(sessionId) as { n: number } | undefined
+  return row?.n ?? 0
+}
+
+function persistCompletedAbilityResult(
+  db: DBAdapter,
+  session: SessionForRedlineRow,
+  sessionId: string,
+  triggeredBy: string
+): string {
+  const resultId = persistAbilityResult(db, session, sessionId, triggeredBy, false)
+  const completedAt = new Date().toISOString()
+  const offlineCompletion = readOfflineAbilityScoringCompletion(db, sessionId)
+  const completedPayload: SessionCompletedPayload = {
+    session_id: sessionId,
+    completed_at: completedAt,
+    total_online_answered: countValidOnlineAbilityAnswers(db, sessionId),
+    total_offline_scored: offlineCompletion.totalScored,
+    has_pending_offline: false
+  }
+  const completedEvent = writeEvent({
+    aggregateType: 'ASSESSMENT_SESSION',
+    aggregateId: sessionId,
+    eventType: 'SESSION_COMPLETED',
+    payload: completedPayload as unknown as Record<string, unknown>,
+    actorId: triggeredBy,
+    actorRole: 'TEACHER'
+  })
+  applyAssessmentEvent(db, completedEvent)
   return resultId
 }
 
@@ -1850,17 +1754,16 @@ export function triggerRedline(db: DBAdapter, params: TriggerRedlineParams): Tri
 /**
  * assessment:calculateResult 核心纯函数（TEACHER / ADMIN）。
  *
- * MVP Step 8 仅支持红线场景：session.status === 'REDLINE_HALTED'。
- * 正常完成路径（COMPLETED + 线下评分）由后续 Step 扩展。
- *
  * 幂等行为：
- * - 已存在 result_record（triggerRedline 已落）→ SELECT 返回已有 resultId
- * - 不存在 → 写 RESULT_CALCULATED + applyReducer
+ * - 已存在 current ABILITY_SCORE → SELECT 返回已有 resultId
+ * - REDLINE_HALTED 且不存在 → 写 RESULT_CALCULATED + applyReducer
+ * - OFFLINE_PENDING + OFFLINE_ABILITY 全量评分且不存在 → 写 RESULT_CALCULATED 后写 SESSION_COMPLETED
  *
  * 失败码：
  * - FORBIDDEN：非 TEACHER/ADMIN
  * - NOT_FOUND：session 不存在
- * - SESSION_NOT_ACTIVE：status 非 REDLINE_HALTED（MVP 范围只支持红线场景）
+ * - SESSION_NOT_ACTIVE：状态不支持结算，或线下基础能力评分未完成
+ * - VALIDATION_ERROR：非 BASELINE/MOCK session 试图生成 ABILITY_SCORE
  * - ASSESSMENT_SYSTEM_ERROR：事务异常（写审计）
  */
 export function calculateResult(db: DBAdapter, params: CalculateResultParams): CalculateResultResult {
@@ -1879,12 +1782,8 @@ export function calculateResult(db: DBAdapter, params: CalculateResultParams): C
     return { success: false, errorCode: 'NOT_FOUND' }
   }
 
-  // 3. MVP 仅支持红线场景
-  if (session.status !== 'REDLINE_HALTED') {
-    return { success: false, errorCode: 'SESSION_NOT_ACTIVE' }
-  }
-
-  // 4. 幂等检查：已有 result_record（同 source_type+source_id+result_type）→ 返回已有
+  // 3. 幂等检查：已有 result_record（同 source_type+source_id+result_type）→ 返回已有。
+  // 正常结算完成后 session 会变 COMPLETED，因此必须先查 current result。
   const existing = db
     .prepare(
       `SELECT result_id, level_result, normalized_score
@@ -1908,10 +1807,33 @@ export function calculateResult(db: DBAdapter, params: CalculateResultParams): C
     return r
   }
 
-  // 5. 事务：落盘 result_record（红线场景）
+  if (
+    session.strategy_type !== 'BASELINE_ASSESSMENT' &&
+    session.strategy_type !== 'MOCK_EXAM'
+  ) {
+    return { success: false, errorCode: 'VALIDATION_ERROR' }
+  }
+
+  const shouldPersistRedline = session.status === 'REDLINE_HALTED'
+  let shouldPersistCompleted = false
+  if (session.status === 'OFFLINE_PENDING') {
+    const offlineCompletion = readOfflineAbilityScoringCompletion(db, params.sessionId)
+    if (!offlineCompletion.isComplete) {
+      return { success: false, errorCode: 'SESSION_NOT_ACTIVE' }
+    }
+    shouldPersistCompleted = true
+  } else if (!shouldPersistRedline) {
+    return { success: false, errorCode: 'SESSION_NOT_ACTIVE' }
+  }
+
+  // 5. 事务：落盘 ABILITY_SCORE；正常完成路径随后写 SESSION_COMPLETED。
   try {
     const tx = db.transaction(() => {
-      persistRedlineResult(db, session, params.sessionId, caller.row.user_id)
+      if (shouldPersistRedline) {
+        persistRedlineResult(db, session, params.sessionId, caller.row.user_id)
+      } else if (shouldPersistCompleted) {
+        persistCompletedAbilityResult(db, session, params.sessionId, caller.row.user_id)
+      }
     })
     tx()
   } catch (e) {
@@ -1939,7 +1861,7 @@ export function calculateResult(db: DBAdapter, params: CalculateResultParams): C
     // 事务成功但读不到 —— 不应发生；按系统异常报错
     logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', params.sessionId, caller.row.user_id, {
       operation: 'calculateResult',
-      error: 'result_record missing after persistRedlineResult commit'
+      error: 'result_record missing after calculateResult commit'
     })
     return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
   }

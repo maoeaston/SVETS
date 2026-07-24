@@ -212,6 +212,86 @@ function nextSessionEventSequence(sessionId: string): number {
   return (row.max_seq ?? 0) + 1
 }
 
+function insertAssessmentProjectionEvent(sessionId: string, eventType: string): string {
+  const eventId = uuidv4()
+  db.prepare(
+    `INSERT INTO domain_event_projection
+       (event_id, aggregate_type, aggregate_id, event_type, event_sequence,
+        payload_json, checksum, source_log_path, schema_version, created_at)
+     VALUES (?, 'ASSESSMENT_SESSION', ?, ?, ?, '{}', 'mixed-track-checksum', 'mixed-track.jsonl', 1, ?)`
+  ).run(eventId, sessionId, eventType, nextSessionEventSequence(sessionId), new Date().toISOString())
+  return eventId
+}
+
+function seedBaseAbilityAndOperationNoise(sessionId: string): void {
+  const onlineAbilityQuestionId = `base-online-noise-${uuidv4()}`
+  db.prepare(
+    `INSERT INTO question_bank
+       (question_id, job_code, bank_domain, module_type, question_type,
+        item_usage, content_json, scoring_rule_json, status)
+     VALUES (?, 'SUPERMARKET_SHELVER', 'BASE_ABILITY', 'FINE_MOTOR', 'TRUE_FALSE',
+             'SCORED_ITEM', '{"seed":true}', '{"seed":true}', 'ACTIVE')`
+  ).run(onlineAbilityQuestionId)
+  db.prepare(
+    `INSERT INTO assessment_session_question
+       (session_question_id, session_id, question_id, question_order, question_phase,
+        bank_domain, module_type, job_module_code, question_type, item_usage)
+     VALUES (?, ?, ?, 1001, 'ONLINE',
+             'BASE_ABILITY', 'FINE_MOTOR', NULL, 'TRUE_FALSE', 'SCORED_ITEM')`
+  ).run(uuidv4(), sessionId, onlineAbilityQuestionId)
+  db.prepare(
+    `INSERT INTO answer_record
+       (answer_id, session_id, question_id, question_type, answer_payload_json,
+        is_correct, score, submitted_event_id, status)
+     VALUES (?, ?, ?, 'TRUE_FALSE', '{"answer":true}', 1, 2, ?, 'VALID')`
+  ).run(
+    uuidv4(),
+    sessionId,
+    onlineAbilityQuestionId,
+    insertAssessmentProjectionEvent(sessionId, 'ANSWER_SUBMITTED')
+  )
+
+  const offlineAbilityQuestionId = `base-offline-noise-${uuidv4()}`
+  db.prepare(
+    `INSERT INTO question_bank
+       (question_id, job_code, bank_domain, module_type, question_type,
+        item_usage, content_json, scoring_rule_json, status)
+     VALUES (?, 'SUPERMARKET_SHELVER', 'BASE_ABILITY', 'COGNITION', 'OFFLINE_OPERATION',
+             'SCORED_ITEM', '{"seed":true}', '{"seed":true}', 'ACTIVE')`
+  ).run(offlineAbilityQuestionId)
+  db.prepare(
+    `INSERT INTO assessment_session_question
+       (session_question_id, session_id, question_id, question_order, question_phase,
+        bank_domain, module_type, job_module_code, question_type, item_usage)
+     VALUES (?, ?, ?, 1002, 'OFFLINE',
+             'BASE_ABILITY', 'COGNITION', NULL, 'OFFLINE_OPERATION', 'SCORED_ITEM')`
+  ).run(uuidv4(), sessionId, offlineAbilityQuestionId)
+  db.prepare(
+    `INSERT INTO offline_score_record
+       (offline_score_id, session_id, question_id, score_scope, task_operation_code,
+        score, scoring_rubric_json, scored_by, scored_event_id, tool_checklist_confirmed)
+     VALUES (?, ?, ?, 'OFFLINE_ABILITY', NULL, 2, '{}', ?, ?, 1)`
+  ).run(
+    uuidv4(),
+    sessionId,
+    offlineAbilityQuestionId,
+    callerId,
+    insertAssessmentProjectionEvent(sessionId, 'OFFLINE_SCORE_SUBMITTED')
+  )
+
+  db.prepare(
+    `INSERT INTO offline_score_record
+       (offline_score_id, session_id, question_id, score_scope, task_operation_code,
+        score, scoring_rubric_json, scored_by, scored_event_id, tool_checklist_confirmed)
+     VALUES (?, ?, NULL, 'TASK_OPERATION', 'IDENTIFY_BOX', 2, '{}', ?, ?, 1)`
+  ).run(
+    uuidv4(),
+    sessionId,
+    callerId,
+    insertAssessmentProjectionEvent(sessionId, 'OFFLINE_SCORE_SUBMITTED')
+  )
+}
+
 function insertLegacyObservationEventAndRecord(sessionId: string, questionId: string): string {
   const eventId = uuidv4()
   const offlineScoreId = uuidv4()
@@ -301,6 +381,59 @@ describe('TC-O: JOB_SKILL_SCORE 自动生成', () => {
     expect(rows[0].strategy_type).toBe('JOB_SKILL_ASSESSMENT')
     expect(rows[0].module_type).toBeNull()
     expect(rows.some((r) => r.result_type === 'ABILITY_SCORE')).toBe(false)
+  })
+
+  it('双轨隔离：BASE_ABILITY、OFFLINE_ABILITY 和 TASK_OPERATION 噪声不影响 JOB_SKILL_SCORE', () => {
+    const sessionId = createOfflinePendingSession()
+    seedBaseAbilityAndOperationNoise(sessionId)
+    completeSession(sessionId, 2)
+
+    const row = db
+      .prepare(
+        `SELECT result_type, raw_score, max_score, normalized_score,
+                completion_ratio, result_payload_json
+           FROM result_record
+          WHERE source_aggregate_id = ?
+            AND is_current = 1`
+      )
+      .get(sessionId) as {
+        result_type: string
+        raw_score: number
+        max_score: number
+        normalized_score: number
+        completion_ratio: number
+        result_payload_json: string
+      } | undefined
+    expect(row).toBeDefined()
+    expect(row).toMatchObject({
+      result_type: 'JOB_SKILL_SCORE',
+      raw_score: 12,
+      max_score: 48,
+      normalized_score: 25,
+      completion_ratio: 0.25
+    })
+    const payload = JSON.parse(row!.result_payload_json) as {
+      score_tracks: {
+        online_knowledge: { raw_score: number; max_score: number }
+        offline_performance: { raw_score: number; max_score: number }
+      }
+      teacher_observations: unknown[]
+      observation_completion_ratio: number
+    }
+    expect(payload.score_tracks.online_knowledge).toMatchObject({ raw_score: 0, max_score: 36 })
+    expect(payload.score_tracks.offline_performance).toMatchObject({ raw_score: 12, max_score: 12 })
+    expect(payload.teacher_observations).toHaveLength(2)
+    expect(payload.observation_completion_ratio).toBe(1)
+    expect(
+      db
+        .prepare(
+          `SELECT COUNT(*) AS n
+             FROM result_record
+            WHERE source_aggregate_id = ?
+              AND result_type IN ('ABILITY_SCORE', 'OPERATION_PASS_RATE', 'TRAINING_COMPLETION')`
+        )
+        .get(sessionId) as { n: number }
+    ).toEqual({ n: 0 })
   })
 
   it('TC-O04 max_score = 48', () => {

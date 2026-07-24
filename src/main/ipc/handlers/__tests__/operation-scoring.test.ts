@@ -151,6 +151,68 @@ function countRows(sql: string, ...params: unknown[]): number {
   return row.n
 }
 
+function insertDomainEvent(sessionId: string, eventType: string): string {
+  const eventId = uuidv4()
+  const row = db
+    .prepare('SELECT MAX(event_sequence) AS max_seq FROM domain_event_projection WHERE aggregate_id = ?')
+    .get(sessionId) as { max_seq: number | null }
+  db.prepare(
+    `INSERT INTO domain_event_projection
+       (event_id, aggregate_type, aggregate_id, event_type, event_sequence,
+        payload_json, checksum, source_log_path, schema_version, created_at)
+     VALUES (?, 'ASSESSMENT_SESSION', ?, ?, ?, '{}', 'mixed-track-checksum', 'mixed-track.jsonl', 1, ?)`
+  ).run(eventId, sessionId, eventType, (row.max_seq ?? 0) + 1, new Date().toISOString())
+  return eventId
+}
+
+function seedNonOperationOfflineScores(sessionId: string): void {
+  const abilityQuestionId = `operation-base-noise-${uuidv4()}`
+  db.prepare(
+    `INSERT INTO question_bank
+       (question_id, job_code, bank_domain, module_type, question_type,
+        item_usage, content_json, scoring_rule_json, status)
+     VALUES (?, 'SUPERMARKET_SHELVER', 'BASE_ABILITY', 'FINE_MOTOR', 'OFFLINE_OPERATION',
+             'SCORED_ITEM', '{"seed":true}', '{"seed":true}', 'ACTIVE')`
+  ).run(abilityQuestionId)
+  db.prepare(
+    `INSERT INTO offline_score_record
+       (offline_score_id, session_id, question_id, score_scope, task_operation_code,
+        score, scoring_rubric_json, scored_by, scored_event_id, tool_checklist_confirmed)
+     VALUES (?, ?, ?, 'OFFLINE_ABILITY', NULL, 2, '{}', ?, ?, 1)`
+  ).run(uuidv4(), sessionId, abilityQuestionId, teacherId, insertDomainEvent(sessionId, 'OFFLINE_SCORE_SUBMITTED'))
+
+  const jobQuestionId = `operation-job-noise-${uuidv4()}`
+  db.prepare(
+    `INSERT INTO question_bank
+       (question_id, job_code, bank_domain, job_module_code, question_type,
+        item_usage, content_json, scoring_rule_json, status)
+     VALUES (?, 'SUPERMARKET_SHELVER', 'JOB_SPECIFIC', 'M1', 'OFFLINE_OPERATION',
+             'SCORED_ITEM', '{"seed":true}', '{"seed":true}', 'ACTIVE')`
+  ).run(jobQuestionId)
+  db.prepare(
+    `INSERT INTO offline_score_record
+       (offline_score_id, session_id, question_id, score_scope, task_operation_code,
+        score, scoring_rubric_json, scored_by, scored_event_id, tool_checklist_confirmed)
+     VALUES (?, ?, ?, 'JOB_SKILL', NULL, 2, '{}', ?, ?, 1)`
+  ).run(uuidv4(), sessionId, jobQuestionId, teacherId, insertDomainEvent(sessionId, 'OFFLINE_SCORE_SUBMITTED'))
+
+  const observationQuestionId = `operation-observation-noise-${uuidv4()}`
+  db.prepare(
+    `INSERT INTO question_bank
+       (question_id, job_code, bank_domain, job_module_code, question_type,
+        item_usage, content_json, scoring_rule_json, status)
+     VALUES (?, 'SUPERMARKET_SHELVER', 'JOB_SPECIFIC', 'M2', 'TRUE_FALSE',
+             'OBSERVATION_ONLY', '{"seed":true}', '{"seed":true}', 'ACTIVE')`
+  ).run(observationQuestionId)
+  db.prepare(
+    `INSERT INTO offline_score_record
+       (offline_score_id, session_id, question_id, score_scope, task_operation_code,
+        score, observation_payload_json, scored_by, scored_event_id, tool_checklist_confirmed)
+     VALUES (?, ?, ?, 'TEACHER_OBSERVATION', NULL,
+             NULL, '{"observed":true}', ?, ?, 0)`
+  ).run(uuidv4(), sessionId, observationQuestionId, teacherId, insertDomainEvent(sessionId, 'TEACHER_OBSERVATION_RECORDED'))
+}
+
 beforeAll(async () => {
   db = await createTestDb()
   db.exec('DROP TRIGGER IF EXISTS trg_assessment_session_no_delete')
@@ -250,6 +312,78 @@ describe('submitOperationScores — TASK_OPERATION M2 阶段与原子性', () =>
     if (!readResult.success) return
     expect(readResult.items).toHaveLength(9)
     expect(readResult.normalizedScore).toBe(100)
+  })
+
+  it('双轨隔离：非 TASK_OPERATION 线下记录不进入实操通过率', () => {
+    const sessionId = createOfflinePendingSession()
+    seedNonOperationOfflineScores(sessionId)
+
+    const result = submitOperationScores(db, {
+      callerUserId: teacherId,
+      callerRole: 'TEACHER',
+      sessionId,
+      toolChecklistConfirmed: true,
+      scores: validScores(1)
+    })
+
+    expect(result.success).toBe(true)
+    if (!result.success) return
+    expect(result.normalizedScore).toBe(50)
+
+    const row = db
+      .prepare(
+        `SELECT raw_score, max_score, normalized_score, result_payload_json
+           FROM result_record
+          WHERE source_aggregate_id = ?
+            AND result_type = 'OPERATION_PASS_RATE'
+            AND is_current = 1`
+      )
+      .get(sessionId) as {
+        raw_score: number
+        max_score: number
+        normalized_score: number
+        result_payload_json: string
+      } | undefined
+    expect(row).toMatchObject({
+      raw_score: 9,
+      max_score: 18,
+      normalized_score: 50
+    })
+    const payload = JSON.parse(row!.result_payload_json) as {
+      result_type: string
+      items: unknown[]
+      raw_score: number
+      max_score: number
+      total_items: number
+    }
+    expect(payload).toMatchObject({
+      result_type: 'OPERATION_PASS_RATE',
+      raw_score: 9,
+      max_score: 18,
+      total_items: 9
+    })
+    expect(payload.items).toHaveLength(9)
+    expect(countRows(
+      `SELECT COUNT(*) AS n
+         FROM offline_score_record
+        WHERE session_id = ?
+          AND score_scope IN ('OFFLINE_ABILITY', 'JOB_SKILL', 'TEACHER_OBSERVATION')`,
+      sessionId
+    )).toBe(3)
+    expect(countRows(
+      `SELECT COUNT(*) AS n
+         FROM result_record
+        WHERE source_aggregate_id = ?
+          AND result_type IN ('ABILITY_SCORE', 'JOB_SKILL_SCORE', 'TRAINING_COMPLETION')`,
+      sessionId
+    )).toBe(0)
+    expect(countRows(
+      `SELECT COUNT(*) AS n
+         FROM domain_event_projection
+        WHERE aggregate_id = ?
+          AND event_type = 'SESSION_COMPLETED'`,
+      sessionId
+    )).toBe(0)
   })
 
   it.each(TASK_OPERATION_CODES.map((_, index) => index + 1))(

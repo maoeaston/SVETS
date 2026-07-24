@@ -143,9 +143,21 @@ function countJobSkillOfflineScoring(db: DBAdapter, sessionId: string): { total:
     .prepare(
       `SELECT
          (SELECT COUNT(*) FROM assessment_session_question
-           WHERE session_id = ? AND question_phase = 'OFFLINE' AND item_usage = 'SCORED_ITEM') AS total,
-         (SELECT COUNT(*) FROM offline_score_record
-           WHERE session_id = ? AND score_scope = 'JOB_SKILL' AND status = 'VALID') AS done`
+           WHERE session_id = ?
+             AND bank_domain = 'JOB_SPECIFIC'
+             AND question_phase = 'OFFLINE'
+             AND item_usage = 'SCORED_ITEM') AS total,
+         (SELECT COUNT(*)
+            FROM offline_score_record os
+            JOIN assessment_session_question sq
+              ON sq.session_id = os.session_id
+             AND sq.question_id = os.question_id
+           WHERE os.session_id = ?
+             AND os.score_scope = 'JOB_SKILL'
+             AND os.status = 'VALID'
+             AND sq.bank_domain = 'JOB_SPECIFIC'
+             AND sq.question_phase = 'OFFLINE'
+             AND sq.item_usage = 'SCORED_ITEM') AS done`
     )
     .get(sessionId, sessionId) as { total: number; done: number }
 }
@@ -155,9 +167,19 @@ function countTeacherObservations(db: DBAdapter, sessionId: string): { total: nu
     .prepare(
       `SELECT
          (SELECT COUNT(*) FROM assessment_session_question
-           WHERE session_id = ? AND question_phase = 'OBSERVATION') AS total,
-         (SELECT COUNT(*) FROM offline_score_record
-           WHERE session_id = ? AND score_scope = 'TEACHER_OBSERVATION' AND status = 'VALID') AS done`
+           WHERE session_id = ?
+             AND bank_domain = 'JOB_SPECIFIC'
+             AND question_phase = 'OBSERVATION') AS total,
+         (SELECT COUNT(*)
+            FROM offline_score_record os
+            JOIN assessment_session_question sq
+              ON sq.session_id = os.session_id
+             AND sq.question_id = os.question_id
+           WHERE os.session_id = ?
+             AND os.score_scope = 'TEACHER_OBSERVATION'
+             AND os.status = 'VALID'
+             AND sq.bank_domain = 'JOB_SPECIFIC'
+             AND sq.question_phase = 'OBSERVATION') AS done`
     )
     .get(sessionId, sessionId) as { total: number; done: number }
 }
@@ -727,13 +749,25 @@ function applySittingEnded(db: DBAdapter, event: ActionLogEntry): void {
 function applySessionCompleted(db: DBAdapter, event: ActionLogEntry): void {
   const p = event.payload as unknown as SessionCompletedPayload
   const row = db
-    .prepare('SELECT last_status_event_id, event_sequence_version FROM assessment_session WHERE session_id = ?')
+    .prepare(
+      `SELECT last_status_event_id, event_sequence_version, delivery_phase
+         FROM assessment_session
+        WHERE session_id = ?`
+    )
     .get(p.session_id) as
-    | { last_status_event_id: string | null; event_sequence_version: number }
+    | { last_status_event_id: string | null; event_sequence_version: number; delivery_phase: string | null }
     | undefined
   if (!row) return
   if (isStaleAssessmentEvent(row, event)) return
   if (row.last_status_event_id === event.event_id) return
+
+  if (row.delivery_phase === 'OFFLINE_SCORING') {
+    db.prepare(
+      `UPDATE assessment_session
+          SET delivery_phase = 'READY_TO_FINALIZE'
+        WHERE session_id = ?`
+    ).run(p.session_id)
+  }
 
   db.prepare(
     `UPDATE assessment_session

@@ -134,6 +134,12 @@ import type {
   ReleaseAssignmentParams,
   ReleaseAssignmentResult
 } from './assignment'
+import type {
+  GetCurrentResultParams,
+  GetCurrentResult,
+  ListCurrentByStudentParams,
+  ListCurrentByStudentResult
+} from './results'
 
 export interface IpcApi {
   auth: {
@@ -255,5 +261,11 @@ export interface IpcApi {
     getOverview: (params: TrustedCallerParams) => Promise<GetWorkspaceOverviewResult>
     listExceptions: (params: ListExceptionsParams) => Promise<ListExceptionsResult>
     getException: (params: GetExceptionParams) => Promise<GetExceptionResult>
+  }
+  results: {
+    getCurrent: (params: GetCurrentResultParams) => Promise<GetCurrentResult>
+    listCurrentByStudent: (
+      params: ListCurrentByStudentParams
+    ) => Promise<ListCurrentByStudentResult>
   }
 }

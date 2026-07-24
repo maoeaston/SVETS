@@ -75,9 +75,21 @@ export function finalizeJobSkillResultCore(
     .prepare(
       `SELECT
          (SELECT COUNT(*) FROM assessment_session_question
-           WHERE session_id = ? AND question_phase = 'OFFLINE' AND item_usage = 'SCORED_ITEM') AS total,
-         (SELECT COUNT(*) FROM offline_score_record
-           WHERE session_id = ? AND score_scope = 'JOB_SKILL' AND status = 'VALID') AS done`
+           WHERE session_id = ?
+             AND bank_domain = 'JOB_SPECIFIC'
+             AND question_phase = 'OFFLINE'
+             AND item_usage = 'SCORED_ITEM') AS total,
+         (SELECT COUNT(*)
+            FROM offline_score_record os
+            JOIN assessment_session_question sq
+              ON sq.session_id = os.session_id
+             AND sq.question_id = os.question_id
+           WHERE os.session_id = ?
+             AND os.score_scope = 'JOB_SKILL'
+             AND os.status = 'VALID'
+             AND sq.bank_domain = 'JOB_SPECIFIC'
+             AND sq.question_phase = 'OFFLINE'
+             AND sq.item_usage = 'SCORED_ITEM') AS done`
     )
     .get(sessionId, sessionId) as { total: number; done: number }
 
@@ -88,9 +100,19 @@ export function finalizeJobSkillResultCore(
     .prepare(
       `SELECT
          (SELECT COUNT(*) FROM assessment_session_question
-           WHERE session_id = ? AND question_phase = 'OBSERVATION') AS total,
-         (SELECT COUNT(*) FROM offline_score_record
-           WHERE session_id = ? AND score_scope = 'TEACHER_OBSERVATION' AND status = 'VALID') AS done`
+           WHERE session_id = ?
+             AND bank_domain = 'JOB_SPECIFIC'
+             AND question_phase = 'OBSERVATION') AS total,
+         (SELECT COUNT(*)
+            FROM offline_score_record os
+            JOIN assessment_session_question sq
+              ON sq.session_id = os.session_id
+             AND sq.question_id = os.question_id
+           WHERE os.session_id = ?
+             AND os.score_scope = 'TEACHER_OBSERVATION'
+             AND os.status = 'VALID'
+             AND sq.bank_domain = 'JOB_SPECIFIC'
+             AND sq.question_phase = 'OBSERVATION') AS done`
     )
     .get(sessionId, sessionId) as { total: number; done: number }
 
@@ -127,6 +149,7 @@ export function finalizeJobSkillResultCore(
           AND ar.question_id = sq.question_id
           AND ar.status = 'VALID'
         WHERE sq.session_id = ? AND sq.question_phase = 'ONLINE'
+          AND sq.bank_domain = 'JOB_SPECIFIC'
         GROUP BY sq.job_module_code`
     )
     .all(sessionId) as { job_module_code: string; raw: number; max_score: number }[]
@@ -143,6 +166,7 @@ export function finalizeJobSkillResultCore(
           AND os.score_scope = 'JOB_SKILL'
           AND os.status = 'VALID'
         WHERE sq.session_id = ? AND sq.question_phase = 'OFFLINE' AND sq.item_usage = 'SCORED_ITEM'
+          AND sq.bank_domain = 'JOB_SPECIFIC'
         GROUP BY sq.job_module_code`
     )
     .all(sessionId) as { job_module_code: string; raw: number; max_score: number }[]
@@ -178,7 +202,10 @@ export function finalizeJobSkillResultCore(
       `SELECT COUNT(*) AS n FROM answer_record ar
          JOIN assessment_session_question sq
            ON sq.session_id = ar.session_id AND sq.question_id = ar.question_id
-        WHERE ar.session_id = ? AND ar.status = 'VALID' AND sq.question_phase = 'ONLINE'`
+        WHERE ar.session_id = ?
+          AND ar.status = 'VALID'
+          AND sq.bank_domain = 'JOB_SPECIFIC'
+          AND sq.question_phase = 'ONLINE'`
     )
     .get(sessionId) as { n: number }
   const actualCompletionRatio = Math.min(1, (answeredOnline.n + offlineCounts.done) / 24)
@@ -187,9 +214,16 @@ export function finalizeJobSkillResultCore(
   // 7. 教师观察记录
   const obsRows = db
     .prepare(
-      `SELECT question_id, observation_payload_json
-         FROM offline_score_record
-        WHERE session_id = ? AND score_scope = 'TEACHER_OBSERVATION' AND status = 'VALID'`
+      `SELECT os.question_id, os.observation_payload_json
+         FROM offline_score_record os
+         JOIN assessment_session_question sq
+           ON sq.session_id = os.session_id
+          AND sq.question_id = os.question_id
+        WHERE os.session_id = ?
+          AND os.score_scope = 'TEACHER_OBSERVATION'
+          AND os.status = 'VALID'
+          AND sq.bank_domain = 'JOB_SPECIFIC'
+          AND sq.question_phase = 'OBSERVATION'`
     )
     .all(sessionId) as { question_id: string; observation_payload_json: string }[]
 

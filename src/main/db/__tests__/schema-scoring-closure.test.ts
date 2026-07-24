@@ -293,6 +293,115 @@ describe('schema v0.1.10 scoring closure constraints', () => {
     }).toThrow()
   })
 
+  it('offline_score_record rejects direct mixed-track shapes', () => {
+    const teacherId = seedCaller(db, 'TEACHER')
+    const studentId = seedStudent(db)
+    seedQuestionBank(db)
+    const q = db
+      .prepare("SELECT question_id FROM question_bank WHERE question_type = 'OFFLINE_OPERATION' LIMIT 1")
+      .get() as { question_id: string }
+    const obs = db
+      .prepare("SELECT question_id FROM question_bank WHERE question_type <> 'OFFLINE_OPERATION' LIMIT 1")
+      .get() as { question_id: string }
+    seedAssessmentSessionFixture(db, {
+      sessionId: 's_mixed_track',
+      studentId,
+      strategyId: 'strategy_baseline_shelver_v1',
+      status: 'OFFLINE_PENDING',
+      createdBy: teacherId
+    })
+    seedSystemEvent('ev_task_with_question')
+    seedSystemEvent('ev_ability_missing_question')
+    seedSystemEvent('ev_ability_missing_rubric')
+    seedSystemEvent('ev_observation_with_score')
+
+    expect(() => {
+      db.prepare(
+        `INSERT INTO offline_score_record
+           (offline_score_id, session_id, question_id, score_scope, task_operation_code,
+            score, scoring_rubric_json, scored_by, scored_event_id)
+         VALUES ('os_task_bad_question', 's_mixed_track', ?, 'TASK_OPERATION', 'IDENTIFY_BOX',
+                 2, '{}', ?, 'ev_task_with_question')`
+      ).run(q.question_id, teacherId)
+    }).toThrow()
+
+    expect(() => {
+      db.prepare(
+        `INSERT INTO offline_score_record
+           (offline_score_id, session_id, question_id, score_scope, task_operation_code,
+            score, scoring_rubric_json, scored_by, scored_event_id)
+         VALUES ('os_ability_bad_missing_question', 's_mixed_track', NULL, 'OFFLINE_ABILITY', NULL,
+                 2, '{}', ?, 'ev_ability_missing_question')`
+      ).run(teacherId)
+    }).toThrow()
+
+    expect(() => {
+      db.prepare(
+        `INSERT INTO offline_score_record
+           (offline_score_id, session_id, question_id, score_scope, task_operation_code,
+            score, scoring_rubric_json, scored_by, scored_event_id)
+         VALUES ('os_ability_bad_missing_rubric', 's_mixed_track', ?, 'OFFLINE_ABILITY', NULL,
+                 2, NULL, ?, 'ev_ability_missing_rubric')`
+      ).run(q.question_id, teacherId)
+    }).toThrow()
+
+    expect(() => {
+      db.prepare(
+        `INSERT INTO offline_score_record
+           (offline_score_id, session_id, question_id, score_scope, task_operation_code,
+            score, observation_payload_json, scored_by, scored_event_id)
+         VALUES ('os_observation_bad_score', 's_mixed_track', ?, 'TEACHER_OBSERVATION', NULL,
+                 1, '{"observed":true}', ?, 'ev_observation_with_score')`
+      ).run(obs.question_id, teacherId)
+    }).toThrow()
+  })
+
+  it('result_record keeps exactly one current row per result type and source', () => {
+    const studentId = seedStudent(db)
+    seedSystemEvent('ev_result_current_1')
+    seedSystemEvent('ev_result_current_2')
+    seedSystemEvent('ev_result_other_type')
+    seedSystemEvent('ev_result_history')
+
+    db.prepare(
+      `INSERT INTO result_record
+         (result_id, student_id, result_type, source_aggregate_type, source_aggregate_id,
+          job_code, normalized_score, level_result, completion_ratio, generated_event_id, is_current)
+       VALUES ('r_current_1', ?, 'ABILITY_SCORE', 'ASSESSMENT_SESSION', 'source_result_current',
+               'SUPERMARKET_SHELVER', 80, 'LEVEL_COMPETENT', 1, 'ev_result_current_1', 1)`
+    ).run(studentId)
+
+    expect(() => {
+      db.prepare(
+        `INSERT INTO result_record
+           (result_id, student_id, result_type, source_aggregate_type, source_aggregate_id,
+            job_code, normalized_score, level_result, completion_ratio, generated_event_id, is_current)
+         VALUES ('r_current_2', ?, 'ABILITY_SCORE', 'ASSESSMENT_SESSION', 'source_result_current',
+                 'SUPERMARKET_SHELVER', 90, 'LEVEL_COMPETENT', 1, 'ev_result_current_2', 1)`
+      ).run(studentId)
+    }).toThrow()
+
+    expect(() => {
+      db.prepare(
+        `INSERT INTO result_record
+           (result_id, student_id, result_type, source_aggregate_type, source_aggregate_id,
+            job_code, normalized_score, level_result, completion_ratio, generated_event_id, is_current)
+         VALUES ('r_other_type', ?, 'OPERATION_PASS_RATE', 'ASSESSMENT_SESSION', 'source_result_current',
+                 'SUPERMARKET_SHELVER', 50, 'LEVEL_NOT_COMPETENT', 1, 'ev_result_other_type', 1)`
+      ).run(studentId)
+    }).not.toThrow()
+
+    expect(() => {
+      db.prepare(
+        `INSERT INTO result_record
+           (result_id, student_id, result_type, source_aggregate_type, source_aggregate_id,
+            job_code, normalized_score, level_result, completion_ratio, generated_event_id, is_current)
+         VALUES ('r_history', ?, 'ABILITY_SCORE', 'ASSESSMENT_SESSION', 'source_result_current',
+                 'SUPERMARKET_SHELVER', 70, 'LEVEL_CONDITIONAL', 1, 'ev_result_history', 0)`
+      ).run(studentId)
+    }).not.toThrow()
+  })
+
   it('referenced question semantic fields are frozen and revisions must use superseded_by_question_id', () => {
     const teacherId = seedCaller(db, 'TEACHER')
     const studentId = seedStudent(db)
