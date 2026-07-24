@@ -145,7 +145,7 @@ doc/
 | 测评流程 | `assessment-prd.md` | `assessment-impl.md` |
 | 训练流程 | `training-prd.md` | `training-impl.md` |
 | 实操评分 | `operation-scoring-prd.md` | `operation-scoring-impl.md` |
-| 报告页面框架 | `report-page-framework-prd.md` | 待 `/vibe-impl` 编写 |
+| 报告页面框架 | `report-page-framework-prd.md` | `report-page-framework-impl.md`（`CONDITIONAL_PASS`） |
 | DRAG 拖拽渲染 | `drag-render-prd.md` | `drag-render-impl.md` |
 
 ### 数据库运维
@@ -273,6 +273,7 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | [specs/impl/07-implementation-task-book.md](specs/impl/07-implementation-task-book.md) | 实施任务书 |
 | [specs/impl/AGENT-PROMPT-T1.md](specs/impl/AGENT-PROMPT-T1.md) | 编码任务 T1：共享类型升级 |
 | [specs/impl/NEW-SESSION-PROMPT.md](specs/impl/NEW-SESSION-PROMPT.md) | 新会话启动 Prompt（当前模板） |
+| [specs/project-invariants.md](specs/project-invariants.md) | Project Invariants |
 | [specs/xc-career-guide-event-payload-schema-v1.0.0.md](specs/xc-career-guide-event-payload-schema-v1.0.0.md) | 炫灿-职途向导系统 事件载荷规范 |
 | [specs/xc-career-guide-json-field-schema-v1.0.0.md](specs/xc-career-guide-json-field-schema-v1.0.0.md) | 炫灿-职途向导系统 JSON 字段规范 |
 | [specs/《分数解释手册》v1.0+《施测者操作手册》v1.md](specs/《分数解释手册》v1.0+《施测者操作手册》v1.md) | 交付文件一：《分数解释手册》v1.0 |
@@ -292,7 +293,7 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | `operation-scoring` | [features/operation-scoring-prd.md](features/operation-scoring-prd.md) | [features/operation-scoring-impl.md](features/operation-scoring-impl.md) |
 | `pause-recovery-safety` | [features/pause-recovery-safety-prd.md](features/pause-recovery-safety-prd.md) | [features/pause-recovery-safety-impl.md](features/pause-recovery-safety-impl.md) |
 | `question-bank-resources` | [features/question-bank-resources-prd.md](features/question-bank-resources-prd.md) | [features/question-bank-resources-impl.md](features/question-bank-resources-impl.md) |
-| `report-page-framework` | [features/report-page-framework-prd.md](features/report-page-framework-prd.md) | 缺失 |
+| `report-page-framework` | [features/report-page-framework-prd.md](features/report-page-framework-prd.md) | [features/report-page-framework-impl.md](features/report-page-framework-impl.md) |
 | `scoring-framework-dual-track` | [features/scoring-framework-dual-track-prd.md](features/scoring-framework-dual-track-prd.md) | [features/scoring-framework-dual-track-impl.md](features/scoring-framework-dual-track-impl.md) |
 | `strategy-config` | [features/strategy-config-prd.md](features/strategy-config-prd.md) | [features/strategy-config-impl.md](features/strategy-config-impl.md) |
 | `student-profile` | [features/student-profile-prd.md](features/student-profile-prd.md) | [features/student-profile-impl.md](features/student-profile-impl.md) |
