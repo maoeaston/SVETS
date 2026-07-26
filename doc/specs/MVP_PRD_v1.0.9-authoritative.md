@@ -2,13 +2,13 @@
 
 产品合同版本：PRD v1.0.9-job-skill-assessment-mvp-closure
 文档形态：Consolidated Authoritative Baseline（单一权威正文）
-当前工程基线：`schema.sql v0.1.15-multi-device-m3-grant-assignment`
+当前工程基线：`schema.sql v0.1.16-report-framework`
 MVP 功能基线：`schema.sql v0.1.12-job-skill-assessment-mvp-closure`
 产品阶段：MVP
 目标平台：本地化桌面端
 核心岗位样板：超市理货员
 MVP 核心任务：拆箱与上架
-最后更新：2026-07-14
+最后更新：2026-07-26
 
 > 本文是当前唯一活跃的 MVP 产品合同。历史差异版 v1.0.5～v1.0.9 仅用于变更追溯，不再作为新开发的组合阅读入口。
 
@@ -35,6 +35,7 @@ MVP 核心任务：拆箱与上架
 - 专业岗位 session 的 `task_code`：`JOB_SKILL_DEMO_M1M6`。
 - “拆箱与上架”训练任务编码：`UNBOXING_AND_SHELVING`。
 - 专业岗位模块低分只生成训练重点，不覆盖总等级；安全红线仍具有最高优先级。
+- BASE_ABILITY 42+8 采用受控 Pilot 发布顺序：内容、专业与技术门禁先通过；独立 Pilot 激活批准后，仅将获批 50 题转为 `ACTIVE`；随后才能执行真实课堂试测；课堂试测证据只门禁正式分数解释与发布，不反向作为首次 Pilot 激活前置条件。
 
 ### 0.3 仍开放但不阻断当前 MVP 的专业决策
 
@@ -1576,6 +1577,39 @@ validateQuestionContract({
 
 ---
 
+#### 5.4.7 BASE_ABILITY Pilot 激活与课堂试测顺序
+
+BASE_ABILITY 42+8 采用方案 A。`question_bank.status = ACTIVE` 在本阶段只表示“通过受控 Pilot 运行门禁”，不表示题库已经成为标准化量表，也不授予正式诊断、就业安置或对外发布权限。
+
+状态顺序固定为：
+
+```text
+DRAFT 准备
+→ READY_FOR_TECHNICAL_REHEARSAL
+→ READY_FOR_PILOT_ACTIVATION_REVIEW
+→ PILOT_ACTIVATION_APPROVED
+→ PILOT_ACTIVE
+→ READY_FOR_CLASSROOM_TRIAL
+→ TRIAL_EVIDENCE_ACCEPTED
+→ READY_FOR_FORMAL_INTERPRETATION_REVIEW
+→ FORMAL_RELEASE_APPROVED
+```
+
+规则：
+
+1. `READY_FOR_PILOT_ACTIVATION_REVIEW` 的前置条件是选定 50 题的内容结构、答案/评分、renderer、资产、线下教具与锚点、适用专业审核、安全/可访问性审核，以及合成身份显式临时库技术演练全部通过；首次 Pilot 激活不要求先具备课堂试测证据。
+2. Pilot 激活批准必须由产品负责人书面指定、且未参与该版本内容制作、代码实现、门禁生成或激活执行的独立批准人作出。批准文件必须绑定批准人、时间、选定 50 题、策略版本及内容/评分/资产/renderer/门禁 hash，并明确 `scope = PILOT_ONLY`。这不是新的应用登录角色。
+3. `ADMIN` 只能执行已经获得有效独立批准的激活包，不能自授批准。执行必须恰好将获批 42 道线上题和 8 道线下题转为 `ACTIVE`；其余 46 道候选继续 `DRAFT`，不得批量激活 96 题。
+4. `PILOT_ACTIVE` 题只能由绑定同一批准文件与题集 hash、且 `pilot_mode = true`、`placement_advice_enabled = false` 的冻结策略版本读取。题目为 `ACTIVE` 不是绕过策略、业务 session、设备 grant、assignment、学生确认或安全门禁的充分条件。
+5. 真实课堂试测还必须具备学校批准的试测协议、适用知情同意、匿名化/本地敏感数据规则、已培训教师，以及 `business_session → device grant → assignment → student confirmation → start` 完整授权链；缺一项不得创建或启动真实学生 session。
+6. Pilot session 可以按现有结果合同保存 `ABILITY_SCORE` 和报告快照，但页面、报告和导出必须标记“基础能力教学诊断试测”，只用于教学诊断、训练支持和证据收集；不得解释为已验证标准化量表，不得输出就业安置方向或作为录用/淘汰结论。
+7. 课堂试测证据通过后，只能进入 `READY_FOR_FORMAL_INTERPRETATION_REVIEW`。正式阈值解释、报告用语、对外发布或 placement advice 仍需产品与专业团队单独批准，并通过新的策略版本生效；不得原地修改 Pilot 策略或历史结果。
+8. 试测发现内容、答案、评分、安全、可访问性或构念问题时，停止后续新 session，将受影响 `ACTIVE` 题转为 `DISABLED` 或 `ARCHIVED`；语义修订必须创建新 `question_id`，重新完成审核与 Pilot 激活。既有 session、结果、报告和批准文件继续保留审计，不得回写覆盖，也不得把题目退回 `DRAFT` 后原地修改。
+
+上述阶段状态属于版本化门禁与批准文件，不新增数据库状态枚举；`question_bank`、session 和报告继续使用现有 schema 状态合同。
+
+---
+
 ### 5.5 四步训练功能
 
 #### 功能说明
@@ -2151,7 +2185,7 @@ MVP 不提供报告草稿编辑流，因此不设置 `DRAFT` 状态。
 }
 ```
 
-完成内容效度复核、可用性测试和小样本试测后，必须通过新增 strategy version 启用，不得修改历史策略。
+Pilot 激活和课堂试测期间必须保持禁用。完成内容效度复核、可用性测试和小样本试测，只能视为提交正式解释评审的必要条件；经产品与专业团队另行批准后，必须通过新增 strategy version 启用，不得修改历史 Pilot 策略。
 
 #### 5.8.2 报告解释约束
 
@@ -3289,7 +3323,7 @@ MVP 采用轻量事件溯源 + SQLite 查询投影：
 
 ### 11.2 当前 schema 基线
 
-当前基线为 `schema.sql v0.1.15-multi-device-m3-grant-assignment`。v0.1.12 已物化题库合同、岗位题库治理和专业岗位测评运行时；v0.1.13 在其上增量增加组织、节点、设备与认证拓扑；v0.1.14 增加 business_session 父记录、assessment delivery_phase / event_sequence_version / observation_template_id、assessment/training business_session_id 与 D2-D6/D8 约束；v0.1.15 增加 delegated_access_grant、business_session_assignment、M3 assignment IPC/事件投影、D1 与 D9-D11 约束，并收窄 assessment:startSession。
+当前基线为 `schema.sql v0.1.16-report-framework`。v0.1.12 已物化题库合同、岗位题库治理和专业岗位测评运行时；v0.1.13 在其上增量增加组织、节点、设备与认证拓扑；v0.1.14 增加 business_session 父记录、assessment delivery_phase / event_sequence_version / observation_template_id、assessment/training business_session_id 与 D2-D6/D8 约束；v0.1.15 增加 delegated_access_grant、business_session_assignment、M3 assignment IPC/事件投影、D1 与 D9-D11 约束，并收窄 assessment:startSession；v0.1.16 增加教师确认且可审计修订的 task_closure，为 task_report 增加不可变的 lineage、来源/hash、内容合同和生命周期事实，并将 TASK_CLOSURE 纳入事件与错误聚合合同。
 
 核心业务表包括：
 
@@ -3297,7 +3331,7 @@ MVP 采用轻量事件溯源 + SQLite 查询投影：
 - 多设备 M1：`organization`、`node`、`device`、`device_runtime_session`、`auth_session`。
 - 策略与资源：`strategy_config`、`asset_resource`、`question_bank`。
 - 测评与训练：`assessment_session`、`assessment_session_question`、`answer_record`、`offline_score_record`、`training_session`、`training_step_record`。
-- 安全与结果：`safety_incident`、`safety_incident_binding`、`result_record`、`task_report`。
+- 安全、结果与报告：`safety_incident`、`safety_incident_binding`、`result_record`、`task_closure`、`task_report`。
 - 事件与恢复：`domain_event_projection`、`snapshot_meta`、`error_code_registry`、`error_event_log`、`schema_migration`。
 
 ### 11.3 策略、题库与资产合同
@@ -4172,6 +4206,12 @@ MVP 不要求保存每个 pointer move。
 13. **上线门禁**：MVP 交付验收时，6 大模块每模块 `ACTIVE` 线上题 ≥ 7 道、全库 `ACTIVE` 线下实操题 ≥ 8 道且覆盖主归属模块标注，否则测评功能不得开放。
 14. 线上题 rubric 含"经提示 / 犹豫 / 提示后"等过程观察描述的，不得转 `ACTIVE`（须改写为二值标准或改为线下题）。
 15. 导入验收必须证明 OFFLINE_OPERATION 的复合能力标签不会进入线上模块计分与否决。
+16. BASE_ABILITY 选定 50 题通过内容、专业和技术门禁后，可以进入 `READY_FOR_PILOT_ACTIVATION_REVIEW`；课堂试测证据不得作为首次提交 Pilot 激活评审的前置条件。
+17. 缺少有效独立 Pilot 激活批准文件时，任何 BASE_ABILITY `DRAFT → ACTIVE` 操作必须失败；批准文件的题集或任一合同 hash 与当前版本不一致时同样失败。
+18. 有效批准只能激活批准文件绑定的 42 道线上题和 8 道线下题；未选 46 道必须继续 `DRAFT`，不得通过同一操作批量激活 96 题。
+19. Pilot 激活后，真实课堂试测必须使用 `pilot_mode = true` 的冻结策略、完整多设备授权链和学校批准协议；缺少任一条件时 session 创建或启动必须失败。
+20. 缺少课堂试测证据不阻断已批准 Pilot 题保持 `ACTIVE`，但必须阻断正式解释、placement advice 和对外发布。
+21. 试测发现需语义修订的问题时，受影响 ACTIVE 题必须先 `DISABLED / ARCHIVED`，再以新 `question_id` 重走审核和 Pilot 激活；历史 session 与结果仍按旧题复现。
 
 ---
 
@@ -4239,6 +4279,17 @@ MVP 不要求保存每个 pointer move。
 40. 至少 8 道 ACTIVE、SCORED_ITEM 的 OFFLINE_OPERATION。
 41. 题量不足时继续返回 QUESTION_BANK_INSUFFICIENT，不静默降低模块或交互要求。
 42. 组卷不得固定要求判断、单选、拖拽各 14 道。
+
+#### BASE_ABILITY Pilot 发布门禁
+
+43. 前置门禁通过但独立批准缺失时，只能声明 `READY_FOR_PILOT_ACTIVATION_REVIEW`，`activation_authority_granted` 必须为 false。
+44. 独立批准文件必须绑定批准人、时间、`PILOT_ONLY` 范围、选定 50 题、策略版本和全部关键 hash；批准人与激活执行人不得为同一责任主体。
+45. 激活执行后，数据库中获批集合必须恰好为 42 ONLINE + 8 OFFLINE ACTIVE，未选 46 道仍为 DRAFT；重复执行必须幂等，同一批准 ID 不得扩大集合。
+46. Pilot 策略或批准文件不匹配、`pilot_mode != true`、`placement_advice_enabled != false` 时，真实课堂 session 创建必须失败。
+47. 课堂试测开始前必须验证学校协议、适用知情同意、学生/设备/业务 session 授权链和未解决安全事件门禁。
+48. Pilot 结果和报告必须显示试测标签与效度限制，placement advice 保持禁用；课堂证据缺失或未接受时，正式解释与发布操作必须失败。
+49. 课堂证据接受后，正式解释仍需独立产品/专业批准和新策略版本；不得修改已引用 Pilot 策略。
+50. 受影响 ACTIVE 题停用或归档后不得进入新 session；历史 session、结果、报告、批准文件和证据 hash 仍可复现。
 
 ---
 
@@ -4395,6 +4446,8 @@ MVP 不要求保存每个 pointer move。
 
 题目、图片和视频只有通过内容、答案、rubric、素材、专业审核、renderer 和合同校验门禁后才能进入 ACTIVE。固定示范卷只读取当前 strategy version 明确列出的题目；其他 JOB_SPECIFIC 题即使 ACTIVE，也不会自动进入 Demo。
 
+BASE_ABILITY 42+8 还必须遵循 §5.4.7 的方案 A：选定 50 题通过内容、专业和技术门禁后，先经独立 Pilot 激活批准成为 `ACTIVE`，再执行真实课堂试测。这里的 `ACTIVE` 仅授予受控 Pilot 运行资格；课堂试测证据接受前，不得形成正式量表解释、就业安置方向或对外发布。课堂证据接受后仍需新的正式解释批准和策略版本，不能把 Pilot ACTIVE 自动升格为正式发布。
+
 ### 18.3 Post-MVP
 
 - 298 题全量 ACTIVE 与随机组卷、多套卷、自定义卷、单模块测评。
@@ -4446,7 +4499,7 @@ MVP 不要求保存每个 pointer move。
 - `REDLINE_HALTED` 的 `assessment_session.redline_incident_id` 必须指向同一 `student_id + task_code` 的 `safety_incident`。
 - `REDLINE_HALTED` 的 `training_session.redline_incident_id` 必须指向同一 `student_id + task_code` 的 `safety_incident`。
 - `training_step_record.status` 不得出现 `ACTIVE` 或 `VOID`。
-- 当前全量初始化基线为 v0.1.15；已有真实数据升级必须提供独立 migration。
+- 当前全量初始化基线为 `schema.sql v0.1.16-report-framework`；已有真实数据升级必须提供独立 migration。
 - 基础能力 CSV 题库导入不得直接发布为正式题库，必须先入 `DRAFT`，审核后再转 `ACTIVE`。
 - 完整试卷系统不属于当前 MVP，不得在现有固定策略上临时拼接实现。
 - 基础能力代码不得硬编码或假设「17+3 / 满分 40 / 阈值 70/40」等 v1.0.4 旧默认值；所有题量、满分、阈值必须从 `strategy_config` 读取。
@@ -4515,6 +4568,15 @@ MVP 不要求保存每个 pointer move。
 78. 不得为未实现的训练模块生成虚假链接。
 79. 不得把基础能力模块兜底规则照搬到专业岗位测评。
 80. 不得把 post_disclosure_status 用作 ACTIVE、观察保存或报告生成门禁（伦理流程定稿前）。
+
+---
+
+81. 不得把课堂试测证据设为 BASE_ABILITY 首次 Pilot 激活的前置条件。
+82. 不得在独立 Pilot 激活批准前将真实 BASE_ABILITY 候选转为 ACTIVE，或由执行激活的 ADMIN 自授批准。
+83. 不得把 BASE_ABILITY 题目 ACTIVE 解释为已完成标准化验证、正式诊断或就业安置授权。
+84. 不得让 Pilot ACTIVE 题绕过 `pilot_mode` 冻结策略、学校试测协议、多设备授权链或安全门禁进入真实学生 session。
+85. 不得在课堂试测证据接受和正式解释批准前启用 placement advice、发布正式量表解释或把 Pilot 结果用于录用/淘汰裁决。
+86. 不得将试测后需要语义修订的 ACTIVE 题退回 DRAFT 原地修改；必须停用/归档并创建新题重走审核与激活。
 
 ---
 

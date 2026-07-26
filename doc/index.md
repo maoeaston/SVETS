@@ -284,6 +284,7 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | 功能前缀 | PRD | 实现文档 |
 |---|---|---|
 | `assessment` | [features/assessment-prd.md](features/assessment-prd.md) | [features/assessment-impl.md](features/assessment-impl.md) |
+| `base-ability-42plus8-pilot-readiness` | [features/base-ability-42plus8-pilot-readiness-prd.md](features/base-ability-42plus8-pilot-readiness-prd.md) | 缺失 |
 | `data-persistence-recovery` | [features/data-persistence-recovery-prd.md](features/data-persistence-recovery-prd.md) | [features/data-persistence-recovery-impl.md](features/data-persistence-recovery-impl.md) |
 | `drag-render` | [features/drag-render-prd.md](features/drag-render-prd.md) | [features/drag-render-impl.md](features/drag-render-impl.md) |
 | `foundation-pages-exception-center` | [features/foundation-pages-exception-center-prd.md](features/foundation-pages-exception-center-prd.md) | [features/foundation-pages-exception-center-impl.md](features/foundation-pages-exception-center-impl.md) |
