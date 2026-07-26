@@ -1,6 +1,15 @@
 // 对应 doc/xc-career-guide-event-payload-schema-v1.0.0.md
 
-import type { AbilityTag, TeacherObservationPayload, JobSkillResultPayload, StrategyType } from './json-schemas'
+import type {
+  AbilityTag,
+  JobSkillResultPayload,
+  ReportContentJson,
+  ReportScope,
+  ReportType,
+  StrategyType,
+  TaskResultSnapshot,
+  TeacherObservationPayload
+} from './json-schemas'
 import type { OperationPassRatePayload } from './operation-scoring'
 import type { TrainingModuleType } from './training'
 import type {
@@ -22,6 +31,7 @@ export type AggregateType =
   | 'STUDENT_PROFILE'
   | 'STRATEGY_CONFIG'
   | 'QUESTION_BANK'
+  | 'TASK_CLOSURE'
   | 'TASK_REPORT'
   | 'SAFETY_INCIDENT'
   | 'ASSET_RESOURCE'
@@ -53,6 +63,8 @@ export type EventType =
   | 'TRAINING_ABORTED'
   | 'TRAINING_COMPLETED'
   | 'RESULT_CALCULATED'
+  | 'TASK_CLOSURE_CONFIRMED'
+  | 'TASK_CLOSURE_REPLACED'
   | 'REPORT_GENERATED'
   | 'REPORT_EXPORTED'
   | 'REPORT_LOCKED'
@@ -421,6 +433,54 @@ export interface PlacementReviewConfirmedPayload {
   reviewed_at: string
 }
 
+export interface TaskClosureConfirmedPayload {
+  task_closure_id: string
+  student_id: string
+  job_code: string
+  task_code: string
+  cycle_no: number
+  closure_revision: 1
+  status: 'CONFIRMED'
+  is_cycle_head: true
+  source_result_ids: [string, string, string]
+  task_result_snapshots: [
+    Extract<TaskResultSnapshot, { result_type: 'ABILITY_SCORE' }>,
+    Extract<TaskResultSnapshot, { result_type: 'TRAINING_COMPLETION' }>,
+    Extract<TaskResultSnapshot, { result_type: 'OPERATION_PASS_RATE' }>
+  ]
+  confirmed_by: string
+  confirmed_at: string
+  superseded_task_closure_ids: string[]
+  superseded_report_ids: string[]
+}
+
+interface TaskClosureReplacedBasePayload {
+  old_task_closure_id: string
+  new_task_closure_id: string
+  student_id: string
+  job_code: string
+  task_code: string
+  cycle_no: number
+  closure_revision: number
+  correction_reason: string
+  source_result_ids: [string, string, string]
+  task_result_snapshots: [
+    Extract<TaskResultSnapshot, { result_type: 'ABILITY_SCORE' }>,
+    Extract<TaskResultSnapshot, { result_type: 'TRAINING_COMPLETION' }>,
+    Extract<TaskResultSnapshot, { result_type: 'OPERATION_PASS_RATE' }>
+  ]
+  reused_result_ids: string[]
+  new_result_ids: string[]
+  replaced_by: string
+  replaced_at: string
+  archived_report_ids: string[]
+}
+
+export type TaskClosureReplacedPayload = TaskClosureReplacedBasePayload & (
+  | { status: 'CONFIRMED'; is_cycle_head: true }
+  | { status: 'SUPERSEDED'; is_cycle_head: false }
+)
+
 export interface QuestionSupersededPayload {
   old_question_id: string
   new_question_id: string
@@ -458,6 +518,57 @@ export interface ReportLockedPayload {
   locked_at: string
   locked_by: string
   lock_reason?: string | null
+}
+
+export interface PlacementReviewConfirmedV2Payload extends PlacementReviewConfirmedPayload {
+  placement_advice_hash: string
+}
+
+export interface ReportGeneratedV2Payload {
+  report_id: string
+  student_id: string
+  job_code: string
+  task_code: string
+  report_type: ReportType
+  report_scope: ReportScope
+  source_aggregate_type: 'ASSESSMENT_SESSION' | 'TRAINING_SESSION' | 'SAFETY_INCIDENT'
+  source_aggregate_id: string
+  result_ids: string[]
+  incident_ids: string[]
+  report_title: string
+  report_content: ReportContentJson
+  generated_at: string
+  generated_by: string
+  report_revision: number
+  report_schema_version: string
+  report_builder_version: string
+  lineage_key: string
+  source_set_hash: string
+  content_hash: string
+  generation_key: string
+  generation_reason: 'NORMAL' | 'CONTRACT_REPAIR' | 'FACTUAL_CORRECTION' | 'DUPLICATE_MERGE'
+  task_closure_id: string | null
+  repair_of_report_id: string | null
+  superseded_report_ids: string[]
+}
+
+export type ReportExportedV2Payload = Omit<ReportExportedPayload, 'export_format'> & {
+  export_format: 'HTML'
+  file_asset_id: string
+  file_hash: string
+  file_size_bytes: number
+  mime_type: 'text/html'
+  content_hash: string
+} & (
+  | { status_before: 'GENERATED'; status_after: 'EXPORTED' }
+  | { status_before: 'EXPORTED'; status_after: 'EXPORTED' }
+  | { status_before: 'LOCKED'; status_after: 'LOCKED' }
+)
+
+export interface ReportLockedV2Payload extends ReportLockedPayload {
+  content_hash: string
+  status_before: 'GENERATED' | 'EXPORTED'
+  status_after: 'LOCKED'
 }
 
 export interface SafetyIncidentCreatedPayload {
@@ -498,6 +609,13 @@ export interface SafetyIncidentVoidedPayload {
   replacement_incident_id?: string | null
 }
 
+export interface SafetyIncidentVoidedV2Payload extends Omit<SafetyIncidentVoidedPayload, 'void_reason'> {
+  void_reason: 'FALSE_TRIGGER' | 'DUPLICATE_RECORD' | 'NON_SAFETY_EVENT'
+  archived_report_ids: string[]
+  superseded_report_ids: string[]
+  primary_incident_id: string | null
+}
+
 export interface SafetyIncidentReplacedPayload {
   old_incident_id: string
   new_incident_id: string
@@ -505,6 +623,39 @@ export interface SafetyIncidentReplacedPayload {
   replaced_by: string
   correction_reason: string
 }
+
+export interface SafetyIncidentReplacedForFactualCorrectionV2Payload {
+  root_incident_id: string
+  old_incident_id: string
+  new_incident_id: string
+  student_id: string
+  job_code: string
+  task_code: string
+  reason_code: string
+  context_phase: string
+  full_description: string
+  occurred_at: string
+  triggered_by: string
+  confirmed_by: string
+  confirmed_at: string
+  old_status: 'CONFIRMED'
+  old_status_after: 'VOIDED'
+  void_reason: 'FACTUAL_CORRECTION'
+  correction_reason: string
+  replaced_by: string
+  replaced_at: string
+  superseded_report_ids: string[]
+}
+
+export type F7EventPayload =
+  | TaskClosureConfirmedPayload
+  | TaskClosureReplacedPayload
+  | ReportGeneratedV2Payload
+  | PlacementReviewConfirmedV2Payload
+  | ReportLockedV2Payload
+  | ReportExportedV2Payload
+  | SafetyIncidentVoidedV2Payload
+  | SafetyIncidentReplacedForFactualCorrectionV2Payload
 
 export interface SnapshotCommittedPayload {
   snapshot_id: string

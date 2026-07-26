@@ -26,7 +26,7 @@ describe.sequential('database content pack', () => {
     first = syncDatabase(dbPath)
     expect(first.ok).toBe(true)
     expect(first.packVersion).toBe('2026.07.22.1')
-    expect(first.schemaVersion).toBe('0.1.15-multi-device-m3-grant-assignment')
+    expect(first.schemaVersion).toBe('0.1.16-report-framework')
     expect(first.counts).toMatchObject({ BASE_ABILITY: 96, JOB_SPECIFIC: 298 })
 
     const second = syncDatabase(dbPath)

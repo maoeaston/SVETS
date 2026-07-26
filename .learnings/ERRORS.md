@@ -1,5 +1,40 @@
 # Errors
 
+## [ERR-20260724-VIBE1] agents-skills-sandbox-readonly
+
+**Logged**: 2026-07-24T23:20:00+08:00
+**Priority**: medium
+**Status**: resolved
+**Area**: config
+
+### Summary
+受控沙箱在项目根目录允许写入，但对已有 `.agents` 目录下创建 `.agents/skills` 返回只读文件系统。
+
+### Error
+```
+mkdir: cannot create directory ‘.agents/skills’: Read-only file system
+```
+
+### Context
+- Command/operation attempted: `mkdir -p doc/ai/vibe-coding-skills .agents/skills/vibe-feature .agents/skills/vibe-impl .agents/skills/vibe-review .agents/skills/vibe-accept .claude/commands`
+- 当前任务要求把 Codex 项目级 Skills 放在 `.agents/skills/`，不得放到 `.codex/skills/`。
+- `.agents` 目录存在，但受控沙箱未允许写入该路径。
+
+### Suggested Fix
+对创建 `.agents/skills/*` 的操作申请提升权限；后续文件写入如仍被拒绝，同样按最小范围提升权限执行。
+
+### Metadata
+- Reproducible: yes
+- Related Files: vibe.md, .agents/skills
+- See Also:
+
+### Resolution
+- **Resolved**: 2026-07-24T23:21:00+08:00
+- **Commit/PR**: none
+- **Notes**: 通过用户批准的提升权限创建 `.agents/skills/*` 目录；后续 `apply_patch` 成功写入 Skill 文件。
+
+---
+
 ## [ERR-20260720-001] vitest-node-spawnsync-sandbox-eperm
 
 **Logged**: 2026-07-20T10:49:47+08:00

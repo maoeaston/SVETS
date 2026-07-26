@@ -1,6 +1,8 @@
 // 对应 doc/xc-career-guide-json-field-schema-v1.0.0.md
 // 运行时校验由主进程负责；此文件仅提供类型声明。
 
+import type { OperationPassRatePayload } from './operation-scoring'
+
 export type AbilityTag =
   | 'FINE_MOTOR'
   | 'COGNITION'
@@ -665,12 +667,193 @@ export type ResultPayloadJson =
 // report_content_json
 // ═══════════════════════════════════════════════════════
 
+export type ReportScope = 'BASE_ABILITY' | 'JOB_SKILL' | 'SAFETY'
+
+export type ReportType = 'FULL_REPORT' | 'SAFETY_TERMINATION_REPORT'
+
+export type ReportUsage = 'PILOT_ONLY' | 'FORMAL' | 'MVP_DEMO_PROFILE_ONLY'
+
+export type ReportSourceAggregateType = 'ASSESSMENT_SESSION' | 'TRAINING_SESSION'
+
+export interface ReportAssetReference {
+  asset_id: string
+  file_hash: string
+  content_pack_version: string | null
+}
+
+export interface ReportSittingSnapshot {
+  sitting_no: number
+  started_at: string
+  ended_at: string | null
+  duration_seconds: number | null
+  end_reason: 'COMPLETED_NORMALLY' | 'PAUSED_BY_PLAN' | 'ENDED_BY_COLLAPSE' | null
+}
+
+export interface ReportResultSnapshotBase<T extends ResultType> {
+  result_id: string
+  result_type: T
+  source_aggregate_type: ReportSourceAggregateType
+  source_aggregate_id: string
+  generated_at: string
+  strategy_id: string | null
+  strategy_type: StrategyType | null
+  raw_score: number | null
+  max_score: number | null
+  normalized_score: number
+  completion_ratio: number | null
+  level_result: string
+  safety_overridden: boolean
+  redline_incident_id: string | null
+  source_started_at: string | null
+  source_completed_at: string | null
+}
+
+export interface AbilityResultSnapshot extends ReportResultSnapshotBase<'ABILITY_SCORE'> {
+  source_aggregate_type: 'ASSESSMENT_SESSION'
+  details: AbilityScorePayload
+}
+
+export interface TrainingCompletionSnapshotDetails {
+  total_steps: number
+  completed_steps: number
+  skipped_steps: number
+  failed_steps: number
+  completion_rate: number
+  completed_at: string
+}
+
+export interface TrainingCompletionResultSnapshot
+  extends ReportResultSnapshotBase<'TRAINING_COMPLETION'> {
+  source_aggregate_type: 'TRAINING_SESSION'
+  details: TrainingCompletionSnapshotDetails
+}
+
+export interface OperationPassRateSnapshotDetails extends OperationPassRatePayload {
+  scored_at: string
+}
+
+export interface OperationPassRateResultSnapshot
+  extends ReportResultSnapshotBase<'OPERATION_PASS_RATE'> {
+  source_aggregate_type: 'ASSESSMENT_SESSION'
+  details: OperationPassRateSnapshotDetails
+}
+
+export interface JobSkillResultSnapshot extends ReportResultSnapshotBase<'JOB_SKILL_SCORE'> {
+  source_aggregate_type: 'ASSESSMENT_SESSION'
+  details: JobSkillResultPayload
+}
+
+export type TaskResultSnapshot =
+  | AbilityResultSnapshot
+  | TrainingCompletionResultSnapshot
+  | OperationPassRateResultSnapshot
+
+export interface PlacementRecommendation {
+  recommendation_code: string
+  recommendation_text: string
+  conditions: string[]
+}
+
+export type PlacementAdvice =
+  | {
+      enabled: true
+      recommendation: PlacementRecommendation
+      reason_disabled: null
+    }
+  | {
+      enabled: false
+      recommendation: null
+      reason_disabled: string
+    }
+
+export interface BaseAssessmentMeta {
+  session_id: string
+  strategy_id: string
+  strategy_version: number
+  question_bank_version: number
+  import_batch_ids: string[]
+  asset_references: ReportAssetReference[]
+  scoring_engine_version: string
+  content_schema_version: string
+  scoring_schema_version: string
+  sitting_count: number
+  sittings: ReportSittingSnapshot[]
+  completion_ratio: number
+  termination_reason: string | null
+  pilot_mode: boolean
+  report_usage: 'PILOT_ONLY' | 'FORMAL'
+}
+
+export interface BaseScoreSummaryItem {
+  result_id: string
+  raw_score: number | null
+  max_score: number | null
+  normalized_score: number
+  completion_ratio: number | null
+  level_result: string
+}
+
+export interface BaseScoreSummary {
+  ability_score: BaseScoreSummaryItem
+  training_completion: BaseScoreSummaryItem
+  operation_pass_rate: BaseScoreSummaryItem
+}
+
+export interface BaseTrainingSummary extends TrainingCompletionSnapshotDetails {
+  result_id: string
+}
+
+export interface BaseOperationSummary extends OperationPassRateSnapshotDetails {
+  result_id: string
+}
+
+export interface ReportEvidenceSummary {
+  evidence_types: EvidenceType[]
+  observations: string[]
+}
+
+export interface ReportAdministrationStatus {
+  status: string
+  observation_completion_ratio: number
+}
+
+export interface ReportBehaviorObservation {
+  observation_code: string
+  observed: boolean
+  behavior_codes: string[]
+  prompt_level: PromptLevel | null
+}
+
+export interface BaseReportSourceMeta {
+  task_closure_id: string
+  cycle_no: number
+  closure_revision: number
+  source_set_hash: string
+  task_result_snapshots: [
+    AbilityResultSnapshot,
+    TrainingCompletionResultSnapshot,
+    OperationPassRateResultSnapshot
+  ]
+}
+
 export interface ReportContentBaseAbility {
   report_schema_version: 'task-report-v1.1'
-  report_scope?: 'BASE_ABILITY'
-  report_type: 'FULL_REPORT' | 'SAFETY_TERMINATION_REPORT'
+  report_scope: 'BASE_ABILITY'
+  report_type: 'FULL_REPORT'
   generated_at: string
-  [key: string]: unknown
+  assessment_meta: BaseAssessmentMeta
+  score_summary: BaseScoreSummary
+  module_profiles: ModuleScore[]
+  training: BaseTrainingSummary
+  operation: BaseOperationSummary
+  evidence_summary: ReportEvidenceSummary
+  support_summary: SupportSummary
+  administration_status: ReportAdministrationStatus
+  behavior_observations: ReportBehaviorObservation[]
+  validity_limitations: string[]
+  safety_summary: SafetySummary
+  placement_advice: PlacementAdvice
+  source_meta: BaseReportSourceMeta
 }
 
 export interface JobSkillAssessmentMeta {
@@ -745,7 +928,178 @@ export interface ReportContentJobSkill {
   placement_advice: { enabled: false; reason_disabled: string }
 }
 
-export type ReportContentJson = ReportContentBaseAbility | ReportContentJobSkill
+export interface JobSkillOnlineKnowledgeSummary {
+  raw_score: number
+  max_score: number
+  normalized_score: number
+  response_status_distribution: Partial<Record<ResponseStatus, number>>
+}
+
+export interface JobSkillOfflinePerformanceSummary {
+  raw_score: number
+  max_score: number
+  normalized_score: number
+  completed_item_count: number
+  total_item_count: number
+}
+
+export interface JobSkillAdministrationSummary {
+  report_usage: 'MVP_DEMO_PROFILE_ONLY'
+  observation_completion_ratio: number
+  completion_ratio: number
+  sittings: ReportSittingSnapshot[]
+  termination_reason: string | null
+}
+
+export interface JobSkillReportSourceMeta {
+  result_snapshot: JobSkillResultSnapshot
+  question_bank_version: number
+  import_batch_ids: string[]
+  asset_references: ReportAssetReference[]
+}
+
+export interface ValidatedReportContentJobSkill
+  extends Omit<ReportContentJobSkill, 'placement_advice'> {
+  report_type: 'FULL_REPORT'
+  generated_at: string
+  online_knowledge_summary: JobSkillOnlineKnowledgeSummary
+  offline_performance_summary: JobSkillOfflinePerformanceSummary
+  administration_summary: JobSkillAdministrationSummary
+  source_meta: JobSkillReportSourceMeta
+  placement_advice: {
+    enabled: false
+    recommendation: null
+    reason_disabled: string
+  }
+}
+
+export type SafetySourceScope =
+  | 'BASE_ABILITY'
+  | 'JOB_SKILL'
+  | 'TRAINING'
+  | 'MIXED'
+  | 'NO_BOUND_SESSION'
+
+export interface SafetyIncidentSnapshot {
+  incident_id: string
+  student_id: string
+  job_code: string
+  task_code: string
+  status_at_generation: 'CONFIRMED' | 'RESOLVED'
+  reason_code: string
+  context_phase: string
+  description: string
+  occurred_at: string
+  triggered_by: string
+  confirmed_by: string
+  confirmed_at: string
+}
+
+export interface SafetyBindingSnapshot {
+  aggregate_type: ReportSourceAggregateType
+  aggregate_id: string
+  pre_status: string
+  post_status: 'REDLINE_HALTED'
+}
+
+export interface SafetyPreRedlineRecords {
+  result_ids: string[]
+  answer_summary: Record<string, number>
+  offline_score_summary: Record<string, number>
+  training_step_summary: Record<string, number>
+}
+
+export interface SafetyAssessmentBindingMetadata {
+  aggregate_type: 'ASSESSMENT_SESSION'
+  aggregate_id: string
+  strategy_id: string
+  strategy_version: number
+  question_bank_version: number
+  import_batch_ids: string[]
+  asset_references: ReportAssetReference[]
+  scoring_engine_version: string
+  content_schema_version: string
+  scoring_schema_version: string
+  sittings: ReportSittingSnapshot[]
+  completion_ratio: number
+  started_at: string | null
+  completed_at: string | null
+}
+
+export type TrainingStrategyAvailability =
+  | {
+      strategy_availability: 'CONFIGURED'
+      strategy_id: string
+      strategy_version: number
+    }
+  | {
+      strategy_availability: 'NOT_CONFIGURED'
+      strategy_id: null
+      strategy_version: null
+    }
+
+export type SafetyTrainingBindingMetadata = {
+  aggregate_type: 'TRAINING_SESSION'
+  aggregate_id: string
+  asset_references: ReportAssetReference[]
+  started_at: string | null
+  completed_at: string | null
+  step_status_summary: Record<string, number>
+  pre_redline_steps: Array<{
+    step_record_id: string
+    status: string
+    attempt_count: number
+    occurred_at: string
+  }>
+} & TrainingStrategyAvailability
+
+export type SafetyBindingMetadata =
+  | SafetyAssessmentBindingMetadata
+  | SafetyTrainingBindingMetadata
+
+export type SafetySourceMeta =
+  | {
+      metadata_availability: 'NO_BOUND_SESSION'
+      binding_metadata: []
+    }
+  | {
+      metadata_availability: 'BY_BINDING'
+      binding_metadata: SafetyBindingMetadata[]
+    }
+
+export interface SafetyCorrectionLineage {
+  root_incident_id: string
+  replaces_incident_id: string | null
+  supersedes_report_id: string | null
+}
+
+export interface ReportContentSafetyTermination {
+  report_schema_version: 'safety-termination-report-v1.0'
+  report_scope: 'SAFETY'
+  source_scope: SafetySourceScope
+  report_type: 'SAFETY_TERMINATION_REPORT'
+  generated_at: string
+  incident_snapshot: SafetyIncidentSnapshot
+  binding_snapshots: SafetyBindingSnapshot[]
+  pre_redline_records: SafetyPreRedlineRecords
+  safety_summary: {
+    level_result: 'LEVEL_FAIL_BY_SAFETY'
+    ordinary_report_blocked: true
+  }
+  validity_limitations: string[]
+  correction_lineage: SafetyCorrectionLineage
+  source_meta: SafetySourceMeta
+  placement_advice: {
+    enabled: false
+    recommendation: null
+    reason_disabled: string
+  }
+}
+
+export type ReportContentJson =
+  | ReportContentBaseAbility
+  | ValidatedReportContentJobSkill
+  | ReportContentSafetyTermination
 
 // ═══════════════════════════════════════════════════════
 // answer_record.answer_payload_json

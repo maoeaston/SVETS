@@ -307,6 +307,148 @@ describe('reconcileActionLog', () => {
     }
   })
 
+  it('对 schema v2 F7 事件同时补写缺失投影和补齐未完成投影', async () => {
+    const db = await createTestDb()
+    try {
+      const logPath = createLogPath()
+      const teacherId = seedCaller(db, 'TEACHER')
+      const adminId = seedCaller(db, 'ADMIN')
+      const studentId = seedStudent(db)
+      const incidentId = uuidv4()
+      const createdPayload = {
+        incident_id: incidentId,
+        student_id: studentId,
+        job_code: 'SUPERMARKET_SHELVER',
+        task_code: 'SHELVE_TASK',
+        reason_code: 'BLADE_TOWARD_SELF',
+        context_phase: 'OFFLINE_SCORING',
+        occurred_at: '2026-07-23T00:00:00.000Z',
+        reported_by: teacherId,
+        brief_description: '安全事件'
+      }
+      const createdEvent: ActionLogEntry = {
+        event_id: uuidv4(), aggregate_type: 'SAFETY_INCIDENT', aggregate_id: incidentId,
+        event_type: 'SAFETY_INCIDENT_CREATED', event_sequence: 1, payload: createdPayload,
+        checksum: createHash('sha256').update(JSON.stringify(createdPayload), 'utf8').digest('hex'),
+        schema_version: 1, created_at: '2026-07-23T00:00:00.000Z', actor_id: teacherId,
+        actor_role: 'TEACHER', app_version: '1.0.0'
+      }
+      db.prepare(
+        `INSERT INTO domain_event_projection
+           (event_id, aggregate_type, aggregate_id, event_type, event_sequence,
+            payload_json, checksum, source_log_path, schema_version, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ).run(
+        createdEvent.event_id, createdEvent.aggregate_type, createdEvent.aggregate_id, createdEvent.event_type,
+        createdEvent.event_sequence, JSON.stringify(createdEvent.payload), createdEvent.checksum,
+        logPath, createdEvent.schema_version, createdEvent.created_at
+      )
+      db.prepare(
+        `INSERT INTO safety_incident
+           (incident_id, student_id, job_code, task_code, trigger_event_id, reason_code,
+            description, triggered_by, context_phase, occurred_at, status)
+         VALUES (?, ?, 'SUPERMARKET_SHELVER', 'SHELVE_TASK', ?, 'BLADE_TOWARD_SELF', '安全事件', ?, 'OFFLINE_SCORING', ?, 'PENDING_DETAIL')`
+      ).run(incidentId, studentId, createdEvent.event_id, teacherId, createdEvent.created_at)
+
+      const voidPayload = {
+        incident_id: incidentId, voided_at: '2026-07-23T01:00:00.000Z', voided_by: adminId,
+        void_reason: 'FALSE_TRIGGER', void_notes: null, replacement_incident_id: null,
+        archived_report_ids: [], superseded_report_ids: [], primary_incident_id: null
+      }
+      const voidEvent: ActionLogEntry = {
+        event_id: uuidv4(), aggregate_type: 'SAFETY_INCIDENT', aggregate_id: incidentId,
+        event_type: 'SAFETY_INCIDENT_VOIDED', event_sequence: 2, payload: voidPayload,
+        checksum: createHash('sha256').update(JSON.stringify(voidPayload), 'utf8').digest('hex'),
+        schema_version: 2, created_at: '2026-07-23T01:00:00.000Z', actor_id: adminId,
+        actor_role: 'ADMIN', app_version: '1.0.0'
+      }
+      writeFileSync(logPath, `${JSON.stringify(createdEvent)}\n${JSON.stringify(voidEvent)}\n`)
+
+      expect(reconcileActionLog(db, { logPath })).toMatchObject({ replayedEventCount: 1, skippedEventCount: 1 })
+      expect(db.prepare('SELECT status FROM safety_incident WHERE incident_id = ?').get(incidentId)).toEqual({ status: 'VOIDED' })
+      expect(db.prepare('SELECT applied_to_snapshot FROM domain_event_projection WHERE event_id = ?').get(voidEvent.event_id))
+        .toEqual({ applied_to_snapshot: 1 })
+
+      const pendingIncidentId = uuidv4()
+      const pendingCreatedPayload = { ...createdPayload, incident_id: pendingIncidentId }
+      const pendingCreatedEvent: ActionLogEntry = {
+        ...createdEvent,
+        event_id: uuidv4(),
+        aggregate_id: pendingIncidentId,
+        payload: pendingCreatedPayload,
+        checksum: createHash('sha256').update(JSON.stringify(pendingCreatedPayload), 'utf8').digest('hex')
+      }
+      db.prepare(
+        `INSERT INTO domain_event_projection
+           (event_id, aggregate_type, aggregate_id, event_type, event_sequence,
+            payload_json, checksum, source_log_path, schema_version, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ).run(
+        pendingCreatedEvent.event_id, pendingCreatedEvent.aggregate_type, pendingCreatedEvent.aggregate_id,
+        pendingCreatedEvent.event_type, pendingCreatedEvent.event_sequence, JSON.stringify(pendingCreatedEvent.payload),
+        pendingCreatedEvent.checksum, logPath, pendingCreatedEvent.schema_version, pendingCreatedEvent.created_at
+      )
+      db.prepare(
+        `INSERT INTO safety_incident
+           (incident_id, student_id, job_code, task_code, trigger_event_id, reason_code,
+            description, triggered_by, context_phase, occurred_at, status)
+         VALUES (?, ?, 'SUPERMARKET_SHELVER', 'SHELVE_TASK', ?, 'BLADE_TOWARD_SELF', '安全事件', ?, 'OFFLINE_SCORING', ?, 'PENDING_DETAIL')`
+      ).run(pendingIncidentId, studentId, pendingCreatedEvent.event_id, teacherId, pendingCreatedEvent.created_at)
+      const pendingVoidPayload = { ...voidPayload, incident_id: pendingIncidentId }
+      const pendingVoidEvent: ActionLogEntry = {
+        ...voidEvent,
+        event_id: uuidv4(),
+        aggregate_id: pendingIncidentId,
+        payload: pendingVoidPayload,
+        checksum: createHash('sha256').update(JSON.stringify(pendingVoidPayload), 'utf8').digest('hex')
+      }
+      db.prepare(
+        `INSERT INTO domain_event_projection
+           (event_id, aggregate_type, aggregate_id, event_type, event_sequence,
+            payload_json, checksum, source_log_path, schema_version, created_at, applied_to_snapshot)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`
+      ).run(
+        pendingVoidEvent.event_id, pendingVoidEvent.aggregate_type, pendingVoidEvent.aggregate_id,
+        pendingVoidEvent.event_type, pendingVoidEvent.event_sequence, JSON.stringify(pendingVoidEvent.payload),
+        pendingVoidEvent.checksum, logPath, pendingVoidEvent.schema_version, pendingVoidEvent.created_at
+      )
+      writeFileSync(logPath, `${JSON.stringify(createdEvent)}\n${JSON.stringify(voidEvent)}\n${JSON.stringify(pendingCreatedEvent)}\n${JSON.stringify(pendingVoidEvent)}\n`)
+
+      expect(reconcileActionLog(db, { logPath })).toMatchObject({ replayedEventCount: 1, skippedEventCount: 3 })
+      expect(db.prepare('SELECT status FROM safety_incident WHERE incident_id = ?').get(pendingIncidentId)).toEqual({ status: 'VOIDED' })
+      expect(db.prepare('SELECT applied_to_snapshot FROM domain_event_projection WHERE event_id = ?').get(pendingVoidEvent.event_id))
+        .toEqual({ applied_to_snapshot: 1 })
+    } finally {
+      db.close()
+    }
+  })
+
+  it('schema v2 F7 payload validation failure leaves no new projection', async () => {
+    const db = await createTestDb()
+    try {
+      const logPath = createLogPath()
+      const malformedPayload = {
+        report_id: 'report-1', export_format: 'HTML', export_path: '/tmp/report.html',
+        exported_at: '2026-07-23T00:00:00.000Z', exported_by: 'teacher-1', file_asset_id: 'asset-1',
+        file_hash: 'a'.repeat(64), file_size_bytes: 1, mime_type: 'text/html', content_hash: 'b'.repeat(64),
+        status_before: 'LOCKED', status_after: 'EXPORTED'
+      }
+      const malformed: ActionLogEntry = {
+        event_id: uuidv4(), aggregate_type: 'TASK_REPORT', aggregate_id: 'report-1',
+        event_type: 'REPORT_EXPORTED', event_sequence: 1, payload: malformedPayload,
+        checksum: createHash('sha256').update(JSON.stringify(malformedPayload), 'utf8').digest('hex'),
+        schema_version: 2, created_at: '2026-07-23T00:00:00.000Z', actor_id: 'teacher-1',
+        actor_role: 'TEACHER', app_version: '1.0.0'
+      }
+      writeFileSync(logPath, `${JSON.stringify(malformed)}\n`)
+
+      expect(() => reconcileActionLog(db, { logPath })).toThrow(RecoveryReplayError)
+      expect(db.prepare('SELECT 1 FROM domain_event_projection WHERE event_id = ?').get(malformed.event_id)).toBeUndefined()
+    } finally {
+      db.close()
+    }
+  })
+
   it('恢复审计事件已落盘后写入指向该事件的快照元数据', async () => {
     const db = await createTestDb()
     try {

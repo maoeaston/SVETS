@@ -140,6 +140,25 @@ import type {
   ListCurrentByStudentParams,
   ListCurrentByStudentResult
 } from './results'
+import type {
+  ListReportsParams,
+  ListReportsResult,
+  GetReportParams,
+  GetReportResult,
+  ListReportGenerationCandidatesParams,
+  ListReportGenerationCandidatesResult,
+  ConfirmTaskClosureParams,
+  ReplaceTaskClosureParams,
+  TaskClosureMutationResult,
+  GenerateReportParams,
+  GenerateReportResult,
+  ConfirmPlacementReviewParams,
+  LockReportParams,
+  ExportReportParams,
+  ExportReportResult,
+  ReportLifecycleMutationResult,
+  ReportsResult
+} from './report'
 
 export interface IpcApi {
   auth: {
@@ -267,5 +286,24 @@ export interface IpcApi {
     listCurrentByStudent: (
       params: ListCurrentByStudentParams
     ) => Promise<ListCurrentByStudentResult>
+  }
+  reports: {
+    list: (params: ListReportsParams) => Promise<ReportsResult<ListReportsResult>>
+    get: (params: GetReportParams) => Promise<ReportsResult<GetReportResult>>
+    listGenerationCandidates: (
+      params: ListReportGenerationCandidatesParams
+    ) => Promise<ReportsResult<ListReportGenerationCandidatesResult>>
+    confirmTaskClosure: (
+      params: ConfirmTaskClosureParams
+    ) => Promise<ReportsResult<TaskClosureMutationResult>>
+    replaceTaskClosure: (
+      params: ReplaceTaskClosureParams
+    ) => Promise<ReportsResult<TaskClosureMutationResult>>
+    generate: (params: GenerateReportParams) => Promise<ReportsResult<GenerateReportResult>>
+    confirmPlacementReview: (
+      params: ConfirmPlacementReviewParams
+    ) => Promise<ReportsResult<ReportLifecycleMutationResult>>
+    lock: (params: LockReportParams) => Promise<ReportsResult<ReportLifecycleMutationResult>>
+    export: (params: ExportReportParams) => Promise<ReportsResult<ExportReportResult>>
   }
 }

@@ -12,6 +12,7 @@ import {
   M2_MIGRATION_ID,
   M2_SCHEMA_VERSION,
   assertCurrentDatabaseSchema,
+  assertPreF7DatabaseSchema,
   runDatabaseMigrations
 } from '../migrations'
 
@@ -333,7 +334,7 @@ describe('database migrations', () => {
       db.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type='table' AND name IN ('learning_session', 'command_log', 'offline_score_draft')").get()
     ).toMatchObject({ count: 0 })
     expectDatabaseIntegrity(db)
-    assertCurrentDatabaseSchema(db)
+    assertPreF7DatabaseSchema(db)
     expect(runDatabaseMigrations(db)).toEqual([])
     db.close()
   })
@@ -376,7 +377,7 @@ describe('database migrations', () => {
     expect(() => db.prepare("UPDATE assessment_session SET delivery_phase = 'ONLINE_IN_PROGRESS' WHERE session_id = 'a-m2'").run())
       .toThrow('PREPARED can only advance to ASSIGNED')
     expectDatabaseIntegrity(db)
-    assertCurrentDatabaseSchema(db)
+    assertPreF7DatabaseSchema(db)
     db.close()
   })
 
@@ -414,7 +415,7 @@ describe('database migrations', () => {
     expect(() => db.prepare("DELETE FROM assessment_session WHERE session_id = 'a-m2'").run())
       .toThrow('assessment_session cannot be deleted')
     expectDatabaseIntegrity(db)
-    assertCurrentDatabaseSchema(db)
+    assertPreF7DatabaseSchema(db)
     db.close()
   })
 
@@ -529,7 +530,7 @@ describe('database migrations', () => {
     expect(db.prepare("SELECT COUNT(*) AS count FROM probe_hit WHERE probe_id = 'p1'").get())
       .toMatchObject({ count: 1 })
     expectDatabaseIntegrity(db)
-    assertCurrentDatabaseSchema(db)
+    assertPreF7DatabaseSchema(db)
     db.close()
   })
 

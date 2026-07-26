@@ -1,95 +1,16 @@
-# /vibe-impl — 实现文档生成（PRD → 步骤化实现计划 + 测试设计）
+请读取并严格执行项目根目录下：
 
-## 触发时机
+`vibe-coding-skills-v2/commands/vibe-impl.md`
 
-已有确认的 Mini-PRD（通常来自 `/vibe-feature`），准备进入实现阶段。
+同时读取：
 
-## 输入
+- `doc/ai/vibe-workflow-contract.md`
+- `doc/specs/baseline.yaml`
+- `doc/specs/project-invariants.md`
+- `AGENTS.md`
 
-用户指定 Mini-PRD 文件路径，例如：`/vibe-impl doc/features/auth-login-prd.md`
+将下面的调用参数作为本次实现计划输入：
 
-## 执行步骤
+$ARGUMENTS
 
-### Step 1：读取 PRD 和相关代码
-
-1. 读取指定的 Mini-PRD 文件
-2. 根据涉及的模块，读取对应的源文件（连接层、IPC handler、Vue 视图、共享类型）
-3. 读取 `AGENTS.md` 中的关键约束
-
-### Step 2：Writer 生成实现文档
-
-输出一份 `doc/features/<feature-name>-impl.md`，结构如下：
-
-```markdown
-## 实现目标（一句话）
-
-## 前置条件
-- 依赖哪些已有模块
-- 哪些字段/表/事件必须已存在
-
-## 实现步骤（每步对应一个 commit）
-
-### Step N：<步骤名>
-**改动文件：**
-- `src/xxx/yyy.ts`：具体说明增加/修改什么
-
-**核心逻辑：**
-（伪代码或关键设计决策）
-
-**测试用例：**
-- 单元测试：正常路径 / 异常路径 / 边界值
-- 集成测试：（如涉及 DB 或 IPC）
-- 手工验收点：（如涉及 UI）
-
-**commit message 建议：**
-`feat(xxx): ...`
-
----
-（重复 Step N...）
-
-## 回归验收清单
-- [ ] typecheck 通过
-- [ ] build 通过
-- [ ] vitest 通过
-- [ ] 手工冒烟：描述核心路径
-```
-
-### 项目约束检查（Writer 必须自检）
-
-- [ ] 事件写入顺序：JSONL append → domain_event_projection → reducer（不可颠倒）
-- [ ] 新 EventType 已加入 `src/shared/types/event-payloads.ts`
-- [ ] 新 IPC 通道已在 `src/preload/index.ts` 白名单中声明
-- [ ] 无硬编码题量/阈值（必须读 strategy_config）
-- [ ] FSM 状态迁移路径与 schema 触发器一致
-- [ ] 安全红线相关逻辑：[!] 标注并说明触发链
-- [ ] JSON 字段写入前有格式校验
-
-### Step 3：Reviewer 审查（subagent）
-
-启动 Reviewer subagent，提供实现文档全文，要求它：
-
-- 找出步骤间的依赖关系是否正确（有没有前置步骤遗漏）
-- 找出测试设计的盲区（特别是并发、异常退出、红线熔断中途）
-- 找出可能违反 AGENTS.md 约束的设计
-- 指出步骤粒度是否过大（单步不应超过5个文件改动）
-
-### Step 4：输出
-
-- 保存实现文档到 `doc/features/<feature-name>-impl.md`
-- 告知用户可以开始逐步执行，每步完成后运行 `/vibe-accept <step-n>`
-
----
-
-## 执行阶段指引
-
-### 子模型分工（节省 token）
-
-机械性实现步骤（按 impl.md 直接编码、补 type、加路由、写样板 IPC handler）优先用 `model: "haiku"` 子 agent 执行；架构判断、PRD 对齐检查、红线逻辑审计、FSM 路径评审留主循环（Sonnet/Opus）。
-
-判断依据：**纯机械 → haiku；需要约束上下文或跨文件判断 → 主循环。**
-
-**子 agent 产出验证**：子 agent 结束后先用 `git status --porcelain` 核实实际文件变更，再采信文字汇报。`tool_uses` 明显偏高（>50）且无实际产出时，说明可能陷入重试循环，应由主循环直接执行。
-
-### 任务书与工程约束冲突处理
-
-执行 impl.md 或其他设计文档中的任务前，先对照 AGENTS.md + `.claude/rules/` 扫描是否有更具体的工程约束覆盖该路径。发现冲突时用 AskUserQuestion 列方案让用户选，不要默认服从任务书字面写法。
+不得根据记忆复述工作流；必须读取上述当前文件后执行。

@@ -102,6 +102,21 @@ const api = {
     getCurrent: (params: unknown) => ipcRenderer.invoke('results:getCurrent', params),
     listCurrentByStudent: (params: unknown) =>
       ipcRenderer.invoke('results:listCurrentByStudent', params)
+  },
+  reports: {
+    list: (params: unknown) => ipcRenderer.invoke('reports:list', params),
+    get: (params: unknown) => ipcRenderer.invoke('reports:get', params),
+    listGenerationCandidates: (params: unknown) =>
+      ipcRenderer.invoke('reports:listGenerationCandidates', params),
+    confirmTaskClosure: (params: unknown) =>
+      ipcRenderer.invoke('reports:confirmTaskClosure', params),
+    replaceTaskClosure: (params: unknown) =>
+      ipcRenderer.invoke('reports:replaceTaskClosure', params),
+    generate: (params: unknown) => ipcRenderer.invoke('reports:generate', params),
+    confirmPlacementReview: (params: unknown) =>
+      ipcRenderer.invoke('reports:confirmPlacementReview', params),
+    lock: (params: unknown) => ipcRenderer.invoke('reports:lock', params),
+    export: (params: unknown) => ipcRenderer.invoke('reports:export', params)
   }
 }
 

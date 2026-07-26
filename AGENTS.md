@@ -1,6 +1,6 @@
 # 炫灿-职途向导系统 MVP
 
-**工程基线：** schema v0.1.15-multi-device-m3-grant-assignment | PRD v1.0.9 authoritative
+**工程基线：** schema v0.1.16-report-framework | PRD v1.0.9 authoritative
 **技术栈：** Electron + Vue3 + TypeScript + SQLite  
 **MVP 范围：** 一岗位（超市理货员）| 一任务（拆箱与上架）| 两条测评路径（BASE_ABILITY / JOB_SKILL）| 一闭环（测评→训练→评分→报告）
 
@@ -44,6 +44,38 @@
 ### 人工审核产物
 
 面向教师、职教专家等非技术审核人的逐题审核包，默认使用自包含 HTML 作为填写入口，提供自动保存、必填校验和提交导出。JSON 是机器可读的权威审核结果，Markdown 只作为由 JSON 生成的人类可读留档。审核页提交不得直接激活题目、修改策略或覆盖历史 manifest。
+
+## Vibe Coding 工作流
+
+本项目同时使用 Claude Code 和 Codex。
+
+### 唯一工作流正文
+
+- `vibe-coding-skills-v2/commands/vibe-feature.md`
+- `vibe-coding-skills-v2/commands/vibe-impl.md`
+- `vibe-coding-skills-v2/commands/vibe-review.md`
+- `vibe-coding-skills-v2/commands/vibe-accept.md`
+
+Claude Code 的 `.claude/commands/` 和 Codex 的 `.agents/skills/` 仅作为运行适配入口，不是工作流正文的第二事实来源。
+
+### 共享约束
+
+- 当前权威基线：`doc/specs/baseline.yaml`
+- 项目不变量：`doc/specs/project-invariants.md`
+- 工作流协议：`doc/ai/vibe-workflow-contract.md`
+
+执行任何 Vibe Coding 工作流前，必须读取上述当前文件。
+
+不得根据文件名猜测当前权威 PRD、Schema 或数据合同。
+不得在多个 Skill 中复制项目不变量全文。
+不得把未实际执行的检查声明为通过。
+
+### 工作流选择
+
+- 新功能定义、范围和 Mini-PRD：`vibe-feature`
+- PRD 转步骤化实现计划：`vibe-impl`
+- PRD、计划、代码或 diff 独立审查：`vibe-review`
+- 实现步骤或合并前验收：`vibe-accept`
 
 ---
 

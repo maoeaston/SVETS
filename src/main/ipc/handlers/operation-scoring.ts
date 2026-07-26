@@ -13,6 +13,7 @@ import { getDatabase } from '../../db/connection'
 import { assertCaller } from '../../utils/auth-context'
 import { writeEvent } from '../../domain/event-writer'
 import { applyAssessmentEvent } from '../../domain/assessment-reducer'
+import { assertF7WriteAllowed, ReportWriteBlockedError } from '../../domain/report-write-gate'
 import {
   TASK_OPERATION_CODES,
   OPERATION_RUBRICS
@@ -157,6 +158,7 @@ export function submitOperationScores(
 
   // 11. 事务：9 × OFFLINE_SCORE_SUBMITTED + 1 × RESULT_CALCULATED
   try {
+    assertF7WriteAllowed('RESULT')
     let resultId = ''
     let normalizedScore = 0
     let levelResult = ''
@@ -270,6 +272,9 @@ export function submitOperationScores(
       levelResult
     }
   } catch (err) {
+    if (err instanceof ReportWriteBlockedError) {
+      return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
+    }
     console.error('[submitOperationScores] error:', err)
     return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
   }

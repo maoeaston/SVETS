@@ -5,6 +5,7 @@ import type { ActionLogEntry } from '@shared/types/event-payloads'
 import type { DBAdapter } from '../db/interface'
 import { applyAssessmentEvent } from './assessment-reducer'
 import { applyAssignmentEvent } from './assignment-reducer'
+import { applyReportEvent, isF7ReportEvent, markReportEventApplied, ReportReducerError } from './report-reducer'
 import { applyTrainingEvent } from './training-reducer'
 
 export type RecoveryLogErrorCode =
@@ -252,6 +253,45 @@ function insertEventProjection(db: DBAdapter, event: ActionLogEntry, sourceLogPa
   )
 }
 
+type EventProjectionRow = {
+  event_id: string
+  aggregate_type: string
+  aggregate_id: string
+  event_type: string
+  event_sequence: number
+  payload_json: string
+  checksum: string
+  schema_version: number
+  applied_to_snapshot: number
+}
+
+function eventProjection(db: DBAdapter, eventId: string): EventProjectionRow | undefined {
+  return db.prepare(
+    `SELECT event_id, aggregate_type, aggregate_id, event_type, event_sequence,
+            payload_json, checksum, schema_version, applied_to_snapshot
+       FROM domain_event_projection
+      WHERE event_id = ?`
+  ).get(eventId) as EventProjectionRow | undefined
+}
+
+function assertF7ProjectionMatches(event: ActionLogEntry, projection: EventProjectionRow): void {
+  if (
+    projection.aggregate_type !== event.aggregate_type
+    || projection.aggregate_id !== event.aggregate_id
+    || projection.event_type !== event.event_type
+    || projection.event_sequence !== event.event_sequence
+    || projection.payload_json !== JSON.stringify(event.payload)
+    || projection.checksum !== event.checksum
+    || projection.schema_version !== 2
+  ) {
+    throw new RecoveryReplayError(
+      'UNRECOVERABLE_EVENT',
+      event.event_id,
+      `schema-v2 event ${event.event_id} conflicts with its SQLite projection`
+    )
+  }
+}
+
 function applyRecoveredEvent(db: DBAdapter, event: ActionLogEntry): void {
   if (assessmentEventTypes.has(event.event_type)) {
     applyAssessmentEvent(db, event)
@@ -492,22 +532,67 @@ export function reconcileActionLog(
   let skippedEventCount = 0
 
   for (const event of log.events) {
-    const projected = db
-      .prepare('SELECT 1 FROM domain_event_projection WHERE event_id = ?')
-      .get(event.event_id)
-    if (projected) {
-      skippedEventCount += 1
-      continue
-    }
-
-    db.transaction(() => {
-      insertEventProjection(db, event, options.logPath)
-      applyRecoveredEvent(db, event)
-    })()
-    replayedEventCount += 1
+    const result = reconcileActionLogEventGroup(db, [event], options.logPath)
+    replayedEventCount += result.replayedEventCount
+    skippedEventCount += result.skippedEventCount
   }
 
   return { ...log, replayedEventCount, skippedEventCount }
+}
+
+/**
+ * 用一个 SQLite 事务恢复一组不可拆分的旧事件。正常恢复以单事件调用；升级桥接用它
+ * 保证旧版安全事实修正的三条 JSONL append 不会留下只恢复一半的 SQLite 投影。
+ */
+export function reconcileActionLogEventGroup(
+  db: DBAdapter,
+  events: ActionLogEntry[],
+  sourceLogPath: string
+): { replayedEventCount: number; skippedEventCount: number } {
+  let replayedEventCount = 0
+  let skippedEventCount = 0
+  db.transaction(() => {
+    for (const event of events) {
+      const projected = eventProjection(db, event.event_id)
+      if (event.schema_version === 2) {
+        if (!isF7ReportEvent(event)) {
+          throw new RecoveryReplayError(
+            'UNSUPPORTED_EVENT',
+            event.event_id,
+            `schema-v2 event ${event.event_type} (${event.event_id}) has no F7 recovery reducer`
+          )
+        }
+        if (projected) {
+          assertF7ProjectionMatches(event, projected)
+          if (projected.applied_to_snapshot === 1) {
+            skippedEventCount += 1
+            continue
+          }
+        } else {
+          insertEventProjection(db, event, sourceLogPath)
+        }
+        try {
+          applyReportEvent(db, event)
+        } catch (error) {
+          if (error instanceof ReportReducerError) {
+            throw new RecoveryReplayError('UNRECOVERABLE_EVENT', event.event_id, error.message)
+          }
+          throw error
+        }
+        markReportEventApplied(db, event)
+        replayedEventCount += 1
+        continue
+      }
+      if (projected) {
+        skippedEventCount += 1
+        continue
+      }
+      insertEventProjection(db, event, sourceLogPath)
+      applyRecoveredEvent(db, event)
+      replayedEventCount += 1
+    }
+  })()
+  return { replayedEventCount, skippedEventCount }
 }
 
 /** 写入恢复完成后的 SQLite 快照元数据。调用方须先持久化 lastAppliedEvent。 */

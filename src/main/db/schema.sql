@@ -1,5 +1,5 @@
 -- ============================================================================
--- 炫灿-职途向导系统 MVP schema.sql v0.1.15-multi-device-m3-grant-assignment
+-- 炫灿-职途向导系统 MVP schema.sql v0.1.16-report-framework
 -- Architecture baseline:
 --   1. Lightweight event sourcing + SQLite projection.
 --   2. action_log.jsonl is the source of truth; SQLite is a query snapshot.
@@ -24,6 +24,10 @@
 -- F6 patch notes (scoring framework — score scope contract):
 --   1. offline_score_record.score_scope no longer defaults to OFFLINE_ABILITY;
 --      every scoring writer must pass an explicit scope.
+-- F7 patch notes (report framework):
+--   1. task_closure records teacher-confirmed BASE_ABILITY result bindings and revisions.
+--   2. task_report stores immutable lineage, source/hash, contract, and lifecycle facts.
+--   3. TASK_CLOSURE is a first-class event/error aggregate.
 -- v0.1.14 patch notes (multi-device M2 — business session foundation):
 --   Ref: doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md §7.5 D2-D6/D8
 --   1. business_session parent table is now enforced for assessment/training child sessions.
@@ -470,6 +474,7 @@ CREATE TABLE IF NOT EXISTS domain_event_projection (
                            'STRATEGY_CONFIG',
                            'QUESTION_BANK',
                            'BUSINESS_SESSION',
+                           'TASK_CLOSURE',
                            'TASK_REPORT',
                            'SAFETY_INCIDENT',
                            'ASSET_RESOURCE',
@@ -1268,6 +1273,45 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_result_record_one_current_per_source_type
 -- 11. Task report snapshots
 -- ----------------------------------------------------------------------------
 
+CREATE TABLE IF NOT EXISTS task_closure (
+  task_closure_id                 TEXT PRIMARY KEY,
+  student_id                      TEXT NOT NULL REFERENCES student_profile(student_id),
+  job_code                        TEXT NOT NULL,
+  task_code                       TEXT NOT NULL CHECK (length(trim(task_code)) > 0),
+  cycle_no                        INTEGER NOT NULL CHECK (cycle_no >= 1),
+  closure_revision                INTEGER NOT NULL CHECK (closure_revision >= 1),
+  status                          TEXT NOT NULL CHECK (status IN ('CONFIRMED', 'SUPERSEDED')),
+  is_cycle_head                   INTEGER NOT NULL CHECK (is_cycle_head IN (0, 1)),
+  ability_result_id               TEXT NOT NULL REFERENCES result_record(result_id),
+  training_completion_result_id   TEXT NOT NULL REFERENCES result_record(result_id),
+  operation_pass_rate_result_id   TEXT NOT NULL REFERENCES result_record(result_id),
+  ability_source_aggregate_id     TEXT NOT NULL,
+  training_source_aggregate_id    TEXT NOT NULL,
+  operation_source_aggregate_id   TEXT NOT NULL,
+  replaces_task_closure_id        TEXT REFERENCES task_closure(task_closure_id),
+  replacement_task_closure_id     TEXT REFERENCES task_closure(task_closure_id),
+  correction_reason               TEXT,
+  confirmed_by                    TEXT NOT NULL REFERENCES user_account(user_id),
+  confirmed_event_id              TEXT NOT NULL UNIQUE REFERENCES domain_event_projection(event_id),
+  confirmed_at                    TEXT NOT NULL,
+  last_applied_event_id           TEXT REFERENCES domain_event_projection(event_id),
+  created_at                      TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at                      TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (student_id, job_code, task_code, cycle_no, closure_revision),
+  CHECK (replaces_task_closure_id IS NULL OR replaces_task_closure_id <> task_closure_id),
+  CHECK (replacement_task_closure_id IS NULL OR replacement_task_closure_id <> task_closure_id),
+  CHECK ((status = 'CONFIRMED' AND is_cycle_head = 1) OR (status = 'SUPERSEDED' AND is_cycle_head = 0))
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_task_closure_cycle_head
+  ON task_closure(student_id, job_code, task_code, cycle_no) WHERE is_cycle_head = 1;
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_task_closure_cycle_confirmed
+  ON task_closure(student_id, job_code, task_code, cycle_no) WHERE status = 'CONFIRMED';
+
+CREATE INDEX IF NOT EXISTS idx_task_closure_student_task
+  ON task_closure(student_id, job_code, task_code, cycle_no DESC, closure_revision DESC);
+
 CREATE TABLE IF NOT EXISTS task_report (
   report_id              TEXT PRIMARY KEY,
   report_type            TEXT NOT NULL CHECK (report_type IN (
@@ -1294,6 +1338,21 @@ CREATE TABLE IF NOT EXISTS task_report (
   generated_at           TEXT NOT NULL DEFAULT (datetime('now')),
   placement_review_by    TEXT REFERENCES user_account(user_id),
   placement_review_at    TEXT,
+  task_closure_id        TEXT REFERENCES task_closure(task_closure_id),
+  repair_of_report_id    TEXT REFERENCES task_report(report_id),
+  lineage_key            TEXT,
+  source_set_hash        TEXT,
+  generation_key         TEXT,
+  content_hash           TEXT,
+  report_revision        INTEGER CHECK (report_revision IS NULL OR report_revision >= 1),
+  report_schema_version  TEXT,
+  report_builder_version TEXT,
+  generation_reason      TEXT CHECK (generation_reason IS NULL OR generation_reason IN (
+                           'NORMAL', 'CONTRACT_REPAIR', 'FACTUAL_CORRECTION', 'DUPLICATE_MERGE'
+                         )),
+  contract_validation_status TEXT NOT NULL DEFAULT 'REPAIR_REQUIRED'
+                           CHECK (contract_validation_status IN ('VALID', 'REPAIR_REQUIRED')),
+  last_applied_event_id  TEXT REFERENCES domain_event_projection(event_id),
   status                 TEXT NOT NULL DEFAULT 'GENERATED'
                          CHECK (status IN ('GENERATED', 'LOCKED', 'EXPORTED', 'SUPERSEDED', 'ARCHIVED', 'FAILED'))
 );
@@ -1303,6 +1362,23 @@ CREATE INDEX IF NOT EXISTS idx_task_report_student_type
 
 CREATE INDEX IF NOT EXISTS idx_task_report_source
   ON task_report(source_aggregate_type, source_aggregate_id);
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_task_report_generation_key
+  ON task_report(generation_key) WHERE generation_key IS NOT NULL;
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_task_report_lineage_revision
+  ON task_report(lineage_key, report_revision)
+  WHERE lineage_key IS NOT NULL AND report_revision IS NOT NULL;
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_task_report_active_lineage
+  ON task_report(lineage_key)
+  WHERE lineage_key IS NOT NULL AND status IN ('GENERATED', 'EXPORTED', 'LOCKED');
+
+CREATE INDEX IF NOT EXISTS idx_task_report_lineage_revision
+  ON task_report(lineage_key, report_revision DESC);
+
+CREATE INDEX IF NOT EXISTS idx_task_report_task_closure
+  ON task_report(task_closure_id);
 
 -- ----------------------------------------------------------------------------
 -- 12. Snapshot metadata
@@ -1354,7 +1430,7 @@ CREATE TABLE IF NOT EXISTS error_event_log (
                           )),
   related_aggregate_type  TEXT CHECK (related_aggregate_type IS NULL OR related_aggregate_type IN (
                             'ASSESSMENT_SESSION', 'TRAINING_SESSION', 'STUDENT_PROFILE',
-                            'STRATEGY_CONFIG', 'QUESTION_BANK', 'TASK_REPORT',
+                            'STRATEGY_CONFIG', 'QUESTION_BANK', 'TASK_CLOSURE', 'TASK_REPORT',
                             'SAFETY_INCIDENT', 'ASSET_RESOURCE', 'SYSTEM'
                           )),
   related_aggregate_id    TEXT,
@@ -1393,7 +1469,14 @@ INSERT OR IGNORE INTO error_code_registry (
   ('ASSET_MISSING', 'ASSET', 'ERROR', 'P1', '资源文件缺失', '题目或报告绑定的本地资源不存在。', '检查资源包完整性，重新导入资源。', 1),
   ('FSM_INVALID_TRANSITION', 'FSM', 'ERROR', 'P1', '非法状态迁移', '当前状态不允许执行该事件。', '阻断该事件，提示教师刷新后重试。', 1),
   ('SCORING_POLICY_MISSING', 'SCORING', 'ERROR', 'P1', '评分策略缺失', 'strategy_config 中缺少必要评分策略。', '禁用相关测评入口并修复策略配置。', 1),
-  ('REPORT_GENERATION_FAILED', 'REPORT', 'ERROR', 'P2', '报告生成失败', '报告快照或文件导出失败。', '保留 result_record，允许重新生成报告。', 0);
+  ('REPORT_GENERATION_FAILED', 'REPORT', 'ERROR', 'P2', '报告生成失败', '报告快照生成失败。', '保留 result_record，允许重新生成报告。', 0),
+  ('REPORT_EXPORT_FAILED', 'REPORT', 'ERROR', 'P2', '报告导出失败', '报告 HTML 文件导出失败。', '保留报告快照，允许重新导出。', 0);
+INSERT OR IGNORE INTO error_code_registry (
+  error_code, error_category, severity, priority_level, title, default_message, default_recovery_hint, is_blocking
+) VALUES (
+  'STARTUP_RECOVERY_REQUIRED', 'RECOVERY', 'CRITICAL', 'P0', '数据库需要恢复',
+  '旧事件日志或报告快照无法安全升级。', '保留当前文件并联系维护人员执行恢复。', 1
+);
 
 -- ----------------------------------------------------------------------------
 -- 14. Terminal-state protection triggers
@@ -1906,6 +1989,93 @@ BEGIN
   SELECT RAISE(ABORT, 'result_record for redline-halted session must be safety-overridden');
 END;
 
+CREATE TRIGGER IF NOT EXISTS trg_task_closure_insert_guard
+BEFORE INSERT ON task_closure
+FOR EACH ROW
+WHEN NOT EXISTS (
+  SELECT 1 FROM result_record r
+  JOIN assessment_session s ON s.session_id = r.source_aggregate_id
+  WHERE r.result_id = NEW.ability_result_id
+    AND r.result_type = 'ABILITY_SCORE'
+    AND r.source_aggregate_type = 'ASSESSMENT_SESSION'
+    AND r.student_id = NEW.student_id AND r.job_code = NEW.job_code
+    AND s.task_code = NEW.task_code AND s.status <> 'REDLINE_HALTED'
+    AND r.safety_overridden = 0 AND NEW.ability_source_aggregate_id = r.source_aggregate_id
+) OR NOT EXISTS (
+  SELECT 1 FROM result_record r
+  JOIN training_session s ON s.training_session_id = r.source_aggregate_id
+  WHERE r.result_id = NEW.training_completion_result_id
+    AND r.result_type = 'TRAINING_COMPLETION'
+    AND r.source_aggregate_type = 'TRAINING_SESSION'
+    AND r.student_id = NEW.student_id AND r.job_code = NEW.job_code
+    AND s.task_code = NEW.task_code AND s.status <> 'REDLINE_HALTED'
+    AND r.safety_overridden = 0 AND NEW.training_source_aggregate_id = r.source_aggregate_id
+) OR NOT EXISTS (
+  SELECT 1 FROM result_record r
+  JOIN assessment_session s ON s.session_id = r.source_aggregate_id
+  WHERE r.result_id = NEW.operation_pass_rate_result_id
+    AND r.result_type = 'OPERATION_PASS_RATE'
+    AND r.source_aggregate_type = 'ASSESSMENT_SESSION'
+    AND r.student_id = NEW.student_id AND r.job_code = NEW.job_code
+    AND s.task_code = NEW.task_code AND s.status <> 'REDLINE_HALTED'
+    AND r.safety_overridden = 0 AND NEW.operation_source_aggregate_id = r.source_aggregate_id
+) OR (NEW.replaces_task_closure_id IS NOT NULL AND NOT EXISTS (
+  SELECT 1 FROM task_closure old
+  WHERE old.task_closure_id = NEW.replaces_task_closure_id
+    AND old.student_id = NEW.student_id AND old.job_code = NEW.job_code AND old.task_code = NEW.task_code
+    AND old.cycle_no = NEW.cycle_no
+    AND ((old.status = 'CONFIRMED' AND old.is_cycle_head = 1)
+         OR (old.status = 'SUPERSEDED' AND old.replacement_task_closure_id IS NULL))
+))
+BEGIN
+  SELECT RAISE(ABORT, 'task_closure binding, source, or replacement head is invalid');
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_task_closure_bindings_immutable
+BEFORE UPDATE OF student_id, job_code, task_code, cycle_no, closure_revision,
+  ability_result_id, training_completion_result_id, operation_pass_rate_result_id,
+  ability_source_aggregate_id, training_source_aggregate_id, operation_source_aggregate_id,
+  replaces_task_closure_id, correction_reason, confirmed_by, confirmed_event_id, confirmed_at
+ON task_closure
+FOR EACH ROW
+BEGIN
+  SELECT RAISE(ABORT, 'task_closure bindings and confirmation facts are immutable');
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_task_closure_delete_guard
+BEFORE DELETE ON task_closure
+FOR EACH ROW
+BEGIN
+  SELECT RAISE(ABORT, 'task_closure rows are append-only');
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_task_closure_status_transition_guard
+BEFORE UPDATE OF status, is_cycle_head ON task_closure
+FOR EACH ROW
+WHEN (OLD.status = 'CONFIRMED' AND NOT (NEW.status = 'SUPERSEDED' AND NEW.is_cycle_head = 0))
+  OR (OLD.status = 'SUPERSEDED' AND (NEW.status <> 'SUPERSEDED' OR NEW.is_cycle_head <> 0))
+BEGIN
+  SELECT RAISE(ABORT, 'task_closure status can only transition CONFIRMED to SUPERSEDED');
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_task_closure_replacement_link_guard
+BEFORE UPDATE OF replacement_task_closure_id ON task_closure
+FOR EACH ROW
+WHEN NEW.replacement_task_closure_id IS NOT NULL AND NOT EXISTS (
+  SELECT 1 FROM task_closure replacement
+  WHERE replacement.task_closure_id = NEW.replacement_task_closure_id
+    AND replacement.replaces_task_closure_id = OLD.task_closure_id
+    AND replacement.student_id = OLD.student_id AND replacement.job_code = OLD.job_code
+    AND replacement.task_code = OLD.task_code AND replacement.cycle_no = OLD.cycle_no
+    AND (
+      (replacement.status = 'CONFIRMED' AND replacement.is_cycle_head = 1)
+      OR (replacement.status = 'SUPERSEDED' AND replacement.is_cycle_head = 0)
+    )
+)
+BEGIN
+  SELECT RAISE(ABORT, 'task_closure replacement must point to the current replacement head');
+END;
+
 CREATE TRIGGER IF NOT EXISTS trg_task_report_safety_termination_insert_guard
 BEFORE INSERT ON task_report
 FOR EACH ROW
@@ -1941,19 +2111,63 @@ END;
 CREATE TRIGGER IF NOT EXISTS trg_task_report_placement_review_export_insert_guard
 BEFORE INSERT ON task_report
 FOR EACH ROW
-WHEN NEW.report_type = 'FULL_REPORT' AND NEW.status = 'EXPORTED'
+WHEN NEW.status = 'EXPORTED'
+  AND json_extract(NEW.report_content_json, '$.placement_advice.enabled') = 1
   AND (NEW.placement_review_by IS NULL OR NEW.placement_review_at IS NULL)
 BEGIN
-  SELECT RAISE(ABORT, 'placement review is required before exporting FULL_REPORT');
+  SELECT RAISE(ABORT, 'placement review is required before exporting an enabled placement advice');
 END;
 
 CREATE TRIGGER IF NOT EXISTS trg_task_report_placement_review_export_update_guard
 BEFORE UPDATE ON task_report
 FOR EACH ROW
-WHEN NEW.report_type = 'FULL_REPORT' AND NEW.status = 'EXPORTED'
+WHEN NEW.status = 'EXPORTED'
+  AND json_extract(NEW.report_content_json, '$.placement_advice.enabled') = 1
   AND (NEW.placement_review_by IS NULL OR NEW.placement_review_at IS NULL)
 BEGIN
-  SELECT RAISE(ABORT, 'placement review is required before exporting FULL_REPORT');
+  SELECT RAISE(ABORT, 'placement review is required before exporting an enabled placement advice');
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_task_report_snapshot_immutable
+BEFORE UPDATE OF student_id, source_aggregate_type, source_aggregate_id, source_result_ids_json,
+  report_title, report_content_json, generated_event_id, generated_by, generated_at,
+  task_closure_id, repair_of_report_id, lineage_key, source_set_hash, generation_key,
+  content_hash, report_revision, report_schema_version, report_builder_version, generation_reason
+ON task_report
+FOR EACH ROW
+BEGIN
+  SELECT RAISE(ABORT, 'task_report snapshot facts are immutable');
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_task_report_contract_valid_for_review_lock_export_insert
+BEFORE INSERT ON task_report
+FOR EACH ROW
+WHEN (NEW.placement_review_by IS NOT NULL OR NEW.placement_review_at IS NOT NULL
+      OR NEW.status IN ('LOCKED', 'EXPORTED'))
+  AND NEW.contract_validation_status <> 'VALID'
+BEGIN
+  SELECT RAISE(ABORT, 'VALID report contract is required for review, lock, and export');
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_task_report_contract_valid_for_review_lock_export_update
+BEFORE UPDATE ON task_report
+FOR EACH ROW
+WHEN (NEW.placement_review_by IS NOT NULL OR NEW.placement_review_at IS NOT NULL
+      OR NEW.status IN ('LOCKED', 'EXPORTED'))
+  AND NEW.contract_validation_status <> 'VALID'
+BEGIN
+  SELECT RAISE(ABORT, 'VALID report contract is required for review, lock, and export');
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_task_report_status_transition_guard
+BEFORE UPDATE OF status ON task_report
+FOR EACH ROW
+WHEN (OLD.status = 'LOCKED' AND NEW.status NOT IN ('LOCKED', 'SUPERSEDED', 'ARCHIVED'))
+  OR (OLD.status IN ('SUPERSEDED', 'ARCHIVED') AND NEW.status <> OLD.status)
+  OR (OLD.status = 'GENERATED' AND NEW.status NOT IN ('GENERATED', 'EXPORTED', 'LOCKED', 'SUPERSEDED', 'ARCHIVED'))
+  OR (OLD.status = 'EXPORTED' AND NEW.status NOT IN ('EXPORTED', 'LOCKED', 'SUPERSEDED', 'ARCHIVED'))
+BEGIN
+  SELECT RAISE(ABORT, 'task_report status transition is invalid');
 END;
 
 -- ----------------------------------------------------------------------------
@@ -2222,8 +2436,13 @@ INSERT OR IGNORE INTO schema_migration (
   '2026-07-24_f6_offline_score_scope_required',
   '0.1.15-multi-device-m3-grant-assignment',
   'F6: require explicit offline_score_record.score_scope'
+),
+(
+  '2026-07-24_f7_report_framework',
+  '0.1.16-report-framework',
+  'F7: task closure, report lineage, contract state, and legacy report backfill'
 );
 
 -- ============================================================================
--- End of schema.sql v0.1.15-multi-device-m3-grant-assignment
+-- End of schema.sql v0.1.16-report-framework
 -- ============================================================================

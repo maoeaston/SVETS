@@ -1,0 +1,74 @@
+version: 1
+
+repository:
+  default_base_branch: main
+  package_manager: npm
+  project_instruction_file: AGENTS.md
+  package_manifest: package.json
+  ci_workflow_dir: TODO_CONFIRM:no_.github_workflows_directory_found
+
+sources:
+  authoritative_prd: doc/specs/MVP_PRD_v1.0.9-authoritative.md
+  authoritative_schema: src/main/db/schema.sql
+  authoritative_architecture: doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md
+  workflow_contract: doc/ai/vibe-workflow-contract.md
+  project_invariants: doc/specs/project-invariants.md
+  json_contract:
+    runtime_type_source: src/shared/types/json-schemas.ts
+    readable_reference: doc/specs/xc-career-guide-json-field-schema-v1.0.0.md
+  event_contract:
+    runtime_type_source: src/shared/types/event-payloads.ts
+    readable_reference: doc/specs/xc-career-guide-event-payload-schema-v1.0.0.md
+  ipc_contract:
+    shared_type_source: src/shared/types/ipc-api.ts
+    preload_whitelist: src/preload/index.ts
+  doc_index: doc/index.md
+
+commands:
+  typecheck: npm run typecheck
+  lint: npm run lint
+  unit_test: npm test
+  build: npm run build
+  schema_verify: npm run db:verify
+  docs_index_update: npm run docs:index:update
+  docs_index_check: npm run docs:index:check
+  asset_manifest_validate: npm run asset:validate
+  job_skill_contract_check: npm run contract:job-skill:check
+  job_skill_delivery_check: npm run contract:job-skill:delivery:check
+  base_ability_gate_check: npm run contract:base-ability:gate:check
+
+risk_triggers:
+  R3:
+    - schema
+    - migration
+    - safety_incident
+    - REDLINE_HALTED
+    - FSM
+    - state_machine
+    - permission_model
+    - data_repair
+    - irreversible_operation
+    - core_result_calculation
+    - multi_device_assignment
+  R2:
+    - ipc
+    - api
+    - event_type
+    - result_projection
+    - report_generation
+    - persistent_write
+    - strategy_config
+    - renderer_route
+
+manual_acceptance:
+  - teacher_core_flow
+  - student_core_flow
+  - safety_redline_flow
+  - electron_desktop_smoke
+  - multi_device_assignment_flow
+
+notes:
+  - AGENTS.md declares PRD v1.0.9 and schema v0.1.16-report-framework as current engineering baseline.
+  - MVP_PRD_v1.0.9-authoritative.md declares src/main/db/schema.sql as the database DDL source of truth.
+  - MVP_PRD_v1.0.9-authoritative.md declares src/shared/types/json-schemas.ts and src/shared/types/event-payloads.ts as runtime JSON and event type sources; the Markdown specs remain readable historical references.
+  - No CI workflow directory was found in this checkout during installation.

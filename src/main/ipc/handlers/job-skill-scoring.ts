@@ -15,6 +15,7 @@ import { getDatabase } from '../../db/connection'
 import { assertCaller, assertSessionOwner, assertStudent } from '../../utils/auth-context'
 import { writeEvent } from '../../domain/event-writer'
 import { applyAssessmentEvent } from '../../domain/assessment-reducer'
+import { assertF7WriteAllowed, ReportWriteBlockedError } from '../../domain/report-write-gate'
 import type {
   SubmitJobSkillOfflineScoresParams,
   SubmitJobSkillOfflineScoresResult,
@@ -30,6 +31,7 @@ import {
   finalizeJobSkillResultCore,
   maybeGenerateJobSkillReportAfterResult
 } from './job-skill-result'
+import { createJobSkillReportAutomation, type JobSkillReportAutomation } from './job-skill-report'
 
 type JsonObject = Record<string, unknown>
 type ScoreAnchors = { '0': string; '1': string; '2': string }
@@ -137,7 +139,8 @@ function buildScoringQuestion(
  */
 export function submitJobSkillOfflineScores(
   db: DBAdapter,
-  params: SubmitJobSkillOfflineScoresParams
+  params: SubmitJobSkillOfflineScoresParams,
+  automation?: JobSkillReportAutomation
 ): SubmitJobSkillOfflineScoresResult {
   // 1. 身份校验（TEACHER）
   const caller = assertCaller(db, params.callerUserId, params.callerRole)
@@ -245,6 +248,7 @@ export function submitJobSkillOfflineScores(
 
   // 8. 事务：N × OFFLINE_SCORE_SUBMITTED + 可选 JOB_SKILL finalization
   try {
+    assertF7WriteAllowed('RESULT')
     let itemsScored = 0
     let finalized = false
 
@@ -303,11 +307,14 @@ export function submitJobSkillOfflineScores(
 
     // T10: 报告生成在评分/finalize 事务提交后执行，避免嵌套事务。
     if (finalized) {
-      maybeGenerateJobSkillReportAfterResult(db, params.sessionId, params.callerUserId)
+      maybeGenerateJobSkillReportAfterResult(db, params.sessionId, params.callerUserId, automation)
     }
 
     return { success: true, itemsScored }
   } catch (err) {
+    if (err instanceof ReportWriteBlockedError) {
+      return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
+    }
     console.error('[submitJobSkillOfflineScores] error:', err)
     return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
   }
@@ -443,7 +450,8 @@ function defaultGetDb(): DBAdapter {
 
 export function registerJobSkillScoringHandlers(getDb: () => DBAdapter = defaultGetDb): void {
   ipcMain.handle('assessment:submitJobSkillOfflineScores', (_event, params: unknown) => {
-    return submitJobSkillOfflineScores(getDb(), params as SubmitJobSkillOfflineScoresParams)
+    const db = getDb()
+    return submitJobSkillOfflineScores(db, params as SubmitJobSkillOfflineScoresParams, createJobSkillReportAutomation(db))
   })
 
   ipcMain.handle('assessment:getJobSkillOfflineScores', (_event, params: unknown) => {

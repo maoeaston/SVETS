@@ -504,8 +504,10 @@ describe('schema v0.1.10 scoring closure constraints', () => {
     db.prepare(
       `INSERT INTO task_report
        (report_id, report_type, student_id, source_aggregate_type, source_aggregate_id,
-          report_title, report_content_json, generated_event_id, generated_by, status)
-       VALUES ('rep1', 'FULL_REPORT', ?, 'ASSESSMENT_SESSION', 's1', '报告', '{}', 'ev_report', ?, 'GENERATED')`
+          report_title, report_content_json, generated_event_id, generated_by,
+          contract_validation_status, status)
+       VALUES ('rep1', 'FULL_REPORT', ?, 'ASSESSMENT_SESSION', 's1', '报告',
+               '{"placement_advice":{"enabled":true}}', 'ev_report', ?, 'VALID', 'GENERATED')`
     ).run(studentId, teacherId)
 
     expect(() => {

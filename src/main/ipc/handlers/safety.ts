@@ -6,6 +6,9 @@ import { getDatabase } from '../../db/connection'
 import { assertCaller } from '../../utils/auth-context'
 import { resolveTrustedAuthSessionCaller } from '../../utils/auth-session'
 import { writeEvent } from '../../domain/event-writer'
+import { getActionLogPath } from '../../domain/action-log-path'
+import { ReportCommandCoordinator, type F7EventIntent, type ReportCommandKey } from '../../domain/report-command-coordinator'
+import { ReportService } from '../../domain/report-service'
 import {
   SAFETY_CONTEXT_PHASES,
   SAFETY_REASON_CODES
@@ -13,9 +16,11 @@ import {
 import type {
   SafetyIncidentCreatedPayload,
   SafetyIncidentDetailConfirmedPayload,
+  SafetyIncidentReplacedPayload,
   SafetyIncidentResolvedPayload,
   SafetyIncidentVoidedPayload,
-  SafetyIncidentReplacedPayload
+  SafetyIncidentReplacedForFactualCorrectionV2Payload,
+  SafetyIncidentVoidedV2Payload
 } from '../../../shared/types/event-payloads'
 import type {
   ConfirmSafetyIncidentParams,
@@ -46,6 +51,9 @@ type SafetyRow = {
   reason_code: string
   context_phase: string
   description: string | null
+  triggered_by: string
+  occurred_at: string
+  confirmed_by: string | null
 }
 
 type SafetyViewRow = {
@@ -78,9 +86,41 @@ function defaultGetDb(): DBAdapter {
   return new SqliteAdapter(getDatabase())
 }
 
+export interface SafetyReportAutomation {
+  generateSafetyReportFromIncident(incidentId: string, callerUserId: string): void
+  runSafetyMutation<T>(
+    key: ReportCommandKey,
+    buildIntent: () => F7EventIntent | null,
+    mapResult: (eventId: string | null) => T
+  ): T
+}
+
+export function createSafetyReportAutomation(db: DBAdapter): SafetyReportAutomation {
+  const coordinator = new ReportCommandCoordinator({ db, actionLogPath: getActionLogPath() })
+  const service = new ReportService(db, coordinator)
+  return {
+    generateSafetyReportFromIncident(incidentId: string, callerUserId: string): void {
+      service.generateSafetyReportFromIncidentSync(incidentId, callerUserId, 'SYSTEM')
+    },
+    runSafetyMutation<T>(
+      key: ReportCommandKey,
+      buildIntent: () => F7EventIntent | null,
+      mapResult: (eventId: string | null) => T
+    ): T {
+      return coordinator.runSingleEventCommandSync({
+        key,
+        areas: ['SAFETY_INCIDENT', 'TASK_REPORT'],
+        buildIntent,
+        mapResult: (event) => mapResult(event?.event_id ?? null)
+      })
+    }
+  }
+}
+
 function readIncident(db: DBAdapter, incidentId: string): SafetyRow | undefined {
   return db.prepare(
-    `SELECT incident_id, student_id, job_code, task_code, status, reason_code, context_phase, description
+    `SELECT incident_id, student_id, job_code, task_code, status, reason_code, context_phase, description,
+            triggered_by, occurred_at, confirmed_by
        FROM safety_incident WHERE incident_id = ?`
   ).get(incidentId) as SafetyRow | undefined
 }
@@ -206,7 +246,8 @@ function isNonEmptyString(value: unknown): value is string {
 
 export function confirmSafetyIncident(
   db: DBAdapter,
-  params: ConfirmSafetyIncidentParams
+  params: ConfirmSafetyIncidentParams,
+  automation?: SafetyReportAutomation
 ): SafetyIncidentMutationResult {
   const teacherId = requireRole(db, params.callerUserId, params.callerRole, 'TEACHER')
   if (!teacherId) return { success: false, errorCode: 'FORBIDDEN' }
@@ -242,12 +283,14 @@ export function confirmSafetyIncident(
   } catch {
     return { success: false, errorCode: 'SAFETY_SYSTEM_ERROR' }
   }
+  tryGenerateSafetyReport(automation, incident.incident_id, teacherId)
   return { success: true, incidentId: incident.incident_id }
 }
 
 export function resolveSafetyIncident(
   db: DBAdapter,
-  params: ResolveSafetyIncidentParams
+  params: ResolveSafetyIncidentParams,
+  automation?: SafetyReportAutomation
 ): SafetyIncidentMutationResult {
   const adminId = requireRole(db, params.callerUserId, params.callerRole, 'ADMIN')
   if (!adminId) return { success: false, errorCode: 'FORBIDDEN' }
@@ -277,6 +320,7 @@ export function resolveSafetyIncident(
   } catch {
     return { success: false, errorCode: 'SAFETY_SYSTEM_ERROR' }
   }
+  tryGenerateSafetyReport(automation, incident.incident_id, adminId)
   return { success: true, incidentId: incident.incident_id }
 }
 
@@ -309,7 +353,8 @@ function voidIncident(
 
 export function voidSafetyIncident(
   db: DBAdapter,
-  params: VoidSafetyIncidentParams
+  params: VoidSafetyIncidentParams,
+  automation?: SafetyReportAutomation
 ): SafetyIncidentMutationResult {
   const adminId = requireRole(db, params.callerUserId, params.callerRole, 'ADMIN')
   if (!adminId) return { success: false, errorCode: 'FORBIDDEN' }
@@ -332,6 +377,38 @@ export function voidSafetyIncident(
   } else if (params.replacementIncidentId) {
     return { success: false, errorCode: 'VALIDATION_ERROR' }
   }
+  if (automation) {
+    const voidedAt = new Date().toISOString()
+    const activeReportIds = activeSafetyReportIds(db, incident.incident_id)
+    const payload: SafetyIncidentVoidedV2Payload = {
+      incident_id: incident.incident_id,
+      voided_at: voidedAt,
+      voided_by: adminId,
+      void_reason: params.voidReason,
+      void_notes: params.voidNotes ?? null,
+      replacement_incident_id: replacementIncidentId,
+      archived_report_ids: params.voidReason === 'DUPLICATE_RECORD' ? [] : activeReportIds,
+      superseded_report_ids: params.voidReason === 'DUPLICATE_RECORD' ? activeReportIds : [],
+      primary_incident_id: params.voidReason === 'DUPLICATE_RECORD' ? replacementIncidentId : null
+    }
+    try {
+      return automation.runSafetyMutation(
+        safetyCommandKey(incident),
+        () => ({
+          aggregateType: 'SAFETY_INCIDENT',
+          aggregateId: incident.incident_id,
+          eventType: 'SAFETY_INCIDENT_VOIDED',
+          payload: payload as unknown as Record<string, unknown>,
+          actorId: adminId,
+          actorRole: 'ADMIN'
+        }),
+        () => ({ success: true, incidentId: incident.incident_id })
+      )
+    } catch (error) {
+      console.error('[Safety] void failed:', error)
+      return { success: false, errorCode: 'SAFETY_SYSTEM_ERROR' }
+    }
+  }
   try {
     db.transaction(() => voidIncident(db, {
       incident, adminId, reason: params.voidReason, notes: params.voidNotes, replacementIncidentId
@@ -344,7 +421,8 @@ export function voidSafetyIncident(
 
 export function replaceSafetyIncidentForFactualCorrection(
   db: DBAdapter,
-  params: ReplaceSafetyIncidentParams
+  params: ReplaceSafetyIncidentParams,
+  automation?: SafetyReportAutomation
 ): SafetyIncidentMutationResult {
   const adminId = requireRole(db, params.callerUserId, params.callerRole, 'ADMIN')
   if (!adminId) return { success: false, errorCode: 'FORBIDDEN' }
@@ -356,6 +434,47 @@ export function replaceSafetyIncidentForFactualCorrection(
   }
   const replacementId = uuidv4()
   const occurredAt = new Date().toISOString()
+  if (automation) {
+    const payload: SafetyIncidentReplacedForFactualCorrectionV2Payload = {
+      root_incident_id: rootSafetyIncidentId(db, incident),
+      old_incident_id: incident.incident_id,
+      new_incident_id: replacementId,
+      student_id: incident.student_id,
+      job_code: incident.job_code,
+      task_code: incident.task_code,
+      reason_code: params.reasonCode,
+      context_phase: params.contextPhase,
+      full_description: params.description.trim(),
+      occurred_at: occurredAt,
+      triggered_by: adminId,
+      confirmed_by: adminId,
+      confirmed_at: occurredAt,
+      old_status: 'CONFIRMED',
+      old_status_after: 'VOIDED',
+      void_reason: 'FACTUAL_CORRECTION',
+      correction_reason: params.correctionReason.trim(),
+      replaced_by: adminId,
+      replaced_at: occurredAt,
+      superseded_report_ids: activeSafetyReportIds(db, incident.incident_id)
+    }
+    try {
+      return automation.runSafetyMutation(
+        safetyCommandKey(incident),
+        () => ({
+          aggregateType: 'SAFETY_INCIDENT',
+          aggregateId: incident.incident_id,
+          eventType: 'SAFETY_INCIDENT_REPLACED_FOR_FACTUAL_CORRECTION',
+          payload: payload as unknown as Record<string, unknown>,
+          actorId: adminId,
+          actorRole: 'ADMIN'
+        }),
+        () => ({ success: true, incidentId: replacementId })
+      )
+    } catch (error) {
+      console.error('[Safety] factual correction failed:', error)
+      return { success: false, errorCode: 'SAFETY_SYSTEM_ERROR' }
+    }
+  }
   try {
     db.transaction(() => {
       const createdPayload: SafetyIncidentCreatedPayload = {
@@ -394,6 +513,44 @@ export function replaceSafetyIncidentForFactualCorrection(
   return { success: true, incidentId: replacementId }
 }
 
+function tryGenerateSafetyReport(
+  automation: SafetyReportAutomation | undefined,
+  incidentId: string,
+  callerUserId: string
+): void {
+  if (!automation) return
+  try {
+    automation.generateSafetyReportFromIncident(incidentId, callerUserId)
+  } catch (error) {
+    console.error('[Safety] report generation failed:', error)
+  }
+}
+
+function activeSafetyReportIds(db: DBAdapter, incidentId: string): string[] {
+  const rows = db.prepare(
+    `SELECT report_id
+       FROM task_report
+      WHERE source_aggregate_type = 'SAFETY_INCIDENT'
+        AND source_aggregate_id = ?
+        AND status IN ('GENERATED', 'EXPORTED', 'LOCKED')
+      ORDER BY report_revision ASC, report_id ASC`
+  ).all(incidentId) as Array<{ report_id: string }>
+  return rows.map((row) => row.report_id)
+}
+
+function rootSafetyIncidentId(_db: DBAdapter, incident: SafetyRow): string {
+  return incident.incident_id
+}
+
+function safetyCommandKey(incident: SafetyRow): ReportCommandKey {
+  return {
+    studentId: incident.student_id,
+    jobCode: incident.job_code,
+    taskCode: incident.task_code,
+    scope: 'SAFETY'
+  }
+}
+
 export function registerSafetyHandlers(getDb: () => DBAdapter = defaultGetDb): void {
   function withTrusted<T extends { callerUserId: string; callerRole: string }, R>(
     event: Electron.IpcMainInvokeEvent,
@@ -406,13 +563,13 @@ export function registerSafetyHandlers(getDb: () => DBAdapter = defaultGetDb): v
     return run(db, trusted.params)
   }
   ipcMain.handle('safety:confirm', (event, params: ConfirmSafetyIncidentParams) =>
-    withTrusted(event, params, confirmSafetyIncident))
+    withTrusted(event, params, (db, trusted) => confirmSafetyIncident(db, trusted, createSafetyReportAutomation(db))))
   ipcMain.handle('safety:resolve', (event, params: ResolveSafetyIncidentParams) =>
-    withTrusted(event, params, resolveSafetyIncident))
+    withTrusted(event, params, (db, trusted) => resolveSafetyIncident(db, trusted, createSafetyReportAutomation(db))))
   ipcMain.handle('safety:void', (event, params: VoidSafetyIncidentParams) =>
-    withTrusted(event, params, voidSafetyIncident))
+    withTrusted(event, params, (db, trusted) => voidSafetyIncident(db, trusted, createSafetyReportAutomation(db))))
   ipcMain.handle('safety:replaceForFactualCorrection', (event, params: ReplaceSafetyIncidentParams) =>
-    withTrusted(event, params, replaceSafetyIncidentForFactualCorrection))
+    withTrusted(event, params, (db, trusted) => replaceSafetyIncidentForFactualCorrection(db, trusted, createSafetyReportAutomation(db))))
   ipcMain.handle('safety:list', (event, params: ListSafetyIncidentsParams) =>
     withTrusted(event, params, listSafetyIncidents))
   ipcMain.handle('safety:get', (event, params: GetSafetyIncidentParams) =>

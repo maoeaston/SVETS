@@ -1,0 +1,49 @@
+# 复制为 doc/specs/baseline.yaml，并按当前仓库实际路径修改。
+version: 1
+
+repository:
+  default_base_branch: main
+  package_manager: npm
+
+sources:
+  authoritative_prd: doc/specs/MVP_PRD-authoritative.md
+  authoritative_schema: src/main/db/schema.sql
+  project_invariants: doc/specs/project-invariants.md
+  architecture: doc/specs/architecture.md
+  event_contract: doc/specs/event-payload-schema.md
+  json_contract: doc/specs/json-field-schema.md
+  testing_policy: doc/specs/testing-policy.md
+
+commands:
+  typecheck: npm run typecheck
+  lint: npm run lint
+  unit_test: npm test
+  integration_test: npm run test:integration
+  build: npm run build
+  schema_verify: npm run verify:schema
+  invariant_verify: npm run verify:invariants
+
+# 不存在的命令请删除，不要保留占位命令并假装执行成功。
+
+risk_triggers:
+  R3:
+    - schema
+    - migration
+    - safety_incident
+    - REDLINE_HALTED
+    - state_machine
+    - permission_model
+    - data_repair
+    - irreversible_operation
+  R2:
+    - ipc
+    - api
+    - event_type
+    - result_projection
+    - report_generation
+    - persistent_write
+
+manual_acceptance:
+  - teacher_core_flow
+  - student_core_flow
+  - safety_redline_flow

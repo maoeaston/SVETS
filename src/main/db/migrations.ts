@@ -1,4 +1,10 @@
 import type { DBAdapter } from './interface'
+import {
+  applyF7ReportFrameworkMigration,
+  F7_REPORT_FRAMEWORK_MIGRATION_ID,
+  F7_SCHEMA_VERSION,
+  isF7ReportFrameworkStructurallyApplied
+} from './report-migration'
 
 export const M1_SCHEMA_VERSION = '0.1.13-multi-device-m1-identity'
 export const M1_MIGRATION_ID = '2026-07-14_mvp_schema_v0_1_13_multi_device_m1_identity'
@@ -9,6 +15,7 @@ export const CURRENT_MIGRATION_ID = '2026-07-15_mvp_schema_v0_1_15_multi_device_
 export const PHASE4_ASSET_ROLE_MIGRATION_ID = '2026-07-20_job_skill_phase4_asset_roles'
 export const F4_SITTING_MIGRATION_ID = '2026-07-23_f4_assessment_sitting'
 export const F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID = '2026-07-24_f6_offline_score_scope_required'
+export { F7_REPORT_FRAMEWORK_MIGRATION_ID, F7_SCHEMA_VERSION }
 
 type MigrationOptions = {
   beforeMigrate?: (migrationIds: string[]) => void
@@ -1311,6 +1318,14 @@ const migrations: Migration[] = [
     isStructurallyApplied: isF6ScoreScopeRequiredStructurallyApplied,
     up: applyF6ScoreScopeRequiredMigration,
     rebuildsReferencedTables: true
+  },
+  {
+    id: F7_REPORT_FRAMEWORK_MIGRATION_ID,
+    version: F7_SCHEMA_VERSION,
+    description: 'F7: task closure, report lineage, contract state, and legacy report backfill',
+    isStructurallyApplied: isF7ReportFrameworkStructurallyApplied,
+    up: applyF7ReportFrameworkMigration,
+    rebuildsReferencedTables: true
   }
 ]
 
@@ -1357,7 +1372,10 @@ export function runDatabaseMigrations(
 
   const targetIndex = options.throughMigrationId
     ? migrations.findIndex((migration) => migration.id === options.throughMigrationId)
-    : migrations.length - 1
+    // F7 requires the startup pre-reconcile bridge. The normal startup path names it
+    // explicitly after that bridge succeeds; existing historical repair callers remain
+    // capped at the last migration that is safe without an action-log context.
+    : migrations.findIndex((migration) => migration.id === F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID)
   if (targetIndex < 0) {
     throw new Error(`[DB] Unknown migration target: ${options.throughMigrationId}`)
   }
@@ -1432,6 +1450,7 @@ export function currentSchemaIssues(database: DBAdapter): string[] {
   if (!isPhase4AssetRoleApplied(database)) issues.push('migration:job-skill-phase4-asset-roles')
   if (!isF4SittingStructurallyApplied(database)) issues.push('migration:f4-assessment-sitting')
   if (!isF6ScoreScopeRequiredStructurallyApplied(database)) issues.push('migration:f6-score-scope-required')
+  if (!isF7ReportFrameworkStructurallyApplied(database)) issues.push('migration:f7-report-framework')
   if (!tableExists(database, 'schema_migration')) {
     issues.push('table:schema_migration')
   } else {
@@ -1459,6 +1478,10 @@ export function currentSchemaIssues(database: DBAdapter): string[] {
       .prepare('SELECT 1 AS present FROM schema_migration WHERE migration_id = ?')
       .get(F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID) as { present: number } | undefined
     if (!f6Row) issues.push(`migration-record:${F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID}`)
+    const f7Row = database
+      .prepare('SELECT 1 AS present FROM schema_migration WHERE migration_id = ?')
+      .get(F7_REPORT_FRAMEWORK_MIGRATION_ID) as { present: number } | undefined
+    if (!f7Row) issues.push(`migration-record:${F7_REPORT_FRAMEWORK_MIGRATION_ID}`)
   }
   return issues
 }
@@ -1467,5 +1490,19 @@ export function assertCurrentDatabaseSchema(database: DBAdapter): void {
   const issues = currentSchemaIssues(database)
   if (issues.length > 0) {
     throw new Error(`[DB] Schema verification failed: ${issues.join(', ')}`)
+  }
+}
+
+/**
+ * F7 requires an action-log-aware pre-reconcile, so callers that intentionally stop at
+ * the v0.1.15 compatibility boundary must use this narrower assertion rather than
+ * claiming the database is the current application schema.
+ */
+export function assertPreF7DatabaseSchema(database: DBAdapter): void {
+  const issues = currentSchemaIssues(database).filter(
+    (issue) => issue !== 'migration:f7-report-framework' && issue !== `migration-record:${F7_REPORT_FRAMEWORK_MIGRATION_ID}`
+  )
+  if (issues.length > 0) {
+    throw new Error(`[DB] Pre-F7 schema verification failed: ${issues.join(', ')}`)
   }
 }

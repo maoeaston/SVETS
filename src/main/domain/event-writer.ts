@@ -4,6 +4,8 @@ import { appendFileSync } from 'fs'
 import { app } from 'electron'
 import { getDatabase } from '../db/connection'
 import { getActionLogPath } from './action-log-path'
+import { assertF7WriteAllowed, f7WriteAreaForEvent } from './report-write-gate'
+import type { DBAdapter } from '../db/interface'
 import type {
   ActionLogEntry,
   AggregateType,
@@ -17,8 +19,8 @@ function calculateChecksum(payload: Record<string, unknown>): string {
 }
 
 // 获取聚合根内的下一个 event_sequence
-function nextSequence(aggregateType: AggregateType, aggregateId: string): number {
-  const row = getDatabase()
+function nextSequence(database: DBAdapter, aggregateType: AggregateType, aggregateId: string): number {
+  const row = database
     .prepare(
       `SELECT MAX(event_sequence) AS max_seq
        FROM domain_event_projection
@@ -36,6 +38,12 @@ export interface WriteEventParams {
   actorId: string
   actorRole: ActorRole
   correlationId?: string
+  /** F7 schema-v2 events must opt in explicitly; existing callers remain v1. */
+  schemaVersion?: 1 | 2
+  /** Test and coordinator injection point; production callers use the singleton database. */
+  database?: DBAdapter
+  /** Test and recovery injection point; production callers use the application action log. */
+  actionLogPath?: string
 }
 
 /**
@@ -50,15 +58,26 @@ export interface WriteEventParams {
  *       调用方需在此之后调用对应的 reducer。
  */
 export function writeEvent(params: WriteEventParams): ActionLogEntry {
-  const db = getDatabase()
-  const { aggregateType, aggregateId, eventType, payload, actorId, actorRole, correlationId } =
+  const db = params.database ?? (getDatabase() as unknown as DBAdapter)
+  const {
+    aggregateType,
+    aggregateId,
+    eventType,
+    payload,
+    actorId,
+    actorRole,
+    correlationId,
+    schemaVersion = 1
+  } =
     params
 
   const eventId = uuidv4()
-  const eventSequence = nextSequence(aggregateType, aggregateId)
+  const writeArea = f7WriteAreaForEvent(aggregateType, eventType)
+  if (writeArea) assertF7WriteAllowed(writeArea)
+  const eventSequence = nextSequence(db, aggregateType, aggregateId)
   const checksum = calculateChecksum(payload)
   const createdAt = new Date().toISOString()
-  const appVersion = app.getVersion()
+  const appVersion = app?.getVersion?.() ?? 'unknown'
 
   const entry: ActionLogEntry = {
     event_id: eventId,
@@ -68,7 +87,7 @@ export function writeEvent(params: WriteEventParams): ActionLogEntry {
     event_sequence: eventSequence,
     payload,
     checksum,
-    schema_version: 1,
+    schema_version: schemaVersion,
     created_at: createdAt,
     actor_id: actorId,
     actor_role: actorRole,
@@ -77,7 +96,7 @@ export function writeEvent(params: WriteEventParams): ActionLogEntry {
   }
 
   // Step 1: 追加写入 JSONL（文件锁由操作系统保证单进程安全）
-  const logPath = getActionLogPath()
+  const logPath = params.actionLogPath ?? getActionLogPath()
   appendFileSync(logPath, JSON.stringify(entry) + '\n', { encoding: 'utf-8' })
 
   // Step 2: 写入 domain_event_projection
@@ -96,7 +115,7 @@ export function writeEvent(params: WriteEventParams): ActionLogEntry {
     JSON.stringify(payload),
     checksum,
     logPath,
-    1,
+    schemaVersion,
     createdAt
   )
 

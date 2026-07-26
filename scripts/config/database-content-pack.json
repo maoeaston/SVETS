@@ -1,7 +1,7 @@
 {
   "version": "2026.07.22.1",
-  "schemaVersion": "0.1.15-multi-device-m3-grant-assignment",
-  "migrationId": "2026-07-15_mvp_schema_v0_1_15_multi_device_m3_grant_assignment",
+  "schemaVersion": "0.1.16-report-framework",
+  "migrationId": "2026-07-24_f7_report_framework",
   "requiredMigrationLedger": [
     {
       "migrationId": "2026-07-14_mvp_schema_v0_1_13_multi_device_m1_identity",
@@ -18,6 +18,18 @@
     {
       "migrationId": "2026-07-20_job_skill_phase4_asset_roles",
       "schemaVersion": "0.1.15-multi-device-m3-grant-assignment"
+    },
+    {
+      "migrationId": "2026-07-23_f4_assessment_sitting",
+      "schemaVersion": "0.1.15-multi-device-m3-grant-assignment"
+    },
+    {
+      "migrationId": "2026-07-24_f6_offline_score_scope_required",
+      "schemaVersion": "0.1.15-multi-device-m3-grant-assignment"
+    },
+    {
+      "migrationId": "2026-07-24_f7_report_framework",
+      "schemaVersion": "0.1.16-report-framework"
     }
   ],
   "questionContracts": [

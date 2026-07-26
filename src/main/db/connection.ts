@@ -8,12 +8,17 @@ import devAccounts from '../../shared/config/dev-accounts.json'
 import type { DBAdapter } from './interface'
 import { getActionLogPath } from '../domain/action-log-path'
 import { writeEvent } from '../domain/event-writer'
+import { preReconcileLegacyActionLog, StartupRecoveryRequiredError } from '../domain/legacy-upgrade-recovery'
 import { reconcileActionLog, writeRecoverySnapshot } from '../domain/recovery'
 import {
   assertCurrentDatabaseSchema,
+  F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID,
+  F7_REPORT_FRAMEWORK_MIGRATION_ID,
+  F7_SCHEMA_VERSION,
   isFreshDatabase,
   runDatabaseMigrations
 } from './migrations'
+import { isF7ReportFrameworkStructurallyApplied } from './report-migration'
 
 let db: Database.Database | null = null
 
@@ -39,12 +44,35 @@ export function initDatabase(): void {
     const schema = readFileSync(schemaPath, 'utf-8')
     const adapter = database as unknown as DBAdapter
     const fresh = isFreshDatabase(adapter)
-    const migrated = runDatabaseMigrations(adapter, {
-      beforeMigrate: (migrationIds) => {
-        const backupPath = createMigrationBackup(database, dataDir)
-        console.log(`[DB] Backup before ${migrationIds.join(', ')}: ${backupPath}`)
+    const actionLogPath = getActionLogPath()
+    if (fresh && hasNonEmptyActionLog(actionLogPath)) {
+      throw new StartupRecoveryRequiredError(
+        'FRESH_DATABASE_WITH_ACTION_LOG',
+        'A fresh database cannot be paired with a non-empty action log'
+      )
+    }
+
+    const migrated: string[] = []
+    if (!fresh && !isF7ReportFrameworkStructurallyApplied(adapter)) {
+      // Only v0.1.15 structures may interpret schema-v1 JSONL. F7 DDL is delayed
+      // until that reconciliation is complete, so backfill sees every legacy report.
+      migrated.push(...runDatabaseMigrations(adapter, {
+        throughMigrationId: F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID
+      }))
+      preReconcileLegacyActionLog(adapter, {
+        logPath: actionLogPath,
+        archiveDir: join(dirname(actionLogPath), 'recovery-archive')
+      })
+      const backupPath = createMigrationBackup(database, dataDir)
+      console.log(`[DB] Paired backup before ${F7_REPORT_FRAMEWORK_MIGRATION_ID}: ${backupPath}`)
+      try {
+        migrated.push(...runDatabaseMigrations(adapter, {
+          throughMigrationId: F7_REPORT_FRAMEWORK_MIGRATION_ID
+        }))
+      } catch {
+        throw new StartupRecoveryRequiredError('F7_MIGRATION_FAILED', 'F7 database migration failed safely')
       }
-    })
+    }
 
     database.transaction(() => database.exec(schema))()
     assertCurrentDatabaseSchema(adapter)
@@ -100,12 +128,16 @@ function recoverActionLog(database: Database.Database, dbPath: string): {
       sqliteFileHash,
       actionLogPath,
       archivedLogPath: recovery.archivedTailPath,
-      schemaVersion: '0.1.15-multi-device-m3-grant-assignment',
+      schemaVersion: F7_SCHEMA_VERSION,
       appVersion: app.getVersion()
     })
   })()
 
   return recovery
+}
+
+function hasNonEmptyActionLog(actionLogPath: string): boolean {
+  return existsSync(actionLogPath) && readFileSync(actionLogPath, 'utf8').trim().length > 0
 }
 
 

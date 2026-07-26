@@ -13,6 +13,7 @@ import { registerAssignmentHandlers } from './handlers/assignment'
 import { registerSafetyHandlers } from './handlers/safety'
 import { registerFoundationHandlers } from './handlers/foundation'
 import { registerResultsHandlers } from './handlers/results'
+import { registerReportsHandlers } from './handlers/reports'
 
 export function registerIpcHandlers(): void {
   registerAuthHandlers()
@@ -28,4 +29,5 @@ export function registerIpcHandlers(): void {
   registerSafetyHandlers()
   registerFoundationHandlers()
   registerResultsHandlers()
+  registerReportsHandlers()
 }

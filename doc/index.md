@@ -30,7 +30,7 @@ doc/
 
 ### 2.1 当前已实现基线
 
-当前工程基线以 **AGENTS.md + `src/main/db/schema.sql`** 为准（现为 `schema.sql v0.1.15-multi-device-m3-grant-assignment`，MVP 功能基线 `PRD v1.0.9` / `schema v0.1.12`）。以下文件是跨版本稳定的规范类文档：
+当前工程基线以 **AGENTS.md + `src/main/db/schema.sql`** 为准（现为 `schema.sql v0.1.16-report-framework`，MVP 功能基线 `PRD v1.0.9`）。以下文件是跨版本稳定的规范类文档：
 
 | 文件 | 用途 | 何时读 |
 |------|------|--------|

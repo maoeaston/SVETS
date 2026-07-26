@@ -13,7 +13,7 @@ import type {
   ResultCalculatedPayload,
   SessionCompletedPayload
 } from '@shared/types/event-payloads'
-import { maybeGenerateJobSkillReport } from './job-skill-report'
+import { maybeGenerateJobSkillReport, type JobSkillReportAutomation } from './job-skill-report'
 import type {
   JobSkillResultPayload,
   JobModuleProfile,
@@ -372,10 +372,11 @@ export function finalizeJobSkillResultCore(
 export function maybeGenerateJobSkillReportAfterResult(
   db: DBAdapter,
   sessionId: string,
-  callerUserId: string
+  callerUserId: string,
+  automation?: JobSkillReportAutomation
 ): void {
   try {
-    maybeGenerateJobSkillReport(db, sessionId, callerUserId)
+    maybeGenerateJobSkillReport(db, sessionId, callerUserId, automation)
   } catch (reportErr) {
     console.error('[maybeGenerateJobSkillResult] report generation error:', reportErr)
   }
@@ -388,7 +389,8 @@ export function maybeGenerateJobSkillReportAfterResult(
 export function maybeGenerateJobSkillResult(
   db: DBAdapter,
   sessionId: string,
-  callerUserId: string
+  callerUserId: string,
+  automation?: JobSkillReportAutomation
 ): void {
   let generated = false
   const txn = db.transaction(() => {
@@ -396,6 +398,6 @@ export function maybeGenerateJobSkillResult(
   })
   txn()
   if (generated) {
-    maybeGenerateJobSkillReportAfterResult(db, sessionId, callerUserId)
+    maybeGenerateJobSkillReportAfterResult(db, sessionId, callerUserId, automation)
   }
 }

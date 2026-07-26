@@ -12,6 +12,7 @@ import { getDatabase } from '../../db/connection'
 import { assertCaller } from '../../utils/auth-context'
 import { writeEvent } from '../../domain/event-writer'
 import { applyAssessmentEvent } from '../../domain/assessment-reducer'
+import { assertF7WriteAllowed, ReportWriteBlockedError } from '../../domain/report-write-gate'
 import type { TeacherObservationPayload } from '@shared/types/json-schemas'
 import type {
   RecordTeacherObservationParams,
@@ -25,6 +26,7 @@ import {
   finalizeJobSkillResultCore,
   maybeGenerateJobSkillReportAfterResult
 } from './job-skill-result'
+import { createJobSkillReportAutomation, type JobSkillReportAutomation } from './job-skill-report'
 
 // ---------------------------------------------------------------------------
 // recordTeacherObservation — 核心纯函数
@@ -32,7 +34,8 @@ import {
 
 export function recordTeacherObservation(
   db: DBAdapter,
-  params: RecordTeacherObservationParams
+  params: RecordTeacherObservationParams,
+  automation?: JobSkillReportAutomation
 ): RecordTeacherObservationResult {
   // 1. 身份校验（TEACHER）
   const caller = assertCaller(db, params.callerUserId, params.callerRole)
@@ -128,6 +131,7 @@ export function recordTeacherObservation(
 
   // 9. 事务：TEACHER_OBSERVATION_RECORDED 事件 → applyAssessmentEvent + 可选 JOB_SKILL finalization
   try {
+    assertF7WriteAllowed('RESULT')
     const offlineScoreId = uuidv4()
     const recordedAt = new Date().toISOString()
     let finalized = false
@@ -157,11 +161,14 @@ export function recordTeacherObservation(
 
     // T10: 报告生成在观察/finalize 事务提交后执行，避免嵌套事务。
     if (finalized) {
-      maybeGenerateJobSkillReportAfterResult(db, params.sessionId, params.callerUserId)
+      maybeGenerateJobSkillReportAfterResult(db, params.sessionId, params.callerUserId, automation)
     }
 
     return { success: true, offlineScoreId }
   } catch (err) {
+    if (err instanceof ReportWriteBlockedError) {
+      return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
+    }
     console.error('[recordTeacherObservation] error:', err)
     return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
   }
@@ -225,7 +232,8 @@ function defaultGetDb(): DBAdapter {
 
 export function registerObservationHandlers(getDb: () => DBAdapter = defaultGetDb): void {
   ipcMain.handle('assessment:recordTeacherObservation', (_event, params: unknown) => {
-    return recordTeacherObservation(getDb(), params as RecordTeacherObservationParams)
+    const db = getDb()
+    return recordTeacherObservation(db, params as RecordTeacherObservationParams, createJobSkillReportAutomation(db))
   })
 
   ipcMain.handle('assessment:getTeacherObservations', (_event, params: unknown) => {
