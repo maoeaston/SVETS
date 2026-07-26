@@ -503,11 +503,12 @@ MVP 提供两条独立测评入口，并共同衔接到现有训练任务：
 坐次规则：
 
 1. 每个坐次由 `SITTING_STARTED` / `SITTING_ENDED` 事件界定，`sitting_no` 在 session 内递增。
-2. 坐次结束方式分三类：
+2. 坐次结束方式分四类：
    - `COMPLETED_NORMALLY`：本坐次计划题目答完，或全卷完成。
    - `PAUSED_BY_PLAN`：教师按计划分段暂停（如按模块分段施测），session 进入 `SUSPENDED_REVIEW_REQUIRED`，等待下一坐次。
    - `ENDED_BY_COLLAPSE`：因情绪中断未恢复而提前结束（见 4.6.2）。
-3. 坐次之间 session 保持开放态（`SUSPENDED_REVIEW_REQUIRED`），已提交答案不丢失，下一坐次从下一未答题继续。
+   - `ENDED_BY_AUTHORIZATION_INVALIDATION`：产品批准、学校授权或逐学生同意失效，当前坐次与 session 一并事件化终止；该方式不得用于普通暂停或安全红线。
+3. `PAUSED_BY_PLAN / ENDED_BY_COLLAPSE` 的坐次之间 session 保持开放态（`SUSPENDED_REVIEW_REQUIRED`），已提交答案不丢失，下一坐次从下一未答题继续；`ENDED_BY_AUTHORIZATION_INVALIDATION` 不得开启下一坐次。
 4. 教师端可按模块规划分段施测（建议每坐次 ≤ 2 个模块 / ≤ 20 分钟），降低测评疲劳对后半段模块得分的污染。
 5. 同一 session 的坐次总数与每坐次时间必须写入报告，保证施测条件可追溯。
 6. session 存在有效期约束：自首个坐次起 `strategy_config.session_validity_days`（默认 14 天）内未完成的 session，由教师作废（`ABORTED`）后重新发起，防止跨度过长导致测评效度失真。
@@ -1599,18 +1600,27 @@ DRAFT 准备
 
 1. `READY_FOR_PILOT_ACTIVATION_REVIEW` 的前置条件是选定 50 题的内容结构、答案/评分、renderer、资产、线下教具与锚点、适用专业审核、安全/可访问性审核，以及合成身份显式临时库技术演练全部通过；首次 Pilot 激活不要求先具备课堂试测证据。
 2. Pilot 激活批准必须由产品负责人书面指定、且未参与该版本内容制作、代码实现、门禁生成或激活执行的独立批准人作出。产品负责人和独立批准人使用跨文档稳定的 `principal_id`，不得以姓名文本、应用角色或批准 JSON 自报身份作为授权依据。这不是新的应用登录角色。
-3. 产品负责人批准信任根必须来自经过审查的安装版验证器内固定的 `pilot-product-owner-trust-anchor-v1`：至少绑定产品负责人 `principal_id`、`key_id`、Ed25519 公钥及 SHA-256 指纹。产品负责人通过独立发布/安装渠道核对该指纹；私钥离线保管，不进入仓库、应用、目标数据库或激活包。验证器不得从待验批准目录、目标数据库、命令行参数、环境变量或 `ADMIN` 输入接受替代信任根；变更信任根必须形成单独审查和发布。
+3. 产品负责人批准信任根必须来自经过审查的安装版验证器内固定的 `pilot-product-owner-trust-anchor-v1`：至少绑定产品负责人 `principal_id`、`key_id`、Ed25519 公钥、SHA-256 指纹及 UTC `issued_at / effective_at / expires_at`，并由安装包签名/发布完整性而非自签名建立可信性。产品负责人通过独立发布/安装渠道核对该指纹；私钥离线保管，不进入仓库、应用、目标数据库或激活包。验证器不得从待验批准目录、目标数据库、命令行参数、环境变量或 `ADMIN` 输入接受替代信任根；变更信任根必须形成单独审查和发布。
 4. 产品负责人根密钥必须分别对 `pilot-approver-authority-registry-v1` 和 `pilot-release-responsibility-manifest-v1` 的精确 UTF-8 JSON 字节作 Ed25519 分离签名。前者绑定获指定批准人的稳定 `principal_id`、批准公钥 `key_id`/指纹和 `BASE_ABILITY + PILOT_ONLY` 授权范围；后者绑定同一待批版本的选定题集、策略及内容/评分/资产/renderer/门禁 hash，并列出内容制作、代码实现、门禁生成和计划激活执行各责任主体的稳定 `principal_id` 及证据引用。计划激活执行项还必须绑定允许执行的 `user_account.user_id ↔ principal_id`，不得在激活请求中临时声明映射。分离签名信封必须记录算法、签名 `key_id`、payload SHA-256 和签名值。
 5. 独立批准人必须使用授权登记中匹配的私钥，对 `pilot-activation-approval-v1` 的精确 UTF-8 JSON 字节作 Ed25519 分离签名；批准 JSON 必须绑定授权登记 ID/hash、责任清单 ID/hash、批准人、时间、选定 50 题、策略版本及内容/评分/资产/renderer/门禁 hash，并明确 `scope = PILOT_ONLY`。机器必须验证“安装版固定产品负责人根 → 已签名授权登记/责任清单 → 已登记批准人签名 → 批准 JSON”的完整链路；仅有姓名、勾选框、扫描签名、Markdown 或未签名 JSON 均不授予权限。
 6. 独立性必须由责任清单和实际执行身份机械判定：产品负责人（指定人）、独立批准人和激活执行责任主体必须使用可比较的稳定 `principal_id`；批准人不得等于产品负责人，不得出现在该版本的内容制作、代码实现、门禁生成或计划激活执行集合中，且不得等于实际执行主体。实际执行 `user_id` 只能来自可信执行上下文：Electron 入口使用当前 sender 绑定且仍为 ACTIVE 的 `auth_session`；独立运维 CLI 必须在目标库上交互验证 ACTIVE ADMIN 的现有账号凭据并创建仅限本次进程的认证上下文，凭据不得通过命令行参数、环境变量、批准包或日志传递。两种入口都必须按已签名责任清单把认证 `user_id` 映射为 `principal_id`，不得采用请求正文自报的 `callerUserId`、角色或主体映射。责任清单缺失、签名无效、版本/hash 不一致、认证上下文无效、主体映射缺失或任一集合相交时失败关闭，不得由 `ADMIN` 手工声明“独立”覆盖。
-7. `ADMIN` 只能执行已经通过上述信任链和独立性校验的激活包，不能生成、替换或自授批准。执行必须恰好将获批 42 道线上题和 8 道线下题转为 `ACTIVE`；其余 46 道候选继续 `DRAFT`，不得批量激活 96 题。
-8. `PILOT_ACTIVE` 题只能由绑定同一批准文件与题集 hash、且 `pilot_mode = true`、`placement_advice_enabled = false` 的冻结策略版本读取。题目为 `ACTIVE` 不是绕过策略、业务 session、设备 grant、assignment、学生确认或安全门禁的充分条件。
-9. 真实课堂试测还必须具备学校批准的试测协议、适用知情同意、匿名化/本地敏感数据规则、已培训教师，以及 `business_session → device grant → assignment → student confirmation → start` 完整授权链；缺一项不得创建或启动真实学生 session。
-10. Pilot session 可以按现有结果合同保存 `ABILITY_SCORE` 和报告快照，但页面、报告和导出必须标记“基础能力教学诊断试测”，只用于教学诊断、训练支持和证据收集；不得解释为已验证标准化量表，不得输出就业安置方向或作为录用/淘汰结论。
-11. 课堂试测证据通过后，只能进入 `READY_FOR_FORMAL_INTERPRETATION_REVIEW`。正式阈值解释、报告用语、对外发布或 placement advice 仍需产品与专业团队单独批准，并通过新的策略版本生效；不得原地修改 Pilot 策略或历史结果。
-12. 试测发现内容、答案、评分、安全、可访问性或构念问题时，停止后续新 session，将受影响 `ACTIVE` 题转为 `DISABLED` 或 `ARCHIVED`；语义修订必须创建新 `question_id`，重新完成审核与 Pilot 激活。既有 session、结果、报告和批准文件继续保留审计，不得回写覆盖，也不得把题目退回 `DRAFT` 后原地修改。
+7. 产品批准链的安装版信任根、批准人授权登记、版本责任清单和激活批准，以及学校侧的授权人登记、课堂试测授权和逐学生知情同意，必须使用不可变的版本化 JSON 与追加式生命周期事件。除由安装包完整性认证的信任根外，每份授权载荷至少记录稳定 ID、payload hash、签名、`issued_at`、`effective_at`、有限且非空的 `expires_at` 和授权范围；时间统一为 UTC RFC 3339，满足 `issued_at <= effective_at < expires_at`，有效区间为 `[effective_at, expires_at)`。JSON Schema/validator 必须强制以下最大期限，允许签发更短期限但不得使用默认值延长：信任根 365 天、批准人登记 90 天、责任清单与激活批准各 30 天、学校授权人登记 90 天、学校课堂授权与逐学生同意各 14 天；任一下游 `expires_at` 还不得晚于全部上游件。
+8. 授权状态不得由请求或 `ADMIN` 直接写入，而应在每次决策时从原始签发件和已验证生命周期事件派生为 `PENDING / ACTIVE / EXPIRED / REVOKED / SUPERSEDED / INVALID`。签名、schema、hash、范围或已验证上游链失败时为 `INVALID`；存在已生效撤销时为 `REVOKED`；存在已生效替代且无更早撤销时为 `SUPERSEDED`；到达 `expires_at` 时为 `EXPIRED`；未到 `effective_at` 时为 `PENDING`；只有时间窗内且无上述失效条件时才为 `ACTIVE`。`EXPIRED / REVOKED / SUPERSEDED` 以及自身 bytes/schema/签名无效的 `INVALID` 不得恢复为 ACTIVE；缺失但后来补齐的上游证据可以重新验证，但在补齐前始终不授权。恢复运行必须签发新 ID/hash 或补齐未曾失效的原始上游证据，不能改写旧状态。
+9. 产品侧 `pilot-authorization-lifecycle-event-v1` 必须绑定目标类型、目标 ID/hash/`key_id`、`REVOKE` 或 `SUPERSEDE`、签发人 `principal_id`、`issued_at`、`effective_at`、原因码、非空原因和可选替代件 ID/hash；普通撤销/替代必须满足 `issued_at <= effective_at`，不得追溯回填。产品负责人根可以签发所有产品侧下游撤销/替代；独立批准人只可以用本人登记密钥签发撤回本人激活批准的事件，该事件必须进入下一份产品负责人根签名的生命周期索引后才成为目标安装可验证的当前事实，紧急期间先执行现场停测。密钥泄漏事件还必须记录可早于事件签发时间的 `compromised_at` 与 `invalid_from`。`ADMIN` 只能导入和执行经验证的生命周期事件，不能自行签发、回填或延后其生效时间。
+10. 学校侧必须先有产品负责人根签名的 `pilot-school-authority-registry-v1`，绑定 `organization_id`、学校试测责任人的稳定 `principal_id`、签名公钥 `key_id`/指纹、授权范围和有效期；学校责任人再使用登记密钥签发 `school-classroom-trial-authorization-v1`，绑定产品激活批准 ID/hash、学校协议与适用知情同意模板 hash、具体学生/教师范围、匿名化和本地敏感数据规则、保留/访问责任、Pilot 题集/策略及有效期。每名学生还必须有学校责任人签名的 `student-trial-consent-v1`，绑定 `consent_id`、`organization_id`、`student_id`、学生/监护人适用同意主体、原始同意证据 hash、见证教师的可信 `user_id/principal_id`、协议/同意模板 hash、范围和有限有效期；该签名是学校对原始同意证据的机器证明，不替代学校本地保存的原件。
+11. 学校授权、授权人登记和逐学生同意的撤销/轮换使用追加、可验签的 `school-trial-authorization-lifecycle-event-v1` / `student-trial-consent-lifecycle-event-v1`。学生或监护人提出撤回时，当前 ACTIVE TEACHER 可在本人 `auth_session` 下追加只减权的 `STUDENT_CONSENT_WITHDRAWAL_REPORTED` 事件；`reported_at` 必须由主进程取当前统一 UTC 决策时间而非客户端传入，并立即作为该学生的 `invalid_from` 停测。若原始撤回证据证明更早的 `withdrawn_at`，只能由学校责任人签名的同意生命周期事件将其确认为更早 `invalid_from`，并按第 17 条处理晚到失效。教师事件不能授予或恢复同意，且必须进入下一份学校责任人签名索引后才能完成闭环。题目 ACTIVE、产品批准有效、学校总授权或 `ADMIN` 手工确认均不能代替当前有效的逐学生同意。
+12. 产品生命周期索引和学校授权/同意生命周期索引必须分别带单调递增 revision、前一 revision hash、`published_at` 和 `next_refresh_at`，并由对应签发密钥签名。产品索引最大租约为 24 小时，学校授权/同意索引在存在可运行课堂授权期间最大租约为 4 小时；validator 必须拒绝超限。目标安装只接受不低于已见 revision 且 hash 链连续的索引；当前时间达到 `next_refresh_at` 仍未导入更新、索引回退/断链，或系统 UTC 早于本机已持久化的最近授权校验时间时，所有新的 Pilot 激活、session 创建/开始/恢复、作答、线下评分和完成操作失败关闭。离线租约只限制最长离线运行时间，不使租约内完成的操作免于后来送达、但已在运行区间生效的撤销。紧急撤销立即现场停测，所有目标安装导入新索引并完成失效处置后才可恢复；预告的未来生效撤销必须在 `effective_at` 前导入。
+13. `ADMIN` 只能执行当前状态为 `ACTIVE`、且通过上述信任链、生命周期和独立性校验的激活包，不能生成、替换或自授批准。执行必须恰好将获批 42 道线上题和 8 道线下题转为 `ACTIVE`；其余 46 道候选继续 `DRAFT`，不得批量激活 96 题。批准后来失效时题目不得退回 `DRAFT` 或改写历史；门禁转为阻断，直至新批准以新 ID/hash 重新授权同一冻结版本。
+14. `PILOT_ACTIVE` 题只能由绑定同一批准文件与题集 hash、且 `pilot_mode = true`、`placement_advice_enabled = false` 的冻结策略版本读取。题目为 `ACTIVE` 不是绕过策略、当前有效产品批准、学校授权、逐学生知情同意、业务 session、设备 grant、assignment、学生确认或安全门禁的充分条件。
+15. 真实课堂试测在创建业务/测评 session、创建 grant/assignment、学生确认、开始或恢复坐次、提交线上作答、提交线下评分和完成 session 前，必须在主进程事务内按同一决策时间重新验证产品批准、学校授权和逐学生知情同意均为 `ACTIVE`，并把三者的 ID/hash、状态、有效期、生命周期 revision 和 `verified_at` 写入 session 的事件/快照。校验与业务写入并发时，以该事务提交前最后一次校验结果为准；提交后才生效的失效不改写已提交事实，但必须阻断下一次业务动作并按第 16-17 条处置。
+16. 若任一授权/同意在 session 创建前已失效，则不得创建 session。若在 `INIT / ACTIVE / EMOTION_INTERRUPTED / SUSPENDED_REVIEW_REQUIRED / OFFLINE_PENDING` 开放 session 中检测到失效，系统必须停止新输入；存在开放坐次时先追加 `SITTING_ENDED(end_reason = ENDED_BY_AUTHORIZATION_INVALIDATION)`，再通过事件链将 session 置为 `ABORTED`，原因区分产品批准、学校授权或知情同意的到期/撤销/替代/无效，并以 `AUTHORIZATION_INVALIDATED` 撤销或释放对应 grant/assignment。既有答题与评分作为不完整历史保留，但不得生成完整 `ABILITY_SCORE`、完成结论或被课堂证据接受。若同一时点已触发安全红线，`REDLINE_HALTED` 优先于授权失效终止，不追加会覆盖该安全终态的 ABORTED。
+17. 对完成后才送达的失效事实，系统必须以 `authorization_required_interval = [business_session.created_at, terminal_at]` 做追溯判定。每个事实具有稳定 `invalidation_fact_id = SHA-256("pilot-invalidation-fact-v1\n" + source_type + "\n" + source_id + "\n" + source_payload_sha256 + "\n" + cause_type + "\n" + cause_ref + "\n" + invalidation_at)`；各字段不得包含换行。自然到期的 `cause_type/cause_ref/invalidation_at` 为 `EXPIRY / EXPIRES_AT / expires_at`，撤销/替代为 `REVOKE|SUPERSEDE / lifecycle_event_id:payload_sha256 / effective_at`，密钥泄漏为 `KEY_COMPROMISE / lifecycle_event_id:payload_sha256 / invalid_from`，个人撤回为 `CONSENT_WITHDRAWAL / withdrawal_event_id:payload_sha256 / invalid_from`。同一授权存在多个事实时必须逐项保留，派生授权终止时间取全部已验证事实中最早的 `invalidation_at`，不得用较晚到期覆盖较早撤销/替代。若任一事实与运行区间重叠，即使 session 在本机最后一份有效离线租约内完成，也必须按 `session_id + invalidation_fact_id` 幂等追加 `PILOT_AUTHORITY_PROVENANCE_REVIEW_REQUIRED`、隔离该 session/result/report，永久阻断其进入课堂证据接受、正式解释和发布；MVP 不提供解除已确认区间重叠的路径，密钥泄漏人工复核只能追加来源结论，不能恢复证据资格，普通授权/同意失效也不得追溯补授权。所有已验证事实的 `invalidation_at` 均晚于 `terminal_at` 时，历史 session、结果、报告和授权快照继续按原签名复验，不因后来失效而删除、回写或重新计算。`REDLINE_HALTED` 的安全事实/报告始终保留，但若区间重叠仍同时标记证据隔离。
+18. 常规密钥轮换自替代件 `effective_at` 起使旧根/登记/授权及其下游件只可用于历史验签，不再授权新的或开放的真实 session；轮换时存在开放 session 则按第 16 条终止，不得原 session 换绑新链。产品负责人根轮换或泄漏只能通过单独审查的新安装版及其历史公钥目录处理，不得临时双根、从批准包补根或让 `ADMIN` 选择根。批准人或学校责任人密钥泄漏时，由上游根撤销对应登记；历史按第 17 条处理。
+19. Pilot session 可以按现有结果合同保存 `ABILITY_SCORE` 和报告快照，但页面、报告和导出必须标记“基础能力教学诊断试测”，只用于教学诊断、训练支持和证据收集；不得解释为已验证标准化量表，不得输出就业安置方向或作为录用/淘汰结论。
+20. 课堂试测证据通过后，只能进入 `READY_FOR_FORMAL_INTERPRETATION_REVIEW`。正式阈值解释、报告用语、对外发布或 placement advice 仍需产品与专业团队单独批准，并通过新的策略版本生效；不得原地修改 Pilot 策略或历史结果。
+21. 试测发现内容、答案、评分、安全、可访问性或构念问题时，停止后续新 session，将受影响 `ACTIVE` 题转为 `DISABLED` 或 `ARCHIVED`；语义修订必须创建新 `question_id`，重新完成审核与 Pilot 激活。既有 session、结果、报告和批准文件继续保留审计，不得回写覆盖，也不得把题目退回 `DRAFT` 后原地修改。
 
-上述阶段状态属于版本化门禁与批准文件，不新增数据库状态枚举；`question_bank`、session 和报告继续使用现有 schema 状态合同。
+上述阶段状态属于版本化门禁与批准文件，不新增数据库状态枚举；`question_bank`、session 和报告继续使用现有 schema 状态合同。实现 Q1 时只增量扩展 `assessment_sitting.end_reason = ENDED_BY_AUTHORIZATION_INVALIDATION` 与 `business_session_assignment.release_reason = AUTHORIZATION_INVALIDATED` 两个原因枚举，并通过 migration 保留既有记录；若还需其他表、列或状态，必须先修订 Mini-PRD 并重新执行 R3 审查。该 migration 在首次写入上述新 reason 或两个新增事件前允许以事务化表重建真正降回旧约束；一旦任一新 reason 或事件写入数据库/JSONL，即成为 expand-only 数据合同，应用回滚只能部署仍识别并重放新旧 reason/事件的兼容版本且保留扩展 schema。此后旧 schema down migration 必须在任何写入前无损拒绝，不得映射、删除、降格历史值或截断事件；失败前后数据库与 JSONL hash 必须不变。
 
 ---
 
@@ -3014,6 +3024,8 @@ MVP 至少支持以下事件：
 - `SNAPSHOT_COMMITTED`
 - `RECOVERY_REPLAYED`
 - `RECOVERY_LOG_TRUNCATED`
+- `STUDENT_CONSENT_WITHDRAWAL_REPORTED`
+- `PILOT_AUTHORITY_PROVENANCE_REVIEW_REQUIRED`
 
 资源异常、数据库异常、状态非法迁移等进入 `error_event_log`。
 
@@ -3022,12 +3034,18 @@ MVP 至少支持以下事件：
 新增事件：
 
 - `SITTING_STARTED`
-- `SITTING_ENDED`（payload 含结束方式：`COMPLETED_NORMALLY / PAUSED_BY_PLAN / ENDED_BY_COLLAPSE`）
+- `SITTING_ENDED`（payload 含结束方式：`COMPLETED_NORMALLY / PAUSED_BY_PLAN / ENDED_BY_COLLAPSE / ENDED_BY_AUTHORIZATION_INVALIDATION`）
 - `EMOTION_COLLAPSE_RECORDED`
 - `PLACEMENT_REVIEW_CONFIRMED`
 - `QUESTION_SUPERSEDED`（题目作废重建）
+- `STUDENT_CONSENT_WITHDRAWAL_REPORTED`（教师代录逐学生知情同意撤回，只减权）
+- `PILOT_AUTHORITY_PROVENANCE_REVIEW_REQUIRED`（晚到授权失效与 session 运行区间重叠，追加来源隔离）
 
 `EMOTION_COLLAPSE_THRESHOLD_REACHED` 保留，语义更新为"累计崩溃坐次达阈值"。
+
+`STUDENT_CONSENT_WITHDRAWAL_REPORTED` 使用现有 `aggregate_type = SYSTEM`、`aggregate_id = consent_id`，从而允许在 session 创建前撤回且不新增 aggregate 类型。它只能由当前 `ACTIVE` 且对目标学生有施测责任的 `TEACHER` 追加，payload 至少绑定 consent ID/hash、`student_id`、可信报告人身份、由主进程统一 UTC 决策时间生成的 `reported_at`、原因和原始撤回证据 hash；`reported_at` 不接受客户端覆盖，并立即作为该 consent 的 `invalid_from`。该事件不得授予、延长或恢复同意，且必须同步进入共享 EventType、payload 类型、运行时 validator、JSONL 写入/重放、projection/recovery 和测试；随后由学校责任人签名的同意生命周期索引完成正式撤销或替代。
+
+`PILOT_AUTHORITY_PROVENANCE_REVIEW_REQUIRED` 追加到受影响的 `ASSESSMENT_SESSION` aggregate，payload 至少绑定 session/business session、`invalidation_fact_id`、失效来源类型与 ID/hash、cause type/ref、`invalidation_at`、本机 `detected_at`、`created_at / terminal_at`、区间重叠判定和被隔离的 result/report/evidence 范围。相同 `session_id + invalidation_fact_id` 必须幂等，不同 payload 必须冲突；事件不得改变既有终态或历史 bytes，projection/recovery 必须由它确定性派生永久证据隔离并让结果、报告、课堂证据和正式解释写门禁拒绝该 session。
 
 ---
 
@@ -3649,6 +3667,9 @@ MVP 支持：
 - 批准人授权登记、版本责任清单和批准 JSON 的 ID、payload hash、签名 `key_id`、签名验证结果及失败码。
 - 独立性校验使用的批准人、产品负责人、内容制作、代码实现、门禁生成、计划激活执行和实际激活执行 `principal_id`，以及集合冲突结果。
 - Pilot 激活尝试的入口类型、`auth_session_id`（Electron 入口）或 CLI 本次进程认证 ID、由可信执行上下文解析的已认证 `ADMIN user_id`、签名责任清单映射后的实际执行 `principal_id`、批准 ID、目标库身份、执行结果和回滚结果；不得记录账号凭据。
+- 产品批准链、学校授权链和逐学生同意链每份签发件的生命周期派生状态、`issued_at / effective_at / expires_at`、签名生命周期事件 ID/hash/revision、前序 hash、`published_at / next_refresh_at`、撤销/替代签发人、时间、原因码、非空原因、替代件，以及密钥泄漏时的 `compromised_at / invalid_from`；同意撤回还必须记录可信报告人、`reported_at` 和原始撤回证据 hash。
+- 每次 Pilot session 授权校验的统一决策时间、产品批准、学校授权和逐学生同意的 ID/hash/revision/状态/有效期、最近授权校验时间水位、校验触点、结果和失败码；授权失效导致的 `SESSION_ABORTED`、grant/assignment 撤销或释放必须可关联同一生命周期事件。
+- 任一晚到失效与 session 运行区间重叠时追加的 `PILOT_AUTHORITY_PROVENANCE_REVIEW_REQUIRED`，包括失效来源、`invalidation_at`、本机 `detected_at`、隔离状态及可选人工复核结论；MVP 内所有已确认区间重叠均不得解除隔离，密钥泄漏复核也只能追加来源结论。任何复核均不得覆盖历史作答、评分、结果或报告快照。
 
 ### 14.4 删除规则
 
@@ -4224,6 +4245,12 @@ MVP 不要求保存每个 pointer move。
 19. Pilot 激活后，真实课堂试测必须使用 `pilot_mode = true` 的冻结策略、完整多设备授权链和学校批准协议；缺少任一条件时 session 创建或启动必须失败。
 20. 缺少课堂试测证据不阻断已批准 Pilot 题保持 `ACTIVE`，但必须阻断正式解释、placement advice 和对外发布。
 21. 试测发现需语义修订的问题时，受影响 ACTIVE 题必须先 `DISABLED / ARCHIVED`，再以新 `question_id` 重走审核和 Pilot 激活；历史 session 与结果仍按旧题复现。
+22. 产品批准链、学校授权链和逐学生同意链所有签发件必须具有有限 `[effective_at, expires_at)`，并由不可变原件与已签名追加式生命周期事件派生 `PENDING / ACTIVE / EXPIRED / REVOKED / SUPERSEDED / INVALID`；缺时间、空 `expires_at`、非法顺序、直接写状态或终态重新激活均失败。产品根最长 365 天、批准人/学校授权人登记最长 90 天、版本责任清单和激活批准最长 30 天、学校课堂授权与逐学生同意最长 14 天，且任何下游 `expires_at` 不得晚于上游最早 `expires_at`。
+23. 产品生命周期索引的 `next_refresh_at - published_at` 不得超过 24 小时；存在可运行课堂授权时，学校授权/同意索引不得超过 4 小时。降低 revision、破坏前序 hash、超过该最大租约或 `next_refresh_at`，或把系统 UTC 回拨到本机最近成功授权校验时间之前时，Pilot 激活和所有真实 session 写操作必须失败；离线租约内完成也不构成晚到失效的安全港。
+24. 逐学生同意必须是登记学校责任人签名的不可变原件，绑定学生、组织、适用签署方/见证教师、同意模板与证据 hash、适用范围及有限有效期；当前有权施测的 `TEACHER` 只能追加 `STUDENT_CONSENT_WITHDRAWAL_REPORTED` 减少权限，不能授予、延长或恢复同意，撤回立即以 `reported_at` 作为 `invalid_from`。
+25. 产品批准、学校授权或逐学生同意在开放 session 中失效时，下一业务动作必须先以 `SITTING_ENDED(end_reason = ENDED_BY_AUTHORIZATION_INVALIDATION)` 关闭当前坐次，再通过事件链将 session 置为 `ABORTED`，并以 `AUTHORIZATION_INVALIDATED` 释放或撤销活动 grant/assignment；没有开放坐次时只执行适用步骤。已有不完整响应保留但不解释；同一时点存在安全红线时必须保持 `REDLINE_HALTED` 优先，且不得追加会把安全终态降级为 ABORTED 的事件。
+26. 对晚到本机的任何失效，必须以 session 的 `[created_at, terminal_at]` 与 `invalidation_at` 做表驱动判定：失效不晚于创建时拒绝/终止，失效落在运行区间则开放 session 终止、已完成 session 追加来源复核事件并隔离结果/报告/课堂证据，失效晚于终态则历史不变；MVP 内已确认区间重叠的隔离不得通过事后重签或人工复核解除。安全红线事实始终保留，但重叠 session 不得作为普通效度证据。
+27. 根、批准人、学校授权人或同意签发密钥轮换生效后，旧链只能历史验签；新 session 必须使用重新签发的新链，开放 session 必须按第 25 条终止且不得绑定新链继续。根轮换只能随单独审查的安装版发布，不得由运行时输入或临时双根完成。
 
 ---
 
@@ -4295,13 +4322,21 @@ MVP 不要求保存每个 pointer move。
 #### BASE_ABILITY Pilot 发布门禁
 
 43. 前置门禁通过但独立批准缺失时，只能声明 `READY_FOR_PILOT_ACTIVATION_REVIEW`，`activation_authority_granted` 必须为 false。
-44. 独立批准文件必须绑定批准人、时间、`PILOT_ONLY` 范围、选定 50 题、策略版本和全部关键 hash；同时绑定经产品负责人根签名验证的授权登记与版本责任清单。批准人签名必须匹配登记公钥，批准人与产品负责人、被审版本各责任主体及实际激活执行人不得为同一稳定 `principal_id`；实际执行人必须由当前 sender 的 ACTIVE `auth_session` 或独立运维 CLI 的目标库交互认证上下文，与责任清单中预签名的 `user_account.user_id ↔ principal_id` 映射共同确定。
+44. 独立批准文件必须绑定批准人、`issued_at / effective_at / expires_at`、`PILOT_ONLY` 范围、选定 50 题、策略版本和全部关键 hash；同时绑定经产品负责人根签名验证的授权登记与版本责任清单。批准人签名必须匹配登记公钥，批准人与产品负责人、被审版本各责任主体及实际激活执行人不得为同一稳定 `principal_id`；实际执行人必须由当前 sender 的 ACTIVE `auth_session` 或独立运维 CLI 的目标库交互认证上下文，与责任清单中预签名的 `user_account.user_id ↔ principal_id` 映射共同确定。
 45. 激活执行后，数据库中获批集合必须恰好为 42 ONLINE + 8 OFFLINE ACTIVE，未选 46 道仍为 DRAFT；重复执行必须幂等，同一批准 ID 不得扩大集合。
-46. Pilot 策略或批准文件不匹配、`pilot_mode != true`、`placement_advice_enabled != false` 时，真实课堂 session 创建必须失败。
-47. 课堂试测开始前必须验证学校协议、适用知情同意、学生/设备/业务 session 授权链和未解决安全事件门禁。
+46. 产品批准链在激活、session 创建/开始/恢复、每次响应/线下评分和完成提交时都必须派生为 `ACTIVE`；任一上游件 PENDING、过期、撤销、替代、无效，索引超过 24 小时最大租约、过期/回退，或授权时钟回退时均返回稳定阻断码。
+47. 课堂试测开始前必须验证产品负责人根签名的学校授权人登记、学校责任人签名的课堂试测授权和逐学生同意、学生/设备/业务 session 授权链和未解决安全事件门禁；学校授权与同意必须在每次写操作时处于有限有效期内的 `ACTIVE`，索引最大租约为 4 小时。伪造/错学生/错组织/过期同意、旧 revision 及教师无权代录的撤回均失败；可信撤回与业务写入并发时只允许撤回或业务写入之一先提交，后者必须按新 revision 重验并失败。
 48. Pilot 结果和报告必须显示试测标签与效度限制，placement advice 保持禁用；课堂证据缺失或未接受时，正式解释与发布操作必须失败。
 49. 课堂证据接受后，正式解释仍需独立产品/专业批准和新策略版本；不得修改已引用 Pilot 策略。
 50. 受影响 ACTIVE 题停用或归档后不得进入新 session；历史 session、结果、报告、批准文件和证据 hash 仍可复现。
+51. 产品批准、学校授权或个人同意失效前创建但尚未终态的 session，在启动扫描或下一业务动作检测到失效时必须事件化 `ABORTED`，撤销/释放 grant 与 assignment，不再接受响应、评分或完成；安全红线并发命中时保持 `REDLINE_HALTED`。
+52. 表驱动测试必须覆盖每类失效来源（产品批准、学校授权及其上游登记、个人同意）与三种时间关系（`invalidation_at <= created_at`、运行区间内、`invalidation_at > terminal_at`），并分别覆盖失效到达时 session 开放/已终态及安全红线并发。运行区间重叠的已完成 session 必须保留原始 bytes 和终态但永久隔离结果、报告、课堂证据与正式解释；MVP 内密钥泄漏人工复核也不能恢复证据资格。
+53. 常规轮换、泄漏处置和授权恢复都必须产生新 ID/hash/签名与可追溯替代关系；不得修改旧签发件、降低 revision、覆盖历史密钥目录、让终态授权恢复 ACTIVE，或把开放 session 重新绑定到新链继续。
+54. JSON Schema 与 validator 边界测试必须证明第 22 条每类最长期限在精确边界通过、超过 1 秒失败，下游超出上游 1 秒失败；生命周期索引最大租约同样在产品 24 小时、学校/同意 4 小时精确边界通过，超过 1 秒失败。
+55. `STUDENT_CONSENT_WITHDRAWAL_REPORTED` 必须完成 EventType、payload、validator、JSONL、projection、recovery 与幂等/冲突测试；事件只能减少目标学生权限，不能创建同意、改变其他学生或使终态同意恢复。
+56. `PILOT_AUTHORITY_PROVENANCE_REVIEW_REQUIRED` 必须完成 EventType、payload、validator、JSONL、projection/recovery、幂等/冲突和结果/报告/证据写门禁测试；混合历史重放必须确定性恢复隔离而不改变 session 终态或历史 bytes。
+57. schema migration 必须只增量扩展 `assessment_sitting.end_reason = ENDED_BY_AUTHORIZATION_INVALIDATION` 和 `business_session_assignment.release_reason = AUTHORIZATION_INVALIDATED`，并同步共享枚举、事件 payload、reducer、恢复和既有数据库迁移测试；不得新增第二套 session/assignment 表或改写历史 reason。首次写入新 reason/事件前允许事务化 down migration；写入后必须保留扩展 schema，旧 schema down migration 在写入前无损拒绝，应用只能回滚到能识别并重放新旧 reason/事件的兼容版本。测试必须证明拒绝前后数据库/JSONL hash 不变。若实现还需要其他表/列/状态，必须停止并重新进行 R3 范围审查。
+58. 失效事实测试必须覆盖自然到期、撤销、替代、密钥泄漏和个人撤回的稳定 `invalidation_fact_id`，同一事实跨索引 revision 不变、不同事实不碰撞；同一授权多原因并存时逐项保留并以最早 `invalidation_at` 结束 ACTIVE，按 `session_id + invalidation_fact_id` 幂等隔离，较晚原因不得掩盖较早重叠。
 
 ---
 
@@ -4592,6 +4627,11 @@ BASE_ABILITY 42+8 还必须遵循 §5.4.7 的方案 A：选定 50 题通过内�
 87. 不得从 Pilot 批准包、目标数据库、命令行、环境变量或 ADMIN 输入读取/替换产品负责人信任根；信任根变更必须经单独审查和安装版发布。
 88. 不得把姓名文本、应用角色、勾选框、扫描签名、Markdown 或未签名 JSON 当作批准人获授权或独立性的机器证据。
 89. 不得在授权登记、版本责任清单或批准 JSON 任一签名/绑定/主体映射校验失败时继续激活，也不得允许 ADMIN 以手工确认覆盖失败。
+90. 不得接受无有限有效期、超过规定最长期限、下游晚于上游、状态由调用方自报、生命周期 revision 回退/断链、超过产品 24 小时或学校/同意 4 小时最大索引租约、刷新期限已过或授权校验时钟回退的产品批准、学校授权或逐学生同意。
+91. 不得让已到期、已撤销、已替代、无效、已撤回同意或密钥泄漏链下的授权继续创建、开始、恢复或写入真实 Pilot session；开放 session 必须按授权失效规则终止且不得重新绑定新链，安全红线优先级不得降级。
+92. 不得因后来到期、撤销或轮换而删除、覆盖或重新计算已完成历史；失效时间与 session 运行区间重叠时，无论撤销何时送达本机，都不得把该 session 纳入课堂证据接受或正式发布，MVP 内也不得靠事后重签或人工复核解除隔离。
+93. 不得由 `ADMIN` 自行生成产品/学校/个人同意撤销记录、回填撤销时间、把终态授权改回 ACTIVE，或在密钥轮换时临时接受双根和运行时补根；教师代录个人撤回只能减少其有权施测学生的权限。
+94. 不得在新授权失效 reason 或事件已经写入数据库/JSONL 后降回不识别它们的旧 CHECK 或旧应用，也不得通过映射、删除、降格 reason 或截断事件伪造可回滚；只能保留扩展 schema 并部署兼容版本。
 
 ---
 
