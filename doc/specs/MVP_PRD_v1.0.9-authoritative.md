@@ -1598,13 +1598,17 @@ DRAFT 准备
 规则：
 
 1. `READY_FOR_PILOT_ACTIVATION_REVIEW` 的前置条件是选定 50 题的内容结构、答案/评分、renderer、资产、线下教具与锚点、适用专业审核、安全/可访问性审核，以及合成身份显式临时库技术演练全部通过；首次 Pilot 激活不要求先具备课堂试测证据。
-2. Pilot 激活批准必须由产品负责人书面指定、且未参与该版本内容制作、代码实现、门禁生成或激活执行的独立批准人作出。批准文件必须绑定批准人、时间、选定 50 题、策略版本及内容/评分/资产/renderer/门禁 hash，并明确 `scope = PILOT_ONLY`。这不是新的应用登录角色。
-3. `ADMIN` 只能执行已经获得有效独立批准的激活包，不能自授批准。执行必须恰好将获批 42 道线上题和 8 道线下题转为 `ACTIVE`；其余 46 道候选继续 `DRAFT`，不得批量激活 96 题。
-4. `PILOT_ACTIVE` 题只能由绑定同一批准文件与题集 hash、且 `pilot_mode = true`、`placement_advice_enabled = false` 的冻结策略版本读取。题目为 `ACTIVE` 不是绕过策略、业务 session、设备 grant、assignment、学生确认或安全门禁的充分条件。
-5. 真实课堂试测还必须具备学校批准的试测协议、适用知情同意、匿名化/本地敏感数据规则、已培训教师，以及 `business_session → device grant → assignment → student confirmation → start` 完整授权链；缺一项不得创建或启动真实学生 session。
-6. Pilot session 可以按现有结果合同保存 `ABILITY_SCORE` 和报告快照，但页面、报告和导出必须标记“基础能力教学诊断试测”，只用于教学诊断、训练支持和证据收集；不得解释为已验证标准化量表，不得输出就业安置方向或作为录用/淘汰结论。
-7. 课堂试测证据通过后，只能进入 `READY_FOR_FORMAL_INTERPRETATION_REVIEW`。正式阈值解释、报告用语、对外发布或 placement advice 仍需产品与专业团队单独批准，并通过新的策略版本生效；不得原地修改 Pilot 策略或历史结果。
-8. 试测发现内容、答案、评分、安全、可访问性或构念问题时，停止后续新 session，将受影响 `ACTIVE` 题转为 `DISABLED` 或 `ARCHIVED`；语义修订必须创建新 `question_id`，重新完成审核与 Pilot 激活。既有 session、结果、报告和批准文件继续保留审计，不得回写覆盖，也不得把题目退回 `DRAFT` 后原地修改。
+2. Pilot 激活批准必须由产品负责人书面指定、且未参与该版本内容制作、代码实现、门禁生成或激活执行的独立批准人作出。产品负责人和独立批准人使用跨文档稳定的 `principal_id`，不得以姓名文本、应用角色或批准 JSON 自报身份作为授权依据。这不是新的应用登录角色。
+3. 产品负责人批准信任根必须来自经过审查的安装版验证器内固定的 `pilot-product-owner-trust-anchor-v1`：至少绑定产品负责人 `principal_id`、`key_id`、Ed25519 公钥及 SHA-256 指纹。产品负责人通过独立发布/安装渠道核对该指纹；私钥离线保管，不进入仓库、应用、目标数据库或激活包。验证器不得从待验批准目录、目标数据库、命令行参数、环境变量或 `ADMIN` 输入接受替代信任根；变更信任根必须形成单独审查和发布。
+4. 产品负责人根密钥必须分别对 `pilot-approver-authority-registry-v1` 和 `pilot-release-responsibility-manifest-v1` 的精确 UTF-8 JSON 字节作 Ed25519 分离签名。前者绑定获指定批准人的稳定 `principal_id`、批准公钥 `key_id`/指纹和 `BASE_ABILITY + PILOT_ONLY` 授权范围；后者绑定同一待批版本的选定题集、策略及内容/评分/资产/renderer/门禁 hash，并列出内容制作、代码实现、门禁生成和计划激活执行各责任主体的稳定 `principal_id` 及证据引用。计划激活执行项还必须绑定允许执行的 `user_account.user_id ↔ principal_id`，不得在激活请求中临时声明映射。分离签名信封必须记录算法、签名 `key_id`、payload SHA-256 和签名值。
+5. 独立批准人必须使用授权登记中匹配的私钥，对 `pilot-activation-approval-v1` 的精确 UTF-8 JSON 字节作 Ed25519 分离签名；批准 JSON 必须绑定授权登记 ID/hash、责任清单 ID/hash、批准人、时间、选定 50 题、策略版本及内容/评分/资产/renderer/门禁 hash，并明确 `scope = PILOT_ONLY`。机器必须验证“安装版固定产品负责人根 → 已签名授权登记/责任清单 → 已登记批准人签名 → 批准 JSON”的完整链路；仅有姓名、勾选框、扫描签名、Markdown 或未签名 JSON 均不授予权限。
+6. 独立性必须由责任清单和实际执行身份机械判定：产品负责人（指定人）、独立批准人和激活执行责任主体必须使用可比较的稳定 `principal_id`；批准人不得等于产品负责人，不得出现在该版本的内容制作、代码实现、门禁生成或计划激活执行集合中，且不得等于实际执行主体。实际执行 `user_id` 只能来自可信执行上下文：Electron 入口使用当前 sender 绑定且仍为 ACTIVE 的 `auth_session`；独立运维 CLI 必须在目标库上交互验证 ACTIVE ADMIN 的现有账号凭据并创建仅限本次进程的认证上下文，凭据不得通过命令行参数、环境变量、批准包或日志传递。两种入口都必须按已签名责任清单把认证 `user_id` 映射为 `principal_id`，不得采用请求正文自报的 `callerUserId`、角色或主体映射。责任清单缺失、签名无效、版本/hash 不一致、认证上下文无效、主体映射缺失或任一集合相交时失败关闭，不得由 `ADMIN` 手工声明“独立”覆盖。
+7. `ADMIN` 只能执行已经通过上述信任链和独立性校验的激活包，不能生成、替换或自授批准。执行必须恰好将获批 42 道线上题和 8 道线下题转为 `ACTIVE`；其余 46 道候选继续 `DRAFT`，不得批量激活 96 题。
+8. `PILOT_ACTIVE` 题只能由绑定同一批准文件与题集 hash、且 `pilot_mode = true`、`placement_advice_enabled = false` 的冻结策略版本读取。题目为 `ACTIVE` 不是绕过策略、业务 session、设备 grant、assignment、学生确认或安全门禁的充分条件。
+9. 真实课堂试测还必须具备学校批准的试测协议、适用知情同意、匿名化/本地敏感数据规则、已培训教师，以及 `business_session → device grant → assignment → student confirmation → start` 完整授权链；缺一项不得创建或启动真实学生 session。
+10. Pilot session 可以按现有结果合同保存 `ABILITY_SCORE` 和报告快照，但页面、报告和导出必须标记“基础能力教学诊断试测”，只用于教学诊断、训练支持和证据收集；不得解释为已验证标准化量表，不得输出就业安置方向或作为录用/淘汰结论。
+11. 课堂试测证据通过后，只能进入 `READY_FOR_FORMAL_INTERPRETATION_REVIEW`。正式阈值解释、报告用语、对外发布或 placement advice 仍需产品与专业团队单独批准，并通过新的策略版本生效；不得原地修改 Pilot 策略或历史结果。
+12. 试测发现内容、答案、评分、安全、可访问性或构念问题时，停止后续新 session，将受影响 `ACTIVE` 题转为 `DISABLED` 或 `ARCHIVED`；语义修订必须创建新 `question_id`，重新完成审核与 Pilot 激活。既有 session、结果、报告和批准文件继续保留审计，不得回写覆盖，也不得把题目退回 `DRAFT` 后原地修改。
 
 上述阶段状态属于版本化门禁与批准文件，不新增数据库状态枚举；`question_bank`、session 和报告继续使用现有 schema 状态合同。
 
@@ -3641,6 +3645,10 @@ MVP 支持：
 - 恢复流程执行。
 - 安全事件 `VOIDED` 时的 `void_reason`。
 - `FACTUAL_CORRECTION` 作废重建时的新旧 incident 关联。
+- Pilot 批准验证器加载的产品负责人信任根 ID、公钥指纹、安装包/验证器版本和校验结果。
+- 批准人授权登记、版本责任清单和批准 JSON 的 ID、payload hash、签名 `key_id`、签名验证结果及失败码。
+- 独立性校验使用的批准人、产品负责人、内容制作、代码实现、门禁生成、计划激活执行和实际激活执行 `principal_id`，以及集合冲突结果。
+- Pilot 激活尝试的入口类型、`auth_session_id`（Electron 入口）或 CLI 本次进程认证 ID、由可信执行上下文解析的已认证 `ADMIN user_id`、签名责任清单映射后的实际执行 `principal_id`、批准 ID、目标库身份、执行结果和回滚结果；不得记录账号凭据。
 
 ### 14.4 删除规则
 
@@ -4207,7 +4215,11 @@ MVP 不要求保存每个 pointer move。
 14. 线上题 rubric 含"经提示 / 犹豫 / 提示后"等过程观察描述的，不得转 `ACTIVE`（须改写为二值标准或改为线下题）。
 15. 导入验收必须证明 OFFLINE_OPERATION 的复合能力标签不会进入线上模块计分与否决。
 16. BASE_ABILITY 选定 50 题通过内容、专业和技术门禁后，可以进入 `READY_FOR_PILOT_ACTIVATION_REVIEW`；课堂试测证据不得作为首次提交 Pilot 激活评审的前置条件。
-17. 缺少有效独立 Pilot 激活批准文件时，任何 BASE_ABILITY `DRAFT → ACTIVE` 操作必须失败；批准文件的题集或任一合同 hash 与当前版本不一致时同样失败。
+17. 缺少有效独立 Pilot 激活批准文件时，任何 BASE_ABILITY `DRAFT → ACTIVE` 操作必须失败；批准文件的题集或任一合同 hash 与当前版本不一致时同样失败。有效性至少必须通过以下信任与独立性验收：
+   - 验证器只接受安装版固定且指纹匹配的产品负责人信任根；从批准包、目标数据库、命令行、环境变量或 `ADMIN` 输入替换根时失败。
+   - 批准人授权登记和版本责任清单均能由产品负责人根签名验证，且共同绑定当前 `BASE_ABILITY + PILOT_ONLY` 范围和待批版本 hash；缺失、伪造、跨版本复用或签名损坏时失败。
+   - 批准 JSON 的签名公钥必须来自已验证授权登记，签名与 payload hash 均匹配；只复制获授权批准人的姓名或 `principal_id`、修改 JSON 后复用旧签名、使用未登记密钥时失败。
+   - 批准人稳定 `principal_id` 与产品负责人、内容制作、代码实现、门禁生成、计划激活执行或实际已认证 `ADMIN` 执行主体任一相同，或责任主体映射缺失时失败；实际执行 `user_id` 必须由当前 sender 的 ACTIVE `auth_session`，或独立运维 CLI 在目标库交互认证形成的本次进程上下文解析，并匹配已签名责任清单。伪造请求 `callerUserId`、CLI `--user-id/--role`、环境变量或临时主体映射不得改变判定，账号凭据不得出现在进程参数或日志。
 18. 有效批准只能激活批准文件绑定的 42 道线上题和 8 道线下题；未选 46 道必须继续 `DRAFT`，不得通过同一操作批量激活 96 题。
 19. Pilot 激活后，真实课堂试测必须使用 `pilot_mode = true` 的冻结策略、完整多设备授权链和学校批准协议；缺少任一条件时 session 创建或启动必须失败。
 20. 缺少课堂试测证据不阻断已批准 Pilot 题保持 `ACTIVE`，但必须阻断正式解释、placement advice 和对外发布。
@@ -4283,7 +4295,7 @@ MVP 不要求保存每个 pointer move。
 #### BASE_ABILITY Pilot 发布门禁
 
 43. 前置门禁通过但独立批准缺失时，只能声明 `READY_FOR_PILOT_ACTIVATION_REVIEW`，`activation_authority_granted` 必须为 false。
-44. 独立批准文件必须绑定批准人、时间、`PILOT_ONLY` 范围、选定 50 题、策略版本和全部关键 hash；批准人与激活执行人不得为同一责任主体。
+44. 独立批准文件必须绑定批准人、时间、`PILOT_ONLY` 范围、选定 50 题、策略版本和全部关键 hash；同时绑定经产品负责人根签名验证的授权登记与版本责任清单。批准人签名必须匹配登记公钥，批准人与产品负责人、被审版本各责任主体及实际激活执行人不得为同一稳定 `principal_id`；实际执行人必须由当前 sender 的 ACTIVE `auth_session` 或独立运维 CLI 的目标库交互认证上下文，与责任清单中预签名的 `user_account.user_id ↔ principal_id` 映射共同确定。
 45. 激活执行后，数据库中获批集合必须恰好为 42 ONLINE + 8 OFFLINE ACTIVE，未选 46 道仍为 DRAFT；重复执行必须幂等，同一批准 ID 不得扩大集合。
 46. Pilot 策略或批准文件不匹配、`pilot_mode != true`、`placement_advice_enabled != false` 时，真实课堂 session 创建必须失败。
 47. 课堂试测开始前必须验证学校协议、适用知情同意、学生/设备/业务 session 授权链和未解决安全事件门禁。
@@ -4577,6 +4589,9 @@ BASE_ABILITY 42+8 还必须遵循 §5.4.7 的方案 A：选定 50 题通过内�
 84. 不得让 Pilot ACTIVE 题绕过 `pilot_mode` 冻结策略、学校试测协议、多设备授权链或安全门禁进入真实学生 session。
 85. 不得在课堂试测证据接受和正式解释批准前启用 placement advice、发布正式量表解释或把 Pilot 结果用于录用/淘汰裁决。
 86. 不得将试测后需要语义修订的 ACTIVE 题退回 DRAFT 原地修改；必须停用/归档并创建新题重走审核与激活。
+87. 不得从 Pilot 批准包、目标数据库、命令行、环境变量或 ADMIN 输入读取/替换产品负责人信任根；信任根变更必须经单独审查和安装版发布。
+88. 不得把姓名文本、应用角色、勾选框、扫描签名、Markdown 或未签名 JSON 当作批准人获授权或独立性的机器证据。
+89. 不得在授权登记、版本责任清单或批准 JSON 任一签名/绑定/主体映射校验失败时继续激活，也不得允许 ADMIN 以手工确认覆盖失败。
 
 ---
 
