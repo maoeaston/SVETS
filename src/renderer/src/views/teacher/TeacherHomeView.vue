@@ -50,8 +50,8 @@
         <WorkspaceEntry index="01" title="学生档案" description="查看感官信息、建档与归档状态" :count="overview.activeStudentCount" to="/teacher/students" />
         <WorkspaceEntry index="02" title="测评任务" description="继续坐次、处理暂停并进入线下评分" :count="overview.openAssessmentCount" to="/teacher/assessments" />
         <WorkspaceEntry index="03" title="训练任务" description="查看四步训练进度和重试记录" :count="overview.openTrainingCount" to="/teacher/trainings" />
-        <WorkspaceEntry index="04" title="安全事件" description="补录现场事实并提交管理员复盘" :count="overview.pendingSafetyCount" to="/teacher/safety" :urgent="overview.pendingSafetyCount > 0" />
-        <WorkspaceEntry index="05" title="任务报告" description="F7 将开放报告列表、锁定与导出" :count="overview.reportCount" disabled />
+        <WorkspaceEntry index="04" title="任务报告" description="查看持久化报告、处理候选、锁定与导出" :count="overview.reportCount" to="/teacher/reports" />
+        <WorkspaceEntry index="05" title="安全事件" description="补录现场事实并提交管理员复盘" :count="overview.pendingSafetyCount" to="/teacher/safety" :urgent="overview.pendingSafetyCount > 0" />
       </section>
     </template>
   </div>

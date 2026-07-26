@@ -68,6 +68,14 @@ const router = createRouter({
           component: () => import('../views/teacher/TrainingCreateView.vue')
         },
         {
+          path: 'reports',
+          component: () => import('../views/teacher/ReportListView.vue')
+        },
+        {
+          path: 'reports/:reportId',
+          component: () => import('../views/teacher/ReportDetailView.vue')
+        },
+        {
           path: 'safety',
           component: () => import('../views/foundation/SafetyIncidentListView.vue')
         },

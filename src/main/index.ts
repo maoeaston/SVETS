@@ -5,6 +5,7 @@ import { initDatabase, closeDatabase } from './db/connection'
 import { registerAppAssetProtocol } from './protocol/app-asset'
 import { registerIpcHandlers } from './ipc'
 import { StartupRecoveryRequiredError } from './domain/legacy-upgrade-recovery'
+import { resolveAppWindowConfig } from './window-config'
 
 // 注册 app:// 为 privileged scheme。必须在 app.whenReady() 之前调用，且整个进程只能调一次。
 // 没有这一步，<img src="app://asset/..."> 会被 Chromium 当作不安全协议直接拦截。
@@ -27,11 +28,9 @@ protocol.registerSchemesAsPrivileged([
 app.setName('xc-career-guide')
 
 function createWindow(): void {
+  const windowConfig = resolveAppWindowConfig()
   const mainWindow = new BrowserWindow({
-    width: 1366,
-    height: 768,
-    minWidth: 1366,
-    minHeight: 768,
+    ...windowConfig,
     show: false,
     autoHideMenuBar: true,
     title: '炫灿-职途向导系统',
