@@ -172,6 +172,8 @@
 
 ### F7 报告页面框架
 
+实施状态：`COMPLETED_2026-07-26`。F7 Step 1-10 已完成本地验收：报告 IPC/UI、权限、锁定、脱敏 HTML 导出、恢复和隔离 Electron 见证通过；`npm run typecheck`、`npm run lint`、`npm test`（104 files / 1026 tests）、`npm run build`、`npm run db:f7:verify`、`npm run e2e:report` 均通过。默认 `npm run db:verify` 会指向真实运行库，按本轮约束未执行。
+
 范围：
 
 - 统一报告列表、详情、生成、锁定和导出入口。

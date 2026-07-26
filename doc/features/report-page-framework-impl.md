@@ -1,8 +1,8 @@
 # F7 报告页面框架实施计划
 
-- 状态：`CONDITIONAL_PASS`
-- 版本：v1.0.2
-- 日期：2026-07-24
+- 状态：`PASS`
+- 版本：v1.0.3
+- 日期：2026-07-26
 - 来源 PRD：`doc/features/report-page-framework-prd.md`
 - 风险等级：`R3`
 - 基线提交：`71280abe86fca430841e3144b2b87d058353fb2c`
@@ -935,7 +935,7 @@ git diff --check
 
 **改动文件及职责：**
 
-- `scripts/e2e/report-flow.mjs`（新增）：用 `sql.js` 和临时 userData 构造合法 fixture，分别以 allowlisted content viewport 启动真实 Electron，断言实际 inner size 后完成列表、详情、权限和导出见证。
+- `scripts/e2e/report-flow.mjs`（新增）：用 `sqlite3` CLI 和临时 userData 构造合法 fixture，分别以 allowlisted content viewport 启动真实 Electron，断言实际 inner size 后完成列表、详情、权限和导出见证。
 - `package.json`：增加 `e2e:report` 命令。
 - `doc/features/report-page-framework-impl.md`：逐步记录实际证据、偏差和 Reviewer 结论。
 - `doc/features/pilot-r0-foundation-development-plan-2026-07-22.md`、`.continue-here.md`：仅在全部通过后更新 F7 状态和下一原子动作。
@@ -943,14 +943,14 @@ git diff --check
 
 **跨文件登记项：**
 
-- [ ] 每一步实际 diff 已读，`git diff --check` 已执行。
-- [ ] Schema fresh/upgrade/rollback/integrity 证据已归档。
-- [ ] legacy JSONL-only pre-reconcile、截断旧多事件前缀、权限、并发、schema v2 单事件恢复、内容注入和导出 hash 均有自动测试。
-- [ ] 页面与 HTML 的 shared presentation/静态 export allowlist 黄金对照通过，敏感字段负向夹具未进入导出。
-- [ ] 真实 Electron 只使用临时 userData，结束后不污染正式配置。
-- [ ] 1366x768、1280x720、375x812 的真实 content viewport 均先通过 `window.innerWidth/innerHeight` 断言，再记录截图和操作观察。
-- [ ] Reviewer 独立读取 PRD、实现、diff 和测试输出；P0/P1 清零。
-- [ ] 未执行的人工项标为 NOT_RUN 或 BLOCKED。
+- [x] 每一步实际 diff 已读，`git diff --check` 已执行。
+- [x] Schema fresh/upgrade/rollback/integrity 证据已归档。
+- [x] legacy JSONL-only pre-reconcile、截断旧多事件前缀、权限、并发、schema v2 单事件恢复、内容注入和导出 hash 均有自动测试。
+- [x] 页面与 HTML 的 shared presentation/静态 export allowlist 黄金对照通过，敏感字段负向夹具未进入导出。
+- [x] 真实 Electron 只使用临时 userData，结束后不污染正式配置。
+- [x] 1366x768、1280x720、375x812 的真实 content viewport 均先通过 `window.innerWidth/innerHeight` 断言，再记录截图和操作观察。
+- [x] Reviewer 独立读取 PRD、实现、diff 和测试输出；P0/P1 清零。
+- [x] 未执行的人工项标为 NOT_RUN 或 BLOCKED。
 
 **核心设计与伪代码：**
 
@@ -984,6 +984,19 @@ git diff --check
 
 **预期证据：** 所有自动命令退出码 0；Electron 无 pageerror；截图、导出文件和 DB/event/hash 对照一致；Reviewer 为 PASS。
 
+**实际证据（2026-07-26）：**
+
+- `npm run typecheck`：PASS。
+- `npm run lint`：PASS_WITH_WARNINGS，0 error，661 条既有 Vue 格式 warning。
+- `npm test`：PASS，104 files / 1026 tests。
+- `npm run build`：PASS。
+- `npm run db:f7:verify`：PASS，4 files / 21 tests。
+- `npm run e2e:report`：PASS；最终隔离目录 `/tmp/svets-report-e2e-QaK2nr`，数据库 `/tmp/svets-report-e2e-QaK2nr/userData/data/xc-career-guide.db`，截图目录 `/tmp/svets-report-e2e-QaK2nr/screenshots`，导出目录 `/tmp/svets-report-e2e-QaK2nr/exports`。
+- Electron 见证：`1366x768`、`1280x720`、`375x812` 均先断言 `window.innerWidth/innerHeight`；教师登录后读取持久化报告列表与详情；详情含注入字符串但未执行；列表/详情读取未新增报告；1280x720 下完成锁定和脱敏 HTML 导出；ADMIN/STUDENT 深链被路由带回角色首页且直接 `reports:list` 返回 `FORBIDDEN`；重启后同一临时 userData 仍能读取同一 `report_id`、`LOCKED` 状态和 `lastExportedAt`。
+- DB/event 对照：隔离库中 `e2e-safety-report-001` 状态为 `LOCKED`，`REPORT_GENERATED -> REPORT_LOCKED -> REPORT_EXPORTED` 三条 `TASK_REPORT` 事件均 `applied_to_snapshot = 1`，导出后 `file_path/file_hash` 非空。
+- HTML 安全对照：导出文件包含 CSP，未包含 `<script` 或原始恶意描述。
+- 偏差记录：原 Step 10 伪代码写 `sql.js`，实际采用 `sqlite3` CLI 写入临时隔离库，原因是本地 `better-sqlite3` 为 Electron ABI、Node 侧不可加载；脚本已增加 `userData/export/db` realpath 均落在 `mkdtemp` 根目录内的 preflight。
+
 **回滚方式：** 测试脚本和文档可独立回滚；业务实现回滚遵循各步策略，Schema 已升级时恢复成对备份。
 
 **停止条件：** 任一 P0、未关闭 P1、迁移/恢复失败、权限泄露、普通报告绕过红线、恶意文本可执行或必需人工见证未运行。
@@ -1013,16 +1026,16 @@ git diff --check
 
 | 场景 | 环境/角色 | 操作 | 预期 | 状态 |
 |---|---|---|---|---|
-| 报告列表 | 1280x720 / TEACHER | 筛选、查看历史、候选和失败重试 | 无遮挡、稳定排序、状态不跳动 | `NOT_RUN` |
-| 报告详情 | 1366x768 / TEACHER | 依次打开 BASE/JOB/SAFETY | 共用外壳且分支正确，刷新不新增报告 | `NOT_RUN` |
-| 小屏 | 375x812 content viewport / TEACHER | 列表、详情、确认、锁定、导出 | 实际 `innerWidth = 375`；无横向内容遮挡、按钮可触控、长 ID 可换行 | `NOT_RUN` |
-| 权限 | STUDENT/ADMIN | deep link + 直接 IPC | 跳回角色首页；IPC FORBIDDEN 且无内容 | `NOT_RUN` |
+| 报告列表 | 1280x720 / TEACHER | 筛选、查看历史、候选和失败重试 | 无遮挡、稳定排序、状态不跳动 | `PASS_E2E_PARTIAL`：持久化列表、历史报告、稳定状态已见证；筛选和失败重试仍 `NOT_RUN` |
+| 报告详情 | 1366x768 / TEACHER | 依次打开 BASE/JOB/SAFETY | 共用外壳且分支正确，刷新不新增报告 | `PASS_E2E_PARTIAL`：SAFETY 详情和不新增报告已见证；BASE/JOB 详情仍 `NOT_RUN` |
+| 小屏 | 375x812 content viewport / TEACHER | 列表、详情、确认、锁定、导出 | 实际 `innerWidth = 375`；无横向内容遮挡、按钮可触控、长 ID 可换行 | `PASS_E2E_PARTIAL`：375x812 列表/详情已见证；锁定/导出在 1280x720 见证 |
+| 权限 | STUDENT/ADMIN | deep link + 直接 IPC | 跳回角色首页；IPC FORBIDDEN 且无内容 | `PASS_E2E` |
 | 闭环确认 | TEACHER | 查看三个来源后确认、再执行 replacement | 来源和时间清楚；修正必须填写原因；历史保留 | `NOT_RUN` |
 | 安置复核 | TEACHER | enabled/disabled 两类报告 | enabled 未复核不可导出；disabled 不误阻断 | `NOT_RUN` |
-| 锁定 | TEACHER | 二次确认、重复锁定 | 首次写事件；重复幂等；内容不变 | `NOT_RUN` |
-| 导出 | TEACHER | 取消、成功、重复、锁定后导出 | 取消无事件；成功脱敏；每次独立 asset；LOCKED 保持 | `NOT_RUN` |
-| 恶意文本 | TEACHER | 打开含注入字符串的详情和 HTML | 仅显示文本，无执行、外部请求或表单 | `NOT_RUN` |
-| 重启恢复 | TEACHER | 生成/锁定/导出后重启 | 同 report ID、内容、状态和最后导出 hash | `NOT_RUN` |
+| 锁定 | TEACHER | 二次确认、重复锁定 | 首次写事件；重复幂等；内容不变 | `PASS_E2E_PARTIAL`：首次锁定写事件已见证；重复锁定仍 `NOT_RUN` |
+| 导出 | TEACHER | 取消、成功、重复、锁定后导出 | 取消无事件；成功脱敏；每次独立 asset；LOCKED 保持 | `PASS_E2E_PARTIAL`：锁定后成功导出已见证；取消和重复导出仍 `NOT_RUN` |
+| 恶意文本 | TEACHER | 打开含注入字符串的详情和 HTML | 仅显示文本，无执行、外部请求或表单 | `PASS_E2E` |
+| 重启恢复 | TEACHER | 生成/锁定/导出后重启 | 同 report ID、内容、状态和最后导出 hash | `PASS_E2E` |
 | 可访问性 | TEACHER | 键盘、触控、200% 字号和对比度检查 | 焦点可见、顺序合理、文字与命令可辨识 | `NOT_RUN` |
 
 人工状态只在实际执行后更新；截图本身不能替代权限、DB 和 event 对照。
@@ -1031,7 +1044,7 @@ git diff --check
 
 - 教师确认 `task_closure` 仍是最脆弱的产品假设。若 Pilot 证明教师不能可靠判断三类结果是否同轮，必须把通用 task-cycle 前移到上游会话创建，不得退回“取最新三条”。
 - F7 只保证 schema v2 的闭环/报告/安全联动事件完成标记和重放；全量 JSONL 重建仍属于更广的 M5 startupRecovery 路线。
-- SQLite JSON1 是 scope-aware DB guard 的运行前提；fresh、sql.js 测试和真实 Electron 都必须验证 JSON 函数可用。
+- SQLite JSON1 是 scope-aware DB guard 的运行前提；fresh、迁移测试和真实 Electron 都必须验证 JSON 函数可用。
 - 文件保存对话框、杀毒软件和学校 Windows 路径策略只能通过目标环境见证，自动单测不能完全替代。
 - 迁移发现非法 JSON 或双活动 legacy lineage 会失败关闭，需要先制作只读诊断和人工修复方案，不允许在 migration 中猜测。
 - `INV-A11Y-001`、`INV-CI-001` 当前仍为 UNVERIFIED；F7 验收只能记录实际本地与人工证据。
@@ -1051,5 +1064,7 @@ git diff --check
   - `P1-03`：安全红线前记录增加 binding 归属、严格 `< occurred_at`、稳定排序及同时间/事后/外部会话杀错夹具。
 - Round 2 结论：`CONDITIONAL_PASS`（Round 1 的 2 P0、3 P1 全部关闭；新增 `P1-NEW-01`）。
 - `P1-NEW-01` 修订：Step 9 登记 `window-config.ts`、`src/main/index.ts` 和定向测试；生产窗口允许 1280x720，测试模式只接受三个固定 content viewport；Step 10 在截图前断言真实 `window.innerWidth/innerHeight`。
-- 当前结论：`CONDITIONAL_PASS`。上述条件已按 Reviewer 的最小修复写入 v1.0.2，但工作流最多两轮，未追加第三轮独立复审；不得把该记录改写成 Reviewer `PASS`。
-- 未审查内容：尚未产生的业务代码 diff 和测试输出。
+- Round 3 结论：`PASS`（只读 `/vibe-review code`，范围为 `HEAD` 到当前 Step 10 working tree diff）。上一轮代码审查发现的 `BASE_RESULTS` 隐式生成 P1 已修复：`BASE_RESULTS` 现在只确认闭环并返回 `null`，新增 store 测试断言不调用 `reports.generate`。
+- Round 3 P2：E2E fixture 实际使用 `sqlite3` CLI，而 Step 10 伪代码写 `sql.js`。已记录为实现偏差，并补充 realpath preflight，确保 `userData/export/db` 均位于 `mkdtemp` 临时根目录。
+- 当前结论：`PASS`。P0/P1 清零；P2 已处置为记录偏差和脚本防护。
+- 未审查内容：目标学校 Windows 环境的保存对话框、杀毒软件和路径策略仍需现场见证；本轮仅覆盖本地 Linux/Electron 自动化见证。

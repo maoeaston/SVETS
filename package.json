@@ -11,6 +11,7 @@
     "test": "vitest run --maxWorkers=50%",
     "test:watch": "vitest",
     "lint": "eslint src --ext .ts,.vue",
+    "e2e:report": "node scripts/e2e/report-flow.mjs",
     "db:sync": "node scripts/db-sync.mjs",
     "db:verify": "node scripts/db-verify.mjs",
     "db:m2:verify": "node scripts/verify-m2-migration.mjs",

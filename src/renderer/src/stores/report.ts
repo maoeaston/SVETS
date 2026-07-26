@@ -140,17 +140,10 @@ export const useReportStore = defineStore('report', () => {
   async function generateFromCandidate(candidate: ReportGenerationCandidate): Promise<string | null> {
     if (!caller.value) return failOperation('FORBIDDEN')
     if (candidate.kind === 'SAFETY_WAITING_CONFIRMATION') return null
+    if (candidate.kind === 'BASE_RESULTS') return confirmBaseClosure(candidate).then(() => null)
     return runOperation(`generate:${candidateKey(candidate)}`, async () => {
       let result: ReportsResult<GenerateReportResult>
-      if (candidate.kind === 'BASE_RESULTS') {
-        const closureId = await confirmBaseClosure(candidate)
-        if (!closureId) return null
-        result = await window.api.reports.generate({
-          ...caller.value!,
-          reportScope: 'BASE_ABILITY',
-          taskClosureId: closureId
-        })
-      } else if (candidate.kind === 'BASE_CLOSURE') {
+      if (candidate.kind === 'BASE_CLOSURE') {
         result = await window.api.reports.generate({
           ...caller.value!,
           reportScope: 'BASE_ABILITY',

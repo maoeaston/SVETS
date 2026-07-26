@@ -1,4 +1,6 @@
 import { dialog, ipcMain } from 'electron'
+import { mkdirSync } from 'fs'
+import { join } from 'path'
 import { getDatabase } from '../../db/connection'
 import type { DBAdapter } from '../../db/interface'
 import { getActionLogPath } from '../../domain/action-log-path'
@@ -786,6 +788,11 @@ async function showReportSaveDialog(
     filters: [{ name: 'HTML', extensions: ['html'] }]
   }
   if (options?.showSaveDialog) return options.showSaveDialog(request)
+  const e2eExportDir = process.env['SVETS_E2E'] === '1' ? process.env['SVETS_REPORT_E2E_EXPORT_DIR'] : undefined
+  if (e2eExportDir) {
+    mkdirSync(e2eExportDir, { recursive: true })
+    return { canceled: false, filePath: join(e2eExportDir, prepared.suggestedFileName) }
+  }
   return dialog.showSaveDialog(request)
 }
 

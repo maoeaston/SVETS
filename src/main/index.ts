@@ -1,4 +1,5 @@
 import { app, shell, BrowserWindow, dialog, protocol } from 'electron'
+import { mkdirSync } from 'fs'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { initDatabase, closeDatabase } from './db/connection'
@@ -26,6 +27,12 @@ protocol.registerSchemesAsPrivileged([
 // directly (Playwright, future CI, packaged app paths) makes app.getName() return
 // "Electron" and userData falls into ~/.config/Electron/, colliding with other apps.
 app.setName('xc-career-guide')
+
+const e2eUserDataPath = process.env['SVETS_E2E'] === '1' ? process.env['SVETS_USER_DATA_DIR'] : undefined
+if (e2eUserDataPath) {
+  mkdirSync(e2eUserDataPath, { recursive: true })
+  app.setPath('userData', e2eUserDataPath)
+}
 
 function createWindow(): void {
   const windowConfig = resolveAppWindowConfig()
