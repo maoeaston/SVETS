@@ -1,7 +1,7 @@
 {
   "version": "2026.07.22.1",
-  "schemaVersion": "0.1.16-report-framework",
-  "migrationId": "2026-07-24_f7_report_framework",
+  "schemaVersion": "0.1.17-multi-device-m4-safety-rekey",
+  "migrationId": "2026-07-27_mvp_schema_v0_1_17_multi_device_m4_safety_rekey",
   "requiredMigrationLedger": [
     {
       "migrationId": "2026-07-14_mvp_schema_v0_1_13_multi_device_m1_identity",
@@ -30,6 +30,10 @@
     {
       "migrationId": "2026-07-24_f7_report_framework",
       "schemaVersion": "0.1.16-report-framework"
+    },
+    {
+      "migrationId": "2026-07-27_mvp_schema_v0_1_17_multi_device_m4_safety_rekey",
+      "schemaVersion": "0.1.17-multi-device-m4-safety-rekey"
     }
   ],
   "questionContracts": [

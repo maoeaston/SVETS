@@ -13,6 +13,8 @@ export type StartupRecoveryRequiredCode =
   | 'AMBIGUOUS_LEGACY_EVENT_PREFIX'
   | 'LEGACY_RECONCILE_FAILED'
   | 'F7_MIGRATION_FAILED'
+  | 'M4_MIGRATION_FAILED'
+  | 'M4_SCHEMA_DRIFT'
 
 export class StartupRecoveryRequiredError extends Error {
   constructor(

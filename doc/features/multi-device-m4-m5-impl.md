@@ -1,10 +1,13 @@
 # 多设备 M4/M5 实施任务书
 
-状态：M4 READY FOR REVIEW；M5 待 M4 完成后细化  
-日期：2026-07-18  
+状态：STALE / HISTORICAL INPUT；不得直接用于编码
+日期：2026-07-18（2026-07-27 标记过期）
 对应 PRD：`doc/features/multi-device-m4-m5-prd.md`  
-当前基线：schema v0.1.15-multi-device-m3-grant-assignment  
-M4 目标版本建议：schema v0.1.16-multi-device-m4-safety-rekey
+原扫描基线：schema v0.1.15-multi-device-m3-grant-assignment
+当前实际基线：schema v0.1.16-report-framework
+M4 当前目标版本：schema v0.1.17-multi-device-m4-safety-rekey
+
+> 本文件保留 2026-07-18 的影响面扫描和测试思路，只作历史输入。当前 M4 范围以 `doc/features/multi-device-m4-safety-rekey-prd.md` 为准；该 PRD 独立审查通过后，必须通过 `/vibe-impl` 基于当前代码和 migration 链重新生成任务书，不能沿用本文的版本号、base schema 或文件清单直接实施。
 
 ## 1. 影响面扫描结论
 

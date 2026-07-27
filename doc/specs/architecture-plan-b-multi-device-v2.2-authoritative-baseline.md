@@ -43,7 +43,7 @@ v2.2 严格区分"当前 v0.1.12 真实实现"与"v2.2 目标合同"。以下差
 
 | 领域 | v0.1.12 真实实现 | v2.2 目标合同 |
 |------|-----------------|--------------|
-| 安全事件聚合键 | `student_id + task_code`（48 个触发器中 6 处 WHERE 实测，不含 job_code） | `student_id + job_code + task_code`（§13 迁移合同替换触发器） |
+| 安全事件聚合键 | `student_id + task_code`（批量熔断、会话阻断、incident 与 replacement 归属守卫未完整使用 job_code） | `student_id + job_code + task_code`（§13 完整迁移合同替换 10 个触发器/守卫和 5 个索引） |
 | 事件写入 | 单事件同步双写（`event-writer.ts` `writeEvent()`：appendFileSync 一行 JSONL + 同函数 INSERT `domain_event_projection`），随后调 reducer 写业务投影表，全包在 `db.transaction()` | 三段式 BATCH_PREPARED→APPLY→CONFIRM + hash chain + command_log fencing（§11、§12） |
 | JSONL 结构 | 单文件 `action_log.jsonl`，`ActionLogEntry` 无 batch/segment/hash 字段 | segment 轮转 + segment_index + hash chain（§11） |
 | 冷启动恢复 | 未实现（`initDatabase()` 只执行 schema + seed，不回读 JSONL） | startupRecovery 四阶段 + CORRUPTION_DETECTED（§11） |
@@ -687,7 +687,7 @@ COMMIT;
 
 `schema_migration, user_account, student_profile, strategy_config, asset_resource, question_bank, domain_event_projection, assessment_session, assessment_session_question, answer_record, offline_score_record, training_session, training_step_record, safety_incident, safety_incident_binding, result_record, task_report, snapshot_meta, error_code_registry, error_event_log`
 
-v0.1.12 的 48 个触发器中，**44 个原样保留、4 个替换**（§13 安全聚合键迁移先 DROP 再 CREATE 加入 job_code：trg_safety_incident_bind_open_assessments、trg_safety_incident_bind_open_trainings、trg_assessment_session_block_unresolved_safety_incident、trg_training_session_block_unresolved_safety_incident），并替换 2 个开放会话唯一索引。本增量另**新增 18 个触发器**（§7.5），迁移后触发器总数 48→66（实测 sqlite_master 加载）。
+v0.1.12 的 48 个触发器中，**38 个原样保留、10 个替换**。§13 安全聚合键迁移除替换 4 个批量熔断/新会话阻断触发器外，还必须替换 assessment/training 的 4 个 `redline_incident_id` 同归属守卫和 safety incident 的 2 个 replacement 同归属守卫，全部加入 `job_code`；同时替换 2 个开放会话唯一索引和 3 个安全查询索引。本增量另**新增 18 个触发器**（§7.5），替换不改变对象总数，迁移后触发器总数仍为 48→66。
 
 ### 7.2 新增表完整 DDL（19 张）
 
@@ -1138,7 +1138,7 @@ CREATE INDEX IF NOT EXISTS idx_result_record_business_session
 
 ### 7.5 新增触发器（18 个）
 
-分三组：delivery_phase 守卫（D1–D4，5 个：forward_only + insert_prepared + frozen_on_abnormal + finalized_completed_consistency insert/update）、父子一致性（D5–D8，7 个：assessment/training/learning 各 insert+update + business_session_key_immutable）、Grant 自一致性与 assignment（D9–D11，6 个：grant_self insert/update + assignment_grant insert/update + assignment_active_requires_active_grant insert/update）。安全聚合键 4 个替换触发器见 §13。
+分三组：delivery_phase 守卫（D1–D4，5 个：forward_only + insert_prepared + frozen_on_abnormal + finalized_completed_consistency insert/update）、父子一致性（D5–D8，7 个：assessment/training/learning 各 insert+update + business_session_key_immutable）、Grant 自一致性与 assignment（D9–D11，6 个：grant_self insert/update + assignment_grant insert/update + assignment_active_requires_active_grant insert/update）。安全聚合键 10 个替换触发器/守卫见 §13。
 
 **D1 delivery_phase 前向状态机**（完整 DDL 见 §9.4）。
 
@@ -1375,7 +1375,7 @@ BEGIN
 END;
 ```
 
-安全聚合键迁移触发器（DROP + CREATE 4 个 + 2 索引替换）见 §13。
+安全聚合键迁移对象（DROP + CREATE 10 个触发器/守卫、2 个开放会话唯一索引和 3 个查询索引）见 §13。
 
 ---
 
@@ -1432,18 +1432,18 @@ END;
 38. D9–D11 grant 自一致性 + assignment-grant 一致性 + 活动 assignment 需 ACTIVE grant
 
 ── 阶段 E：安全聚合键迁移（问题 #8，§13）──
-36. DROP + CREATE trg_safety_incident_bind_open_assessments（加 job_code）
-37. DROP + CREATE trg_safety_incident_bind_open_trainings（加 job_code）
-38. DROP + CREATE trg_assessment_session_block_unresolved_safety_incident（加 job_code）
-39. DROP + CREATE trg_training_session_block_unresolved_safety_incident（加 job_code）
-40. CREATE INDEX idx_safety_incident_student_job_task_status
-41. DROP + CREATE ux_assessment_one_open_session_per_student_job_task_strategy（加 job_code）
-42. DROP + CREATE ux_training_one_open_session_per_student_job_task（加 job_code）
+E1. 只读预检 redline incident、binding 与 replacement 的历史三元归属；不一致则在 DDL 前停止
+E2. DROP + CREATE 4 个 batch halt / unresolved-session 触发器（加 job_code）
+E3. DROP + CREATE assessment/training 的 4 个 redline incident 同归属守卫（加 job_code）
+E4. DROP + CREATE safety incident 的 2 个 replacement 同归属守卫（加 job_code）
+E5. DROP + CREATE assessment/training/safety incident 的 3 个 student-job-task 查询索引
+E6. DROP + CREATE 2 个 student-job-task 开放会话唯一索引
+E7. 核对 10 个触发器/守卫的 sqlite_master.sql 正文及 5 个索引的列、谓词和旧对象不存在
 
 ── 阶段 F：收尾 ──
-43. INSERT schema_migration ('2026-07-14_multi_device_v2_2', '0.1.12+multi-device-v2.2', …)
-44. PRAGMA foreign_key_check
-45. PRAGMA integrity_check
+F1. INSERT schema_migration ('2026-07-14_multi_device_v2_2', '0.1.12+multi-device-v2.2', …)
+F2. PRAGMA foreign_key_check
+F3. PRAGMA integrity_check
 ```
 
 ### 8.2 delivery_phase 迁移为何必须"先 NULL 再回填再建触发器"（问题 #1）
@@ -1522,14 +1522,16 @@ R4. DROP TABLE（19 张新表，逆 FK 依赖顺序：pairing_challenge → offl
     session_invalidation_record → backup_manifest → projector_cursor → processed_event → applied_event_batch →
     command_log → learning_progress → learning_session → business_session_assignment → delegated_access_grant →
     business_session → auth_session → device_runtime_session → device → node → organization）
-R5. 恢复 v0.1.12 安全触发器与唯一索引到 student_id+task_code 原定义：
-    DROP 4 个 job_code 版触发器 + idx_safety_incident_student_job_task_status +
+R5. 恢复 v0.1.12 安全触发器与索引到 student_id+task_code 原定义：
+    DROP 10 个 job_code 版触发器/守卫 + 3 个 student-job-task 查询索引 +
     ux_assessment_one_open_session_per_student_job_task_strategy + ux_training_one_open_session_per_student_job_task；
-    CREATE 4 个 task_code 版触发器 + ux_assessment_one_open_session_per_student_task_strategy +
-    ux_training_one_open_session_per_student_task；
+    CREATE 10 个 task_code 版触发器/守卫 + 3 个 student-task 查询索引 +
+    ux_assessment_one_open_session_per_student_task_strategy + ux_training_one_open_session_per_student_task；
     DELETE schema_migration WHERE migration_id='2026-07-14_multi_device_v2_2'
 R6. PRAGMA foreign_key_check（空）+ PRAGMA integrity_check（ok）
 ```
+
+上述 R5 只适用于尚未产生任何依赖三元安全语义业务写入的迁移失败/受控回退窗口。一旦存在跨岗位同 task 的合法会话或其他 M4 语义事实，不得 down 回两元触发器与唯一索引，只能前滚到继续支持三元键的兼容版本，或使用迁移前配套备份做另行批准的灾难恢复。
 
 SQLite 3.35.0+ 支持 `ALTER TABLE DROP COLUMN`（本环境 3.50.6）；若目标版本不支持，R3 改用 recreate-table 迁移。
 
@@ -2046,7 +2048,7 @@ PENDING_DETAIL → VOIDED
 
 | | 聚合/查询/熔断匹配键 |
 |---|---|
-| **v0.1.12 真实实现** | `student_id + task_code`（48 触发器中 6 处 WHERE 实测，`safety_incident` 有 job_code 列但触发器不使用；`task_code` 无全局 UNIQUE 约束） |
+| **v0.1.12 真实实现** | `student_id + task_code`（安全批量熔断、新会话阻断、redline incident 归属和 replacement 归属共 10 个触发器/守卫未完整使用 `job_code`；`task_code` 无全局 UNIQUE 约束） |
 | **v2.2 目标合同** | `student_id + job_code + task_code` |
 
 **必须迁移的理由：**
@@ -2058,16 +2060,22 @@ PENDING_DETAIL → VOIDED
 
 这是需要正式 Schema 迁移的差异；**不得声称现有触发器已满足 job_code 聚合**。本轮只写迁移合同和触发器替换方案，不修改正式 `schema.sql`。
 
-### 13.2 迁移合同（DROP + CREATE，已验证）
+### 13.2 迁移合同（完整对象集合）
 
-必须替换 v0.1.12 的 4 个触发器 + 2 个开放会话唯一索引，并新增查询索引：
+必须替换 v0.1.12 的 10 个触发器/守卫、2 个开放会话唯一索引和 3 个查询索引。早期验证只覆盖 4 个主触发器、2 个唯一索引和 1 个查询索引，遗漏了 6 个归属守卫及 assessment/training 查询索引；以下完整集合覆盖该缺口，实施时必须在当前正式 Schema 上重新验证：
 
 ```sql
--- F0. 删除 v0.1.12 基于 student_id+task_code 的旧触发器
+-- F0. 删除基于 student_id+task_code 的 10 个旧触发器/守卫
 DROP TRIGGER IF EXISTS trg_safety_incident_bind_open_assessments;
 DROP TRIGGER IF EXISTS trg_safety_incident_bind_open_trainings;
 DROP TRIGGER IF EXISTS trg_assessment_session_block_unresolved_safety_incident;
 DROP TRIGGER IF EXISTS trg_training_session_block_unresolved_safety_incident;
+DROP TRIGGER IF EXISTS trg_assessment_session_redline_incident_same_student_task_insert;
+DROP TRIGGER IF EXISTS trg_assessment_session_redline_incident_same_student_task_update;
+DROP TRIGGER IF EXISTS trg_training_session_redline_incident_same_student_task_insert;
+DROP TRIGGER IF EXISTS trg_training_session_redline_incident_same_student_task_update;
+DROP TRIGGER IF EXISTS trg_safety_incident_replacement_same_student_task_insert;
+DROP TRIGGER IF EXISTS trg_safety_incident_replacement_same_student_task_update;
 
 -- F1. 批量熔断开放 assessment（加入 job_code）
 CREATE TRIGGER trg_safety_incident_bind_open_assessments
@@ -2140,11 +2148,110 @@ BEGIN
   SELECT RAISE(ABORT, 'unresolved safety incident blocks new training_session');
 END;
 
--- F5. safety_incident 查询索引（加入 job_code）
+-- F5. REDLINE_HALTED session 引用的 incident 必须属于同一三元键
+CREATE TRIGGER trg_assessment_session_redline_incident_same_student_job_task_insert
+BEFORE INSERT ON assessment_session
+FOR EACH ROW
+WHEN NEW.status = 'REDLINE_HALTED'
+     AND NOT EXISTS (
+       SELECT 1 FROM safety_incident si
+       WHERE si.incident_id = NEW.redline_incident_id
+         AND si.student_id = NEW.student_id
+         AND si.job_code = NEW.job_code
+         AND si.task_code = NEW.task_code
+     )
+BEGIN
+  SELECT RAISE(ABORT, 'assessment_session redline_incident_id must belong to same student_id, job_code and task_code');
+END;
+
+CREATE TRIGGER trg_assessment_session_redline_incident_same_student_job_task_update
+BEFORE UPDATE ON assessment_session
+FOR EACH ROW
+WHEN NEW.status = 'REDLINE_HALTED'
+     AND NOT EXISTS (
+       SELECT 1 FROM safety_incident si
+       WHERE si.incident_id = NEW.redline_incident_id
+         AND si.student_id = NEW.student_id
+         AND si.job_code = NEW.job_code
+         AND si.task_code = NEW.task_code
+     )
+BEGIN
+  SELECT RAISE(ABORT, 'assessment_session redline_incident_id must belong to same student_id, job_code and task_code');
+END;
+
+CREATE TRIGGER trg_training_session_redline_incident_same_student_job_task_insert
+BEFORE INSERT ON training_session
+FOR EACH ROW
+WHEN NEW.status = 'REDLINE_HALTED'
+     AND NOT EXISTS (
+       SELECT 1 FROM safety_incident si
+       WHERE si.incident_id = NEW.redline_incident_id
+         AND si.student_id = NEW.student_id
+         AND si.job_code = NEW.job_code
+         AND si.task_code = NEW.task_code
+     )
+BEGIN
+  SELECT RAISE(ABORT, 'training_session redline_incident_id must belong to same student_id, job_code and task_code');
+END;
+
+CREATE TRIGGER trg_training_session_redline_incident_same_student_job_task_update
+BEFORE UPDATE ON training_session
+FOR EACH ROW
+WHEN NEW.status = 'REDLINE_HALTED'
+     AND NOT EXISTS (
+       SELECT 1 FROM safety_incident si
+       WHERE si.incident_id = NEW.redline_incident_id
+         AND si.student_id = NEW.student_id
+         AND si.job_code = NEW.job_code
+         AND si.task_code = NEW.task_code
+     )
+BEGIN
+  SELECT RAISE(ABORT, 'training_session redline_incident_id must belong to same student_id, job_code and task_code');
+END;
+
+-- F6. replacement/factual-correction 链必须属于同一三元键
+CREATE TRIGGER trg_safety_incident_replacement_same_student_job_task_insert
+BEFORE INSERT ON safety_incident
+FOR EACH ROW
+WHEN NEW.replacement_incident_id IS NOT NULL
+     AND NOT EXISTS (
+       SELECT 1 FROM safety_incident r
+       WHERE r.incident_id = NEW.replacement_incident_id
+         AND r.student_id = NEW.student_id
+         AND r.job_code = NEW.job_code
+         AND r.task_code = NEW.task_code
+     )
+BEGIN
+  SELECT RAISE(ABORT, 'replacement safety_incident must have same student_id + job_code + task_code');
+END;
+
+CREATE TRIGGER trg_safety_incident_replacement_same_student_job_task_update
+BEFORE UPDATE ON safety_incident
+FOR EACH ROW
+WHEN NEW.replacement_incident_id IS NOT NULL
+     AND NOT EXISTS (
+       SELECT 1 FROM safety_incident r
+       WHERE r.incident_id = NEW.replacement_incident_id
+         AND r.student_id = NEW.student_id
+         AND r.job_code = NEW.job_code
+         AND r.task_code = NEW.task_code
+     )
+BEGIN
+  SELECT RAISE(ABORT, 'replacement safety_incident must have same student_id + job_code + task_code');
+END;
+
+-- F7. 三类安全热路径查询索引都加入 job_code；旧二元索引不得并存
+DROP INDEX IF EXISTS idx_assessment_session_student_task_status;
+CREATE INDEX IF NOT EXISTS idx_assessment_session_student_job_task_status
+  ON assessment_session(student_id, job_code, task_code, status);
+DROP INDEX IF EXISTS idx_training_session_student_task_status;
+CREATE INDEX IF NOT EXISTS idx_training_session_student_job_task_status
+  ON training_session(student_id, job_code, task_code, status);
+DROP INDEX IF EXISTS idx_safety_incident_student_task_status;
 CREATE INDEX IF NOT EXISTS idx_safety_incident_student_job_task_status
   ON safety_incident(student_id, job_code, task_code, status, requires_review_before_next_session);
 
--- F6. 开放会话唯一性守卫也必须 job-scoped（否则同 student+task_code 跨 job 无法并存）
+-- F8. 开放会话唯一性守卫也必须 job-scoped（否则同 student+task_code 跨 job 无法并存）
 DROP INDEX IF EXISTS ux_assessment_one_open_session_per_student_task_strategy;
 CREATE UNIQUE INDEX IF NOT EXISTS ux_assessment_one_open_session_per_student_job_task_strategy
   ON assessment_session(student_id, job_code, task_code, strategy_type)
@@ -2157,7 +2264,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_training_one_open_session_per_student_job_t
 
 `safety_incident_binding` 唯一性不变量保持不变：`UNIQUE(incident_id, aggregate_type, aggregate_id)`（v0.1.12 原表约束，不修改），配合 `INSERT OR IGNORE` 保证每会话每事件只一条 binding。
 
-### 13.3 迁移后必须验证（已在临时库执行，见 validation report）
+### 13.3 迁移后必须验证
 
 - 同一 student、同一 task_code、**不同 job_code** 的两个开放会话不互相误熔断。
 - 同一 student、同一 job_code、同一 task_code 的 assessment 和 training 同时熔断。
@@ -2165,6 +2272,12 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_training_one_open_session_per_student_job_t
 - 每个受影响会话只创建一条 binding。
 - 每个 assessment 只产生一个当前安全结果（ux_result_record_one_current_per_source_type）。
 - 未 RESOLVED/VOIDED 的事件只阻断相同 student_id + job_code + task_code 的新会话。
+- assessment/training 的 `REDLINE_HALTED.redline_incident_id` insert/update 均拒绝跨 job incident。
+- replacement incident insert/update 均拒绝跨 job 链接。
+- `sqlite_master.sql` 证明 10 个触发器/守卫和 5 个索引完整采用三元键，旧二元对象不存在；三个关键查询的 `EXPLAIN QUERY PLAN` 命中三元索引。
+- 在正式 DDL 前预检现有 redline 引用、binding 和 replacement 链的三元归属；任何不一致都失败关闭，不自动改写历史。
+
+早期 validation report 只证明了旧清单中的 4 个主触发器、2 个唯一索引和 1 个查询索引；它不是上述完整对象集合的验收证据。M4 必须基于当前正式 Schema 另行生成独立验证记录。
 
 ### 13.4 task_code 全局唯一性说明
 

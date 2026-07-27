@@ -7,14 +7,17 @@ import {
   CURRENT_SCHEMA_VERSION,
   F4_SITTING_MIGRATION_ID,
   F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID,
+  F7_REPORT_FRAMEWORK_MIGRATION_ID,
   M1_MIGRATION_ID,
   M1_SCHEMA_VERSION,
   M2_MIGRATION_ID,
   M2_SCHEMA_VERSION,
+  M4_SAFETY_REKEY_MIGRATION_ID,
   assertCurrentDatabaseSchema,
   assertPreF7DatabaseSchema,
   runDatabaseMigrations
 } from '../migrations'
+import { inspectM4SafetyRekeyStructure, m4SafetyRekeyObjectSql } from '../safety-rekey-migration'
 
 function expectDatabaseIntegrity(db: MemoryAdapter): void {
   expect(db.prepare('PRAGMA foreign_key_check').all()).toEqual([])
@@ -76,6 +79,15 @@ CREATE TABLE result_record (
   strategy_type TEXT NOT NULL
 );
 `
+
+function downgradeFreshSchemaToV016(db: MemoryAdapter): void {
+  for (const sql of m4SafetyRekeyObjectSql('CURRENT_M4')) {
+    const [, type, name] = sql.match(/CREATE (TRIGGER|(?:UNIQUE )?INDEX) ([a-z_]+)/i) ?? []
+    db.exec(`DROP ${type.includes('INDEX') ? 'INDEX' : 'TRIGGER'} ${name};`)
+  }
+  for (const sql of m4SafetyRekeyObjectSql('LEGACY_V016')) db.exec(`${sql};`)
+  db.prepare('DELETE FROM schema_migration WHERE migration_id = ?').run(M4_SAFETY_REKEY_MIGRATION_ID)
+}
 
 const V012_M2_COMPAT_SCHEMA = `
 PRAGMA foreign_keys = ON;
@@ -208,6 +220,20 @@ function scoreScopeDefault(db: MemoryAdapter): string | null | undefined {
 }
 
 describe('database migrations', () => {
+  it('keeps the no-argument migration cap at F6 while an explicit M4 target is registered after F7', async () => {
+    const db = await MemoryAdapter.create()
+    db.exec(readFileSync(resolve(process.cwd(), 'src/main/db/schema.sql'), 'utf8'))
+    downgradeFreshSchemaToV016(db)
+    expect(inspectM4SafetyRekeyStructure(db)).toBe('LEGACY_V016')
+
+    expect(runDatabaseMigrations(db)).toEqual([])
+    expect(inspectM4SafetyRekeyStructure(db)).toBe('LEGACY_V016')
+    expect(runDatabaseMigrations(db, { throughMigrationId: M4_SAFETY_REKEY_MIGRATION_ID }))
+      .toEqual([M4_SAFETY_REKEY_MIGRATION_ID])
+    expect(db.prepare('SELECT migration_id FROM schema_migration WHERE migration_id = ?').get(F7_REPORT_FRAMEWORK_MIGRATION_ID))
+      .toMatchObject({ migration_id: F7_REPORT_FRAMEWORK_MIGRATION_ID })
+    db.close()
+  })
   it('repairs a falsely recorded M1 migration and preserves v0.1.12 rows', async () => {
     const db = await MemoryAdapter.create()
     db.exec(V012_MINIMAL_SCHEMA)

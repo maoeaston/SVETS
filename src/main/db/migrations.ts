@@ -5,6 +5,12 @@ import {
   F7_SCHEMA_VERSION,
   isF7ReportFrameworkStructurallyApplied
 } from './report-migration'
+import {
+  applyM4SafetyRekeyMigration,
+  inspectM4SafetyRekeyStructure,
+  M4_SAFETY_REKEY_MIGRATION_ID,
+  M4_SCHEMA_VERSION
+} from './safety-rekey-migration'
 
 export const M1_SCHEMA_VERSION = '0.1.13-multi-device-m1-identity'
 export const M1_MIGRATION_ID = '2026-07-14_mvp_schema_v0_1_13_multi_device_m1_identity'
@@ -16,6 +22,7 @@ export const PHASE4_ASSET_ROLE_MIGRATION_ID = '2026-07-20_job_skill_phase4_asset
 export const F4_SITTING_MIGRATION_ID = '2026-07-23_f4_assessment_sitting'
 export const F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID = '2026-07-24_f6_offline_score_scope_required'
 export { F7_REPORT_FRAMEWORK_MIGRATION_ID, F7_SCHEMA_VERSION }
+export { M4_SAFETY_REKEY_MIGRATION_ID, M4_SCHEMA_VERSION }
 
 type MigrationOptions = {
   beforeMigrate?: (migrationIds: string[]) => void
@@ -1326,6 +1333,13 @@ const migrations: Migration[] = [
     isStructurallyApplied: isF7ReportFrameworkStructurallyApplied,
     up: applyF7ReportFrameworkMigration,
     rebuildsReferencedTables: true
+  },
+  {
+    id: M4_SAFETY_REKEY_MIGRATION_ID,
+    version: M4_SCHEMA_VERSION,
+    description: 'M4: re-key safety aggregation from student/task to student/job/task',
+    isStructurallyApplied: (database) => inspectM4SafetyRekeyStructure(database) === 'CURRENT_M4',
+    up: applyM4SafetyRekeyMigration
   }
 ]
 
@@ -1451,6 +1465,9 @@ export function currentSchemaIssues(database: DBAdapter): string[] {
   if (!isF4SittingStructurallyApplied(database)) issues.push('migration:f4-assessment-sitting')
   if (!isF6ScoreScopeRequiredStructurallyApplied(database)) issues.push('migration:f6-score-scope-required')
   if (!isF7ReportFrameworkStructurallyApplied(database)) issues.push('migration:f7-report-framework')
+  if (inspectM4SafetyRekeyStructure(database) !== 'CURRENT_M4') {
+    issues.push('migration:m4-safety-rekey')
+  }
   if (!tableExists(database, 'schema_migration')) {
     issues.push('table:schema_migration')
   } else {
@@ -1482,6 +1499,10 @@ export function currentSchemaIssues(database: DBAdapter): string[] {
       .prepare('SELECT 1 AS present FROM schema_migration WHERE migration_id = ?')
       .get(F7_REPORT_FRAMEWORK_MIGRATION_ID) as { present: number } | undefined
     if (!f7Row) issues.push(`migration-record:${F7_REPORT_FRAMEWORK_MIGRATION_ID}`)
+    const m4Row = database
+      .prepare('SELECT 1 AS present FROM schema_migration WHERE migration_id = ?')
+      .get(M4_SAFETY_REKEY_MIGRATION_ID) as { present: number } | undefined
+    if (!m4Row) issues.push(`migration-record:${M4_SAFETY_REKEY_MIGRATION_ID}`)
   }
   return issues
 }
@@ -1500,9 +1521,25 @@ export function assertCurrentDatabaseSchema(database: DBAdapter): void {
  */
 export function assertPreF7DatabaseSchema(database: DBAdapter): void {
   const issues = currentSchemaIssues(database).filter(
-    (issue) => issue !== 'migration:f7-report-framework' && issue !== `migration-record:${F7_REPORT_FRAMEWORK_MIGRATION_ID}`
+    (issue) => issue !== 'migration:f7-report-framework'
+      && issue !== `migration-record:${F7_REPORT_FRAMEWORK_MIGRATION_ID}`
+      && issue !== 'migration:m4-safety-rekey'
+      && issue !== `migration-record:${M4_SAFETY_REKEY_MIGRATION_ID}`
   )
   if (issues.length > 0) {
     throw new Error(`[DB] Pre-F7 schema verification failed: ${issues.join(', ')}`)
+  }
+}
+
+/**
+ * M4 is deliberately orchestrated after F7's action-log reconciliation bridge. This
+ * narrower assertion lets the startup coordinator prove F7 before classifying M4.
+ */
+export function assertPreM4DatabaseSchema(database: DBAdapter): void {
+  const issues = currentSchemaIssues(database).filter(
+    (issue) => issue !== 'migration:m4-safety-rekey' && issue !== `migration-record:${M4_SAFETY_REKEY_MIGRATION_ID}`
+  )
+  if (issues.length > 0) {
+    throw new Error(`[DB] Pre-M4 schema verification failed: ${issues.join(', ')}`)
   }
 }

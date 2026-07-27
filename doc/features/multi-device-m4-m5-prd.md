@@ -1,9 +1,9 @@
 # 多设备 M4/M5 推进 PRD
 
-状态：DRAFT，待评审  
-日期：2026-07-18  
+状态：顺序已确认；各子阶段仍须独立 R3 工作流
+日期：2026-07-27
 上游架构：`doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md`  
-当前基线：schema v0.1.15，M1-M3 已完成并通过真实 Electron 主链路冒烟  
+当前基线：schema v0.1.16-report-framework；M1-M3、F4、F6、F7 已进入当前 migration 链
 目标：在扩展全量产品功能前，完成安全聚合、可靠事件基础设施和 Local Server 架构换轨。
 
 ## 1. 为什么 M4/M5 必须前置
@@ -13,17 +13,23 @@
 执行顺序固定为：
 
 ```text
-R0 Pilot Freeze
-  -> M4 Safety Re-key
-  -> M5A Command Bus Boundary
-  -> M5B Event Batch + startupRecovery
+Q1 Step 1 42+8 DRAFT authority
+  -> Step 2A / M4 Safety Re-key
+  -> Step 2B / M5A Command Bus Boundary
+  -> Step 2C / M5B Event Batch + startupRecovery
+  -> Q1 Step 3-10
+  -> R0 Release Gate
   -> M5C utilityProcess Local Server
   -> M5D Teacher Web Transport + Security
 ```
 
 M4 和每个 M5 子阶段独立 migration、独立验收、独立 commit，不合并为一次大爆炸式改造。
 
+这样排序的原因是：先稳定最终安全聚合身份，再让全部写命令进入统一边界，最后只把这套最终边界接入 batch coordinator。若先做 batch，M4 和 M5A 会迫使安全 handler 与 writer 接线重复迁移；若把 M4 与 batch 合并，则 Schema、安全状态机、日志 durability 和 recovery 同时变化，故障面过大。
+
 ## 2. M4 Safety Re-key
+
+M4 的当前详细范围、迁移边界和验收标准以 `doc/features/multi-device-m4-safety-rekey-prd.md` 为准。本节保留路线图摘要，不替代独立 Mini-PRD。
 
 ### 2.1 目标
 
@@ -97,7 +103,7 @@ migration 必须：
 | M4-05 | FACTUAL_CORRECTION 指向不同 job | 触发器拒绝 |
 | M4-05A | REDLINE_HALTED session 绑定不同 job incident | 触发器拒绝 |
 | M4-06 | 旧库迁移 | 行数、主键、状态、binding 不丢失 |
-| M4-07 | 故障注入 | 整个 migration 回滚到完整 v0.1.15 |
+| M4-07 | 故障注入 | 整个 migration 回滚到完整 v0.1.16-report-framework |
 | M4-08 | 既有业务回归 | 测评、训练、评分、报告、M3 assignment 全通过 |
 
 ## 3. M5A Command Bus Boundary
@@ -254,8 +260,8 @@ M4/M5 不直接实现模型调用，但必须为 AI 提供可靠边界：
 
 ## 9. 下一步原子任务
 
-1. 完成 R0 Pilot 冻结清单。
-2. 对 M4 三元安全聚合键做代码影响面扫描。
-3. 把 M4 拆成测试先行的实现任务书。
-4. M4 评审通过后修改产品合同、schema/migration、运行代码和测试。
-5. M4 独立验收完成后，再启动 M5A Command Bus 设计。
+1. 独立审查 `doc/features/multi-device-m4-safety-rekey-prd.md`，关闭全部 P0/P1。
+2. 基于当前 v0.1.16-report-framework 和真实 migration/handler 清单重新生成 M4 实现计划；2026-07-18 的 v0.1.15 任务书只作历史影响面参考，不得直接用于编码。
+3. M4 实现计划独立审查通过后，实施并验收 Step 2A。
+4. Step 2A 验收 `PASS` 后才启动 Step 2B M5A Command Bus 的独立工作流。
+5. Step 2B 验收 `PASS` 后，按最终 mutation boundary 重基线并复审 Step 2C batch runtime PRD，再进入实现。

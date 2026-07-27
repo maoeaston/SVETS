@@ -290,6 +290,7 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | `foundation-pages-exception-center` | [features/foundation-pages-exception-center-prd.md](features/foundation-pages-exception-center-prd.md) | [features/foundation-pages-exception-center-impl.md](features/foundation-pages-exception-center-impl.md) |
 | `login-by-role` | [features/login-by-role-prd.md](features/login-by-role-prd.md) | [features/login-by-role-impl.md](features/login-by-role-impl.md) |
 | `multi-device-m4-m5` | [features/multi-device-m4-m5-prd.md](features/multi-device-m4-m5-prd.md) | [features/multi-device-m4-m5-impl.md](features/multi-device-m4-m5-impl.md) |
+| `multi-device-m4-safety-rekey` | [features/multi-device-m4-safety-rekey-prd.md](features/multi-device-m4-safety-rekey-prd.md) | [features/multi-device-m4-safety-rekey-impl.md](features/multi-device-m4-safety-rekey-impl.md) |
 | `multi-device-v2.2-migration` | [features/multi-device-v2.2-migration-prd.md](features/multi-device-v2.2-migration-prd.md) | [features/multi-device-v2.2-migration-impl.md](features/multi-device-v2.2-migration-impl.md) |
 | `operation-scoring` | [features/operation-scoring-prd.md](features/operation-scoring-prd.md) | [features/operation-scoring-impl.md](features/operation-scoring-impl.md) |
 | `pause-recovery-safety` | [features/pause-recovery-safety-prd.md](features/pause-recovery-safety-prd.md) | [features/pause-recovery-safety-impl.md](features/pause-recovery-safety-impl.md) |

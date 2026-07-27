@@ -3411,6 +3411,8 @@ MVP 采用轻量事件溯源 + SQLite 查询投影：
 5. REDLINE_HALTED session 的 incident 必须与同一学生、同一任务匹配。
 6. 安全红线结果覆盖所有分数等级。
 
+> **后续版本覆盖说明（M4，待独立 R3 实施与验收后生效）：** 上述第 1、5 项以及由此派生的开放会话唯一性、新会话阻断、批量熔断、replacement/factual-correction、结果和报告归属，在 schema v0.1.16 及以前保留 `student_id + task_code` 的历史实现语义；M4 自 schema v0.1.17 起统一升级为 `student_id + job_code + task_code`。M4 必须通过独立 migration 一次性替换全部相关 Schema 守卫和运行查询，不允许二元/三元混用。该覆盖不改变既有角色责任、安全事件生命周期、先熔断后归因、安全结果优先级或历史事实；同一岗位现有行为保持不变，`task_code` 允许跨岗位复用。
+
 ### 11.7 多设备 M1 边界
 
 v0.1.15 提供 M1 身份拓扑、M2 Business Session Foundation 与 M3 本地 Grant/Assignment 最小闭环。learning_session、离线草稿、发布同步、跨设备安全聚合、M5 command_log/REST/SSE 和自动 JSONL 冷启动重放属于后续里程碑；在相应合同落地前，不得推断当前 MVP 已具备完整跨设备同步运行能力。

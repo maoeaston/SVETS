@@ -2,7 +2,7 @@ import Database from 'better-sqlite3'
 import { createHash } from 'crypto'
 import { dirname, join } from 'path'
 import { app } from 'electron'
-import { copyFileSync, existsSync, readFileSync, mkdirSync } from 'fs'
+import { existsSync, readFileSync, mkdirSync } from 'fs'
 import { hashPassword } from '../utils/password'
 import devAccounts from '../../shared/config/dev-accounts.json'
 import type { DBAdapter } from './interface'
@@ -12,13 +12,11 @@ import { preReconcileLegacyActionLog, StartupRecoveryRequiredError } from '../do
 import { reconcileActionLog, writeRecoverySnapshot } from '../domain/recovery'
 import {
   assertCurrentDatabaseSchema,
-  F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID,
-  F7_REPORT_FRAMEWORK_MIGRATION_ID,
-  F7_SCHEMA_VERSION,
-  isFreshDatabase,
-  runDatabaseMigrations
+  M4_SCHEMA_VERSION,
+  isFreshDatabase
 } from './migrations'
-import { isF7ReportFrameworkStructurallyApplied } from './report-migration'
+import { createVerifiedMigrationBackup } from './migration-backup'
+import { DatabaseStartupUpgradeError, orchestrateDatabaseStartupUpgrade } from './migration-startup'
 
 let db: Database.Database | null = null
 
@@ -52,26 +50,43 @@ export function initDatabase(): void {
       )
     }
 
-    const migrated: string[] = []
-    if (!fresh && !isF7ReportFrameworkStructurallyApplied(adapter)) {
-      // Only v0.1.15 structures may interpret schema-v1 JSONL. F7 DDL is delayed
-      // until that reconciliation is complete, so backfill sees every legacy report.
-      migrated.push(...runDatabaseMigrations(adapter, {
-        throughMigrationId: F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID
-      }))
-      preReconcileLegacyActionLog(adapter, {
-        logPath: actionLogPath,
-        archiveDir: join(dirname(actionLogPath), 'recovery-archive')
+    let migrated: string[]
+    try {
+      migrated = orchestrateDatabaseStartupUpgrade(adapter, {
+        preReconcileF7: () => preReconcileLegacyActionLog(adapter, {
+          logPath: actionLogPath,
+          archiveDir: join(dirname(actionLogPath), 'recovery-archive')
+        }),
+        createVerifiedBackup: (stage, migrationId) => {
+          const backup = createVerifiedMigrationBackup({
+            source: {
+              checkpointFull: () => database.pragma('wal_checkpoint(FULL)'),
+              vacuumInto: (path) => database.exec(`VACUUM INTO '${path.replace(/'/g, "''")}'`),
+              verifyBackup: (path) => {
+                const backupDatabase = new Database(path, { readonly: true })
+                try {
+                  const integrity = backupDatabase.prepare('PRAGMA integrity_check').all() as Array<Record<string, string>>
+                  if (integrity.map((row) => Object.values(row)[0]).join(',') !== 'ok') {
+                    throw new Error('backup database integrity_check failed')
+                  }
+                } finally {
+                  backupDatabase.close()
+                }
+              }
+            },
+            dataDir,
+            actionLogPath,
+            stage,
+            migrationId
+          })
+          console.log(`[DB] Paired ${stage} backup before ${migrationId}: ${backup.backupDir}`)
+        }
       })
-      const backupPath = createMigrationBackup(database, dataDir)
-      console.log(`[DB] Paired backup before ${F7_REPORT_FRAMEWORK_MIGRATION_ID}: ${backupPath}`)
-      try {
-        migrated.push(...runDatabaseMigrations(adapter, {
-          throughMigrationId: F7_REPORT_FRAMEWORK_MIGRATION_ID
-        }))
-      } catch {
-        throw new StartupRecoveryRequiredError('F7_MIGRATION_FAILED', 'F7 database migration failed safely')
+    } catch (error) {
+      if (error instanceof DatabaseStartupUpgradeError) {
+        throw new StartupRecoveryRequiredError(error.code, error.message)
       }
+      throw error
     }
 
     database.transaction(() => database.exec(schema))()
@@ -128,7 +143,7 @@ function recoverActionLog(database: Database.Database, dbPath: string): {
       sqliteFileHash,
       actionLogPath,
       archivedLogPath: recovery.archivedTailPath,
-      schemaVersion: F7_SCHEMA_VERSION,
+      schemaVersion: M4_SCHEMA_VERSION,
       appVersion: app.getVersion()
     })
   })()
@@ -168,18 +183,6 @@ function seedDevUsers(database: Database.Database): void {
     `).run()
   })
   tx()
-}
-
-function createMigrationBackup(database: Database.Database, dataDir: string): string {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-  const backupDir = join(dataDir, 'backups', `pre-migration.${timestamp}`)
-  mkdirSync(backupDir, { recursive: true })
-  const backupPath = join(backupDir, 'xc-career-guide.db')
-  database.pragma('wal_checkpoint(FULL)')
-  database.exec(`VACUUM INTO '${backupPath.replace(/'/g, "''")}'`)
-  const actionLogPath = join(dataDir, 'action_log.jsonl')
-  if (existsSync(actionLogPath)) copyFileSync(actionLogPath, join(backupDir, 'action_log.jsonl'))
-  return backupDir
 }
 
 export function closeDatabase(): void {
