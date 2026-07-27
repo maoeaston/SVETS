@@ -132,12 +132,12 @@ function seedStrategyConfig(db: DBAdapter, over: Partial<StrategyInput> = {}): s
   return s.strategyId
 }
 
-function createOfflinePendingSession(): { sessionId: string; offlineQuestionIds: string[]; onlineQuestionId: string } {
+function createOfflinePendingSession(strategyIdForSession = strategyId): { sessionId: string; offlineQuestionIds: string[]; onlineQuestionId: string } {
   const result = createSession(db, {
     callerUserId: teacherId,
     callerRole: 'TEACHER',
     studentId,
-    strategyId,
+    strategyId: strategyIdForSession,
     strategyVersion: 1,
     taskCode
   })
@@ -417,6 +417,35 @@ describe('assessment:submitOfflineAbilityScores', () => {
           AND event_type = 'SESSION_COMPLETED'`,
       sessionId
     )).toBe(0)
+  })
+
+  it('M4：其他 job 的安全事件不阻断 session 所属 job 的评分', () => {
+    const otherJobCode = 'WAREHOUSE_PICKER'
+    const otherStrategyId = seedStrategyConfig(db, { jobCode: otherJobCode })
+    seedQuestionBank(db, { jobCode: otherJobCode })
+    const { sessionId, offlineQuestionIds } = createOfflinePendingSession(otherStrategyId)
+    const incidentId = uuidv4()
+    const triggerEventId = uuidv4()
+    db.prepare(
+      `INSERT INTO domain_event_projection
+         (event_id, aggregate_type, aggregate_id, event_type, event_sequence,
+          payload_json, checksum, source_log_path, schema_version, created_at)
+       VALUES (?, 'SAFETY_INCIDENT', ?, 'SAFETY_INCIDENT_CREATED', 1, '{}', 'c', 'l', 1, datetime('now'))`
+    ).run(triggerEventId, incidentId)
+    db.prepare(
+      `INSERT INTO safety_incident
+         (incident_id, student_id, job_code, task_code, trigger_event_id,
+          reason_code, triggered_by, context_phase, status, requires_review_before_next_session)
+       VALUES (?, ?, 'SUPERMARKET_SHELVER', ?, ?,
+               'OTHER_SAFETY_RISK', ?, 'OTHER', 'PENDING_DETAIL', 1)`
+    ).run(incidentId, studentId, taskCode, triggerEventId, teacherId)
+
+    expect(submitOfflineAbilityScores(db, {
+      callerUserId: teacherId,
+      callerRole: 'TEACHER',
+      sessionId,
+      scores: validScores([offlineQuestionIds[0]])
+    }).success).toBe(true)
   })
 
   it('允许部分补交，重复提交同一题返回 ALREADY_SCORED', () => {

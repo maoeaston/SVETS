@@ -123,12 +123,12 @@ function seedStrategyConfig(db: DBAdapter, over: Partial<StrategyInput> = {}): s
   return s.strategyId
 }
 
-function createOfflinePendingSession(): string {
+function createOfflinePendingSession(over: { strategyId?: string; jobCode?: string } = {}): string {
   return seedAssessmentSessionFixture(db, {
     studentId,
-    strategyId,
+    strategyId: over.strategyId ?? strategyId,
     strategyType: 'BASELINE_ASSESSMENT',
-    jobCode: 'SUPERMARKET_SHELVER',
+    jobCode: over.jobCode ?? 'SUPERMARKET_SHELVER',
     taskCode: 'SHELVE_TASK',
     strategyVersion: 1,
     status: 'OFFLINE_PENDING',
@@ -312,6 +312,35 @@ describe('submitOperationScores — TASK_OPERATION M2 阶段与原子性', () =>
     if (!readResult.success) return
     expect(readResult.items).toHaveLength(9)
     expect(readResult.normalizedScore).toBe(100)
+  })
+
+  it('M4：其他 job 的安全事件不阻断 session 所属 job 的实操评分', () => {
+    const otherJobCode = 'WAREHOUSE_PICKER'
+    const otherStrategyId = seedStrategyConfig(db, { jobCode: otherJobCode })
+    const sessionId = createOfflinePendingSession({ strategyId: otherStrategyId, jobCode: otherJobCode })
+    const incidentId = uuidv4()
+    const triggerEventId = uuidv4()
+    db.prepare(
+      `INSERT INTO domain_event_projection
+         (event_id, aggregate_type, aggregate_id, event_type, event_sequence,
+          payload_json, checksum, source_log_path, schema_version, created_at)
+       VALUES (?, 'SAFETY_INCIDENT', ?, 'SAFETY_INCIDENT_CREATED', 1, '{}', 'c', 'l', 1, datetime('now'))`
+    ).run(triggerEventId, incidentId)
+    db.prepare(
+      `INSERT INTO safety_incident
+         (incident_id, student_id, job_code, task_code, trigger_event_id,
+          reason_code, triggered_by, context_phase, status, requires_review_before_next_session)
+       VALUES (?, ?, 'SUPERMARKET_SHELVER', 'SHELVE_TASK', ?,
+               'OTHER_SAFETY_RISK', ?, 'OTHER', 'PENDING_DETAIL', 1)`
+    ).run(incidentId, studentId, triggerEventId, teacherId)
+
+    expect(submitOperationScores(db, {
+      callerUserId: teacherId,
+      callerRole: 'TEACHER',
+      sessionId,
+      toolChecklistConfirmed: true,
+      scores: validScores()
+    }).success).toBe(true)
   })
 
   it('双轨隔离：非 TASK_OPERATION 线下记录不进入实操通过率', () => {

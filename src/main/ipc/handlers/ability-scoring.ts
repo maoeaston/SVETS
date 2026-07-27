@@ -132,14 +132,15 @@ function hasBlockingSafetyIncident(db: DBAdapter, session: AbilitySessionRow): b
   const blocked = db
     .prepare(
       `SELECT 1
-         FROM safety_incident
+        FROM safety_incident
         WHERE student_id = ?
+          AND job_code = ?
           AND task_code = ?
           AND status IN ('PENDING_DETAIL', 'CONFIRMED')
           AND requires_review_before_next_session = 1
         LIMIT 1`
     )
-    .get(session.student_id, session.task_code)
+    .get(session.student_id, session.job_code, session.task_code)
   return Boolean(blocked)
 }
 

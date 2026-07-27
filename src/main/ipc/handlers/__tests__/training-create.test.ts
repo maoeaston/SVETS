@@ -60,6 +60,28 @@ const taskCode = 'SHELVE_TASK'
 const strategyId = 'strategy_training_shelver_v1'
 const strategyVersion = 1
 
+function seedTrainingStrategyForJob(jobCode: string): string {
+  const otherStrategyId = `strategy_training_${jobCode.toLowerCase()}_v1`
+  db.prepare(
+    `INSERT INTO strategy_config
+       (strategy_id, strategy_type, job_code, strategy_name,
+        online_question_count, offline_question_count, max_score,
+        competent_threshold, conditional_threshold, module_veto_threshold,
+        emotion_collapse_threshold, question_policy_json, scoring_policy_json,
+        supports_redline_halt, allows_emotion_interrupt, requires_offline_scoring,
+        version, is_active)
+     SELECT ?, strategy_type, ?, strategy_name,
+            online_question_count, offline_question_count, max_score,
+            competent_threshold, conditional_threshold, module_veto_threshold,
+            emotion_collapse_threshold, question_policy_json, scoring_policy_json,
+            supports_redline_halt, allows_emotion_interrupt, requires_offline_scoring,
+            version, is_active
+       FROM strategy_config
+      WHERE strategy_id = ? AND version = ?`
+  ).run(otherStrategyId, jobCode, strategyId, strategyVersion)
+  return otherStrategyId
+}
+
 /** 验证 training_session 状态 */
 function getSession(trainingSessionId: string) {
   return db
@@ -237,6 +259,46 @@ describe('createTrainingSession', () => {
     expect(second.success).toBe(false)
     if (second.success) return
     expect(second.errorCode).toBe('DUPLICATE_TRAINING_SESSION')
+  })
+
+  it('M4：同 student/task 的不同 job 可并存，其他 job 的安全事件不阻断当前 strategy job', () => {
+    const otherStrategyId = seedTrainingStrategyForJob('WAREHOUSE_PICKER')
+
+    expect(createTrainingSession(db, {
+      callerUserId: callerId,
+      callerRole: 'TEACHER',
+      studentId,
+      strategyId,
+      strategyVersion,
+      moduleType: 'FINE_MOTOR',
+      taskCode
+    }).success).toBe(true)
+
+    const triggerEventId = uuidv4()
+    db.prepare(
+      `INSERT INTO domain_event_projection
+         (event_id, aggregate_type, aggregate_id, event_type, event_sequence,
+          payload_json, checksum, source_log_path, schema_version, created_at)
+       VALUES (?, 'SAFETY_INCIDENT', ?, 'REDLINE_TRIGGERED', 1, '{}', 'x', 'test.jsonl', 1, datetime('now'))`
+    ).run(triggerEventId, uuidv4())
+    db.prepare(
+      `INSERT INTO safety_incident
+         (incident_id, student_id, job_code, task_code, trigger_event_id,
+          reason_code, context_phase, triggered_by,
+          status, requires_review_before_next_session)
+       VALUES (?, ?, 'SUPERMARKET_SHELVER', ?, ?,
+          'OTHER_SAFETY_RISK', 'OTHER', ?, 'PENDING_DETAIL', 1)`
+    ).run(uuidv4(), studentId, taskCode, triggerEventId, callerId)
+
+    expect(createTrainingSession(db, {
+      callerUserId: callerId,
+      callerRole: 'TEACHER',
+      studentId,
+      strategyId: otherStrategyId,
+      strategyVersion,
+      moduleType: 'FINE_MOTOR',
+      taskCode
+    }).success).toBe(true)
   })
 
   it('BLOCKED_BY_SAFETY_INCIDENT：有未解决安全事件', () => {

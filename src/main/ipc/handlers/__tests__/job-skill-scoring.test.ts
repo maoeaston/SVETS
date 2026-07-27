@@ -67,7 +67,7 @@ import type { JobSkillOfflineScoreItem } from '../../../../shared/types/job-skil
 const JOB_MODULES = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6'] as const
 const JOB_ONLINE_TYPES = ['TRUE_FALSE', 'SINGLE_CHOICE', 'DRAG'] as const
 
-function seedJobSkillBank(db: MemoryAdapter): {
+function seedJobSkillBank(db: MemoryAdapter, jobCode = 'SUPERMARKET_SHELVER'): {
   scoredIds: string[]
   obsIds: string[]
   onlineIds: string[]
@@ -83,20 +83,20 @@ function seedJobSkillBank(db: MemoryAdapter): {
     `INSERT INTO question_bank
        (question_id, job_code, bank_domain, job_module_code, question_type, item_usage,
         content_json, scoring_rule_json, status)
-     VALUES (?, 'SUPERMARKET_SHELVER', 'JOB_SPECIFIC', ?, ?, 'SCORED_ITEM', ?, '{"seed":true}', 'ACTIVE')`
+     VALUES (?, ?, 'JOB_SPECIFIC', ?, ?, 'SCORED_ITEM', ?, '{"seed":true}', 'ACTIVE')`
   )
   const offlineStmt = db.prepare(
     `INSERT INTO question_bank
        (question_id, job_code, bank_domain, job_module_code, question_type, item_usage,
         content_json, scoring_rule_json, status)
-     VALUES (?, 'SUPERMARKET_SHELVER', 'JOB_SPECIFIC', ?, 'OFFLINE_OPERATION', 'SCORED_ITEM',
+     VALUES (?, ?, 'JOB_SPECIFIC', ?, 'OFFLINE_OPERATION', 'SCORED_ITEM',
              '{"seed":true}', '{"scoring_type":"OFFLINE_RUBRIC","max_score":2}', 'ACTIVE')`
   )
   const obsStmt = db.prepare(
     `INSERT INTO question_bank
        (question_id, job_code, bank_domain, job_module_code, question_type, item_usage,
         content_json, scoring_rule_json, status)
-     VALUES (?, 'SUPERMARKET_SHELVER', 'JOB_SPECIFIC', ?, 'TRUE_FALSE', 'OBSERVATION_ONLY',
+     VALUES (?, ?, 'JOB_SPECIFIC', ?, 'TRUE_FALSE', 'OBSERVATION_ONLY',
              '{"seed":true}', '{"seed":true}', 'ACTIVE')`
   )
 
@@ -107,16 +107,16 @@ function seedJobSkillBank(db: MemoryAdapter): {
         qtype === 'TRUE_FALSE'
           ? { question_type: 'TRUE_FALSE', expected_answer: true }
           : { seed: true }
-      onlineStmt.run(id, mod, qtype, JSON.stringify(content))
+      onlineStmt.run(id, jobCode, mod, qtype, JSON.stringify(content))
       onlineIds.push(id)
     }
     const offId = `${mod}_OP_${uuidv4().slice(0, 6)}`
-    offlineStmt.run(offId, mod)
+    offlineStmt.run(offId, jobCode, mod)
     offlineIds.push(offId)
   }
   for (const mod of ['M1', 'M5'] as const) {
     const id = `${mod}_OB_${uuidv4().slice(0, 6)}`
-    obsStmt.run(id, mod)
+    obsStmt.run(id, jobCode, mod)
     obsIds.push(id)
   }
 
@@ -125,7 +125,8 @@ function seedJobSkillBank(db: MemoryAdapter): {
 
 function seedJobSkillStrategy(
   db: MemoryAdapter,
-  bankIds: { scoredIds: string[]; obsIds: string[]; onlineIds: string[]; offlineIds: string[] }
+  bankIds: { scoredIds: string[]; obsIds: string[]; onlineIds: string[]; offlineIds: string[] },
+  jobCode = 'SUPERMARKET_SHELVER'
 ): string {
   const strategyId = `strategy_job_skill_test_${uuidv4().slice(0, 6)}`
   const policy = {
@@ -145,11 +146,11 @@ function seedJobSkillStrategy(
         emotion_collapse_threshold, question_policy_json, scoring_policy_json,
         supports_redline_halt, allows_emotion_interrupt, requires_offline_scoring,
         version, is_active)
-     VALUES (?, 'JOB_SKILL_ASSESSMENT', 'SUPERMARKET_SHELVER', 'JOB_SKILL 测试策略',
+     VALUES (?, 'JOB_SKILL_ASSESSMENT', ?, 'JOB_SKILL 测试策略',
              18, 6, 48, 40, 24, 0.5, 3, ?,
              '{"schema_version":"scoring-policy-v1.1","online_score_values":[0,2],"offline_score_values":[0,1,2],"normalization":"raw_score/max_score*100","safety_override_enabled":true,"placement_advice_enabled":false}',
              1, 1, 1, 1, 1)`
-  ).run(strategyId, JSON.stringify(policy))
+  ).run(strategyId, jobCode, JSON.stringify(policy))
   return strategyId
 }
 
@@ -187,8 +188,8 @@ function baseParams(over: Partial<CreateSessionParams> = {}): CreateSessionParam
 }
 
 /** 创建 session 并直接把状态推进到 OFFLINE_PENDING（跳过真实答题，聚焦线下评分路径）。*/
-function createOfflinePendingSession(): string {
-  const result = createSession(db, baseParams())
+function createOfflinePendingSession(strategyIdForSession = strategyId): string {
+  const result = createSession(db, baseParams({ strategyId: strategyIdForSession }))
   if (!result.success) throw new Error('createSession failed in test setup')
   setAssessmentSessionStateFixture(db, result.sessionId, 'OFFLINE_PENDING')
   return result.sessionId
@@ -269,6 +270,35 @@ describe('TC-O: JOB_SKILL 线下评分录入', () => {
       expect(r.scoring_rubric_json).not.toBe('')
       expect(() => JSON.parse(r.scoring_rubric_json)).not.toThrow()
     }
+  })
+
+  it('M4：其他 job 的安全事件不阻断 session 所属 job 的岗位技能评分', () => {
+    const otherJobCode = 'WAREHOUSE_PICKER'
+    const otherBankIds = seedJobSkillBank(db, otherJobCode)
+    const otherStrategyId = seedJobSkillStrategy(db, otherBankIds, otherJobCode)
+    const sessionId = createOfflinePendingSession(otherStrategyId)
+    const incidentId = uuidv4()
+    const triggerEventId = uuidv4()
+    db.prepare(
+      `INSERT INTO domain_event_projection
+         (event_id, aggregate_type, aggregate_id, event_type, event_sequence,
+          payload_json, checksum, source_log_path, schema_version, created_at)
+       VALUES (?, 'SAFETY_INCIDENT', ?, 'SAFETY_INCIDENT_CREATED', 1, '{}', 'c', 'l', 1, datetime('now'))`
+    ).run(triggerEventId, incidentId)
+    db.prepare(
+      `INSERT INTO safety_incident
+         (incident_id, student_id, job_code, task_code, trigger_event_id,
+          reason_code, triggered_by, context_phase, status, requires_review_before_next_session)
+       VALUES (?, ?, 'SUPERMARKET_SHELVER', ?, ?,
+               'OTHER_SAFETY_RISK', ?, 'OTHER', 'PENDING_DETAIL', 1)`
+    ).run(incidentId, studentId, JOB_TASK_CODE, triggerEventId, callerId)
+
+    expect(submitJobSkillOfflineScores(db, {
+      callerUserId: callerId,
+      callerRole: 'TEACHER',
+      sessionId,
+      scores: otherBankIds.offlineIds.map((questionId) => ({ questionId, score: 1 as const }))
+    }).success).toBe(true)
   })
 
   it('TC-O01 JOB_SKILL 线上题仍只产生 0/2（复用 submitAnswer，不受本次改动影响）', () => {

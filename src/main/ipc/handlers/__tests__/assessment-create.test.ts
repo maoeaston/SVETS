@@ -124,7 +124,7 @@ function seedStrategyRow(over: Partial<StrategyInput> = {}): void {
 }
 
 /** 直接 INSERT 一条 PENDING_DETAIL + requires_review 的 safety_incident（绕过 handler）。 */
-function seedBlockingSafetyIncident(student: string): string {
+function seedBlockingSafetyIncident(student: string, jobCode = 'SUPERMARKET_SHELVER'): string {
   const incidentId = uuidv4()
   const triggerEventId = uuidv4()
   db.prepare(
@@ -137,8 +137,8 @@ function seedBlockingSafetyIncident(student: string): string {
     `INSERT INTO safety_incident
        (incident_id, student_id, job_code, task_code, trigger_event_id,
         reason_code, triggered_by, context_phase, status, requires_review_before_next_session)
-     VALUES (?, ?, 'SUPERMARKET_SHELVER', ?, ?, 'BLADE_TOWARD_SELF', ?, 'ONLINE_ASSESSMENT', 'PENDING_DETAIL', 1)`
-  ).run(incidentId, student, taskCode, triggerEventId, callerId)
+       VALUES (?, ?, ?, ?, ?, 'BLADE_TOWARD_SELF', ?, 'ONLINE_ASSESSMENT', 'PENDING_DETAIL', 1)`
+  ).run(incidentId, student, jobCode, taskCode, triggerEventId, callerId)
   return incidentId
 }
 
@@ -296,6 +296,34 @@ describe('assessment:createSession 正常路径', () => {
 
     const result = createSession(db, baseParams())
     expect(result.success).toBe(true)
+  })
+})
+
+describe('assessment:createSession M4 job 作用域', () => {
+  const otherJobCode = 'WAREHOUSE_PICKER'
+
+  it('同 student/task 的不同 job 可并存；同 job 的重复开放仍拒绝', () => {
+    const firstStrategyId = strategyId
+    seedStrategyRow({ jobCode: otherJobCode })
+    const otherStrategyId = strategyId
+    seedQuestionBank(db, { jobCode: otherJobCode })
+
+    expect(createSession(db, baseParams({ strategyId: firstStrategyId })).success).toBe(true)
+    expect(createSession(db, baseParams({ strategyId: otherStrategyId })).success).toBe(true)
+
+    expect(createSession(db, baseParams({ strategyId: otherStrategyId }))).toEqual({
+      success: false,
+      errorCode: 'SESSION_ALREADY_OPEN'
+    })
+  })
+
+  it('其他 job 的安全事件不阻断当前 strategy job', () => {
+    seedBlockingSafetyIncident(studentId)
+    seedStrategyRow({ jobCode: otherJobCode })
+    const otherStrategyId = strategyId
+    seedQuestionBank(db, { jobCode: otherJobCode })
+
+    expect(createSession(db, baseParams({ strategyId: otherStrategyId })).success).toBe(true)
   })
 })
 

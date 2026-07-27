@@ -14,6 +14,7 @@ const EXCLUDED_PATH_PARTS = new Set(['__tests__'])
 const EXCLUDED_FILES = new Set([
   'src/main/db/migrations.ts',
   'src/main/db/report-migration.ts',
+  'src/main/db/safety-rekey-migration.ts',
   'src/main/db/test-helpers.ts'
 ])
 const SQL_START = /^\s*(?:SELECT|INSERT\s+INTO|UPDATE|DELETE\s+FROM)\b/i

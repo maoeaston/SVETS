@@ -317,43 +317,43 @@
       "id": "M4-SQL-023",
       "file": "src/main/ipc/handlers/ability-scoring.ts",
       "symbol": "hasBlockingSafetyIncident",
-      "sql_fingerprint": "234d91c6c2c7d08e6d210b0d3e9e5780d7dc7cf269296efec42e0c62312efbba",
+      "sql_fingerprint": "4c43c882928171c29e3b9042c629db15fd4be3cabc71a27469684f0fcfbf2eab",
       "classification": "AGGREGATE_MATCH_REKEY",
-      "current_predicate": "student_id + task_code (current binary safety scope)",
+      "current_predicate": "student_id + job_code + task_code (M4-4 re-keyed)",
       "target_predicate": "student_id + job_code + task_code (M4 required)",
-      "allowed_reason": "M4-1 baseline captures the required re-key before M4-4/M4-5 implementation.",
+      "allowed_reason": "Session-owned job_code scopes the ability scoring safety gate to its aggregate.",
       "test_evidence": [
         "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
       ],
-      "status": "PENDING_REKEY"
+      "status": "REKEYED"
     },
     {
       "id": "M4-SQL-024",
       "file": "src/main/ipc/handlers/assessment.ts",
       "symbol": "createSession",
-      "sql_fingerprint": "6ad6bb4346aecef97387378fb7791876f400afda6343894ffefbdb03a921c129",
+      "sql_fingerprint": "ba576adf17dcb47562b62ddf19626bc2a5e49bad5d3407cf5d9bb4e75bdfcc3d",
       "classification": "AGGREGATE_MATCH_REKEY",
-      "current_predicate": "student_id + task_code (current binary safety scope)",
+      "current_predicate": "student_id + job_code + task_code (M4-4 re-keyed)",
       "target_predicate": "student_id + job_code + task_code (M4 required)",
-      "allowed_reason": "M4-1 baseline captures the required re-key before M4-4/M4-5 implementation.",
+      "allowed_reason": "Trusted strategy job_code scopes the assessment open-session check to its aggregate.",
       "test_evidence": [
         "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
       ],
-      "status": "PENDING_REKEY"
+      "status": "REKEYED"
     },
     {
       "id": "M4-SQL-025",
       "file": "src/main/ipc/handlers/assessment.ts",
       "symbol": "createSession",
-      "sql_fingerprint": "8576f81d516c744fb85a6996b8752bcb2bc0dc7b21a7052d4b699df85e648c63",
+      "sql_fingerprint": "ce019b5472dc1b740232a8359b6746b97329f472284de6ff34bb8ce83ea91469",
       "classification": "AGGREGATE_MATCH_REKEY",
-      "current_predicate": "student_id + task_code (current binary safety scope)",
+      "current_predicate": "student_id + job_code + task_code (M4-4 re-keyed)",
       "target_predicate": "student_id + job_code + task_code (M4 required)",
-      "allowed_reason": "M4-1 baseline captures the required re-key before M4-4/M4-5 implementation.",
+      "allowed_reason": "Trusted strategy job_code scopes the assessment safety gate to its aggregate.",
       "test_evidence": [
         "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
       ],
-      "status": "PENDING_REKEY"
+      "status": "REKEYED"
     },
     {
       "id": "M4-SQL-026",
@@ -471,29 +471,29 @@
       "id": "M4-SQL-034",
       "file": "src/main/ipc/handlers/job-skill-scoring.ts",
       "symbol": "submitJobSkillOfflineScores",
-      "sql_fingerprint": "e4116ad42cfe6771fc15b54a12634be6709737ecafe97a6192cb8f3a99b83b76",
+      "sql_fingerprint": "1e7f2356a9eb927b59e9ff3a8d90199a4e6eecaab268bca33abe83a14cd7245d",
       "classification": "AGGREGATE_MATCH_REKEY",
-      "current_predicate": "student_id + task_code (current binary safety scope)",
+      "current_predicate": "student_id + job_code + task_code (M4-4 re-keyed)",
       "target_predicate": "student_id + job_code + task_code (M4 required)",
-      "allowed_reason": "M4-1 baseline captures the required re-key before M4-4/M4-5 implementation.",
+      "allowed_reason": "Persisted session job_code scopes the JOB_SKILL scoring safety gate to its aggregate.",
       "test_evidence": [
         "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
       ],
-      "status": "PENDING_REKEY"
+      "status": "REKEYED"
     },
     {
       "id": "M4-SQL-035",
       "file": "src/main/ipc/handlers/operation-scoring.ts",
       "symbol": "submitOperationScores",
-      "sql_fingerprint": "b7ba3b589152178b070dbd51bd7d57640f93f5b3650f377af15ed8c218a4a74e",
+      "sql_fingerprint": "ba7fdb947d937ed74b2fd5e8eb254a84c0849767f563f7d9e822a98500f4e144",
       "classification": "AGGREGATE_MATCH_REKEY",
-      "current_predicate": "student_id + task_code (current binary safety scope)",
+      "current_predicate": "student_id + job_code + task_code (M4-4 re-keyed)",
       "target_predicate": "student_id + job_code + task_code (M4 required)",
-      "allowed_reason": "M4-1 baseline captures the required re-key before M4-4/M4-5 implementation.",
+      "allowed_reason": "Persisted session job_code scopes the operation scoring safety gate to its aggregate.",
       "test_evidence": [
         "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
       ],
-      "status": "PENDING_REKEY"
+      "status": "REKEYED"
     },
     {
       "id": "M4-SQL-036",
@@ -625,43 +625,43 @@
       "id": "M4-SQL-045",
       "file": "src/main/ipc/handlers/training.ts",
       "symbol": "createTrainingSession",
-      "sql_fingerprint": "c6208484f8726386f94271ae574fdadfa5efd169cebbf2710bf6dfde9b664b8d",
+      "sql_fingerprint": "a30f91835e071debcee16bdba7884304cda1c68ba6a738ca0880e7f8eb698295",
       "classification": "AGGREGATE_MATCH_REKEY",
-      "current_predicate": "student_id + task_code (current binary safety scope)",
+      "current_predicate": "student_id + job_code + task_code (M4-4 re-keyed)",
       "target_predicate": "student_id + job_code + task_code (M4 required)",
-      "allowed_reason": "M4-1 baseline captures the required re-key before M4-4/M4-5 implementation.",
+      "allowed_reason": "Trusted strategy job_code scopes the training open-session check to its aggregate.",
       "test_evidence": [
         "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
       ],
-      "status": "PENDING_REKEY"
+      "status": "REKEYED"
     },
     {
       "id": "M4-SQL-046",
       "file": "src/main/ipc/handlers/training.ts",
       "symbol": "createTrainingSession",
-      "sql_fingerprint": "e9f33f00e74a6f83c013660413eb2062ec820260a8cf2cd45e1bc5697f1c82d6",
+      "sql_fingerprint": "7b4a8e1282f66d7bbe381bbd686751b97f9d27f3d95d7b6c4430440275285101",
       "classification": "AGGREGATE_MATCH_REKEY",
-      "current_predicate": "student_id + task_code (current binary safety scope)",
+      "current_predicate": "student_id + job_code + task_code (M4-4 re-keyed)",
       "target_predicate": "student_id + job_code + task_code (M4 required)",
-      "allowed_reason": "M4-1 baseline captures the required re-key before M4-4/M4-5 implementation.",
+      "allowed_reason": "Trusted strategy job_code scopes the training safety gate to its aggregate.",
       "test_evidence": [
         "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
       ],
-      "status": "PENDING_REKEY"
+      "status": "REKEYED"
     },
     {
       "id": "M4-SQL-047",
       "file": "src/main/ipc/handlers/training.ts",
       "symbol": "haltTrainingSessionSteps",
-      "sql_fingerprint": "bdf91662b4bca4acd03b83a915e4a32268f0998852e0135fdf121eb5cf2f0dd3",
+      "sql_fingerprint": "63e8b1c40a10fb3a89cbd3ec9e0378758b050eb66174836c26d850b5858ef6da",
       "classification": "AGGREGATE_MATCH_REKEY",
-      "current_predicate": "student_id + task_code (current binary safety scope)",
+      "current_predicate": "student_id + job_code + task_code (M4-4 re-keyed)",
       "target_predicate": "student_id + job_code + task_code (M4 required)",
-      "allowed_reason": "M4-1 baseline captures the required re-key before M4-4/M4-5 implementation.",
+      "allowed_reason": "The redline session's persisted job_code scopes the halted training-step cascade to its aggregate.",
       "test_evidence": [
         "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
       ],
-      "status": "PENDING_REKEY"
+      "status": "REKEYED"
     },
     {
       "id": "M4-SQL-048",

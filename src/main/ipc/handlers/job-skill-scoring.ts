@@ -156,12 +156,12 @@ export function submitJobSkillOfflineScores(
   // 3. 读 session，校验 strategy_type + OFFLINE_PENDING
   const session = db
     .prepare(
-      `SELECT session_id, status, student_id, task_code, strategy_type
+      `SELECT session_id, status, student_id, job_code, task_code, strategy_type
          FROM assessment_session
         WHERE session_id = ?`
     )
     .get(params.sessionId) as
-    | { session_id: string; status: string; student_id: string; task_code: string; strategy_type: string }
+    | { session_id: string; status: string; student_id: string; job_code: string; task_code: string; strategy_type: string }
     | undefined
 
   if (!session) {
@@ -174,17 +174,16 @@ export function submitJobSkillOfflineScores(
     return { success: false, errorCode: 'SESSION_NOT_OFFLINE_PENDING' }
   }
 
-  // 4. 校验无未解决安全事件（与 createSession/assessment.ts 同模式；注意列名是
-  //    requires_review_before_next_session，非 operation-scoring.ts 中误写的 requires_review）
+  // 4. 校验同 student/job/task 下无未解决安全事件（与 createSession/assessment.ts 同模式）
   const blocked = db
     .prepare(
       `SELECT 1 FROM safety_incident
-        WHERE student_id = ? AND task_code = ?
+        WHERE student_id = ? AND job_code = ? AND task_code = ?
           AND status IN ('PENDING_DETAIL', 'CONFIRMED')
           AND requires_review_before_next_session = 1
         LIMIT 1`
     )
-    .get(session.student_id, session.task_code)
+    .get(session.student_id, session.job_code, session.task_code)
   if (blocked) {
     return { success: false, errorCode: 'BLOCKED_BY_SAFETY_INCIDENT' }
   }

@@ -110,28 +110,28 @@ export function createTrainingSession(
     .get(params.studentId) as { student_id: string } | undefined
   if (!student) return { success: false, errorCode: 'NOT_FOUND' }
 
-  // 5. 校验无开放 training_session（DUPLICATE_TRAINING_SESSION）
+  // 5. 校验同 student/job/task 下无开放 training_session（DUPLICATE_TRAINING_SESSION）
   const placeholders = OPEN_TRAINING_STATUSES.map(() => '?').join(', ')
   const openSession = db
     .prepare(
       `SELECT 1 FROM training_session
-        WHERE student_id = ? AND task_code = ?
+        WHERE student_id = ? AND job_code = ? AND task_code = ?
           AND status IN (${placeholders})
         LIMIT 1`
     )
-    .get(params.studentId, params.taskCode, ...OPEN_TRAINING_STATUSES) as { 1: number } | undefined
+    .get(params.studentId, strategy.job_code, params.taskCode, ...OPEN_TRAINING_STATUSES) as { 1: number } | undefined
   if (openSession) return { success: false, errorCode: 'DUPLICATE_TRAINING_SESSION' }
 
-  // 6. 校验无未解决安全事件
+  // 6. 校验同 student/job/task 下无未解决安全事件
   const blocked = db
     .prepare(
       `SELECT 1 FROM safety_incident
-        WHERE student_id = ? AND task_code = ?
+        WHERE student_id = ? AND job_code = ? AND task_code = ?
           AND requires_review_before_next_session = 1
           AND status IN ('PENDING_DETAIL', 'CONFIRMED')
         LIMIT 1`
     )
-    .get(params.studentId, params.taskCode) as { 1: number } | undefined
+    .get(params.studentId, strategy.job_code, params.taskCode) as { 1: number } | undefined
   if (blocked) return { success: false, errorCode: 'BLOCKED_BY_SAFETY_INCIDENT' }
 
   // 7. 写事件 + reducer（事务内）
@@ -763,14 +763,15 @@ export function retryStep(
 export function haltTrainingSessionSteps(
   db: DBAdapter,
   studentId: string,
+  jobCode: string,
   taskCode: string
 ): void {
   const haltedSessions = db
     .prepare(
       `SELECT training_session_id FROM training_session
-        WHERE student_id = ? AND task_code = ? AND status = 'REDLINE_HALTED'`
+        WHERE student_id = ? AND job_code = ? AND task_code = ? AND status = 'REDLINE_HALTED'`
     )
-    .all(studentId, taskCode) as Array<{ training_session_id: string }>
+    .all(studentId, jobCode, taskCode) as Array<{ training_session_id: string }>
 
   for (const { training_session_id } of haltedSessions) {
     db.prepare(

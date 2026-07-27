@@ -79,6 +79,7 @@ import {
   calculateResult,
   seedAssessmentErrorCodes
 } from '../assessment'
+import { createTrainingSession, startStep } from '../training'
 import { applyAssessmentEvent } from '../../../domain/assessment-reducer'
 import {
   createTestDb,
@@ -348,6 +349,7 @@ function bindingCount(incidentId: string): number {
 beforeAll(async () => {
   db = await createTestDb()
   db.exec('DROP TRIGGER IF EXISTS trg_assessment_session_no_delete')
+  db.exec('DROP TRIGGER IF EXISTS trg_training_session_no_delete')
 })
 
 afterAll(() => {
@@ -355,6 +357,8 @@ afterAll(() => {
 })
 
 beforeEach(() => {
+  db.exec('DELETE FROM training_step_record')
+  db.exec('DELETE FROM training_session')
   db.exec('DELETE FROM offline_score_record')
   db.exec('DELETE FROM answer_record')
   db.exec('DELETE FROM assessment_session_question')
@@ -679,6 +683,86 @@ describe('assessment:triggerRedline 批量熔断', () => {
     // result_record 仅对 handler 指定的 target session 落盘（persistRedlineResult 单次调用）
     expect(resultRecord(s1.sessionId)).toBeDefined()
     expect(resultRecord(s2.sessionId)).toBeUndefined()
+  })
+
+  it('M4：job A 红线只归档 job A 训练步骤，不影响同 student/task 的 job B 训练', () => {
+    const assessment = setupSession()
+    const trainingStrategyA = seedStrategyRow({
+      strategyType: 'TRAINING_PRACTICE',
+      onlineQuestionCount: 0,
+      offlineQuestionCount: 0
+    })
+    const trainingStrategyB = `strategy_training_warehouse_${uuidv4().slice(0, 8)}`
+    db.prepare(
+      `INSERT INTO strategy_config
+         (strategy_id, strategy_type, job_code, strategy_name,
+          online_question_count, offline_question_count, max_score,
+          competent_threshold, conditional_threshold, module_veto_threshold,
+          emotion_collapse_threshold, question_policy_json, scoring_policy_json,
+          supports_redline_halt, allows_emotion_interrupt, requires_offline_scoring,
+          version, is_active)
+       SELECT ?, strategy_type, 'WAREHOUSE_PICKER', strategy_name,
+              online_question_count, offline_question_count, max_score,
+              competent_threshold, conditional_threshold, module_veto_threshold,
+              emotion_collapse_threshold, question_policy_json, scoring_policy_json,
+              supports_redline_halt, allows_emotion_interrupt, requires_offline_scoring,
+              version, is_active
+         FROM strategy_config
+        WHERE strategy_id = ? AND version = ?`
+    ).run(trainingStrategyB, trainingStrategyA, strategyVersion)
+
+    const trainingA = createTrainingSession(db, {
+      callerUserId: callerId,
+      callerRole: 'TEACHER',
+      studentId,
+      strategyId: trainingStrategyA,
+      strategyVersion,
+      moduleType: 'FINE_MOTOR',
+      taskCode
+    })
+    const trainingB = createTrainingSession(db, {
+      callerUserId: callerId,
+      callerRole: 'TEACHER',
+      studentId,
+      strategyId: trainingStrategyB,
+      strategyVersion,
+      moduleType: 'FINE_MOTOR',
+      taskCode
+    })
+    expect(trainingA.success).toBe(true)
+    expect(trainingB.success).toBe(true)
+    if (!trainingA.success || !trainingB.success) return
+
+    const stepIdFor = (trainingSessionId: string) => (db
+      .prepare('SELECT training_step_record_id FROM training_step_record WHERE training_session_id = ? AND step_order = 1')
+      .get(trainingSessionId) as { training_step_record_id: string }).training_step_record_id
+    const trainingAStepId = stepIdFor(trainingA.trainingSessionId)
+    const trainingBStepId = stepIdFor(trainingB.trainingSessionId)
+    expect(startStep(db, {
+      callerUserId: studentId,
+      callerRole: 'STUDENT',
+      trainingSessionId: trainingA.trainingSessionId,
+      stepRecordId: trainingAStepId
+    }).success).toBe(true)
+    expect(startStep(db, {
+      callerUserId: studentId,
+      callerRole: 'STUDENT',
+      trainingSessionId: trainingB.trainingSessionId,
+      stepRecordId: trainingBStepId
+    }).success).toBe(true)
+
+    expect(triggerRedline(db, redlineParams(assessment.sessionId)).success).toBe(true)
+
+    const trainingStatus = (trainingSessionId: string) => db
+      .prepare('SELECT status FROM training_session WHERE training_session_id = ?')
+      .get(trainingSessionId) as { status: string }
+    const stepStatus = (stepId: string) => db
+      .prepare('SELECT status FROM training_step_record WHERE training_step_record_id = ?')
+      .get(stepId) as { status: string }
+    expect(trainingStatus(trainingA.trainingSessionId).status).toBe('REDLINE_HALTED')
+    expect(stepStatus(trainingAStepId).status).toBe('FAILED')
+    expect(trainingStatus(trainingB.trainingSessionId).status).not.toBe('REDLINE_HALTED')
+    expect(stepStatus(trainingBStepId).status).toBe('IN_PROGRESS')
   })
 
   it('EMOTION_INTERRUPTED 态 session 也被熔断（schema trigger WHERE 含此状态）', () => {

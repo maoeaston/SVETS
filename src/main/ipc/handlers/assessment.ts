@@ -402,17 +402,18 @@ export function createSession(db: DBAdapter, params: CreateSessionParams): Creat
     return { success: false, errorCode: 'NOT_FOUND' }
   }
 
-  // 6. 校验无开放 session（schema partial unique index 兜底；前置 SELECT 返回友好错误码）
+  // 6. 校验同 student/job/task 下无开放 session（schema partial unique index 兜底；前置 SELECT 返回友好错误码）
   const placeholders = OPEN_SESSION_STATUSES.map(() => '?').join(', ')
   const openSession = db
     .prepare(
       `SELECT session_id FROM assessment_session
-        WHERE student_id = ? AND task_code = ? AND strategy_type = ?
+        WHERE student_id = ? AND job_code = ? AND task_code = ? AND strategy_type = ?
           AND status IN (${placeholders})
         LIMIT 1`
     )
     .get(
       params.studentId,
+      strategy.job_code,
       params.taskCode,
       strategyType,
       ...OPEN_SESSION_STATUSES
@@ -421,17 +422,17 @@ export function createSession(db: DBAdapter, params: CreateSessionParams): Creat
     return { success: false, errorCode: 'SESSION_ALREADY_OPEN' }
   }
 
-  // 7. 校验无未解决安全事件（schema trigger trg_assessment_session_block_unresolved_safety_incident
+  // 7. 校验同 student/job/task 下无未解决安全事件（schema trigger trg_assessment_session_block_unresolved_safety_incident
   //    是兜底 BEFORE INSERT ABORT；handler 前置 SELECT 返回友好错误码，避免进事务后才发现）
   const blocked = db
     .prepare(
       `SELECT 1 FROM safety_incident
-        WHERE student_id = ? AND task_code = ?
+        WHERE student_id = ? AND job_code = ? AND task_code = ?
           AND requires_review_before_next_session = 1
           AND status IN ('PENDING_DETAIL', 'CONFIRMED')
         LIMIT 1`
     )
-    .get(params.studentId, params.taskCode) as { 1: number } | undefined
+    .get(params.studentId, strategy.job_code, params.taskCode) as { 1: number } | undefined
   if (blocked) {
     return { success: false, errorCode: 'BLOCKED_BY_SAFETY_INCIDENT' }
   }
@@ -1728,9 +1729,9 @@ export function triggerRedline(db: DBAdapter, params: TriggerRedlineParams): Tri
     return { success: false, errorCode: 'REDLINE_TRIGGER_SYSTEM_ERROR' }
   }
 
-  // 6. 安全红线应用层级联：将该学生同任务的开放训练会话的 IN_PROGRESS 步骤归档为 FAILED
+  // 6. 安全红线应用层级联：将该学生同 job/task 的开放训练会话的 IN_PROGRESS 步骤归档为 FAILED
   // （schema trigger 已将 training_session 置 REDLINE_HALTED；本步骤处理步骤级联）
-  haltTrainingSessionSteps(db, session.student_id, session.task_code)
+  haltTrainingSessionSteps(db, session.student_id, session.job_code, session.task_code)
 
   // 7. 审计 REDLINE_TRIGGERED（INFO，TEACHER/ADMIN 关键操作）
   logAssessmentEvent(db, 'REDLINE_TRIGGERED', 'INFO', params.sessionId, caller.row.user_id, {

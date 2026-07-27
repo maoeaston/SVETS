@@ -49,7 +49,13 @@ describe('M4 production safety-SQL inventory', () => {
     const realInventory = JSON.parse(readFileSync(join(projectRoot, 'doc/features/multi-device-m4-safety-sql-inventory-v1.json'), 'utf8'))
     expect(hits).toHaveLength(48)
     expect(hits.every((source) => source.file.startsWith('src/main/'))).toBe(true)
-    expect(hits.some((source) => source.file.includes('__tests__') || source.file.endsWith('migrations.ts'))).toBe(false)
+    const excludedFiles = new Set([
+      'src/main/db/migrations.ts',
+      'src/main/db/report-migration.ts',
+      'src/main/db/safety-rekey-migration.ts',
+      'src/main/db/test-helpers.ts'
+    ])
+    expect(hits.some((source) => source.file.includes('__tests__') || excludedFiles.has(source.file))).toBe(false)
     expect(validateSafetySqlInventory({ hits, inventory: realInventory })).toMatchObject({
       hit_count: 48,
       classification_counts: {
