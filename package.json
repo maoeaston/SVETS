@@ -67,6 +67,8 @@
     "contract:job-skill:phase4:check": "node scripts/build-job-skill-shelver-phase4.mjs --check && node scripts/question-bank-import.mjs --check",
     "contract:base-ability:gate:build": "node scripts/build-base-ability-42plus8-gate.mjs",
     "contract:base-ability:gate:check": "node scripts/build-base-ability-42plus8-gate.mjs --check",
+    "contract:base-ability:authority:build": "node scripts/build-base-ability-42plus8-authority.mjs",
+    "contract:base-ability:authority:check": "node scripts/build-base-ability-42plus8-authority.mjs --check",
     "question-bank:job-skill:build": "node scripts/question-bank-import.mjs --build-only",
     "question-bank:viewer:pilot:update": "node scripts/update-question-bank-viewer-pilot-overlay.mjs",
     "docs:index:update": "node scripts/update-doc-index.mjs",

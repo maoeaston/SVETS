@@ -49,7 +49,9 @@
 
 ```text
 Step 1 候选清单/题目合同
-  -> Step 2 [独立 R3] 权威 v2.2 batch/hash-chain/command-fencing 基础设施、全 writer 迁移与重基线
+  -> Step 2A [独立 R3] M4 Safety Re-key（三元安全聚合）
+  -> Step 2B [独立 R3] M5A Command Bus Boundary（统一命令/写入口）
+  -> Step 2C [独立 R3] 权威 v2.2 batch/hash-chain/command-fencing、全 writer 迁移与重基线
   -> Step 3 v1.2 策略、组卷合同、renderer 需求与 SESSION_STARTED v2 快照链
   -> Step 4 response/scoring 事件链（只读取冻结快照）
   -> Step 5 共享路径守卫、真实 renderer registry、线下评分和三视口运行证据
@@ -60,7 +62,7 @@ Step 1 候选清单/题目合同
   -> Step 10 生产固定根装配、独立批准和受控激活
 ```
 
-当前生产评分命令已经要求一次事务内的多事件全有或全无，不能先迁移成逐行独立 COMMIT 再把 v2.2 推迟到 Step 6。Step 2 因此是独立 R3 硬前置：严格落地权威架构 `doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md` §10、§11、§18 的 `BATCH_PREPARED -> EVENT* -> BATCH_COMMITTED`、hash chain、`command_log` fencing 和 `startupRecovery`，迁移全部现存 writer 和 mutation 入口，完成 `/vibe-accept` 后更新基线，再重新审查本计划；任一结论不是 `PASS` 时 Step 3-10 均不得开始。Step 3 不以 Step 5 尚未实现的 renderer 作为自身“可运行”完成条件：它冻结每道题所需的 renderer key，并让缺失实现稳定失败关闭；Step 5 才登记真实 registry、放行合成 session 并完成 viewport 验收。Step 6 必须先交付可注入测试根的通用授权底座，Step 9 才能执行授权失效演练；Step 10 只装配不可覆盖的生产根、独立批准链和激活入口，不再补做 Step 6 的生命周期基础能力。
+当前生产评分命令已经要求一次事务内的多事件全有或全无，不能先迁移成逐行独立 COMMIT 再把 v2.2 推迟到 Step 6。为避免同一批 handler 和 writer 重接两次，Step 2 固定拆为三个独立 R3：Step 2A 先把安全聚合从二元键统一为最终三元键；Step 2B 再建立统一 Command Bus / mutation boundary；Step 2C 最后严格落地权威架构 `doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md` §10、§11、§12、§18 的 `BATCH_PREPARED -> EVENT* -> BATCH_COMMITTED`、hash chain、`command_log` fencing 和 `startupRecovery`，一次迁移最终的 writer/mutation 边界。三个阶段分别完成 `/vibe-accept`，Step 2C 后更新基线并重新审查本计划；任一结论不是 `PASS` 时 Step 3-10 均不得开始。Step 3 不以 Step 5 尚未实现的 renderer 作为自身“可运行”完成条件：它冻结每道题所需的 renderer key，并让缺失实现稳定失败关闭；Step 5 才登记真实 registry、放行合成 session 并完成 viewport 验收。Step 6 必须先交付可注入测试根的通用授权底座，Step 9 才能执行授权失效演练；Step 10 只装配不可覆盖的生产根、独立批准链和激活入口，不再补做 Step 6 的生命周期基础能力。
 
 ### 跨文件副作用登记表
 
@@ -68,7 +70,9 @@ Step 1 候选清单/题目合同
 |---|---|
 | 新 `EventType` | `event-payloads.ts`、validator、event writer、reducer、recovery、JSONL/projection、幂等/冲突测试 |
 | 事件版本 | `ActionLogEntry.schema_version` 只表示 envelope；业务 payload 使用独立 `payload_version`，不得复用同一版本号原地增加必填字段 |
-| v2.2 事件基础设施（独立 R3 Step 2） | 权威 `BATCH_PREPARED/EVENT/BATCH_COMMITTED`、hash chain、segment/index、`command_log` fencing、batch projector/startupRecovery、旧 `ActionLogEntry` 兼容迁移、data-root 单写者锁、durability barrier、全部现有 writer call site 与整批故障/并发测试；不得自定义 group/sidecar 协议 |
+| Step 2A M4 安全三元键（独立 R3） | 产品覆盖说明、v2.2 架构 §13、10 个 trigger/guard、2 个开放会话唯一索引、3 个查询索引、全部安全查询/报告 JOIN、v0.1.16→v0.1.17 migration 与跨 job 正负测试；不得和 Command Bus/batch 合并 |
+| Step 2B M5A Command Bus（独立 R3） | 统一 command envelope、application service、IPC/CLI/background mutation inventory 与最终写边界；保持 IPC 响应和业务成功语义，不提前实现 batch 日志协议 |
+| Step 2C v2.2 事件基础设施（独立 R3） | 权威 `BATCH_PREPARED/EVENT/BATCH_COMMITTED`、hash chain、segment/index、`command_log` fencing、batch projector/startupRecovery、旧 `ActionLogEntry` 兼容迁移、data-root 单写者锁、durability barrier、最终 writer call site 与整批故障/并发测试；不得自定义 group/sidecar 协议 |
 | 事件不变量重基线 | `project-invariants.md` 版本化保留旧 `INV-EVT-002` 的历史适用范围，新增 v2.2 当前不变量并同步 `INV-EVT-001/003` 实际证据；静态门禁不得继续把旧逐行 writer 声明为当前合同 |
 | 全局 mutation 门禁 | IPC channel 唯一分类 registry、preload/shared API 对账、后台/启动写入与 CLI mutation registry、所有 DB/文件写入口统一 gate、关闭门禁时零副作用测试；与 Step 2 batch runtime 同一 data-root context，不另设旁路 |
 | `SESSION_STARTED` v2/v3 快照 | envelope 保持 schema v1；payload v2 冻结逐题/策略/资产/renderer，payload v3 追加授权快照；创建 handler、validator、reducer 不回查题库、冷启动混合重放、后续评分只读冻结快照 |
@@ -92,7 +96,7 @@ Step 1 候选清单/题目合同
 - Step 2-9 的构建、测试、门禁生成和技术演练不得把任何非测试数据库中的 BASE_ABILITY 题从 `DRAFT` 改为 `ACTIVE`；Step 9 的合成 `ACTIVE` fixture 只能存在于命令行显式指定的临时库。
 - 任一“完成状态”只能由该 Step 的精确命令、产物 hash、数据库断言和 `/vibe-accept` 证据共同证明。命令未执行记 `NOT_RUN`，外部原件或环境缺失记 `BLOCKED`，不得写成已完成。
 - 进入下一 Step 前必须核对真实 diff、跨文件副作用登记和 `git diff --check`。发现范围扩大到 PRD 未批准的 Schema、状态机、权限模型或正式解释时立即停止，重新进行 R3 审查。
-- Step 2 是跨功能独立 R3，不得直接借本 PRD 的两个 reason CHECK 授权其 Schema 扩展。它必须另行完成 `/vibe-feature -> /vibe-impl -> /vibe-review -> implementation -> /vibe-accept`；更新 `baseline.yaml` 后重新执行本计划的 `/vibe-review impl`。外部功能验收与本计划重审未同时取得 `PASS` 时 Step 2 完成状态为 `BLOCKED`，不得进入 Step 3，也不得用自定义 `EVENT_GROUP`、逐行单事件重试、复合业务 payload 或 sidecar intent 代替。
+- Step 2A、2B、2C 是三个跨功能独立 R3，不得直接借本 PRD 的两个 reason CHECK 授权其 Schema 或写入协议扩展。每个阶段都必须另行完成 `/vibe-feature -> /vibe-impl -> /vibe-review -> implementation -> /vibe-accept`，并且只在前一阶段 `PASS` 后启动；Step 2C 更新 `baseline.yaml` 后重新执行本计划的 `/vibe-review impl`。三个外部功能验收与本计划重审未全部取得 `PASS` 时 Step 2 完成状态为 `BLOCKED`，不得进入 Step 3，也不得把三阶段合并，或用自定义 `EVENT_GROUP`、逐行单事件重试、复合业务 payload、sidecar intent 代替。
 - 所有 Electron E2E、技术演练或其他同时拥有 DB 与 userData 的组合自动验证必须显式传入 `--temp-root / --db / --user-data-dir / --evidence-dir`；命令缺参、DB 与 userData 不配对、路径解析到默认 userData、仓库目录、符号链接或硬链接别名时必须在打开数据库前失败。纯 `db:sync/db:verify` helper 是明确例外，只接收 `--db` 且不得启动 Electron、推导 userData 或写 action log；它只能在共享 path guard 已验证或紧接着将由四路径组合入口验证的显式临时 DB 上运行。任何“默认库不变”都必须比较默认数据文件族的存在状态与逐文件 hash，而不是只比较主 `.db` 文件。
 
 ### Step 1：冻结 42+8 候选清单与 v1.2 题目合同
@@ -124,11 +128,11 @@ Step 1 候选清单/题目合同
 
 **建议 commit message：** `feat(base-ability): freeze 42plus8 draft authority`
 
-### Step 2：先行交付权威 v2.2 batch 事件基础设施（独立 R3）
+### Step 2A–2C：先稳定安全身份和命令边界，再交付权威 v2.2 batch 运行时（三个独立 R3）
 
-**目的与理由：** 当前 `writeEvent()` 的 JSONL/SQLite 双写会在 append 后 DB 失败时留下未投影事实并可能复用 sequence；同时 `submitOperationScores`、BASE_ABILITY/JOB_SKILL 线下评分、结果终结、坐次启动和红线路径已经依赖一个命令内多事件全有或全无。现有测试明确要求评分第 N 条写失败时整批零投影，逐事件独立 COMMIT 会直接破坏既有合同。必须先用权威 v2.2 batch 协议一次性关闭原子性、durability、recovery、fencing、锁序和全局 mutation 门禁，再扩展 42+8 事件。
+**目的与理由：** 当前安全聚合仍为二元键，写命令仍分散在 handler，`writeEvent()` 的 JSONL/SQLite 双写又会在 append 后 DB 失败时留下未投影事实并可能复用 sequence。若先接 batch，M4/M5A 会让 handler 和 writer 二次迁移；若三者合并，则安全 Schema、命令边界和崩溃恢复同时变化。Step 2A 先交付最终三元安全身份，Step 2B 再统一命令/写入口，Step 2C 最后一次性关闭原子性、durability、recovery、fencing、锁序和全局 mutation 门禁，再扩展 42+8 事件。
 
-**前置状态：** Step 1 的 `/vibe-accept step 1` 为 `PASS`；另立的事件基础设施 Mini-PRD 风险为 R3，并读取当前 `baseline.yaml`、权威架构、不变量和 workflow contract；当前 `ActionLogEntry` v1、F7 envelope-v2、完整 LF/EOF、截断尾部、recovery snapshot、全部直接 `writeEvent()` 调用点以及所有 IPC/CLI/后台 mutation 入口已形成只读基线清单与 fixture。默认运行库只读记录存在状态/hash，不作为迁移或故障注入目标。
+**前置状态：** Step 1 的 `/vibe-accept step 1` 为 `PASS`。Step 2A 使用 `doc/features/multi-device-m4-safety-rekey-prd.md`，其独立 review/impl review 通过后才实施；Step 2B 只能在 Step 2A `/vibe-accept` 为 `PASS` 后建立统一 Command Bus；Step 2C 只能在 Step 2B `/vibe-accept` 为 `PASS` 后，将 `doc/features/event-batch-v2.2-runtime-prd.md` 按最终 mutation boundary 重基线并重新独立审查。进入 Step 2C 时，当前 `ActionLogEntry` v1、F7 envelope-v2、完整 LF/EOF、截断尾部、recovery snapshot、全部最终 writer 调用点以及所有 IPC/CLI/后台 mutation 入口必须形成版本化只读 inventory 与 fixture。默认运行库只读记录存在状态/hash，不作为迁移或故障注入目标。
 
 **完成状态：**
 
@@ -139,7 +143,7 @@ Step 1 候选清单/题目合同
 - `startupRecovery` 在任何业务 IPC、后台 mutation 或 lazy seed 注册/执行前完成：不完整 PREPARE 尾部、PREPARED 未 APPLIED、APPLIED 未 CONFIRMED、command_log/projector cursor 和 hash-chain/segment-index 分别按权威状态机处理。恢复期间只有持有 composition-root 内部 capability 的 recovery/migration 可写；任一 hash、identity、sequence、request 或 projection 冲突保持 gate 关闭并失败关闭。
 - 全局 mutation gate 覆盖所有 DB/文件副作用。每个 shared/preload IPC channel 在中央 registry 中恰好分类一次；所有 CLI、后台任务、启动 seed、报告导出和本地配置 mutation 也进入同一 data-root runtime。gate 关闭时登录/登出、账号/学生/策略、session/assignment/safety/scoring、报告导出、down 和未来 activation 均在副作用前拒绝，纯读取仍可用；read handler 不得 lazy write。
 - 全局锁序固定为 `authorization state lock（未来 Pilot 路径适用） -> event-log single-writer lock -> BEGIN IMMEDIATE`。普通 batch、startupRecovery、down 和 activation 不得反向获取；同一 data root 不能构造第二套 coordinator/gate，低层 append/project API 只接受不可伪造 ownership token。
-- 独立功能完成 `/vibe-feature`、`/vibe-impl`、独立 `/vibe-review`、实现和 `/vibe-accept`，结论均为 `PASS`；Schema/运行时/数据合同、实际文件路径、`project-invariants.md` 和 `baseline.yaml` 同步成为新基线并更新文档索引。本 42+8 计划随后重新记录 base commit、替换所有占位模块路径/命令，重跑 Step 1 验收并执行独立 `/vibe-review impl`；两者均为 `PASS` 后，Step 2 才算完成并允许 Step 3 开始。
+- Step 2A、2B、2C 各自完成 `/vibe-feature`、`/vibe-impl`、独立 `/vibe-review`、实现和 `/vibe-accept`，结论均为 `PASS`；Step 2C 将最终 Schema/运行时/数据合同、实际文件路径、`project-invariants.md` 和 `baseline.yaml` 同步成为新基线并更新文档索引。本 42+8 计划随后重新记录 base commit、替换所有占位模块路径/命令，重跑 Step 1 验收并执行独立 `/vibe-review impl`；两者均为 `PASS` 后，Step 2 才算完成并允许 Step 3 开始。
 
 **不得改变：** 该独立 R3 不得借 42+8 PRD 擅自实现授权 reason、题目激活或 Pilot 业务；不得新增 `EVENT_GROUP` 或权威三类 batch record 之外的永久日志协议；不得把 SQLite 改成事实来源、在 PREPARE durability barrier 前 APPLY、以 sidecar intent 补造未落盘 EVENT、吞掉 PREPARE 后错误、重写/删除历史合法记录、把完整 legacy EOF 当损坏尾部，或让不同 data root 共用锁/gate。不得以“最终能重放”为由放宽现有整批零投影失败测试。
 
@@ -203,7 +207,7 @@ git diff --check
 
 **回滚方式：** 第一条非测试 `BATCH_PREPARED` 写入前，可按独立迁移计划回退应用和新增空 Schema，同时保留所有 legacy reader/gate 修复；一旦任一目标数据源写入 v2.2 batch，只能前滚或回滚到仍完整支持 legacy + v2.2、hash chain、command fencing 和 startupRecovery 的兼容版本，不得展开、重写或删除历史记录。备份只作经批准灾难恢复，不是普通 rollback。
 
-**停止条件：** 独立 R3 任一 workflow 结论不是 `PASS`；需要偏离权威三类 record/hash/三阶段协议；无法保持现存整批失败合同；旧 LF/EOF/投影无法无损迁移；跨进程锁、durability 或 file identity 无法证明；gate 仍有 IPC/CLI/background 绕过；需要触碰默认库才能验证；或本计划在新基线上尚未重审时，Step 2 保持 `BLOCKED`。
+**停止条件：** Step 2A/2B/2C 任一独立 R3 结论不是 `PASS`；三阶段被合并或越级；需要偏离权威三类 record/hash/三阶段协议；无法保持现存整批失败合同；旧 LF/EOF/投影无法无损迁移；跨进程锁、durability 或 file identity 无法证明；gate 仍有 IPC/CLI/background 绕过；需要触碰默认库才能验证；或本计划在新基线上尚未重审时，Step 2 保持 `BLOCKED`。
 
 **建议 commit message：** 由独立 R3 实施计划定义；42+8 分支不得把该基础设施伪装成本功能的小改动。
 
@@ -211,7 +215,7 @@ git diff --check
 
 **目的与理由：** 消除旧固定题型比例与 v1.2 模块配额冲突，并让创建事件本身携带可独立重放的题目/策略事实，避免 recovery 重新读取可能变化的 `question_bank`。本步骤只冻结 renderer 需求和稳定阻断，不宣称真实 renderer 已可用。
 
-**前置状态：** Step 2 的 `/vibe-accept step 2` 为 `PASS`；Step 1 冻结清单恰好包含 42 道 ONLINE + 8 道 OFFLINE、每个模块 ONLINE 7 道且观察项为 0；50 道入选题和 46 道未选题在所有非测试数据源中仍为 `DRAFT`；`activation_authority_granted = false`。
+**前置状态：** Step 2A、2B、2C 的独立 `/vibe-accept` 均为 `PASS`，Step 1 重验和本计划重基线复审也为 `PASS`；Step 1 冻结清单恰好包含 42 道 ONLINE + 8 道 OFFLINE、每个模块 ONLINE 7 道且观察项为 0；50 道入选题和 46 道未选题在所有非测试数据源中仍为 `DRAFT`；`activation_authority_granted = false`。
 
 **完成状态：** 新 `question-policy-v1.2` 策略可在不读取 `question_ratio` 的情况下按 seed 稳定生成相同 42+8；`SESSION_STARTED` payload v2 冻结完整 strategy snapshot、paper seed/集合 hash，以及逐题 ID/version/order/phase/domain/module/type/usage、`content_json`、`scoring_rule_json`、合同 hash、资产 ID/hash 和 renderer requirement key/hash。该事件继续使用 `ActionLogEntry.schema_version = 1`，业务版本只由 payload 内必填 `payload_version = 2` 判定，不占用当前专属于 F7 report 事件的 envelope schema v2。payload-v2 reducer 只使用事件 payload 建立 `assessment_session_question`，不得回查 `question_bank`；payload-v1 历史事件保留原回放分支。冷启动删除业务投影后，仅凭 action log + 基线静态外键数据即可恢复完全相同的 session/question 投影；后续评分读取 payload-v2 创建事件中的冻结合同。缺 renderer 时稳定返回 `QUESTION_RENDERER_UNAVAILABLE` 并保持分阶段门禁 `BLOCKED_RENDERER_IMPLEMENTATION`，不阻断本步骤工程验收；`/vibe-accept step 3` 为 `PASS`。
 
@@ -650,7 +654,7 @@ npm run pilot:base-ability:activate -- --data-root /absolute/path/to/pilot/data 
 | 检查 | 必须执行的入口 | 通过证据 |
 |---|---|---|
 | 类型、Lint、全量测试、构建 | `npm run typecheck`、`npm run lint`、`npm test`、`npm run build` | 四条命令分别退出码 0；不得用定向测试代替 `npm test` |
-| Step 2 v2.2 batch 前置 | 独立 R3 定向/全量测试、invariant 静态门禁、`/vibe-accept` 记录 + 本计划重基线复审 | PREPARE/APPLY/CONFIRM、durability、hash chain、command fencing、segment/index、legacy LF/EOF、全 writer 整批迁移、mutation registry、startupRecovery 和版本化不变量均为 `PASS`；否则 Step 3-10 `BLOCKED` |
+| Step 2A–2C 前置链 | 三个独立 R3 的定向/全量测试、`/vibe-accept` 记录 + 本计划重基线复审 | M4 三元安全身份、M5A 最终 Command Bus、M5B PREPARE/APPLY/CONFIRM、durability、hash chain、command fencing、segment/index、legacy LF/EOF、全 writer 整批迁移、mutation registry、startupRecovery 和版本化不变量均为 `PASS`；否则 Step 3-10 `BLOCKED` |
 | Step 3-10 batch 集成 | 42+8 session/响应/评分/授权/激活 batch、gate、lock-order、recovery 定向测试 + 全量测试 | 单/多 EVENT batch 各阶段故障、启动整体恢复/CONFIRM、普通写/down/activation 无锁反转 |
 | Schema/迁移 | 全量 migration tests；对显式临时库执行 `db:sync` + `db:verify` | 前滚、允许/拒绝 down、结构/trigger/FK/行/hash 证据；默认库不在自动命令目标中 |
 | 题库、人工审核、资产、门禁 | authority check、两轨 packet/results check、asset validate、gate check | 当前原件/manifest/gate 可确定复算且 check 不写文件；缺人工原件为 `BLOCKED` |
@@ -725,7 +729,7 @@ git diff --check
 
 ## 8. 残余风险与后续项
 
-- [!] Step 2 的权威 v2.2 batch runtime 当前尚未实现，是 Step 3-10 的硬阻断；它必须作为独立 R3 功能先交付并更新基线，本计划不能用自身 PRD 权限代做 Schema/协议迁移。
+- [!] Step 2A M4、Step 2B Command Bus 和 Step 2C 权威 v2.2 batch runtime 当前均尚未实现，是 Step 3-10 的硬阻断；三者必须按顺序独立交付并更新基线，本计划不能用自身 PRD 权限代做其 Schema、命令边界或日志协议迁移。
 - [!] PRD 已明确的现状冲突必须在实现中关闭：旧 `question_ratio`、基础能力查询过滤、硬编码评分、`ANSWER_SUBMITTED` 独占、两个 reason CHECK 缺口。每项关闭都要对应代码和测试证据。
 - [!] 当前默认运行库存在已知漂移；必须作为单独、获授权的运维任务修复并取得 `db:verify` 证据，计划实现和临时库测试不得自动修复或覆盖它。
 - [!] `doc/features/mvp-pilot-freeze-plan.md` 的 R0-G02 仍写着禁用 BASE_ABILITY，与当前权威 PRD 的受控 Pilot 路径不一致；不阻断本计划修订，但在进入 R0 冻结前必须单独修订并复审。

@@ -1,0 +1,429 @@
+{
+  "schema_version": "base-ability-42plus8-contract-input-v1",
+  "input_id": "base-ability-42plus8-contract-input-v1",
+  "generated_at": "2026-07-27T12:00:00+08:00",
+  "source_bindings": {
+    "source_path": "doc/reference/通用基础能力正式测评候选题库_v0.2-软件优先版.xlsx",
+    "source_sha256": "sha256:ceb5e5615e10b0c0b5b6d1711e1efe21dd6248cc8ebc50ca82d30e308256ebec",
+    "import_sql_path": "doc/features/question-bank-import-base-ability-v02.sql",
+    "import_sql_sha256": "sha256:db905216cd6735bdf90c44036cf675747dc859a97d894f110d1d959211fe649f"
+  },
+  "selection_policy": "每个模块固定 7 道线上题，覆盖核心构念、不同证据类型和低至中高难度；所有 8 道现有线下题完整保留。机器预选不替代内容、测评、安全、康复或特教审核。",
+  "selected_question_contracts": [
+    {
+      "question_id": "GA-FM-005",
+      "selection_reason": "覆盖触控拖拽、视觉对齐和目标放置，保留精细动作的基础数字证据。",
+      "interaction_type": "DRAG_DROP",
+      "renderer_key": "base-ability/drag-drop/v1",
+      "scoring_type": "MAPPING_MATCH"
+    },
+    {
+      "question_id": "GA-FM-007",
+      "selection_reason": "覆盖小目标拖放与视觉动作整合，补足基础精细操作的可观察证据。",
+      "interaction_type": "DRAG_DROP",
+      "renderer_key": "base-ability/drag-drop/v1",
+      "scoring_type": "MAPPING_MATCH"
+    },
+    {
+      "question_id": "GA-FM-008",
+      "selection_reason": "覆盖连续分拣与动作节奏，保留中等难度的持续操作证据。",
+      "interaction_type": "DRAG_DROP",
+      "renderer_key": "base-ability/drag-drop/v1",
+      "scoring_type": "MAPPING_MATCH"
+    },
+    {
+      "question_id": "GA-FM-009",
+      "selection_reason": "覆盖触控放置稳定和空间校准，与其他拖放题形成不同构念证据。",
+      "interaction_type": "DRAG_DROP",
+      "renderer_key": "base-ability/drag-drop/v1",
+      "scoring_type": "MAPPING_MATCH"
+    },
+    {
+      "question_id": "GA-FM-010",
+      "selection_reason": "覆盖双手触控协调与任务转换，保留需要手势指标的中等难度候选。",
+      "interaction_type": "GESTURE_TASK",
+      "renderer_key": "base-ability/gesture-task/v1",
+      "scoring_type": "METRIC_THRESHOLD"
+    },
+    {
+      "question_id": "GA-FM-011",
+      "selection_reason": "覆盖视觉对齐与连续摆放，补足精细动作的规整操作证据。",
+      "interaction_type": "GESTURE_TASK",
+      "renderer_key": "base-ability/gesture-task/v1",
+      "scoring_type": "METRIC_THRESHOLD"
+    },
+    {
+      "question_id": "GA-FM-014",
+      "selection_reason": "覆盖轨迹控制和视觉动作整合，保留与拖放不同的连续手势证据。",
+      "interaction_type": "GESTURE_TASK",
+      "renderer_key": "base-ability/gesture-task/v1",
+      "scoring_type": "METRIC_THRESHOLD"
+    },
+    {
+      "question_id": "GA-COG-001",
+      "selection_reason": "覆盖基础视觉匹配，作为认知模块的低门槛选择证据。",
+      "interaction_type": "SINGLE_SELECT",
+      "renderer_key": "base-ability/single-select/v1",
+      "scoring_type": "EXACT_MATCH"
+    },
+    {
+      "question_id": "GA-COG-004",
+      "selection_reason": "覆盖点数与数字对应，保留基础数量理解的单选证据。",
+      "interaction_type": "SINGLE_SELECT",
+      "renderer_key": "base-ability/single-select/v1",
+      "scoring_type": "EXACT_MATCH"
+    },
+    {
+      "question_id": "GA-COG-006",
+      "selection_reason": "覆盖单一维度排序，保留基础规则化序列处理证据。",
+      "interaction_type": "ORDERING",
+      "renderer_key": "base-ability/ordering/v1",
+      "scoring_type": "ORDER_MATCH"
+    },
+    {
+      "question_id": "GA-COG-009",
+      "selection_reason": "覆盖空间关系理解，补足中等难度的空间拖放证据。",
+      "interaction_type": "DRAG_DROP",
+      "renderer_key": "base-ability/drag-drop/v1",
+      "scoring_type": "MAPPING_MATCH"
+    },
+    {
+      "question_id": "GA-COG-011",
+      "selection_reason": "覆盖两步指令保持与顺序执行，保留可复核的任务序列证据。",
+      "interaction_type": "TASK_SEQUENCE",
+      "renderer_key": "base-ability/task-sequence/v1",
+      "scoring_type": "EVENT_RULE"
+    },
+    {
+      "question_id": "GA-COG-014",
+      "selection_reason": "覆盖日常流程排序，与数量和空间题形成构念互补。",
+      "interaction_type": "ORDERING",
+      "renderer_key": "base-ability/ordering/v1",
+      "scoring_type": "ORDER_MATCH"
+    },
+    {
+      "question_id": "GA-COG-020",
+      "selection_reason": "覆盖干扰信息中的目标搜索和核对，保留较高难度的视觉注意证据。",
+      "interaction_type": "GESTURE_TASK",
+      "renderer_key": "base-ability/gesture-task/v1",
+      "scoring_type": "METRIC_THRESHOLD"
+    },
+    {
+      "question_id": "GA-RULE-001",
+      "selection_reason": "覆盖开始信号下的启动抑制，形成规则执行的基础时间证据。",
+      "interaction_type": "TIMED_TASK",
+      "renderer_key": "base-ability/timed-task/v1",
+      "scoring_type": "METRIC_THRESHOLD"
+    },
+    {
+      "question_id": "GA-RULE-002",
+      "selection_reason": "覆盖停止信号后的动作抑制，与启动信号形成成对规则证据。",
+      "interaction_type": "TIMED_TASK",
+      "renderer_key": "base-ability/timed-task/v1",
+      "scoring_type": "METRIC_THRESHOLD"
+    },
+    {
+      "question_id": "GA-RULE-003",
+      "selection_reason": "覆盖明确边界内的持续操作，保留空间规则遵守的拖放证据。",
+      "interaction_type": "DRAG_DROP",
+      "renderer_key": "base-ability/drag-drop/v1",
+      "scoring_type": "MAPPING_MATCH"
+    },
+    {
+      "question_id": "GA-RULE-005",
+      "selection_reason": "覆盖连续任务中的双规则保持，保留中等难度的规则整合证据。",
+      "interaction_type": "TASK_SEQUENCE",
+      "renderer_key": "base-ability/task-sequence/v1",
+      "scoring_type": "EVENT_RULE"
+    },
+    {
+      "question_id": "GA-RULE-006",
+      "selection_reason": "覆盖固定三步流程的顺序执行，补足可重复的流程规则证据。",
+      "interaction_type": "TASK_SEQUENCE",
+      "renderer_key": "base-ability/task-sequence/v1",
+      "scoring_type": "EVENT_RULE"
+    },
+    {
+      "question_id": "GA-RULE-009",
+      "selection_reason": "覆盖指令不完整时暂停并澄清，保留安全的求助决策证据。",
+      "interaction_type": "BRANCHING_TASK",
+      "renderer_key": "base-ability/branching-task/v1",
+      "scoring_type": "EVENT_RULE"
+    },
+    {
+      "question_id": "GA-RULE-016",
+      "selection_reason": "覆盖未授权任务或工具的确认边界，保留较高难度的授权判断证据。",
+      "interaction_type": "BRANCHING_TASK",
+      "renderer_key": "base-ability/branching-task/v1",
+      "scoring_type": "EVENT_RULE"
+    },
+    {
+      "question_id": "GA-EMO-001",
+      "selection_reason": "覆盖当前情绪或唤醒状态的表达，保留情绪模块的基础自我报告证据。",
+      "interaction_type": "BRANCHING_TASK",
+      "renderer_key": "base-ability/branching-task/v1",
+      "scoring_type": "EVENT_RULE"
+    },
+    {
+      "question_id": "GA-EMO-002",
+      "selection_reason": "覆盖困难时的功能性求助策略，保留安全的调节路径证据。",
+      "interaction_type": "BRANCHING_TASK",
+      "renderer_key": "base-ability/branching-task/v1",
+      "scoring_type": "EVENT_RULE"
+    },
+    {
+      "question_id": "GA-EMO-003",
+      "selection_reason": "覆盖可逆错误后的恢复，保留任务中断后的调节证据。",
+      "interaction_type": "BRANCHING_TASK",
+      "renderer_key": "base-ability/branching-task/v1",
+      "scoring_type": "EVENT_RULE"
+    },
+    {
+      "question_id": "GA-EMO-004",
+      "selection_reason": "覆盖短暂等待期间的安全调节，保留可度量的时间任务证据。",
+      "interaction_type": "TIMED_TASK",
+      "renderer_key": "base-ability/timed-task/v1",
+      "scoring_type": "METRIC_THRESHOLD"
+    },
+    {
+      "question_id": "GA-EMO-005",
+      "selection_reason": "覆盖预告后的活动转换，保留低至中等难度的转换序列证据。",
+      "interaction_type": "TASK_SEQUENCE",
+      "renderer_key": "base-ability/task-sequence/v1",
+      "scoring_type": "EVENT_RULE"
+    },
+    {
+      "question_id": "GA-EMO-010",
+      "selection_reason": "覆盖环境不适和感官需求表达，补足支持与无障碍边界的自我倡导证据。",
+      "interaction_type": "BRANCHING_TASK",
+      "renderer_key": "base-ability/branching-task/v1",
+      "scoring_type": "EVENT_RULE"
+    },
+    {
+      "question_id": "GA-EMO-013",
+      "selection_reason": "覆盖未成功后的重试、求助或停止选择，保留较高难度的恢复决策证据。",
+      "interaction_type": "BRANCHING_TASK",
+      "renderer_key": "base-ability/branching-task/v1",
+      "scoring_type": "EVENT_RULE"
+    },
+    {
+      "question_id": "GA-SOC-001",
+      "selection_reason": "覆盖呼唤后的功能性回应，保留基础社交的起始证据。",
+      "interaction_type": "BRANCHING_TASK",
+      "renderer_key": "base-ability/branching-task/v1",
+      "scoring_type": "EVENT_RULE"
+    },
+    {
+      "question_id": "GA-SOC-002",
+      "selection_reason": "覆盖简短互动的开启和结束，保留基本沟通结构证据。",
+      "interaction_type": "BRANCHING_TASK",
+      "renderer_key": "base-ability/branching-task/v1",
+      "scoring_type": "EVENT_RULE"
+    },
+    {
+      "question_id": "GA-SOC-003",
+      "selection_reason": "覆盖遇到困难时向合适对象提出具体帮助请求，补足社交求助证据。",
+      "interaction_type": "BRANCHING_TASK",
+      "renderer_key": "base-ability/branching-task/v1",
+      "scoring_type": "EVENT_RULE"
+    },
+    {
+      "question_id": "GA-SOC-004",
+      "selection_reason": "覆盖听不清或不理解时的澄清请求，与规则模块形成不同社交语境。",
+      "interaction_type": "BRANCHING_TASK",
+      "renderer_key": "base-ability/branching-task/v1",
+      "scoring_type": "EVENT_RULE"
+    },
+    {
+      "question_id": "GA-SOC-005",
+      "selection_reason": "覆盖完成、未完成和问题状态汇报，保留工作沟通的核心证据。",
+      "interaction_type": "BRANCHING_TASK",
+      "renderer_key": "base-ability/branching-task/v1",
+      "scoring_type": "EVENT_RULE"
+    },
+    {
+      "question_id": "GA-SOC-010",
+      "selection_reason": "覆盖拒绝不安全或超授权请求，保留社交安全边界的选择证据。",
+      "interaction_type": "SINGLE_SELECT",
+      "renderer_key": "base-ability/single-select/v1",
+      "scoring_type": "EXACT_MATCH"
+    },
+    {
+      "question_id": "GA-SOC-014",
+      "selection_reason": "覆盖离开任务区域前的告知，保留较高难度的责任交接证据。",
+      "interaction_type": "BRANCHING_TASK",
+      "renderer_key": "base-ability/branching-task/v1",
+      "scoring_type": "EVENT_RULE"
+    },
+    {
+      "question_id": "GA-SAFE-001",
+      "selection_reason": "覆盖湿滑地面后的停止、绕行和上报，保留基础场景安全判断。",
+      "interaction_type": "SINGLE_SELECT",
+      "renderer_key": "base-ability/single-select/v1",
+      "scoring_type": "EXACT_MATCH"
+    },
+    {
+      "question_id": "GA-SAFE-002",
+      "selection_reason": "覆盖破损电线的距离和上报处理，与湿滑场景形成不同风险来源。",
+      "interaction_type": "SINGLE_SELECT",
+      "renderer_key": "base-ability/single-select/v1",
+      "scoring_type": "EXACT_MATCH"
+    },
+    {
+      "question_id": "GA-SAFE-004",
+      "selection_reason": "覆盖破损玻璃或尖锐碎片的隔离上报，保留常见直接风险判断。",
+      "interaction_type": "SINGLE_SELECT",
+      "renderer_key": "base-ability/single-select/v1",
+      "scoring_type": "EXACT_MATCH"
+    },
+    {
+      "question_id": "GA-SAFE-005",
+      "selection_reason": "覆盖未知液体或化学品的不接触与上报，保留中等难度的安全边界。",
+      "interaction_type": "SINGLE_SELECT",
+      "renderer_key": "base-ability/single-select/v1",
+      "scoring_type": "EXACT_MATCH"
+    },
+    {
+      "question_id": "GA-SAFE-007",
+      "selection_reason": "覆盖高处取物时不攀爬并使用授权方式，补足身体安全与授权边界。",
+      "interaction_type": "SINGLE_SELECT",
+      "renderer_key": "base-ability/single-select/v1",
+      "scoring_type": "EXACT_MATCH"
+    },
+    {
+      "question_id": "GA-SAFE-009",
+      "selection_reason": "覆盖重量和尺寸下的稳定堆叠，保留安全模块的空间拖放证据。",
+      "interaction_type": "DRAG_DROP",
+      "renderer_key": "base-ability/drag-drop/v1",
+      "scoring_type": "MAPPING_MATCH"
+    },
+    {
+      "question_id": "GA-SAFE-014",
+      "selection_reason": "覆盖紧急停止、路线和报告，保留较高难度的完整应急决策路径。",
+      "interaction_type": "BRANCHING_TASK",
+      "renderer_key": "base-ability/branching-task/v1",
+      "scoring_type": "EVENT_RULE"
+    },
+    {
+      "question_id": "GA-FM-001",
+      "selection_reason": "保留现有线下题，覆盖指尖捏取和力度控制的直接动作证据。",
+      "interaction_type": "OFFLINE_RUBRIC",
+      "renderer_key": "base-ability/offline-rubric/v1",
+      "scoring_type": "OFFLINE_RUBRIC",
+      "offline_rubric": {
+        "setup_id": "setup_ga_fm_001",
+        "item_ids": ["soft_beads", "sorting_cup", "timer"],
+        "criteria": [
+          {"criterion_id": "pinch_grip", "description_0": "无法以安全手指捏取完成指定材料，或需要持续手把手代替。", "description_1": "在一次重复指令或稳定摆位后可完成部分捏取，但掉落或力度失控影响完成。", "description_2": "以稳定指尖捏取完成指定材料，并能控制力度避免明显掉落或挤压。"},
+          {"criterion_id": "placement_control", "description_0": "未能将材料放入指定容器，或动作造成材料散落。", "description_1": "可放入部分材料，但需要停顿、重新定位或口头提醒。", "description_2": "连续将材料放入指定容器，放置位置和节奏稳定。"}
+        ]
+      }
+    },
+    {
+      "question_id": "GA-FM-002",
+      "selection_reason": "保留现有线下题，覆盖夹具夹持的工具控制和安全放置。",
+      "interaction_type": "OFFLINE_RUBRIC",
+      "renderer_key": "base-ability/offline-rubric/v1",
+      "scoring_type": "OFFLINE_RUBRIC",
+      "offline_rubric": {
+        "setup_id": "setup_ga_fm_002",
+        "item_ids": ["training_tongs", "soft_blocks", "target_tray"],
+        "criteria": [
+          {"criterion_id": "tool_grip", "description_0": "无法安全握持夹具，或夹具反复脱手并中止任务。", "description_1": "能握持夹具但夹取时需多次调整或由教师重复提醒。", "description_2": "稳定握持夹具并以可控力度夹取指定材料。"},
+          {"criterion_id": "transfer_and_release", "description_0": "无法把夹取材料移至目标盘，或以抛掷方式放置。", "description_1": "能完成部分转移，但路线、释放时机或目标对准不稳定。", "description_2": "将指定材料平稳转移至目标盘并在目标区内释放。"}
+        ]
+      }
+    },
+    {
+      "question_id": "GA-FM-003",
+      "selection_reason": "保留现有线下题，覆盖旋盖开合中的双手配合与旋转控制。",
+      "interaction_type": "OFFLINE_RUBRIC",
+      "renderer_key": "base-ability/offline-rubric/v1",
+      "scoring_type": "OFFLINE_RUBRIC",
+      "offline_rubric": {
+        "setup_id": "setup_ga_fm_003",
+        "item_ids": ["training_bottle", "screw_cap", "work_mat"],
+        "criteria": [
+          {"criterion_id": "two_hand_stabilization", "description_0": "无法稳定容器或盖体，导致任务无法继续。", "description_1": "可短暂稳定容器，但开合过程需要多次重新摆位。", "description_2": "一手稳定容器、另一手操作盖体，双手分工清晰。"},
+          {"criterion_id": "rotation_sequence", "description_0": "未按开合方向操作，或强行用力造成明显卡顿。", "description_1": "在重复指令后完成部分旋转，但有明显反向或遗漏。", "description_2": "按正确方向完成开合，并在结束后将盖体稳妥复位。"}
+        ]
+      }
+    },
+    {
+      "question_id": "GA-FM-004",
+      "selection_reason": "保留现有线下题，覆盖折叠、对齐和双手协同的直接动作证据。",
+      "interaction_type": "OFFLINE_RUBRIC",
+      "renderer_key": "base-ability/offline-rubric/v1",
+      "scoring_type": "OFFLINE_RUBRIC",
+      "offline_rubric": {
+        "setup_id": "setup_ga_fm_004",
+        "item_ids": ["folding_sheets", "alignment_template", "work_mat"],
+        "criteria": [
+          {"criterion_id": "edge_alignment", "description_0": "无法使纸张边缘对应，或折叠方向明显错误。", "description_1": "能在模板旁完成部分对齐，但边缘偏差较大或需反复调整。", "description_2": "按模板将边缘对齐后完成折叠，成品无明显错位。"},
+          {"criterion_id": "bilateral_coordination", "description_0": "一手无法稳定材料，导致折叠无法连续完成。", "description_1": "可在停顿后完成折痕压平，但双手配合不连续。", "description_2": "一手稳定、一手折叠并压平，动作连续且材料保持在工作区。"}
+        ]
+      }
+    },
+    {
+      "question_id": "GA-FM-006",
+      "selection_reason": "保留现有线下题，覆盖穿引中的双手协调和视觉动作整合。",
+      "interaction_type": "OFFLINE_RUBRIC",
+      "renderer_key": "base-ability/offline-rubric/v1",
+      "scoring_type": "OFFLINE_RUBRIC",
+      "offline_rubric": {
+        "setup_id": "setup_ga_fm_006",
+        "item_ids": ["large_beads", "lace", "stopper"],
+        "criteria": [
+          {"criterion_id": "target_alignment", "description_0": "无法将绳端对准孔位，或频繁离开材料区。", "description_1": "可在重复指令后对准部分孔位，但需要多次试探。", "description_2": "能将绳端对准指定孔位并进行连续穿引。"},
+          {"criterion_id": "threading_control", "description_0": "未能完成指定穿引，或用力方式造成材料散落。", "description_1": "完成部分穿引但出现明显停顿、回退或需稳定摆位。", "description_2": "完成指定数量穿引，双手配合稳定并保留材料完整性。"}
+        ]
+      }
+    },
+    {
+      "question_id": "GA-FM-012",
+      "selection_reason": "保留现有线下题，覆盖持物稳定、移动和安全放置。",
+      "interaction_type": "OFFLINE_RUBRIC",
+      "renderer_key": "base-ability/offline-rubric/v1",
+      "scoring_type": "OFFLINE_RUBRIC",
+      "offline_rubric": {
+        "setup_id": "setup_ga_fm_012",
+        "item_ids": ["light_container", "marked_route", "target_surface"],
+        "criteria": [
+          {"criterion_id": "stable_carry", "description_0": "持物过程中明显失稳、掉落或无法完成路线。", "description_1": "可完成部分路线，但出现大幅晃动、停顿或需口头提醒。", "description_2": "以稳定姿势持物通过指定路线，视线和重心保持安全。"},
+          {"criterion_id": "controlled_placement", "description_0": "未能在目标面放置，或以碰撞方式放下材料。", "description_1": "能放到目标面但位置偏差大或需要重新调整。", "description_2": "在目标区域内平稳放置材料，随后松手并确认稳定。"}
+        ]
+      }
+    },
+    {
+      "question_id": "GA-FM-016",
+      "selection_reason": "保留现有线下题，覆盖定向装配和连续精细操作的较高难度证据。",
+      "interaction_type": "OFFLINE_RUBRIC",
+      "renderer_key": "base-ability/offline-rubric/v1",
+      "scoring_type": "OFFLINE_RUBRIC",
+      "offline_rubric": {
+        "setup_id": "setup_ga_fm_016",
+        "item_ids": ["training_bolts", "training_nuts", "assembly_board"],
+        "criteria": [
+          {"criterion_id": "orientation_match", "description_0": "未能辨认螺母和螺栓的对应方向，或以强行敲击方式处理。", "description_1": "在重复指令后可完成部分方向匹配，但多次反向尝试。", "description_2": "辨认对应部件和方向后，将螺母放到正确起始位置。"},
+          {"criterion_id": "continuous_assembly", "description_0": "无法完成规定装配，或操作造成部件脱落散失。", "description_1": "完成部分旋合但出现明显卡住、遗漏或需重新摆位。", "description_2": "连续完成指定装配并以适度力度固定，不损伤材料。"}
+        ]
+      }
+    },
+    {
+      "question_id": "GA-SAFE-008",
+      "selection_reason": "保留现有线下题，覆盖轻物搬运姿势、路线观察和安全放置；必须经安全和康复审核。",
+      "interaction_type": "OFFLINE_RUBRIC",
+      "renderer_key": "base-ability/offline-rubric/v1",
+      "scoring_type": "OFFLINE_RUBRIC",
+      "offline_rubric": {
+        "setup_id": "setup_ga_safe_008",
+        "item_ids": ["light_empty_box", "marked_route", "two_platforms"],
+        "criteria": [
+          {"criterion_id": "route_and_grip", "description_0": "未观察路线或以不稳定抓持开始搬运，出现明显碰撞风险。", "description_1": "在重复指令后观察部分路线并抓持箱体，但姿势或视线偶有不稳。", "description_2": "开始前观察路线，以稳定抓持搬运且不遮挡主要行进视线。"},
+          {"criterion_id": "body_control", "description_0": "出现过度弯腰、扭转或疼痛信号后仍继续搬运。", "description_1": "可在提醒后调整躯干或速度，但动作控制不连续。", "description_2": "保持可接受的躯干控制和步态；出现不适或风险时主动停止。"},
+          {"criterion_id": "safe_placement", "description_0": "未能把箱体放到目标平台，或以跌落、抛掷方式结束。", "description_1": "能放至平台但位置不稳、需要二次调整或口头提醒。", "description_2": "将轻箱平稳放在目标平台，确认稳定后松手并完成交接。"}
+        ]
+      }
+    }
+  ]
+}

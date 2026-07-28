@@ -1,104 +1,23 @@
-import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import initSqlJs from 'sql.js'
-
-const MODULE_TYPES = [
-  'FINE_MOTOR',
-  'COGNITION',
-  'RULE_EXECUTION',
-  'EMOTION_REGULATION',
-  'BASIC_SOCIAL',
-  'SAFETY_OPERATION'
-]
-
-const ONLINE_QUESTION_TYPES = ['TRUE_FALSE', 'SINGLE_CHOICE', 'DRAG', 'SOFTWARE_TASK']
+import {
+  fileSha256,
+  loadBaseAbilityRowsFromSql,
+  MODULE_TYPES,
+  ONLINE_QUESTION_TYPES
+} from './base-ability-42plus8-source.mjs'
+import {
+  buildBaseAbilityAuthority,
+  writeOrCheckBaseAbilityAuthority
+} from './base-ability-42plus8-authority.mjs'
 const EXPECTED_TOTAL = 96
 const EXPECTED_ONLINE_CANDIDATES = 87
 const EXPECTED_OFFLINE_CANDIDATES = 8
 const EXPECTED_OBSERVATION_ONLY = 1
 const REQUIRED_ONLINE_PER_MODULE = 7
-const GENERATED_AT = '2026-07-22T17:30:00+08:00'
+const GENERATED_AT = '2026-07-27T12:00:00+08:00'
 
-let sqlPromise
-
-function ensureSqlJs(projectRoot) {
-  if (!sqlPromise) {
-    sqlPromise = initSqlJs({
-      locateFile: (file) => join(projectRoot, 'node_modules', 'sql.js', 'dist', file)
-    })
-  }
-  return sqlPromise
-}
-
-function fileSha256(projectRoot, relativePath) {
-  const path = join(projectRoot, relativePath)
-  return `sha256:${createHash('sha256').update(readFileSync(path)).digest('hex')}`
-}
-
-function createQuestionBankTable(db) {
-  db.run(`CREATE TABLE question_bank (
-    question_id TEXT PRIMARY KEY,
-    job_code TEXT,
-    bank_domain TEXT,
-    module_type TEXT,
-    job_module_code TEXT,
-    question_type TEXT,
-    item_usage TEXT,
-    difficulty_level INTEGER,
-    content_json TEXT,
-    scoring_rule_json TEXT,
-    media_asset_id TEXT,
-    tool_asset_ids_json TEXT,
-    safety_sensitive INTEGER,
-    sensory_tags_json TEXT,
-    status TEXT,
-    version INTEGER,
-    updated_at TEXT
-  )`)
-}
-
-function queryRows(db) {
-  const stmt = db.prepare(`SELECT
-    question_id,
-    job_code,
-    bank_domain,
-    module_type,
-    job_module_code,
-    question_type,
-    item_usage,
-    difficulty_level,
-    content_json,
-    scoring_rule_json,
-    media_asset_id,
-    tool_asset_ids_json,
-    safety_sensitive,
-    sensory_tags_json,
-    status,
-    version
-    FROM question_bank
-    ORDER BY question_id`)
-  const rows = []
-  try {
-    while (stmt.step()) rows.push(stmt.getAsObject())
-  } finally {
-    stmt.free()
-  }
-  return rows
-}
-
-export async function loadBaseAbilityRowsFromSql(projectRoot) {
-  const sqlPath = join(projectRoot, 'doc', 'features', 'question-bank-import-base-ability-v02.sql')
-  const SQL = await ensureSqlJs(projectRoot)
-  const db = new SQL.Database()
-  try {
-    createQuestionBankTable(db)
-    db.run(readFileSync(sqlPath, 'utf8'))
-    return queryRows(db)
-  } finally {
-    db.close()
-  }
-}
+export { loadBaseAbilityRowsFromSql } from './base-ability-42plus8-source.mjs'
 
 function safeJson(value) {
   try {
@@ -134,6 +53,7 @@ function gate(gate_id, status, details) {
 
 export async function buildBaseAbilityGate(projectRoot) {
   const rows = await loadBaseAbilityRowsFromSql(projectRoot)
+  const authorityDocument = await buildBaseAbilityAuthority(projectRoot)
   const modules = emptyModuleSummary()
   const questionTypeCounts = {}
   const statusCounts = {}
@@ -176,6 +96,7 @@ export async function buildBaseAbilityGate(projectRoot) {
   }).length
   const mediaBoundTotal = rows.filter((row) => row.media_asset_id).length
   const toolBoundTotal = rows.filter((row) => row.tool_asset_ids_json).length
+  const selectedSummary = authorityDocument.summary
 
   for (const row of rows) {
     if (row.bank_domain !== 'BASE_ABILITY') issues.push(`${row.question_id}: bank_domain must be BASE_ABILITY`)
@@ -216,6 +137,27 @@ export async function buildBaseAbilityGate(projectRoot) {
       observation_only_total: observationOnlyTotal,
       required_online_per_module: REQUIRED_ONLINE_PER_MODULE
     }),
+    gate('draft_authority_42plus8',
+      selectedSummary.selected_total === 50
+        && selectedSummary.selected_online_total === 42
+        && selectedSummary.selected_offline_total === 8
+        && selectedSummary.observation_selected_total === 0
+        && selectedSummary.job_specific_selected_total === 0
+        && selectedSummary.active_total === 0
+        ? 'PASSED'
+        : 'FAILED', {
+        authority_hash: authorityDocument.authority_hash,
+        selected_total: selectedSummary.selected_total,
+        selected_online_total: selectedSummary.selected_online_total,
+        selected_offline_total: selectedSummary.selected_offline_total,
+        deferred_total: selectedSummary.deferred_total,
+        online_by_module: selectedSummary.online_by_module,
+        activation_authority_granted: authorityDocument.boundaries.activation_authority_granted
+      }),
+    gate('draft_contract_professional_review', 'BLOCKED', {
+      pending_selected_contracts: selectedSummary.selected_total,
+      rule: '本步骤固定 DRAFT 结构化候选，不将机器预选或答案草案视为人工审核通过。'
+    }),
     gate('active_question_status', activeTotal >= 50 ? 'PASSED' : 'BLOCKED', {
       active_total: activeTotal,
       draft_total: draftTotal,
@@ -250,7 +192,9 @@ export async function buildBaseAbilityGate(projectRoot) {
       source_sha256: existsSync(join(projectRoot, sourcePath)) ? fileSha256(projectRoot, sourcePath) : null,
       import_sql_path: importSqlPath,
       import_sql_sha256: fileSha256(projectRoot, importSqlPath),
-      content_pack_path: 'scripts/config/database-content-pack.json'
+      content_pack_path: 'scripts/config/database-content-pack.json',
+      draft_authority_path: 'doc/features/base-ability-42plus8-authority-v1.json',
+      draft_authority_sha256: authorityDocument.authority_hash
     },
     summary: {
       source_question_total: rows.length,
@@ -262,6 +206,10 @@ export async function buildBaseAbilityGate(projectRoot) {
       no_score_total: noScoreTotal,
       media_asset_bound_total: mediaBoundTotal,
       tool_asset_bound_total: toolBoundTotal,
+      selected_total: selectedSummary.selected_total,
+      selected_online_total: selectedSummary.selected_online_total,
+      selected_offline_total: selectedSummary.selected_offline_total,
+      deferred_total: selectedSummary.deferred_total,
       question_type_counts: Object.fromEntries(Object.entries(questionTypeCounts).sort()),
       status_counts: Object.fromEntries(Object.entries(statusCounts).sort()),
       modules
@@ -279,6 +227,10 @@ export function serializeBaseAbilityGate(gateDocument) {
 
 export async function writeOrCheckBaseAbilityGate(projectRoot, { check = false } = {}) {
   const outputPath = join(projectRoot, 'doc', 'features', 'base-ability-42plus8-activation-gate-v1.json')
+  const authorityState = await writeOrCheckBaseAbilityAuthority(projectRoot, { check: true })
+  if (!authorityState.ok) {
+    throw new Error(`draft authority is stale: ${authorityState.outputPath}`)
+  }
   const document = await buildBaseAbilityGate(projectRoot)
   const content = serializeBaseAbilityGate(document)
   if (check) {

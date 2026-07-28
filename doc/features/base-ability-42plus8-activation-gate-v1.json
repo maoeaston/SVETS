@@ -3,14 +3,16 @@
   "schema_version": "base-ability-42plus8-activation-gate-v1",
   "gate_id": "base-ability-42plus8-activation-gate-2026-07-22",
   "status": "BLOCKED_DRAFT_REVIEW_RENDERER_MATERIAL_AND_TRIAL_GATE",
-  "generated_at": "2026-07-22T17:30:00+08:00",
+  "generated_at": "2026-07-27T12:00:00+08:00",
   "authority": {
     "product_contract_path": "doc/specs/MVP_PRD_v1.0.9-authoritative.md",
     "source_path": "doc/reference/通用基础能力正式测评候选题库_v0.2-软件优先版.xlsx",
     "source_sha256": "sha256:ceb5e5615e10b0c0b5b6d1711e1efe21dd6248cc8ebc50ca82d30e308256ebec",
     "import_sql_path": "doc/features/question-bank-import-base-ability-v02.sql",
     "import_sql_sha256": "sha256:db905216cd6735bdf90c44036cf675747dc859a97d894f110d1d959211fe649f",
-    "content_pack_path": "scripts/config/database-content-pack.json"
+    "content_pack_path": "scripts/config/database-content-pack.json",
+    "draft_authority_path": "doc/features/base-ability-42plus8-authority-v1.json",
+    "draft_authority_sha256": "sha256:52c27a71596f7c32e1aab287af40c9c88268ed807bbfdee187a683b4f40d0201"
   },
   "summary": {
     "source_question_total": 96,
@@ -22,6 +24,10 @@
     "no_score_total": 96,
     "media_asset_bound_total": 0,
     "tool_asset_bound_total": 0,
+    "selected_total": 50,
+    "selected_online_total": 42,
+    "selected_offline_total": 8,
+    "deferred_total": 46,
     "question_type_counts": {
       "DRAG": 17,
       "OFFLINE_OPERATION": 8,
@@ -111,6 +117,34 @@
         "offline_candidate_total": 8,
         "observation_only_total": 1,
         "required_online_per_module": 7
+      }
+    },
+    {
+      "gate_id": "draft_authority_42plus8",
+      "status": "PASSED",
+      "details": {
+        "authority_hash": "sha256:52c27a71596f7c32e1aab287af40c9c88268ed807bbfdee187a683b4f40d0201",
+        "selected_total": 50,
+        "selected_online_total": 42,
+        "selected_offline_total": 8,
+        "deferred_total": 46,
+        "online_by_module": {
+          "FINE_MOTOR": 7,
+          "COGNITION": 7,
+          "RULE_EXECUTION": 7,
+          "EMOTION_REGULATION": 7,
+          "BASIC_SOCIAL": 7,
+          "SAFETY_OPERATION": 7
+        },
+        "activation_authority_granted": false
+      }
+    },
+    {
+      "gate_id": "draft_contract_professional_review",
+      "status": "BLOCKED",
+      "details": {
+        "pending_selected_contracts": 50,
+        "rule": "本步骤固定 DRAFT 结构化候选，不将机器预选或答案草案视为人工审核通过。"
       }
     },
     {

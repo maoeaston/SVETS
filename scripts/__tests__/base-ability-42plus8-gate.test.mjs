@@ -17,6 +17,26 @@ describe('base ability 42+8 activation gate', () => {
   it('确认 42+8 候选供给足够但激活仍关闭', async () => {
     const document = await buildBaseAbilityGate(projectRoot)
 
+    const draftAuthorityGate = document.gates.find((gate) => gate.gate_id === 'draft_authority_42plus8')
+    const reviewGate = document.gates.find((gate) => gate.gate_id === 'draft_contract_professional_review')
+    expect(draftAuthorityGate).toMatchObject({ status: 'PASSED' })
+    expect(draftAuthorityGate.details).toMatchObject({
+      selected_total: 50,
+      selected_online_total: 42,
+      selected_offline_total: 8,
+      deferred_total: 46,
+      activation_authority_granted: false
+    })
+    expect(Object.values(draftAuthorityGate.details.online_by_module)).toEqual([7, 7, 7, 7, 7, 7])
+    expect(reviewGate).toMatchObject({ status: 'BLOCKED' })
+    expect(document.summary).toMatchObject({
+      selected_total: 50,
+      selected_online_total: 42,
+      selected_offline_total: 8,
+      deferred_total: 46
+    })
+    expect(document.authority.draft_authority_sha256).toMatch(/^sha256:[a-f0-9]{64}$/)
+
     expect(document).toMatchObject({
       schema_version: 'base-ability-42plus8-activation-gate-v1',
       status: 'BLOCKED_DRAFT_REVIEW_RENDERER_MATERIAL_AND_TRIAL_GATE',

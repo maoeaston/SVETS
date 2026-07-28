@@ -29,7 +29,9 @@
         "source_sha256",
         "import_sql_path",
         "import_sql_sha256",
-        "content_pack_path"
+        "content_pack_path",
+        "draft_authority_path",
+        "draft_authority_sha256"
       ],
       "additionalProperties": false,
       "properties": {
@@ -38,7 +40,9 @@
         "source_sha256": { "type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$" },
         "import_sql_path": { "type": "string", "minLength": 1 },
         "import_sql_sha256": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
-        "content_pack_path": { "type": "string", "minLength": 1 }
+        "content_pack_path": { "type": "string", "minLength": 1 },
+        "draft_authority_path": { "type": "string", "minLength": 1 },
+        "draft_authority_sha256": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
       }
     },
     "summary": {
@@ -53,6 +57,10 @@
         "no_score_total",
         "media_asset_bound_total",
         "tool_asset_bound_total",
+        "selected_total",
+        "selected_online_total",
+        "selected_offline_total",
+        "deferred_total",
         "question_type_counts",
         "status_counts",
         "modules"
@@ -67,6 +75,10 @@
         "no_score_total": { "type": "integer", "minimum": 0 },
         "media_asset_bound_total": { "type": "integer", "minimum": 0 },
         "tool_asset_bound_total": { "type": "integer", "minimum": 0 },
+        "selected_total": { "const": 50 },
+        "selected_online_total": { "const": 42 },
+        "selected_offline_total": { "const": 8 },
+        "deferred_total": { "const": 46 },
         "question_type_counts": { "type": "object" },
         "status_counts": { "type": "object" },
         "modules": { "type": "object" }

@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "base-ability-42plus8-authority-v1.schema.json",
+  "title": "BASE_ABILITY 42+8 Draft Authority",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "authority_id",
+    "status",
+    "generated_at",
+    "generator",
+    "source_files",
+    "structured_input",
+    "selection",
+    "boundaries",
+    "summary",
+    "content_root_hash",
+    "scoring_root_hash",
+    "renderer_requirements_root_hash",
+    "release_gate",
+    "questions",
+    "authority_hash"
+  ],
+  "properties": {
+    "$schema": { "const": "./base-ability-42plus8-authority-v1.schema.json" },
+    "schema_version": { "const": "base-ability-42plus8-authority-v1" },
+    "authority_id": { "const": "base-ability-42plus8-authority-v1" },
+    "status": { "const": "DRAFT_FROZEN_PENDING_PROFESSIONAL_REVIEW" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["script", "version", "runtime_database_write"],
+      "properties": {
+        "script": { "const": "scripts/build-base-ability-42plus8-authority.mjs" },
+        "version": { "const": "1" },
+        "runtime_database_write": { "const": false }
+      }
+    },
+    "source_files": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["workbook", "import_sql", "derivation"],
+      "properties": {
+        "workbook": { "$ref": "#/$defs/fileRef" },
+        "import_sql": { "$ref": "#/$defs/fileRef" },
+        "derivation": { "type": "string", "minLength": 1 }
+      }
+    },
+    "structured_input": { "$ref": "#/$defs/fileRef" },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "policy"],
+      "properties": {
+        "status": { "const": "MACHINE_PRESELECTED_PENDING_PROFESSIONAL_REVIEW" },
+        "policy": { "type": "string", "minLength": 1 }
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runtime_database_write_allowed", "activation_authority_granted", "activation_sql_generated", "professional_review_completed"],
+      "properties": {
+        "runtime_database_write_allowed": { "const": false },
+        "activation_authority_granted": { "const": false },
+        "activation_sql_generated": { "const": false },
+        "professional_review_completed": { "const": false }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_total", "selected_total", "selected_online_total", "selected_offline_total", "deferred_total", "observation_selected_total", "job_specific_selected_total", "active_total", "draft_total", "online_by_module"],
+      "properties": {
+        "source_total": { "const": 96 },
+        "selected_total": { "const": 50 },
+        "selected_online_total": { "const": 42 },
+        "selected_offline_total": { "const": 8 },
+        "deferred_total": { "const": 46 },
+        "observation_selected_total": { "const": 0 },
+        "job_specific_selected_total": { "const": 0 },
+        "active_total": { "const": 0 },
+        "draft_total": { "const": 96 },
+        "online_by_module": { "type": "object", "additionalProperties": { "const": 7 } }
+      }
+    },
+    "content_root_hash": { "$ref": "#/$defs/hash" },
+    "scoring_root_hash": { "$ref": "#/$defs/hash" },
+    "renderer_requirements_root_hash": { "$ref": "#/$defs/hash" },
+    "release_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "blockers"],
+      "properties": {
+        "status": { "const": "BLOCKED" },
+        "blockers": { "type": "array", "minItems": 1 }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 96,
+      "maxItems": 96,
+      "items": { "$ref": "#/$defs/question" }
+    },
+    "authority_hash": { "$ref": "#/$defs/hash" }
+  },
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "fileRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "question": {
+      "type": "object",
+      "required": ["source_question_id", "source_record_hash", "bank_domain", "job_code", "module_type", "question_type", "item_usage", "runtime_status", "activation_authority", "selection", "source"],
+      "properties": {
+        "source_question_id": { "type": "string", "pattern": "^GA-(COG|EMO|FM|RULE|SAFE|SOC)-[0-9]{3}$" },
+        "source_record_hash": { "$ref": "#/$defs/hash" },
+        "bank_domain": { "const": "BASE_ABILITY" },
+        "job_code": { "const": "SUPERMARKET_SHELVER" },
+        "module_type": { "enum": ["FINE_MOTOR", "COGNITION", "RULE_EXECUTION", "EMOTION_REGULATION", "BASIC_SOCIAL", "SAFETY_OPERATION"] },
+        "question_type": { "enum": ["SINGLE_CHOICE", "DRAG", "SOFTWARE_TASK", "OFFLINE_OPERATION"] },
+        "item_usage": { "enum": ["SCORED_ITEM", "OBSERVATION_ONLY"] },
+        "runtime_status": { "const": "DRAFT" },
+        "activation_authority": { "const": "NONE" },
+        "selection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["disposition", "reason"],
+          "properties": {
+            "disposition": { "enum": ["SELECTED", "DEFERRED"] },
+            "reason": { "type": "string", "minLength": 1 }
+          }
+        },
+        "contract_state": { "const": "DRAFT_PENDING_PROFESSIONAL_REVIEW" },
+        "required_review_tracks": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "content_json": { "type": "object" },
+        "scoring_rule_json": { "type": "object" },
+        "renderer_requirement": { "type": "object" },
+        "content_hash": { "$ref": "#/$defs/hash" },
+        "scoring_hash": { "$ref": "#/$defs/hash" },
+        "renderer_requirement_hash": { "$ref": "#/$defs/hash" },
+        "source": { "type": "object" }
+      }
+    }
+  }
+}
