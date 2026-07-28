@@ -282,6 +282,19 @@ export function preflightM4SafetyRekeyHistory(database: DBAdapter): void {
       )
     )`)
   if (strategyMismatch) issues.push(`strategy-key-mismatch:${strategyMismatch}`)
+  const redlineOrphan = count(database, `
+    SELECT COUNT(*) AS count FROM (
+      SELECT s.session_id AS id FROM assessment_session s
+      WHERE s.status = 'REDLINE_HALTED' AND NOT EXISTS (
+        SELECT 1 FROM safety_incident si WHERE si.incident_id = s.redline_incident_id
+      )
+      UNION ALL
+      SELECT s.training_session_id AS id FROM training_session s
+      WHERE s.status = 'REDLINE_HALTED' AND NOT EXISTS (
+        SELECT 1 FROM safety_incident si WHERE si.incident_id = s.redline_incident_id
+      )
+    )`)
+  if (redlineOrphan) issues.push(`redline-incident-orphan:${redlineOrphan}`)
   const redlineMismatch = count(database, `
     SELECT COUNT(*) AS count FROM (
       SELECT s.session_id AS id FROM assessment_session s JOIN safety_incident si ON si.incident_id = s.redline_incident_id
@@ -291,6 +304,12 @@ export function preflightM4SafetyRekeyHistory(database: DBAdapter): void {
        WHERE s.status = 'REDLINE_HALTED' AND (si.student_id <> s.student_id OR si.job_code <> s.job_code OR si.task_code <> s.task_code)
     )`)
   if (redlineMismatch) issues.push(`redline-key-mismatch:${redlineMismatch}`)
+  const bindingOrphan = count(database, `
+    SELECT COUNT(*) AS count FROM safety_incident_binding b
+    WHERE NOT EXISTS (
+      SELECT 1 FROM safety_incident si WHERE si.incident_id = b.incident_id
+    )`)
+  if (bindingOrphan) issues.push(`binding-incident-orphan:${bindingOrphan}`)
   const bindingMismatch = count(database, `
     SELECT COUNT(*) AS count FROM safety_incident_binding b
     JOIN safety_incident si ON si.incident_id = b.incident_id
@@ -300,6 +319,12 @@ export function preflightM4SafetyRekeyHistory(database: DBAdapter): void {
       SELECT 1 FROM training_session t WHERE t.training_session_id = b.aggregate_id AND t.student_id = si.student_id AND t.job_code = si.job_code AND t.task_code = si.task_code
     ))`)
   if (bindingMismatch) issues.push(`binding-key-mismatch:${bindingMismatch}`)
+  const replacementOrphan = count(database, `
+    SELECT COUNT(*) AS count FROM safety_incident s
+    WHERE s.replacement_incident_id IS NOT NULL AND NOT EXISTS (
+      SELECT 1 FROM safety_incident r WHERE r.incident_id = s.replacement_incident_id
+    )`)
+  if (replacementOrphan) issues.push(`replacement-incident-orphan:${replacementOrphan}`)
   const replacementMismatch = count(database, `
     SELECT COUNT(*) AS count FROM safety_incident s JOIN safety_incident r ON r.incident_id = s.replacement_incident_id
     WHERE s.replacement_incident_id IS NOT NULL AND (s.student_id <> r.student_id OR s.job_code <> r.job_code OR s.task_code <> r.task_code)`)

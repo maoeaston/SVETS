@@ -34,6 +34,18 @@ export class DatabaseStartupUpgradeError extends Error {
   }
 }
 
+function runM4StartupPreparation(action: () => void): void {
+  try {
+    action()
+  } catch (error) {
+    if (error instanceof DatabaseStartupUpgradeError) throw error
+    const code = error instanceof M4SafetyRekeyMigrationError && error.code === 'M4_SCHEMA_DRIFT'
+      ? 'M4_SCHEMA_DRIFT'
+      : 'M4_MIGRATION_FAILED'
+    throw new DatabaseStartupUpgradeError(code, 'M4 database startup preparation failed safely', error)
+  }
+}
+
 function hasMigrationLedger(database: DBAdapter, migrationId: string): boolean {
   const row = database.prepare('SELECT 1 AS present FROM schema_migration WHERE migration_id = ?')
     .get(migrationId) as { present: number } | undefined
@@ -73,16 +85,22 @@ export function orchestrateDatabaseStartupUpgrade(
 
   assertPreM4DatabaseSchema(database)
   const m4State = inspectM4SafetyRekeyStructure(database)
+  const hasM4Ledger = hasMigrationLedger(database, M4_SAFETY_REKEY_MIGRATION_ID)
   if (m4State === 'LEGACY_V016') {
-    preflightM4SafetyRekeyHistory(database)
-    dependencies.createVerifiedBackup('M4', M4_SAFETY_REKEY_MIGRATION_ID)
-    try {
-      migrated.push(...run(database, { throughMigrationId: M4_SAFETY_REKEY_MIGRATION_ID }))
-    } catch (error) {
-      throw new DatabaseStartupUpgradeError('M4_MIGRATION_FAILED', 'M4 database migration failed safely', error)
+    if (hasM4Ledger) {
+      throw new DatabaseStartupUpgradeError(
+        'M4_SCHEMA_DRIFT',
+        'M4 migration ledger conflicts with legacy safety structure; startup stopped before backup or DDL',
+        new M4SafetyRekeyMigrationError('M4_SCHEMA_DRIFT', 'M4 ledger exists while legacy safety objects remain')
+      )
     }
+    runM4StartupPreparation(() => {
+      preflightM4SafetyRekeyHistory(database)
+      dependencies.createVerifiedBackup('M4', M4_SAFETY_REKEY_MIGRATION_ID)
+      migrated.push(...run(database, { throughMigrationId: M4_SAFETY_REKEY_MIGRATION_ID }))
+    })
   } else if (m4State === 'CURRENT_M4') {
-    if (!hasMigrationLedger(database, M4_SAFETY_REKEY_MIGRATION_ID)) {
+    if (!hasM4Ledger) {
       try {
         migrated.push(...run(database, { throughMigrationId: M4_SAFETY_REKEY_MIGRATION_ID }))
       } catch (error) {

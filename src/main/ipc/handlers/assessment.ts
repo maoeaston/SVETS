@@ -1574,15 +1574,15 @@ function statusToRedlineErrorCode(status: string): AssessmentErrorCode | null {
 /**
  * assessment:triggerRedline 核心纯函数（TEACHER / ADMIN）。
  *
- * 触发安全红线 → 批量熔断同 student+task 的所有开放 session → 落盘 result_record
+ * 触发安全红线 → 批量熔断同 student+job+task 的所有开放 session → 落盘 result_record
  * （LEVEL_FAIL_BY_SAFETY）。
  *
  * [!] schema trigger 链（handler 不重复实现，理解其行为）：
  *   1. handler writeEvent(SAFETY_INCIDENT_CREATED) → INSERT safety_incident(PENDING_DETAIL)
  *   2. trg_safety_incident_bind_open_assessments AFTER INSERT：
- *      批量 UPDATE 同 student+task 开放 session → REDLINE_HALTED +
+ *      批量 UPDATE 同 student+job+task 开放 session → REDLINE_HALTED +
  *      level_result=LEVEL_FAIL_BY_SAFETY + 写 safety_incident_binding
- *   3. trg_assessment_session_redline_incident_same_student_task_update AFTER UPDATE：
+ *   3. trg_assessment_session_redline_incident_same_student_job_task_update BEFORE UPDATE：
  *      校验 REDLINE_HALTED 必须有匹配 incident
  *   4. handler writeEvent(REDLINE_TRIGGERED) + applyReducer（补 redline_incident_id
  *      / 事件指针；session 已被 trigger 改成 REDLINE_HALTED）

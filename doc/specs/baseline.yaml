@@ -36,6 +36,9 @@ commands:
   job_skill_contract_check: npm run contract:job-skill:check
   job_skill_delivery_check: npm run contract:job-skill:delivery:check
   base_ability_gate_check: npm run contract:base-ability:gate:check
+  m4_safety_sql_check: npm run contract:m4:safety-sql:check
+  m4_db_verify: npm run db:m4:verify
+  m4_native_electron_verify: npm run db:m4:native:verify
 
 risk_triggers:
   R3:
@@ -68,7 +71,7 @@ manual_acceptance:
   - multi_device_assignment_flow
 
 notes:
-  - AGENTS.md declares PRD v1.0.9 and schema v0.1.16-report-framework as current engineering baseline.
+  - AGENTS.md declares PRD v1.0.9 and schema v0.1.17-multi-device-m4-safety-rekey as the current engineering baseline; M4 Step 2A is ACCEPTED after independent Review and evidence-based Accept. Step 2B is eligible to begin but is not implemented by this status change.
   - MVP_PRD_v1.0.9-authoritative.md declares src/main/db/schema.sql as the database DDL source of truth.
   - MVP_PRD_v1.0.9-authoritative.md declares src/shared/types/json-schemas.ts and src/shared/types/event-payloads.ts as runtime JSON and event type sources; the Markdown specs remain readable historical references.
   - No CI workflow directory was found in this checkout during installation.

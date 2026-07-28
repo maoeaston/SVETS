@@ -54,6 +54,7 @@ import { ReportCommandCoordinator } from '../../../domain/report-command-coordin
 import { recordReportGenerationError } from '../../../domain/report-errors'
 import {
   confirmSafetyIncident,
+  replaceSafetyIncidentForFactualCorrection,
   voidSafetyIncident,
   type SafetyReportAutomation
 } from '../safety'
@@ -223,6 +224,47 @@ describe('F7 Step 6 report integration', () => {
           AND aggregate_id = ?
           AND event_type = 'SAFETY_INCIDENT_VOIDED'
         LIMIT 1`
+    ).get(incidentId)).toEqual({ schema_version: 2, applied_to_snapshot: 1 })
+  })
+
+  it('uses the original teacher confirmation when an admin factually replaces a safety incident', () => {
+    const incidentId = seedIncident('CONFIRMED')
+    const reportId = seedActiveSafetyReport(incidentId)
+
+    const replacement = replaceSafetyIncidentForFactualCorrection(db, {
+      callerUserId: adminId,
+      callerRole: 'ADMIN',
+      incidentId,
+      reasonCode: 'DANGEROUS_CLIMBING',
+      contextPhase: 'TRAINING_DO',
+      description: '管理员更正后的安全事实',
+      correctionReason: '原始场景记录错误'
+    }, coordinatorAutomation())
+
+    expect(replacement.success).toBe(true)
+    if (!replacement.success) return
+    expect(db.prepare(
+      'SELECT status, void_reason, replacement_incident_id FROM safety_incident WHERE incident_id = ?'
+    ).get(incidentId)).toEqual({
+      status: 'VOIDED',
+      void_reason: 'FACTUAL_CORRECTION',
+      replacement_incident_id: replacement.incidentId
+    })
+    expect(db.prepare(
+      'SELECT status, confirmed_by, triggered_by FROM safety_incident WHERE incident_id = ?'
+    ).get(replacement.incidentId)).toEqual({
+      status: 'CONFIRMED',
+      confirmed_by: teacherId,
+      triggered_by: adminId
+    })
+    expect(db.prepare('SELECT status FROM task_report WHERE report_id = ?').get(reportId))
+      .toEqual({ status: 'SUPERSEDED' })
+    expect(db.prepare(
+      `SELECT schema_version, applied_to_snapshot
+         FROM domain_event_projection
+        WHERE aggregate_type = 'SAFETY_INCIDENT'
+          AND aggregate_id = ?
+          AND event_type = 'SAFETY_INCIDENT_REPLACED_FOR_FACTUAL_CORRECTION'`
     ).get(incidentId)).toEqual({ schema_version: 2, applied_to_snapshot: 1 })
   })
 })

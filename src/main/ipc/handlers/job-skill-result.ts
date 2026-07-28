@@ -243,7 +243,10 @@ export function finalizeJobSkillResultCore(
     .prepare(
       `SELECT si.incident_id, si.reason_code, si.occurred_at
          FROM safety_incident si
-         JOIN assessment_session s ON s.student_id = si.student_id AND s.task_code = si.task_code
+         JOIN assessment_session s
+           ON s.student_id = si.student_id
+          AND s.job_code = si.job_code
+          AND s.task_code = si.task_code
         WHERE s.session_id = ? AND si.status NOT IN ('VOIDED')`
     )
     .all(sessionId) as { incident_id: string; reason_code: string; occurred_at: string }[]

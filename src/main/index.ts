@@ -5,7 +5,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { initDatabase, closeDatabase } from './db/connection'
 import { registerAppAssetProtocol } from './protocol/app-asset'
 import { registerIpcHandlers } from './ipc'
-import { StartupRecoveryRequiredError } from './domain/legacy-upgrade-recovery'
+import { describeStartupFailure } from './startup-error'
 import { resolveAppWindowConfig } from './window-config'
 
 // 注册 app:// 为 privileged scheme。必须在 app.whenReady() 之前调用，且整个进程只能调一次。
@@ -79,13 +79,9 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 }).catch((error: unknown) => {
-  if (error instanceof StartupRecoveryRequiredError) {
-    console.error(`[startup] ${error.code}`)
-    dialog.showErrorBox('数据库需要恢复', '数据库或历史事件日志无法安全升级。应用未打开业务窗口，也未启用业务操作。')
-  } else {
-    console.error('[startup] Database initialization failed')
-    dialog.showErrorBox('启动失败', '应用无法安全初始化本地数据。请保留当前数据文件并联系维护人员。')
-  }
+  const failure = describeStartupFailure(error)
+  console.error(failure.logMessage)
+  dialog.showErrorBox(failure.title, failure.message)
   app.exit(1)
 })
 

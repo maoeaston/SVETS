@@ -375,4 +375,30 @@ describe('applyReportEvent', () => {
       db.close()
     }
   })
+
+  it('rejects a factual-correction payload whose job differs from the original incident', async () => {
+    const db = await createTestDb()
+    try {
+      const teacherId = seedCaller(db, 'TEACHER')
+      const adminId = seedCaller(db, 'ADMIN')
+      const studentId = seedStudent(db)
+      const oldIncidentId = seedConfirmedSafetyIncident(db, teacherId, studentId)
+      const newIncidentId = uuidv4()
+      const correction = makeEvent('SAFETY_INCIDENT_REPLACED_FOR_FACTUAL_CORRECTION', 'SAFETY_INCIDENT', oldIncidentId, {
+        root_incident_id: oldIncidentId, old_incident_id: oldIncidentId, new_incident_id: newIncidentId,
+        student_id: studentId, job_code: 'WAREHOUSE_PICKER', task_code: TASK_CODE,
+        reason_code: 'BLADE_TOWARD_SELF', context_phase: 'OFFLINE_SCORING', full_description: '跨岗位篡改',
+        occurred_at: ISO, triggered_by: teacherId, confirmed_by: teacherId, confirmed_at: ISO,
+        old_status: 'CONFIRMED', old_status_after: 'VOIDED', void_reason: 'FACTUAL_CORRECTION',
+        correction_reason: '不应通过', replaced_by: adminId, replaced_at: ISO, superseded_report_ids: []
+      }, adminId, 'ADMIN')
+
+      expect(() => applyReportEvent(db, correction)).toThrow(ReportReducerError)
+      expect(db.prepare('SELECT status, replacement_incident_id FROM safety_incident WHERE incident_id = ?').get(oldIncidentId))
+        .toEqual({ status: 'CONFIRMED', replacement_incident_id: null })
+      expect(db.prepare('SELECT 1 FROM safety_incident WHERE incident_id = ?').get(newIncidentId)).toBeUndefined()
+    } finally {
+      db.close()
+    }
+  })
 })

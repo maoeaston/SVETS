@@ -1,6 +1,6 @@
 # 炫灿-职途向导系统 MVP
 
-**工程基线：** schema v0.1.16-report-framework | PRD v1.0.9 authoritative
+**工程基线：** schema v0.1.17-multi-device-m4-safety-rekey（ACCEPTED_STEP_2A） | PRD v1.0.9 authoritative
 **技术栈：** Electron + Vue3 + TypeScript + SQLite  
 **MVP 范围：** 一岗位（超市理货员）| 一任务（拆箱与上架）| 两条测评路径（BASE_ABILITY / JOB_SKILL）| 一闭环（测评→训练→评分→报告）
 

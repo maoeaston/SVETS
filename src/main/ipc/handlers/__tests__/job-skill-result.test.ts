@@ -116,6 +116,23 @@ function createOfflinePendingSession(): string {
   return result.sessionId
 }
 
+function seedSafetyIncidentForSummary(jobCode: string): string {
+  const incidentId = uuidv4()
+  const triggerEventId = uuidv4()
+  db.prepare(
+    `INSERT INTO domain_event_projection
+       (event_id, aggregate_type, aggregate_id, event_type, event_sequence, payload_json, checksum, source_log_path, schema_version, created_at)
+     VALUES (?, 'SAFETY_INCIDENT', ?, 'SAFETY_INCIDENT_CREATED', 1, '{}', 'summary-checksum', 'summary.jsonl', 1, ?)`
+  ).run(triggerEventId, incidentId, new Date().toISOString())
+  db.prepare(
+    `INSERT INTO safety_incident
+       (incident_id, student_id, job_code, task_code, trigger_event_id, reason_code, triggered_by,
+        context_phase, status, requires_review_before_next_session)
+     VALUES (?, ?, ?, ?, ?, 'BLADE_TOWARD_SELF', ?, 'OFFLINE_SCORING', 'PENDING_DETAIL', 1)`
+  ).run(incidentId, studentId, jobCode, JOB_TASK_CODE, triggerEventId, callerId)
+  return incidentId
+}
+
 function seedAnswerRecords(sessionId: string, onlineScores: Array<0 | 2>) {
   // 查询每题的真实 question_type（trigger 要求 answer_record.question_type 与 assessment_session_question 一致）
   const questions = db
@@ -499,6 +516,21 @@ describe('TC-O: JOB_SKILL_SCORE 自动生成', () => {
       .prepare('SELECT COUNT(*) AS n FROM result_record WHERE source_aggregate_id = ?')
       .get(sessionId) as { n: number }
     expect(count.n).toBe(0)
+  })
+
+  it('JOB_SKILL safety summary 排除同学生同任务的其他岗位事件', () => {
+    const sessionId = createOfflinePendingSession()
+    const otherJobIncidentId = seedSafetyIncidentForSummary('WAREHOUSE_PICKER')
+
+    completeSession(sessionId, 2)
+
+    const row = db
+      .prepare("SELECT level_result, result_payload_json FROM result_record WHERE source_aggregate_id = ? AND result_type = 'JOB_SKILL_SCORE'")
+      .get(sessionId) as { level_result: string; result_payload_json: string } | undefined
+    expect(row).toBeDefined()
+    expect(row?.level_result).not.toBe('LEVEL_FAIL_BY_SAFETY')
+    const payload = JSON.parse(row!.result_payload_json) as { safety_summary: { safety_incidents: Array<{ incident_id: string }> } }
+    expect(payload.safety_summary.safety_incidents.map((incident) => incident.incident_id)).not.toContain(otherJobIncidentId)
   })
 
   it('session 完成后 status → COMPLETED', () => {

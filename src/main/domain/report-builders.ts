@@ -763,10 +763,13 @@ function preRedlineRecords(db: DBAdapter, bindings: BindingRow[], occurredAt: st
   }
   for (const trainingId of trainingIds) {
     for (const row of db.prepare(
+      // training_step_record has no occurred_at column. Rows are created during
+      // training-session initialization, so created_at is the durable evidence
+      // that a step record existed before a redline.
       `SELECT status
          FROM training_step_record
-        WHERE training_session_id = ? AND occurred_at < ?
-        ORDER BY occurred_at ASC, step_type ASC, training_step_record_id ASC`
+        WHERE training_session_id = ? AND created_at < ?
+        ORDER BY created_at ASC, step_type ASC, training_step_record_id ASC`
     ).all(trainingId, occurredAt) as Array<{ status: string }>) {
       trainingStepSummary[row.status] = (trainingStepSummary[row.status] ?? 0) + 1
     }
@@ -824,11 +827,11 @@ function safetyTrainingMetadata(db: DBAdapter, trainingId: string, occurredAt: s
   } | undefined
   if (!row) throw new ReportBuilderError('SOURCE_NOT_FOUND', `Training session ${trainingId} was not found`)
   const stepRows = db.prepare(
-    `SELECT training_step_record_id, status, attempt_count, occurred_at
+    `SELECT training_step_record_id, status, attempt_count, created_at
        FROM training_step_record
       WHERE training_session_id = ?
-      ORDER BY occurred_at ASC, step_order ASC, training_step_record_id ASC`
-  ).all(trainingId) as Array<{ training_step_record_id: string; status: string; attempt_count: number; occurred_at: string }>
+      ORDER BY created_at ASC, step_order ASC, training_step_record_id ASC`
+  ).all(trainingId) as Array<{ training_step_record_id: string; status: string; attempt_count: number; created_at: string }>
   const base = {
     aggregate_type: 'TRAINING_SESSION' as const,
     aggregate_id: trainingId,
@@ -837,12 +840,12 @@ function safetyTrainingMetadata(db: DBAdapter, trainingId: string, occurredAt: s
     completed_at: row.completed_at,
     step_status_summary: countBy(stepRows.map((step) => step.status)),
     pre_redline_steps: stepRows
-      .filter((step) => step.occurred_at < occurredAt)
+      .filter((step) => step.created_at < occurredAt)
       .map((step) => ({
         step_record_id: step.training_step_record_id,
         status: step.status,
         attempt_count: step.attempt_count,
-        occurred_at: step.occurred_at
+        occurred_at: step.created_at
       }))
   }
   if (row.strategy_id && row.strategy_version) {

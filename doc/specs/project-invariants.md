@@ -64,7 +64,9 @@ action_log.jsonl append → domain_event_projection persist → reducer/projecto
 
 状态：VERIFIED
 
-检测到满足红线条件的事实时，必须先阻断同一学生、同一任务范围内受影响的开放测评/训练会话，再进入原因补充、确认、作废、解除或事实更正流程。
+版本语义：v0.1.16 及以前的历史语义为同一 `student_id + task_code`；自 v0.1.17-multi-device-m4-safety-rekey 起，当前 `VERIFIED` 语义为同一 `student_id + job_code + task_code`。历史文档中的二元表述仅描述当时基线，不覆盖当前 Schema。
+
+检测到满足红线条件的事实时，必须先阻断同一学生、同一岗位、同一任务范围内受影响的开放测评/训练会话，再进入原因补充、确认、作废、解除或事实更正流程。
 
 证据：
 
@@ -77,19 +79,26 @@ action_log.jsonl append → domain_event_projection persist → reducer/projecto
 
 状态：VERIFIED
 
-`REDLINE_HALTED` 必须由安全事件触发链产生，并关联同一 `student_id + task_code` 的有效安全事件。不得直接 INSERT 为 `REDLINE_HALTED` 会话。
+版本语义：v0.1.16 及以前的历史语义为同一 `student_id + task_code`；自 v0.1.17-multi-device-m4-safety-rekey 起，当前 `VERIFIED` 语义为同一 `student_id + job_code + task_code`。历史文档中的二元表述仅描述当时基线，不覆盖当前 Schema。
+
+`REDLINE_HALTED` 必须由安全事件触发链产生，并关联同一 `student_id + job_code + task_code` 的有效安全事件。不得直接 INSERT 为 `REDLINE_HALTED` 会话。
 
 证据：
 
 - `src/main/db/schema.sql` 中 `trg_assessment_session_no_insert_redline_status`
 - `src/main/db/schema.sql` 中 `trg_training_session_no_insert_redline_status`
-- `src/main/db/schema.sql` 中 redline incident same student-task guards
+- `src/main/db/schema.sql` 中 `trg_assessment_session_redline_incident_same_student_job_task_insert`
+- `src/main/db/schema.sql` 中 `trg_assessment_session_redline_incident_same_student_job_task_update`
+- `src/main/db/schema.sql` 中 `trg_training_session_redline_incident_same_student_job_task_insert`
+- `src/main/db/schema.sql` 中 `trg_training_session_redline_incident_same_student_job_task_update`
 
 ### INV-SAFE-003 未解决安全事件阻断新会话
 
 状态：VERIFIED
 
-同一学生、同一任务范围内仍存在 `PENDING_DETAIL` 或 `CONFIRMED` 且 `requires_review_before_next_session = 1` 的安全事件时，不得创建受规则约束的新测评或训练会话。
+版本语义：v0.1.16 及以前的历史语义为同一 `student_id + task_code`；自 v0.1.17-multi-device-m4-safety-rekey 起，当前 `VERIFIED` 语义为同一 `student_id + job_code + task_code`。历史文档中的二元表述仅描述当时基线，不覆盖当前 Schema。
+
+同一学生、同一岗位、同一任务范围内仍存在 `PENDING_DETAIL` 或 `CONFIRMED` 且 `requires_review_before_next_session = 1` 的安全事件时，不得创建受规则约束的新测评或训练会话。
 
 证据：
 

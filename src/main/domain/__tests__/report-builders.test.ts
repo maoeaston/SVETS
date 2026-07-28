@@ -283,4 +283,39 @@ describe('report builders', () => {
       db.close()
     }
   })
+
+  it('builds SAFETY report for bound training steps from their durable creation timestamps', async () => {
+    const db = await createTestDb()
+    try {
+      const teacherId = seedCaller(db, 'TEACHER')
+      const studentId = seedStudent(db)
+      const trainingId = seedTraining(db, teacherId, studentId)
+      const stepId = uuidv4()
+      db.prepare(
+        `INSERT INTO training_step_record
+           (training_step_record_id, training_session_id, step_code, step_name, step_order, step_type,
+            status, attempt_count, generated_event_id, created_at, updated_at)
+         VALUES (?, ?, 'WATCH', '观看示范', 1, 'WATCH', 'COMPLETED', 1, ?, ?, ?)`
+      ).run(stepId, trainingId, eventId(db, trainingId, BEFORE), BEFORE, BEFORE)
+
+      const incidentId = seedConfirmedIncident(db, teacherId, studentId)
+      db.prepare(
+        `INSERT INTO safety_incident_binding
+           (binding_id, incident_id, aggregate_type, aggregate_id, pre_status, post_status, halt_event_id)
+         VALUES (?, ?, 'TRAINING_SESSION', ?, 'ACTIVE', 'REDLINE_HALTED', ?)`
+      ).run(uuidv4(), incidentId, trainingId, eventId(db, incidentId))
+
+      const built = buildSafetyReport(db, incidentId, ISO)
+
+      expect(parseReportContent(built.content).valid).toBe(true)
+      expect(built.content.source_scope).toBe('TRAINING')
+      expect(built.content.pre_redline_records.training_step_summary).toEqual({ COMPLETED: 1 })
+      expect(built.content.source_meta.binding_metadata[0]).toMatchObject({
+        aggregate_type: 'TRAINING_SESSION',
+        pre_redline_steps: [{ step_record_id: stepId, status: 'COMPLETED', occurred_at: BEFORE }]
+      })
+    } finally {
+      db.close()
+    }
+  })
 })

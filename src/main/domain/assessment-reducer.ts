@@ -812,11 +812,11 @@ function applySessionAborted(db: DBAdapter, event: ActionLogEntry): void {
 }
 
 // REDLINE_TRIGGERED → status=REDLINE_HALTED + level_result=LEVEL_FAIL_BY_SAFETY + redline_incident_id
-// 正常流程下 safety_incident INSERT 的 schema trigger 已批量熔断 session（reducer 仅记事件指针）；
+// 正常流程下 safety_incident INSERT 的 schema trigger 已按同 student+job+task 批量熔断 session（reducer 仅记事件指针）；
 // 冷启动重放下 trigger 未跑，reducer 兜底完整熔断。两种路径都写 redline_incident_id。
 // 幂等：last_status_event_id == event_id 则 skip。
-// FK 约束：redline_incident_id 要求 safety_incident 存在且同 student+task
-// （trg_assessment_session_redline_incident_same_student_task_update 校验）。
+// FK 约束：redline_incident_id 要求 safety_incident 存在且同 student+job+task
+// （trg_assessment_session_redline_incident_same_student_job_task_update 校验）。
 function applyRedlineTriggered(db: DBAdapter, event: ActionLogEntry): void {
   const p = event.payload as unknown as RedlineTriggeredPayload
   const row = db

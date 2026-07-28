@@ -16,9 +16,17 @@ import {
   isFreshDatabase
 } from './migrations'
 import { createVerifiedMigrationBackup } from './migration-backup'
-import { DatabaseStartupUpgradeError, orchestrateDatabaseStartupUpgrade } from './migration-startup'
+import { orchestrateDatabaseStartupUpgrade } from './migration-startup'
+import { normalizeStartupUpgradeError } from '../startup-error'
 
 let db: Database.Database | null = null
+
+type StartupUpgradeDatabase = Pick<Database.Database, 'pragma' | 'exec'>
+
+export type ConnectionStartupUpgradeDependencies = {
+  preReconcileF7?: () => void
+  createVerifiedBackup?: (stage: 'F7' | 'M4', migrationId: string) => void
+}
 
 export function getDatabase(): Database.Database {
   if (!db) {
@@ -50,44 +58,12 @@ export function initDatabase(): void {
       )
     }
 
-    let migrated: string[]
-    try {
-      migrated = orchestrateDatabaseStartupUpgrade(adapter, {
-        preReconcileF7: () => preReconcileLegacyActionLog(adapter, {
-          logPath: actionLogPath,
-          archiveDir: join(dirname(actionLogPath), 'recovery-archive')
-        }),
-        createVerifiedBackup: (stage, migrationId) => {
-          const backup = createVerifiedMigrationBackup({
-            source: {
-              checkpointFull: () => database.pragma('wal_checkpoint(FULL)'),
-              vacuumInto: (path) => database.exec(`VACUUM INTO '${path.replace(/'/g, "''")}'`),
-              verifyBackup: (path) => {
-                const backupDatabase = new Database(path, { readonly: true })
-                try {
-                  const integrity = backupDatabase.prepare('PRAGMA integrity_check').all() as Array<Record<string, string>>
-                  if (integrity.map((row) => Object.values(row)[0]).join(',') !== 'ok') {
-                    throw new Error('backup database integrity_check failed')
-                  }
-                } finally {
-                  backupDatabase.close()
-                }
-              }
-            },
-            dataDir,
-            actionLogPath,
-            stage,
-            migrationId
-          })
-          console.log(`[DB] Paired ${stage} backup before ${migrationId}: ${backup.backupDir}`)
-        }
-      })
-    } catch (error) {
-      if (error instanceof DatabaseStartupUpgradeError) {
-        throw new StartupRecoveryRequiredError(error.code, error.message)
-      }
-      throw error
-    }
+    const migrated = runConnectionStartupUpgrade({
+      database,
+      adapter,
+      dataDir,
+      actionLogPath
+    })
 
     database.transaction(() => database.exec(schema))()
     assertCurrentDatabaseSchema(adapter)
@@ -105,6 +81,55 @@ export function initDatabase(): void {
     database.close()
     db = null
     throw error
+  }
+}
+
+/**
+ * Connection-layer bridge for non-fresh databases. Keeping the M4 wiring here
+ * lets its stage, backup, and error boundary be regression-tested without a
+ * native Electron SQLite runtime.
+ */
+export function runConnectionStartupUpgrade(options: {
+  database: StartupUpgradeDatabase
+  adapter: DBAdapter
+  dataDir: string
+  actionLogPath: string
+  dependencies?: ConnectionStartupUpgradeDependencies
+}): string[] {
+  const { database, adapter, dataDir, actionLogPath, dependencies = {} } = options
+  try {
+    return orchestrateDatabaseStartupUpgrade(adapter, {
+      preReconcileF7: dependencies.preReconcileF7 ?? (() => preReconcileLegacyActionLog(adapter, {
+        logPath: actionLogPath,
+        archiveDir: join(dirname(actionLogPath), 'recovery-archive')
+      })),
+      createVerifiedBackup: dependencies.createVerifiedBackup ?? ((stage, migrationId) => {
+        const backup = createVerifiedMigrationBackup({
+          source: {
+            checkpointFull: () => database.pragma('wal_checkpoint(FULL)'),
+            vacuumInto: (path) => database.exec(`VACUUM INTO '${path.replace(/'/g, "''")}'`),
+            verifyBackup: (path) => {
+              const backupDatabase = new Database(path, { readonly: true })
+              try {
+                const integrity = backupDatabase.prepare('PRAGMA integrity_check').all() as Array<Record<string, string>>
+                if (integrity.map((row) => Object.values(row)[0]).join(',') !== 'ok') {
+                  throw new Error('backup database integrity_check failed')
+                }
+              } finally {
+                backupDatabase.close()
+              }
+            }
+          },
+          dataDir,
+          actionLogPath,
+          stage,
+          migrationId
+        })
+        console.log(`[DB] Paired ${stage} backup before ${migrationId}: ${backup.backupDir}`)
+      })
+    })
+  } catch (error) {
+    throw normalizeStartupUpgradeError(error)
   }
 }
 

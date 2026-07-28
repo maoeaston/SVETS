@@ -1015,6 +1015,15 @@ paired-backup manifest/hash/isolated restore
 
 ## 8. 实施与验收证据记录规则
 
+### 8.1 M4-6 实际记录（2026-07-28）
+
+- 当前基线为 `v0.1.17-multi-device-m4-safety-rekey`，`/vibe-accept step M4-6 / Step 2A` 已为 `PASS`，状态为 `ACCEPTED_STEP_2A`。
+- P0 的不变量版本语义和 P2 的文档索引陈述已修正；M4 运行中另发现并修复安全报告训练步骤时间列、以及管理员事实更正的教师确认人约束。
+- `contract:m4:safety-sql:check`（49 hits）、`db:m4:verify`（7 文件、36 项）、M4 定向矩阵（7 文件、56 项）、typecheck、lint（0 errors、661 warnings）、全量 test（112 文件、1081 项）和 build 均已实际通过；完整命令与证据见 `multi-device-m4-safety-rekey-validation.md`。
+- `db:m4:native:verify` 已通过 Electron 41.9.1 / ABI 145 的真实 `better-sqlite3` 执行：fresh、v0.1.16→M4、hash 守恒、查询计划、完整性、配套 backup manifest/hash、隔离 restore 与 preflight 零写入均有临时路径证据。
+- `e2e:m4:ui` 已通过 `xvfb-run`、`SVETS_E2E=1` 和唯一临时 userData：跨岗位 UI 隔离、同三元整体熔断、跨岗 duplicate 拒绝、同三元 replacement 均已观察并在 Electron 关闭后读取稳定 SQLite 快照断言。
+- 独立 R3 Review（P0/P1/P2=0）与 `/vibe-accept` 均已完成并为 `PASS`；Step 2A 已关闭，Step 2B 解除前置阻断但仍未实施。
+
 每完成一个 Step：
 
 1. 读取真实 path-scoped diff；

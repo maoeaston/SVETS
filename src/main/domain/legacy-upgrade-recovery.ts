@@ -19,7 +19,8 @@ export type StartupRecoveryRequiredCode =
 export class StartupRecoveryRequiredError extends Error {
   constructor(
     public readonly code: StartupRecoveryRequiredCode,
-    message: string
+    message: string,
+    public readonly cause?: unknown
   ) {
     super(message)
     this.name = 'StartupRecoveryRequiredError'

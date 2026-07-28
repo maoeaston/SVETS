@@ -2,7 +2,7 @@
 
 > **文档状态：** AUTHORITATIVE BASELINE — 唯一权威来源
 > **生效日期：** 2026-07-14
-> **正式 Schema 基线：** `src/main/db/schema.sql` v0.1.12-job-skill-assessment-mvp-closure（实测 20 表 / 48 触发器 / 73 索引）
+> **当前工程 Schema 基线：** `src/main/db/schema.sql` v0.1.17-multi-device-m4-safety-rekey（M4 Step 2A 为 `ACCEPTED_STEP_2A`）；本文 v0.1.12 仅保留为 v2.2 原始增量设计的历史比较基线。
 > **正式 PRD 基线：** `doc/specs/MVP_PRD_v1.0.9-authoritative.md`
 > **技术栈：** Electron 33+ / Vue 3 / TypeScript 5 / SQLite 3.45+ (WAL) / better-sqlite3
 > **范围：** 局域网多设备架构（学生触摸一体机 + 教师平板浏览器 + 未来学生自主 Web 门户）
@@ -13,7 +13,7 @@
 
 本文档是"炫灿·职途向导系统"方案 B 多设备架构的**唯一权威来源、自包含文档**。实施人员只需阅读以下三类文件即可实施：
 
-1. 当前正式 Schema：`src/main/db/schema.sql`（v0.1.12-job-skill-assessment-mvp-closure）
+1. 当前正式 Schema：`src/main/db/schema.sql`（v0.1.17-multi-device-m4-safety-rekey；M4 Step 2A 已独立验收）
 2. 当前正式 PRD：`doc/specs/MVP_PRD_v1.0.9-authoritative.md`
 3. 本文档 v2.2
 
@@ -43,7 +43,7 @@ v2.2 严格区分"当前 v0.1.12 真实实现"与"v2.2 目标合同"。以下差
 
 | 领域 | v0.1.12 真实实现 | v2.2 目标合同 |
 |------|-----------------|--------------|
-| 安全事件聚合键 | `student_id + task_code`（批量熔断、会话阻断、incident 与 replacement 归属守卫未完整使用 job_code） | `student_id + job_code + task_code`（§13 完整迁移合同替换 10 个触发器/守卫和 5 个索引） |
+| 安全事件聚合键 | v0.1.16 及以前为 `student_id + task_code`（历史比较实现） | v0.1.17 M4 已实施并完成 Step 2A `ACCEPTED_STEP_2A`：以 F7 后独立 migration 替换 10 个触发器/守卫和 5 个索引（§13）；Step 2B/2C 仍未实施。 |
 | 事件写入 | 单事件同步双写（`event-writer.ts` `writeEvent()`：appendFileSync 一行 JSONL + 同函数 INSERT `domain_event_projection`），随后调 reducer 写业务投影表，全包在 `db.transaction()` | 三段式 BATCH_PREPARED→APPLY→CONFIRM + hash chain + command_log fencing（§11、§12） |
 | JSONL 结构 | 单文件 `action_log.jsonl`，`ActionLogEntry` 无 batch/segment/hash 字段 | segment 轮转 + segment_index + hash chain（§11） |
 | 冷启动恢复 | 未实现（`initDatabase()` 只执行 schema + seed，不回读 JSONL） | startupRecovery 四阶段 + CORRUPTION_DETECTED（§11） |
@@ -687,7 +687,7 @@ COMMIT;
 
 `schema_migration, user_account, student_profile, strategy_config, asset_resource, question_bank, domain_event_projection, assessment_session, assessment_session_question, answer_record, offline_score_record, training_session, training_step_record, safety_incident, safety_incident_binding, result_record, task_report, snapshot_meta, error_code_registry, error_event_log`
 
-v0.1.12 的 48 个触发器中，**38 个原样保留、10 个替换**。§13 安全聚合键迁移除替换 4 个批量熔断/新会话阻断触发器外，还必须替换 assessment/training 的 4 个 `redline_incident_id` 同归属守卫和 safety incident 的 2 个 replacement 同归属守卫，全部加入 `job_code`；同时替换 2 个开放会话唯一索引和 3 个安全查询索引。本增量另**新增 18 个触发器**（§7.5），替换不改变对象总数，迁移后触发器总数仍为 48→66。
+v0.1.12 的 48 个触发器中，**38 个原样保留、10 个替换**是本节的历史设计比较。当前 v0.1.17 已由 F7 后的 M4 独立 migration 实施 §13 的完整安全聚合键替换：4 个批量熔断/新会话阻断触发器、assessment/training 的 4 个 `redline_incident_id` 同归属守卫、2 个 replacement 同归属守卫，及 2 个开放会话唯一索引和 3 个安全查询索引均加入 `job_code`。本增量另**新增 18 个触发器**（§7.5）；M5 Command Bus、batch 与 startupRecovery 仍未实施。
 
 ### 7.2 新增表完整 DDL（19 张）
 
@@ -1375,13 +1375,15 @@ BEGIN
 END;
 ```
 
-安全聚合键迁移对象（DROP + CREATE 10 个触发器/守卫、2 个开放会话唯一索引和 3 个查询索引）见 §13。
+安全聚合键迁移对象（DROP + CREATE 10 个触发器/守卫、2 个开放会话唯一索引和 3 个查询索引）见 §13；当前 v0.1.17 已实施该 M4 对象集合，历史 DDL 保留作迁移合同追溯。
 
 ---
 
 ## 八、完整迁移顺序和回滚
 
 ### 8.1 迁移顺序（严格按依赖 + 问题 #1 的 delivery_phase 顺序）
+
+本节 A–F 是 v2.2 原始整体迁移合同，不能被当作当前仓库已完整实现的声明。其阶段 E 的 M4 安全聚合键部分已在 v0.1.17 以 `2026-07-27_mvp_schema_v0_1_17_multi_device_m4_safety_rekey` 于 F7 后独立实施，并具备 preflight、配套备份、对象结构断言和临时库验证；其余 M5 Command Bus、batch 与 `startupRecovery` 仍未实现。
 
 ```
 ── 阶段 A：新增表（按 FK 依赖顺序）──
@@ -2042,14 +2044,14 @@ PENDING_DETAIL → VOIDED
 
 ---
 
-## 十三、安全事件聚合键迁移合同
+## 十三、安全事件聚合键迁移合同与 M4 实施事实
 
 ### 13.1 现实与目标
 
 | | 聚合/查询/熔断匹配键 |
 |---|---|
-| **v0.1.12 真实实现** | `student_id + task_code`（安全批量熔断、新会话阻断、redline incident 归属和 replacement 归属共 10 个触发器/守卫未完整使用 `job_code`；`task_code` 无全局 UNIQUE 约束） |
-| **v2.2 目标合同** | `student_id + job_code + task_code` |
+| **v0.1.12 / v0.1.16 历史实现** | `student_id + task_code`（安全批量熔断、新会话阻断、redline incident 归属和 replacement 归属共 10 个触发器/守卫未完整使用 `job_code`；`task_code` 无全局 UNIQUE 约束） |
+| **v0.1.17 M4 当前工程实现** | `student_id + job_code + task_code`；F7 后独立 migration 已替换完整 10 个触发器/守卫、2 个开放会话唯一索引和 3 个查询索引，Step 2A 已独立审查并验收。 |
 
 **必须迁移的理由：**
 1. `task_code` 无全局唯一约束（仅 `length(trim)>0`）。
@@ -2058,11 +2060,11 @@ PENDING_DETAIL → VOIDED
 4. `safety_incident` 已有 job_code 列，必须参与聚合、阻断新会话和批量熔断。
 5. 否则一个岗位的安全事件会错误熔断另一岗位下相同 task_code 的 assessment/training。
 
-这是需要正式 Schema 迁移的差异；**不得声称现有触发器已满足 job_code 聚合**。本轮只写迁移合同和触发器替换方案，不修改正式 `schema.sql`。
+这是 v0.1.16 与 v0.1.17 之间已实施的受控迁移差异；`schema.sql`、M4 migration 与 production SQL inventory 是当前实现证据。本文保留原始迁移合同与替换方案作历史追溯，不将其余 v2.2 目标误写为已实施。
 
-### 13.2 迁移合同（完整对象集合）
+### 13.2 已实施 M4 的历史迁移合同（完整对象集合）
 
-必须替换 v0.1.12 的 10 个触发器/守卫、2 个开放会话唯一索引和 3 个查询索引。早期验证只覆盖 4 个主触发器、2 个唯一索引和 1 个查询索引，遗漏了 6 个归属守卫及 assessment/training 查询索引；以下完整集合覆盖该缺口，实施时必须在当前正式 Schema 上重新验证：
+M4 已替换 v0.1.12 的 10 个触发器/守卫、2 个开放会话唯一索引和 3 个查询索引。早期验证只覆盖 4 个主触发器、2 个唯一索引和 1 个查询索引，遗漏了 6 个归属守卫及 assessment/training 查询索引；以下完整集合记录已实施对象，当前验证由 `npm run db:m4:verify` 和 `npm run contract:m4:safety-sql:check` 执行：
 
 ```sql
 -- F0. 删除基于 student_id+task_code 的 10 个旧触发器/守卫
@@ -2277,7 +2279,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_training_one_open_session_per_student_job_t
 - `sqlite_master.sql` 证明 10 个触发器/守卫和 5 个索引完整采用三元键，旧二元对象不存在；三个关键查询的 `EXPLAIN QUERY PLAN` 命中三元索引。
 - 在正式 DDL 前预检现有 redline 引用、binding 和 replacement 链的三元归属；任何不一致都失败关闭，不自动改写历史。
 
-早期 validation report 只证明了旧清单中的 4 个主触发器、2 个唯一索引和 1 个查询索引；它不是上述完整对象集合的验收证据。M4 必须基于当前正式 Schema 另行生成独立验证记录。
+早期 validation report 只证明了旧清单中的 4 个主触发器、2 个唯一索引和 1 个查询索引；它不是上述完整对象集合的验收证据。现行 `multi-device-m4-safety-rekey-validation.md` 已记录完整对象、原生 SQLite/Electron、UI、独立 Review 和 Accept 的 Step 2A PASS 证据。
 
 ### 13.4 task_code 全局唯一性说明
 

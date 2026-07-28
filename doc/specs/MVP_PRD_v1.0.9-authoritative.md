@@ -2,13 +2,13 @@
 
 产品合同版本：PRD v1.0.9-job-skill-assessment-mvp-closure
 文档形态：Consolidated Authoritative Baseline（单一权威正文）
-当前工程基线：`schema.sql v0.1.16-report-framework`
+当前工程基线：`schema.sql v0.1.17-multi-device-m4-safety-rekey`（M4 Step 2A 为 `ACCEPTED_STEP_2A`）
 MVP 功能基线：`schema.sql v0.1.12-job-skill-assessment-mvp-closure`
 产品阶段：MVP
 目标平台：本地化桌面端
 核心岗位样板：超市理货员
 MVP 核心任务：拆箱与上架
-最后更新：2026-07-26
+最后更新：2026-07-27
 
 > 本文是当前唯一活跃的 MVP 产品合同。历史差异版 v1.0.5～v1.0.9 仅用于变更追溯，不再作为新开发的组合阅读入口。
 
@@ -3345,7 +3345,7 @@ MVP 采用轻量事件溯源 + SQLite 查询投影：
 
 ### 11.2 当前 schema 基线
 
-当前基线为 `schema.sql v0.1.16-report-framework`。v0.1.12 已物化题库合同、岗位题库治理和专业岗位测评运行时；v0.1.13 在其上增量增加组织、节点、设备与认证拓扑；v0.1.14 增加 business_session 父记录、assessment delivery_phase / event_sequence_version / observation_template_id、assessment/training business_session_id 与 D2-D6/D8 约束；v0.1.15 增加 delegated_access_grant、business_session_assignment、M3 assignment IPC/事件投影、D1 与 D9-D11 约束，并收窄 assessment:startSession；v0.1.16 增加教师确认且可审计修订的 task_closure，为 task_report 增加不可变的 lineage、来源/hash、内容合同和生命周期事实，并将 TASK_CLOSURE 纳入事件与错误聚合合同。
+当前工程基线为 `schema.sql v0.1.17-multi-device-m4-safety-rekey`（M4 Step 2A 为 `ACCEPTED_STEP_2A`）。v0.1.12 已物化题库合同、岗位题库治理和专业岗位测评运行时；v0.1.13 在其上增量增加组织、节点、设备与认证拓扑；v0.1.14 增加 business_session 父记录、assessment delivery_phase / event_sequence_version / observation_template_id、assessment/training business_session_id 与 D2-D6/D8 约束；v0.1.15 增加 delegated_access_grant、business_session_assignment、M3 assignment IPC/事件投影、D1 与 D9-D11 约束，并收窄 assessment:startSession；v0.1.16 增加教师确认且可审计修订的 task_closure，为 task_report 增加不可变的 lineage、来源/hash、内容合同和生命周期事实，并将 TASK_CLOSURE 纳入事件与错误聚合合同；v0.1.17 在 F7 后以独立 migration 将安全聚合、开放会话唯一性、阻断、熔断、replacement 与结果/报告关联收口为 `student_id + job_code + task_code`，并保持既有权限、FSM、事件和报告 JSON 合同不变。
 
 核心业务表包括：
 
@@ -3411,7 +3411,7 @@ MVP 采用轻量事件溯源 + SQLite 查询投影：
 5. REDLINE_HALTED session 的 incident 必须与同一学生、同一任务匹配。
 6. 安全红线结果覆盖所有分数等级。
 
-> **后续版本覆盖说明（M4，待独立 R3 实施与验收后生效）：** 上述第 1、5 项以及由此派生的开放会话唯一性、新会话阻断、批量熔断、replacement/factual-correction、结果和报告归属，在 schema v0.1.16 及以前保留 `student_id + task_code` 的历史实现语义；M4 自 schema v0.1.17 起统一升级为 `student_id + job_code + task_code`。M4 必须通过独立 migration 一次性替换全部相关 Schema 守卫和运行查询，不允许二元/三元混用。该覆盖不改变既有角色责任、安全事件生命周期、先熔断后归因、安全结果优先级或历史事实；同一岗位现有行为保持不变，`task_code` 允许跨岗位复用。
+> **后续版本覆盖说明（M4，Step 2A 已验收）：** 上述第 1、5 项保留其在 v1.0.9 / schema v0.1.16 及以前的历史二元叙述；当前 v0.1.17 工程实现及其派生的开放会话唯一性、新会话阻断、批量熔断、replacement/factual-correction、结果和报告归属，统一采用 `student_id + job_code + task_code`。M4 已通过独立 migration 一次性替换相关 Schema 守卫和运行查询，并由 production SQL inventory 禁止二元/三元混用；该覆盖不改变既有角色责任、安全事件生命周期、先熔断后归因、安全结果优先级或历史事实。独立 Review 与 `/vibe-accept` 已为 `PASS`，M4 状态为 `ACCEPTED_STEP_2A`；Step 2B 获得开始资格但尚未实施；`task_code` 允许跨岗位复用。
 
 ### 11.7 多设备 M1 边界
 
@@ -4128,6 +4128,8 @@ MVP 不要求保存每个 pointer move。
 37. `FACTUAL_CORRECTION` 指向不同 `student_id` 或不同 `task_code` 的 incident 应失败。
 38. `FACTUAL_CORRECTION` 作废重建必须在同一事务完成，不得存在旧事件已 `VOIDED` 且新事件尚未创建的可发起新会话空窗。
 
+> **M4 v0.1.17 验收映射（Step 2A 已验收）：** 本节 1–38 保留 v1.0.9 的历史“同一学生同一任务”验收措辞。当前工程实现对其中的开放会话唯一性、未解决事件阻断、批量熔断、redline incident 归属和 replacement 归属统一增加同一 `job_code`；同学生同任务的跨岗位会话必须隔离，且跨岗位 incident 不得进入 JOB_SKILL 安全摘要。自动与原生/UI 证据记录于 `multi-device-m4-safety-rekey-validation.md`；独立 Review 与 `/vibe-accept` 均为 `PASS`，Step 2B 解除前置阻断但尚未开始。
+
 ### 17.6 策略版本锁定专项验收
 
 必须覆盖以下场景：
@@ -4545,10 +4547,10 @@ BASE_ABILITY 42+8 还必须遵循 §5.4.7 的方案 A：选定 50 题通过内�
 - 新建或更新 `assessment_session` 时，必须在 schema 层校验 `strategy_id / strategy_type / job_code / strategy_version` 与 `strategy_config` 同行匹配。
 - 新建或更新 `training_session` 时，必须在 schema 层校验 `strategy_id / strategy_type / job_code / strategy_version` 与 `strategy_config` 同行匹配。
 - `training_session.strategy_id` 业务上不得为空。
-- `REDLINE_HALTED` 的 `assessment_session.redline_incident_id` 必须指向同一 `student_id + task_code` 的 `safety_incident`。
-- `REDLINE_HALTED` 的 `training_session.redline_incident_id` 必须指向同一 `student_id + task_code` 的 `safety_incident`。
+- `REDLINE_HALTED` 的 `assessment_session.redline_incident_id` 必须指向同一 `student_id + job_code + task_code` 的 `safety_incident`。
+- `REDLINE_HALTED` 的 `training_session.redline_incident_id` 必须指向同一 `student_id + job_code + task_code` 的 `safety_incident`。
 - `training_step_record.status` 不得出现 `ACTIVE` 或 `VOID`。
-- 当前全量初始化基线为 `schema.sql v0.1.16-report-framework`；已有真实数据升级必须提供独立 migration。
+- 当前全量初始化基线为 `schema.sql v0.1.17-multi-device-m4-safety-rekey`；已有真实数据升级必须提供独立 migration。M4 Step 2A 已独立验收通过；Step 2B 可开始但未在本轮实施。
 - 基础能力 CSV 题库导入不得直接发布为正式题库，必须先入 `DRAFT`，审核后再转 `ACTIVE`。
 - 完整试卷系统不属于当前 MVP，不得在现有固定策略上临时拼接实现。
 - 基础能力代码不得硬编码或假设「17+3 / 满分 40 / 阈值 70/40」等 v1.0.4 旧默认值；所有题量、满分、阈值必须从 `strategy_config` 读取。

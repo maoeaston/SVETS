@@ -8,20 +8,62 @@ import {
   applyM4SafetyRekeyMigration,
   inspectM4SafetyRekeyStructure,
   M4SafetyRekeyMigrationError,
-  m4SafetyRekeyObjectSql,
   preflightM4SafetyRekeyHistory
 } from '../safety-rekey-migration'
+
+const V016_SAFETY_OBJECTS_FIXTURE = readFileSync(
+  resolve(process.cwd(), 'src/main/db/__tests__/fixtures/m4-v016-safety-objects.sql'),
+  'utf8'
+)
+
+const CURRENT_M4_OBJECTS: ReadonlyArray<readonly ['index' | 'trigger', string]> = [
+  ['trigger', 'trg_assessment_session_redline_incident_same_student_job_task_insert'],
+  ['trigger', 'trg_assessment_session_redline_incident_same_student_job_task_update'],
+  ['trigger', 'trg_training_session_redline_incident_same_student_job_task_insert'],
+  ['trigger', 'trg_training_session_redline_incident_same_student_job_task_update'],
+  ['trigger', 'trg_assessment_session_block_unresolved_safety_incident'],
+  ['trigger', 'trg_training_session_block_unresolved_safety_incident'],
+  ['trigger', 'trg_safety_incident_replacement_same_student_job_task_insert'],
+  ['trigger', 'trg_safety_incident_replacement_same_student_job_task_update'],
+  ['trigger', 'trg_safety_incident_bind_open_assessments'],
+  ['trigger', 'trg_safety_incident_bind_open_trainings'],
+  ['index', 'idx_assessment_session_student_job_task_status'],
+  ['index', 'ux_assessment_one_open_session_per_student_job_task_strategy'],
+  ['index', 'idx_training_session_student_job_task_status'],
+  ['index', 'ux_training_one_open_session_per_student_job_task'],
+  ['index', 'idx_safety_incident_student_job_task_status']
+]
 
 async function createV016Database(): Promise<MemoryAdapter> {
   const db = await MemoryAdapter.create()
   db.exec(readFileSync(resolve(process.cwd(), 'src/main/db/schema.sql'), 'utf8'))
-  for (const sql of m4SafetyRekeyObjectSql('CURRENT_M4')) {
-    const [, type, name] = sql.match(/CREATE (TRIGGER|(?:UNIQUE )?INDEX) ([a-z_]+)/i) ?? []
-    db.exec(`DROP ${type.includes('INDEX') ? 'INDEX' : 'TRIGGER'} ${name};`)
-  }
-  for (const sql of m4SafetyRekeyObjectSql('LEGACY_V016')) db.exec(`${sql};`)
+  for (const [type, name] of CURRENT_M4_OBJECTS) db.exec(`DROP ${type.toUpperCase()} ${name};`)
+  db.exec(V016_SAFETY_OBJECTS_FIXTURE)
   db.prepare('DELETE FROM schema_migration WHERE migration_id = ?').run(M4_SAFETY_REKEY_MIGRATION_ID)
   return db
+}
+
+function temporarilyRemoveLegacyM4Triggers(database: MemoryAdapter, names: readonly string[]): () => void {
+  const triggers = names.map((name) => {
+    const row = database.prepare("SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = ?").get(name) as
+      | { sql: string | null }
+      | undefined
+    if (!row?.sql) throw new Error(`missing frozen legacy M4 trigger fixture: ${name}`)
+    database.exec(`DROP TRIGGER ${name};`)
+    return row.sql
+  })
+  return () => {
+    for (const sql of triggers) database.exec(`${sql};`)
+  }
+}
+
+function temporarilyRemoveTrigger(database: MemoryAdapter, name: string): () => void {
+  const row = database.prepare("SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = ?").get(name) as
+    | { sql: string | null }
+    | undefined
+  if (!row?.sql) throw new Error(`missing trigger fixture: ${name}`)
+  database.exec(`DROP TRIGGER ${name};`)
+  return () => database.exec(`${row.sql};`)
 }
 
 class FailingExecAdapter implements DBAdapter {
@@ -100,6 +142,65 @@ describe('M4 safety re-key migration kernel', () => {
     `)
 
     expect(() => applyM4SafetyRekeyMigration(db)).toThrow('empty-job:incident:1')
+    expect(inspectM4SafetyRekeyStructure(db)).toBe('LEGACY_V016')
+    db.close()
+  })
+
+  it('rejects orphaned historical redline, binding, and replacement references before M4 DDL', async () => {
+    const db = await createV016Database()
+    const restoreLegacyTriggers = temporarilyRemoveLegacyM4Triggers(db, [
+      'trg_assessment_session_redline_incident_same_student_task_insert',
+      'trg_safety_incident_replacement_same_student_task_update'
+    ])
+    // Historical corruption may predate the direct-insert guard; restore every guard
+    // before invoking M4 so the fixture keeps the frozen legacy structure.
+    const restoreDirectRedlineGuard = temporarilyRemoveTrigger(db, 'trg_assessment_session_no_insert_redline_status')
+    db.exec(`
+      PRAGMA foreign_keys = OFF;
+      INSERT INTO user_account (user_id, username, password_hash, role, display_name, status)
+      VALUES ('admin-m4-orphan', 'admin-m4-orphan', 'hash', 'ADMIN', '管理员', 'ACTIVE');
+      INSERT INTO student_profile (student_id, student_name, status)
+      VALUES ('student-m4-orphan', '学生', 'ACTIVE');
+      INSERT INTO business_session
+        (business_session_id, session_type, student_id, job_code, task_code, created_by)
+      VALUES
+        ('business-m4-orphan', 'ASSESSMENT', 'student-m4-orphan', 'SUPERMARKET_SHELVER',
+         'UNBOX_AND_SHELF', 'admin-m4-orphan');
+      INSERT INTO domain_event_projection
+        (event_id, aggregate_type, aggregate_id, event_type, event_sequence, payload_json, checksum, source_log_path)
+      VALUES
+        ('event-m4-orphan-incident', 'SAFETY_INCIDENT', 'incident-m4-orphan', 'SAFETY_INCIDENT_CREATED', 1, '{}', 'checksum', 'test-log'),
+        ('event-m4-orphan-halt', 'ASSESSMENT_SESSION', 'session-m4-orphan', 'SESSION_HALTED', 1, '{}', 'checksum', 'test-log');
+      INSERT INTO assessment_session
+        (session_id, business_session_id, student_id, strategy_id, strategy_type, job_code, task_code, strategy_version,
+         status, delivery_phase, online_question_count, offline_question_count, level_result, redline_incident_id, created_by)
+      VALUES
+        ('session-m4-orphan', 'business-m4-orphan', 'student-m4-orphan', 'strategy_baseline_shelver_v1', 'BASELINE_ASSESSMENT',
+         'SUPERMARKET_SHELVER', 'UNBOX_AND_SHELF', 1, 'REDLINE_HALTED', 'PREPARED', 0, 0,
+         'LEVEL_FAIL_BY_SAFETY', 'missing-redline-incident', 'admin-m4-orphan');
+      INSERT INTO safety_incident
+        (incident_id, student_id, job_code, task_code, trigger_event_id, reason_code, triggered_by, context_phase, status)
+      VALUES
+        ('incident-m4-orphan', 'student-m4-orphan', 'SUPERMARKET_SHELVER', 'UNBOX_AND_SHELF',
+         'event-m4-orphan-incident', 'BLADE_TOWARD_SELF', 'admin-m4-orphan', 'OTHER',
+         'PENDING_DETAIL');
+      UPDATE safety_incident
+      SET status = 'VOIDED', void_reason = 'DUPLICATE_RECORD', replacement_incident_id = 'missing-replacement-incident',
+          resolved_by = 'admin-m4-orphan', resolved_at = '2026-07-27T00:00:00.000Z'
+      WHERE incident_id = 'incident-m4-orphan';
+      INSERT INTO safety_incident_binding
+        (binding_id, incident_id, aggregate_type, aggregate_id, pre_status, post_status, halt_event_id)
+      VALUES
+        ('binding-m4-orphan', 'missing-binding-incident', 'ASSESSMENT_SESSION', 'session-m4-orphan',
+         'ACTIVE', 'REDLINE_HALTED', 'event-m4-orphan-halt');
+      PRAGMA foreign_keys = ON;
+    `)
+    restoreLegacyTriggers()
+    restoreDirectRedlineGuard()
+
+    expect(() => applyM4SafetyRekeyMigration(db)).toThrow(
+      'redline-incident-orphan:1, binding-incident-orphan:1, replacement-incident-orphan:1'
+    )
     expect(inspectM4SafetyRekeyStructure(db)).toBe('LEGACY_V016')
     db.close()
   })

@@ -43,7 +43,10 @@ let adminId: string
 let studentId: string
 let incidentId: string
 
-function seedIncident(status: 'PENDING_DETAIL' | 'CONFIRMED' = 'PENDING_DETAIL'): void {
+function seedIncident(
+  status: 'PENDING_DETAIL' | 'CONFIRMED' = 'PENDING_DETAIL',
+  jobCode = 'SUPERMARKET_SHELVER'
+): void {
   const triggerEventId = uuidv4()
   db.prepare(
     `INSERT INTO domain_event_projection
@@ -54,9 +57,9 @@ function seedIncident(status: 'PENDING_DETAIL' | 'CONFIRMED' = 'PENDING_DETAIL')
     `INSERT INTO safety_incident
        (incident_id, student_id, job_code, task_code, trigger_event_id, reason_code, triggered_by,
         context_phase, status, confirmed_by)
-     VALUES (?, ?, 'SUPERMARKET_SHELVER', 'SHELVE_TASK', ?, 'BLADE_TOWARD_SELF', ?,
+     VALUES (?, ?, ?, 'SHELVE_TASK', ?, 'BLADE_TOWARD_SELF', ?,
              'ONLINE_ASSESSMENT', 'PENDING_DETAIL', NULL)`
-  ).run(incidentId, studentId, triggerEventId, teacherId)
+  ).run(incidentId, studentId, jobCode, triggerEventId, teacherId)
   if (status === 'CONFIRMED') {
     db.prepare(
       `UPDATE safety_incident SET status = 'CONFIRMED', confirmed_by = ? WHERE incident_id = ?`
@@ -135,6 +138,27 @@ describe('F4 safety incident lifecycle', () => {
       void_reason: 'DUPLICATE_RECORD',
       replacement_incident_id: incidentId
     })
+  })
+
+  it('重复记录不得跨岗位关联 replacement，且不写入事件或 incident', () => {
+    seedIncident()
+    const duplicateId = incidentId
+    incidentId = uuidv4()
+    seedIncident('CONFIRMED', 'WAREHOUSE_PICKER')
+    const replacementId = incidentId
+    const eventsBefore = db.prepare('SELECT COUNT(*) AS count FROM domain_event_projection').get() as { count: number }
+
+    expect(voidSafetyIncident(db, {
+      callerUserId: adminId,
+      callerRole: 'ADMIN',
+      incidentId: duplicateId,
+      voidReason: 'DUPLICATE_RECORD',
+      replacementIncidentId: replacementId
+    })).toEqual({ success: false, errorCode: 'VALIDATION_ERROR' })
+
+    expect(db.prepare('SELECT status, replacement_incident_id FROM safety_incident WHERE incident_id = ?').get(duplicateId))
+      .toEqual({ status: 'PENDING_DETAIL', replacement_incident_id: null })
+    expect(db.prepare('SELECT COUNT(*) AS count FROM domain_event_projection').get()).toEqual(eventsBefore)
   })
 })
 

@@ -2,11 +2,11 @@
 
 ## 1. 文档状态
 
-- 状态：REVIEWED（独立 R3 第二轮 `PASS`；尚未运行 `/vibe-impl` 或实施）。
+- 状态：ACCEPTED_STEP_2A（独立 R3 `/vibe-review code` 与 `/vibe-accept` 均为 `PASS`；M4-1 至 M4-6 已完成验收）。
 - 审查快照：`a9e5e15489e01b577577b3f63ed48c94799c85c1ec1c696d98e9d4923eb979f0`；P0/P1/P2 均为 0。
 - 风险等级：R3。原因是本功能同时修改 Schema、增量 migration、安全红线聚合键、并发唯一性、历史兼容和结果/报告归属。
 - 在 Q1 中的位置：Step 2A。必须先于 Step 2B Command Bus Boundary 和 Step 2C Event Batch + `startupRecovery` 完成并验收；Step 2A–2C 任一未通过，Q1 Step 3–10 均不得开始。
-- 当前工程基线：`schema v0.1.16-report-framework`；目标版本：`schema v0.1.17-multi-device-m4-safety-rekey`。
+- 当前工程基线：`schema v0.1.17-multi-device-m4-safety-rekey`（ACCEPTED_STEP_2A）；实施前历史基线：`schema v0.1.16-report-framework`。
 - 权威依据：
   - `doc/specs/baseline.yaml`；
   - `doc/specs/MVP_PRD_v1.0.9-authoritative.md` §11.6 及其后续版本覆盖说明；
@@ -16,7 +16,7 @@
 
 ## 2. 问题与目标
 
-### 当前行为
+### 实施前历史行为
 
 当前 `safety_incident`、`assessment_session` 和 `training_session` 都已有 `job_code`，但正式 Schema 和部分运行查询仍按：
 

@@ -11,7 +11,7 @@
 | 阶段 | 状态 |
 |---|---|
 | PRD v1.0.9 consolidated authoritative baseline | ✅ 当前唯一产品合同 |
-| Schema v0.1.16-report-framework | ✅ 当前工程基线（MVP 功能合同由 v1.0.9 承载） |
+| Schema v0.1.17-multi-device-m4-safety-rekey | ✅ M4 Step 2A 已独立审查并验收；MVP 功能合同由 v1.0.9 承载 |
 | JSON 字段规范 | ✅ 已完成 |
 | 事件载荷规范 | ✅ 已完成 |
 | Electron 脚手架 | ✅ 已就绪（typecheck + build 通过）|
@@ -156,7 +156,7 @@ SVETS/
 
 ### 安全红线
 
-安全事件（`safety_incident`）是学生+任务级独立聚合，触发后批量熔断同一学生同一任务下所有开放会话，直到管理员完成处理。
+安全事件（`safety_incident`）是学生+岗位+任务级独立聚合，触发后批量熔断同一学生、同一岗位、同一任务下所有开放会话，直到管理员完成处理。M4 Step 2A 已完成独立审查与验收。
 
 ### 四类结果（独立计算，不合并）
 

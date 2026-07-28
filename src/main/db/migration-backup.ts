@@ -32,9 +32,11 @@ export function createVerifiedMigrationBackup(options: {
   const incompleteDir = `${backupDir}.INCOMPLETE`
   const databasePath = join(backupDir, 'xc-career-guide.db')
   const backupActionLogPath = join(backupDir, 'action_log.jsonl')
+  let backupDirCreated = false
   try {
     mkdirSync(join(options.dataDir, 'backups'), { recursive: true })
     mkdirSync(backupDir, { recursive: false })
+    backupDirCreated = true
     options.source.checkpointFull()
     options.source.vacuumInto(databasePath)
     options.source.verifyBackup(databasePath)
@@ -59,7 +61,7 @@ export function createVerifiedMigrationBackup(options: {
     }, null, 2)}\n`, 'utf8')
     return { backupDir, manifestPath }
   } catch (error) {
-    if (existsSync(backupDir)) renameSync(backupDir, incompleteDir)
+    if (backupDirCreated && existsSync(backupDir)) renameSync(backupDir, incompleteDir)
     throw error
   }
 }

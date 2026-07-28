@@ -2,6 +2,7 @@ import { spawnSync } from 'node:child_process'
 
 const files = [
   'src/main/db/__tests__/migration-startup.test.ts',
+  'src/main/db/__tests__/connection-m4-safety-rekey.test.ts',
   'src/main/db/__tests__/migration-backup.test.ts',
   'src/main/db/__tests__/schema-m4-safety-rekey.test.ts',
   'src/main/db/__tests__/safety-rekey-migration.test.ts',

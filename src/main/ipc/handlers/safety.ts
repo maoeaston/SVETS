@@ -370,7 +370,12 @@ export function voidSafetyIncident(
       return { success: false, errorCode: 'VALIDATION_ERROR' }
     }
     const replacement = readIncident(db, params.replacementIncidentId)
-    if (!replacement || replacement.student_id !== incident.student_id || replacement.task_code !== incident.task_code) {
+    if (
+      !replacement
+      || replacement.student_id !== incident.student_id
+      || replacement.job_code !== incident.job_code
+      || replacement.task_code !== incident.task_code
+    ) {
       return { success: false, errorCode: 'VALIDATION_ERROR' }
     }
     replacementIncidentId = replacement.incident_id
@@ -429,6 +434,8 @@ export function replaceSafetyIncidentForFactualCorrection(
   const incident = readIncident(db, params.incidentId)
   if (!incident) return { success: false, errorCode: 'NOT_FOUND' }
   if (incident.status !== 'CONFIRMED') return { success: false, errorCode: 'INVALID_STATE' }
+  const confirmedBy = incident.confirmed_by
+  if (!confirmedBy) return { success: false, errorCode: 'SAFETY_SYSTEM_ERROR' }
   if (!reasonCodes.has(params.reasonCode) || !contextPhases.has(params.contextPhase) || !isNonEmptyString(params.description) || !isNonEmptyString(params.correctionReason)) {
     return { success: false, errorCode: 'VALIDATION_ERROR' }
   }
@@ -447,7 +454,9 @@ export function replaceSafetyIncidentForFactualCorrection(
       full_description: params.description.trim(),
       occurred_at: occurredAt,
       triggered_by: adminId,
-      confirmed_by: adminId,
+      // Factual correction is performed by an ADMIN, but a CONFIRMED incident
+      // must retain the TEACHER who originally confirmed the safety facts.
+      confirmed_by: confirmedBy,
       confirmed_at: occurredAt,
       old_status: 'CONFIRMED',
       old_status_after: 'VOIDED',

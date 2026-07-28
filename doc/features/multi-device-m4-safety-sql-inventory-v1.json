@@ -454,18 +454,33 @@
       "status": "BASELINE_CLASSIFIED"
     },
     {
-      "id": "M4-SQL-033",
-      "file": "src/main/ipc/handlers/job-skill-result.ts",
-      "symbol": "finalizeJobSkillResultCore",
-      "sql_fingerprint": "e6d30d8137d10d572610e5bec0b244da808e07b71128dde4c4ae898e18bf696f",
-      "classification": "AGGREGATE_MATCH_REKEY",
-      "current_predicate": "student_id + task_code (current binary safety scope)",
-      "target_predicate": "student_id + job_code + task_code (M4 required)",
-      "allowed_reason": "M4-1 baseline captures the required re-key before M4-4/M4-5 implementation.",
+      "id": "M4-SQL-049",
+      "file": "src/main/ipc/handlers/foundation.ts",
+      "symbol": "getWorkspaceOverview",
+      "sql_fingerprint": "1deecd1836f510372dce1440a12c28347a008472e5d5f70163b73cc841f323b2",
+      "classification": "NON_SAFETY_QUERY",
+      "current_predicate": "global pending-safety status count; no aggregate ownership match",
+      "target_predicate": "unchanged; no aggregate re-key required",
+      "allowed_reason": "Workspace overview counts all pending or confirmed incidents for display only; it does not block, halt, bind, assign ownership, or correlate results.",
       "test_evidence": [
         "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
       ],
-      "status": "PENDING_REKEY"
+      "status": "BASELINE_CLASSIFIED"
+    },
+    {
+      "id": "M4-SQL-033",
+      "file": "src/main/ipc/handlers/job-skill-result.ts",
+      "symbol": "finalizeJobSkillResultCore",
+      "sql_fingerprint": "5f78189e352a4e5dcf39760549c9f28de535e68885cfc3005b8a0eaa74ed426f",
+      "classification": "AGGREGATE_MATCH_REKEY",
+      "current_predicate": "student_id + job_code + task_code (M4-5 re-keyed)",
+      "target_predicate": "student_id + job_code + task_code (M4 required)",
+      "allowed_reason": "JOB_SKILL safety summary joins the source assessment session to incidents on the complete M4 aggregate key.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/ipc/handlers/__tests__/job-skill-result.test.ts"
+      ],
+      "status": "REKEYED"
     },
     {
       "id": "M4-SQL-034",

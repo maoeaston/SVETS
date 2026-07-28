@@ -17,7 +17,30 @@ import {
   assertPreF7DatabaseSchema,
   runDatabaseMigrations
 } from '../migrations'
-import { inspectM4SafetyRekeyStructure, m4SafetyRekeyObjectSql } from '../safety-rekey-migration'
+import { inspectM4SafetyRekeyStructure } from '../safety-rekey-migration'
+
+const V016_SAFETY_OBJECTS_FIXTURE = readFileSync(
+  resolve(process.cwd(), 'src/main/db/__tests__/fixtures/m4-v016-safety-objects.sql'),
+  'utf8'
+)
+
+const CURRENT_M4_OBJECTS: ReadonlyArray<readonly ['index' | 'trigger', string]> = [
+  ['trigger', 'trg_assessment_session_redline_incident_same_student_job_task_insert'],
+  ['trigger', 'trg_assessment_session_redline_incident_same_student_job_task_update'],
+  ['trigger', 'trg_training_session_redline_incident_same_student_job_task_insert'],
+  ['trigger', 'trg_training_session_redline_incident_same_student_job_task_update'],
+  ['trigger', 'trg_assessment_session_block_unresolved_safety_incident'],
+  ['trigger', 'trg_training_session_block_unresolved_safety_incident'],
+  ['trigger', 'trg_safety_incident_replacement_same_student_job_task_insert'],
+  ['trigger', 'trg_safety_incident_replacement_same_student_job_task_update'],
+  ['trigger', 'trg_safety_incident_bind_open_assessments'],
+  ['trigger', 'trg_safety_incident_bind_open_trainings'],
+  ['index', 'idx_assessment_session_student_job_task_status'],
+  ['index', 'ux_assessment_one_open_session_per_student_job_task_strategy'],
+  ['index', 'idx_training_session_student_job_task_status'],
+  ['index', 'ux_training_one_open_session_per_student_job_task'],
+  ['index', 'idx_safety_incident_student_job_task_status']
+]
 
 function expectDatabaseIntegrity(db: MemoryAdapter): void {
   expect(db.prepare('PRAGMA foreign_key_check').all()).toEqual([])
@@ -81,11 +104,8 @@ CREATE TABLE result_record (
 `
 
 function downgradeFreshSchemaToV016(db: MemoryAdapter): void {
-  for (const sql of m4SafetyRekeyObjectSql('CURRENT_M4')) {
-    const [, type, name] = sql.match(/CREATE (TRIGGER|(?:UNIQUE )?INDEX) ([a-z_]+)/i) ?? []
-    db.exec(`DROP ${type.includes('INDEX') ? 'INDEX' : 'TRIGGER'} ${name};`)
-  }
-  for (const sql of m4SafetyRekeyObjectSql('LEGACY_V016')) db.exec(`${sql};`)
+  for (const [type, name] of CURRENT_M4_OBJECTS) db.exec(`DROP ${type.toUpperCase()} ${name};`)
+  db.exec(V016_SAFETY_OBJECTS_FIXTURE)
   db.prepare('DELETE FROM schema_migration WHERE migration_id = ?').run(M4_SAFETY_REKEY_MIGRATION_ID)
 }
 
