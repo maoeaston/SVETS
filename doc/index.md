@@ -30,7 +30,7 @@ doc/
 
 ### 2.1 当前已实现基线
 
-当前工程基线以 **AGENTS.md + `src/main/db/schema.sql`** 为准（现为 `schema.sql v0.1.16-report-framework`，MVP 功能基线 `PRD v1.0.9`）。以下文件是跨版本稳定的规范类文档：
+当前工程基线以 **AGENTS.md + `src/main/db/schema.sql`** 为准（现为 `schema.sql v0.1.17-multi-device-m4-safety-rekey`，M4 Step 2A 已 `PASS / CLOSED`；MVP 功能基线 `PRD v1.0.9`）。以下文件是跨版本稳定的规范类文档：
 
 | 文件 | 用途 | 何时读 |
 |------|------|--------|
@@ -287,6 +287,7 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | `base-ability-42plus8-pilot-readiness` | [features/base-ability-42plus8-pilot-readiness-prd.md](features/base-ability-42plus8-pilot-readiness-prd.md) | [features/base-ability-42plus8-pilot-readiness-impl.md](features/base-ability-42plus8-pilot-readiness-impl.md) |
 | `data-persistence-recovery` | [features/data-persistence-recovery-prd.md](features/data-persistence-recovery-prd.md) | [features/data-persistence-recovery-impl.md](features/data-persistence-recovery-impl.md) |
 | `drag-render` | [features/drag-render-prd.md](features/drag-render-prd.md) | [features/drag-render-impl.md](features/drag-render-impl.md) |
+| `event-batch-v2.2-runtime` | [features/event-batch-v2.2-runtime-prd.md](features/event-batch-v2.2-runtime-prd.md) | 缺失 |
 | `foundation-pages-exception-center` | [features/foundation-pages-exception-center-prd.md](features/foundation-pages-exception-center-prd.md) | [features/foundation-pages-exception-center-impl.md](features/foundation-pages-exception-center-impl.md) |
 | `login-by-role` | [features/login-by-role-prd.md](features/login-by-role-prd.md) | [features/login-by-role-impl.md](features/login-by-role-impl.md) |
 | `multi-device-m4-m5` | [features/multi-device-m4-m5-prd.md](features/multi-device-m4-m5-prd.md) | [features/multi-device-m4-m5-impl.md](features/multi-device-m4-m5-impl.md) |
@@ -335,6 +336,7 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | [features/job-skill-shelver-pilot-13-question-revision-and-renderer-fix-v1.0.md](features/job-skill-shelver-pilot-13-question-revision-and-renderer-fix-v1.0.md) | 超市理货员 Pilot 13 道退回题修订与学习端渲染修复稿 v1.0 |
 | [features/job-skill-shelver-pilot-current-question-authority.md](features/job-skill-shelver-pilot-current-question-authority.md) | 超市理货员 Pilot 当前题目门禁追溯入口 |
 | [features/local-database-sync-sop.md](features/local-database-sync-sop.md) | 本地多开发机数据库同步 SOP |
+| [features/multi-device-m4-safety-rekey-validation.md](features/multi-device-m4-safety-rekey-validation.md) | 多设备 M4 安全聚合三元键升级验收记录 |
 | [features/mvp-pilot-freeze-plan.md](features/mvp-pilot-freeze-plan.md) | MVP Pilot 冻结与收口计划 |
 | [features/pilot-r0-foundation-development-plan-2026-07-22.md](features/pilot-r0-foundation-development-plan-2026-07-22.md) | Pilot R0 基础能力开发与验收计划 |
 | [features/question-bank-image-integration-checklist.md](features/question-bank-image-integration-checklist.md) | 视觉资产合同执行清单 |
