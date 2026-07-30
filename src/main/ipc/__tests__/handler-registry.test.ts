@@ -4,7 +4,8 @@ import { readFileSync } from 'fs'
 
 const electronState = vi.hoisted(() => ({
   handlers: new Map<string, (event: unknown, rawInput?: unknown, transportMetadata?: unknown) => Promise<unknown>>(),
-  failOnChannel: null as string | null
+  failOnChannel: null as string | null,
+  showSaveDialog: vi.fn()
 }))
 
 vi.mock('electron', () => ({
@@ -19,7 +20,7 @@ vi.mock('electron', () => ({
     }
   },
   dialog: {
-    showSaveDialog: vi.fn(),
+    showSaveDialog: electronState.showSaveDialog,
     showErrorBox: vi.fn()
   }
 }))
@@ -126,9 +127,29 @@ function requireHandler(channel: string) {
   return handler
 }
 
+function seedReportForExportDialog(db: MemoryAdapter, teacherId: string): string {
+  const reportId = uuidv4()
+  const eventId = uuidv4()
+  const timestamp = '2026-07-30T00:00:00.000Z'
+  db.prepare(
+    `INSERT INTO domain_event_projection
+       (event_id, aggregate_type, aggregate_id, event_type, event_sequence,
+        payload_json, checksum, source_log_path, schema_version, created_at)
+     VALUES (?, 'TASK_REPORT', ?, 'REPORT_GENERATED', 1, '{}', 'seed', 'seed', 2, ?)`
+  ).run(eventId, reportId, timestamp)
+  db.prepare(
+    `INSERT INTO task_report
+       (report_id, report_type, report_title, report_content_json, generated_event_id,
+        generated_by, generated_at, contract_validation_status, status)
+     VALUES (?, 'FULL_REPORT', 'Dialog failure report', '{}', ?, ?, ?, 'VALID', 'GENERATED')`
+  ).run(reportId, eventId, teacherId, timestamp)
+  return reportId
+}
+
 beforeEach(() => {
   electronState.handlers.clear()
   electronState.failOnChannel = null
+  electronState.showSaveDialog.mockReset()
 })
 
 afterEach(() => {
@@ -138,6 +159,7 @@ afterEach(() => {
   for (const db of databases.splice(0)) db.close()
   electronState.handlers.clear()
   electronState.failOnChannel = null
+  electronState.showSaveDialog.mockReset()
 })
 
 describe('M5B central IPC registry', () => {
@@ -309,6 +331,69 @@ describe('M5B central IPC registry', () => {
       .toBe(1)
     expect((db.prepare("SELECT COUNT(*) AS count FROM student_profile WHERE student_name = 'Durable Student'").get() as { count: number }).count)
       .toBe(1)
+  })
+
+  it('marks a gate-only command as FAILED when its transaction throws after acceptance', async () => {
+    const { db, runtime } = await createM5bRuntime()
+    const senderId = 4106
+    const adminId = bindUser(db, runtime, senderId, 'ADMIN')
+    const originalImmediate = db.immediateTransaction.bind(db)
+    let injected = false
+    db.immediateTransaction = (<T>(callback: () => T): (() => T) => () => {
+      const processingCount = (db.prepare(
+        "SELECT COUNT(*) AS count FROM command_log WHERE status = 'PROCESSING'"
+      ).get() as { count: number }).count
+      if (!injected && processingCount === 1) {
+        injected = true
+        throw new Error('injected gate-only transaction failure')
+      }
+      return originalImmediate(callback)()
+    }) as typeof db.immediateTransaction
+
+    const result = await requireHandler('student:create')(event(senderId), {
+      callerUserId: adminId,
+      callerRole: 'ADMIN',
+      username: 'failed-gate-student',
+      password: 'durable-password',
+      studentName: 'Failed Gate Student'
+    }, mutationMetadata())
+
+    expect(injected).toBe(true)
+    expect(result).toEqual({ success: false, errorCode: 'SYSTEM_ERROR' })
+    expect(db.prepare(
+      "SELECT status, error_code, result_json FROM command_log WHERE command_type = 'student:create'"
+    ).get()).toEqual({
+      status: 'FAILED',
+      error_code: 'PRE_PONR_EXECUTION_FAILURE',
+      result_json: null
+    })
+    expect((db.prepare("SELECT COUNT(*) AS count FROM student_profile WHERE student_name = 'Failed Gate Student'").get() as { count: number }).count)
+      .toBe(0)
+  })
+
+  it('marks an accepted report export as FAILED when the save dialog throws before PREPARE', async () => {
+    const { db, runtime } = await createM5bRuntime()
+    const senderId = 4105
+    const teacherId = bindUser(db, runtime, senderId, 'TEACHER')
+    const reportId = seedReportForExportDialog(db, teacherId)
+    electronState.showSaveDialog.mockRejectedValueOnce(new Error('injected save dialog failure'))
+
+    const result = await requireHandler('reports:export')(event(senderId), {
+      callerUserId: teacherId,
+      callerRole: 'TEACHER',
+      reportId
+    }, mutationMetadata())
+
+    expect(result).toEqual({ success: false, errorCode: 'REPORT_SYSTEM_ERROR' })
+    expect(db.prepare(
+      "SELECT status, error_code, result_json FROM command_log WHERE command_type = 'reports:export'"
+    ).get()).toEqual({
+      status: 'FAILED',
+      error_code: 'PRE_PONR_EXECUTION_FAILURE',
+      result_json: null
+    })
+    expect((db.prepare('SELECT COUNT(*) AS count FROM applied_event_batch').get() as { count: number }).count)
+      .toBe(0)
   })
 
   it('returns a stable system failure when direct test transport omits preload metadata', async () => {

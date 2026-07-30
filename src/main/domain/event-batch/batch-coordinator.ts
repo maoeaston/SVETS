@@ -1,4 +1,5 @@
 import type { DBAdapter } from '../../db/interface'
+import { PRE_PONR_EXECUTION_ERROR_CODE } from '../../application/command/durable-command-coordinator'
 import type { CommandEnvelopeV2 } from '../../application/command/command-types'
 import {
   DurableCommandStore,
@@ -368,6 +369,7 @@ export class EventBatchCoordinator {
       }
       const segmentStore = { current: null as SegmentStore | null }
       let ponr = false
+      let prepareWriteAttempted = false
       try {
         const leaseNow = nowIso(this.clock)
         const command = this.commandStore.assertLease({
@@ -453,6 +455,9 @@ export class EventBatchCoordinator {
             decision,
             now: nowIso(this.clock)
           })
+          // A write or fsync error cannot prove that no complete PREPARE reached disk.
+          // Preserve PROCESSING so startup recovery can inspect durable facts.
+          prepareWriteAttempted = true
           segmentStore.current.appendPrepared(prepared, events)
           ponr = true
           // Nothing after the durability point may depend on planner-owned memory.
@@ -563,6 +568,20 @@ export class EventBatchCoordinator {
           publicResult: parseCommandResultJson(resultJson).public_result
         })
       } catch (error) {
+        if (!ponr && !prepareWriteAttempted && !(error instanceof InjectedEventBatchFault)) {
+          try {
+            this.commandStore.markRetryablePrePonrFailure({
+              commandId: options.envelope.commandId,
+              leaseOwner: options.envelope.leaseOwner,
+              generation: options.envelope.leaseGeneration,
+              errorCode: PRE_PONR_EXECUTION_ERROR_CODE,
+              now: nowIso(this.clock),
+              stage: 'PRE_PONR_NO_PREPARE'
+            })
+          } catch (failure) {
+            if (!(failure instanceof DurableCommandStoreError && failure.code === 'FENCED')) throw failure
+          }
+        }
         if (ponr && !(error instanceof InjectedEventBatchFault) && isProtocolCorruption(error)) {
           this.corruption.transition({
             code: 'EVENT_BATCH_PROTOCOL_CONFLICT',

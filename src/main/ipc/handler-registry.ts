@@ -261,22 +261,27 @@ export function registerCentralIpcHandlers(runtime: ApplicationRuntime): Central
       if (accepted.status === 'REPLAYED') return accepted.publicResult
       let reportExportInteraction
       if (channel === 'reports:export') {
-        const response = await dialog.showSaveDialog({
-          title: '导出报告',
-          defaultPath: 'task-report.html',
-          filters: [{ name: 'HTML', extensions: ['html'] }]
-        })
-        if (response.canceled || !response.filePath) {
-          return completeReportExportCancellation({
-            commandStore: runtime.commandStore,
-            envelope: accepted.envelope,
-            completedAt: new Date().toISOString()
-          }).publicResult
+        try {
+          const response = await dialog.showSaveDialog({
+            title: '导出报告',
+            defaultPath: 'task-report.html',
+            filters: [{ name: 'HTML', extensions: ['html'] }]
+          })
+          if (response.canceled || !response.filePath) {
+            return completeReportExportCancellation({
+              commandStore: runtime.commandStore,
+              envelope: accepted.envelope,
+              completedAt: new Date().toISOString()
+            }).publicResult
+          }
+          reportExportInteraction = prepareReportExportInteraction(accepted.envelope, {
+            artifactRoot: dirname(response.filePath),
+            targetPath: response.filePath
+          })
+        } catch (error) {
+          mutationExecutor.failRetryableBeforePrepare(accepted)
+          throw error
         }
-        reportExportInteraction = prepareReportExportInteraction(accepted.envelope, {
-          artifactRoot: dirname(response.filePath),
-          targetPath: response.filePath
-        })
       }
       const completed = await mutationExecutor.execute({
         accepted,

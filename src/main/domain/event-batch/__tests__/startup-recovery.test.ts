@@ -96,6 +96,47 @@ describe('M5B four-phase startup recovery', () => {
     }
   })
 
+  it('recovers a complete PREPARE after its sync reports failure without marking the command FAILED', async () => {
+    let syncCalls = 0
+    const harness = await createSyntheticHarness({
+      fileDurabilityHooks: {
+        syncFile: () => {
+          syncCalls += 1
+          if (syncCalls === 2) throw new Error('injected PREPARE sync failure')
+        },
+        syncDirectory: () => undefined
+      }
+    })
+    try {
+      const command = acceptSyntheticCommand({ harness })
+      const planner = syntheticPlanner({ command, values: ['sync-uncertain'] })
+      await expect(coordinator({ harness }).execute({
+        envelope: command.envelope,
+        readSnapshot: () => syntheticSnapshot(),
+        planner
+      })).rejects.toThrow(/file sync failed/)
+      expect(harness.store.findByCommandId(command.envelope.commandId)).toMatchObject({
+        status: 'PROCESSING',
+        resultJson: null,
+        errorCode: null
+      })
+      expect(loadVerifiedProjectionSources(harness.capability)).toHaveLength(1)
+
+      harness.clock.advance(31_000)
+      expect(await recovery(harness).run()).toMatchObject({
+        appliedBatches: 1,
+        appendedCommitted: 1,
+        confirmedBatches: 1,
+        recoveredResults: 1,
+        plannerCalls: 0
+      })
+      expect(harness.store.findByCommandId(command.envelope.commandId)).toMatchObject({ status: 'SUCCEEDED' })
+      expect(planner.calls.count).toBe(1)
+    } finally {
+      harness.close()
+    }
+  })
+
   it('resets an expired pre-PONR command only after proving no complete PREPARE exists', async () => {
     const harness = await createSyntheticHarness()
     try {

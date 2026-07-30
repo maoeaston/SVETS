@@ -24,7 +24,7 @@ import {
   type PlannerReadSnapshot
 } from '../command-plan'
 import type { CanonicalJsonValue } from '../canonical-json'
-import { DurableFileCapability } from '../file-capability'
+import { DurableFileCapability, type FileDurabilityHooks } from '../file-capability'
 import type { EventBatchFaultInjector } from '../fault-injection'
 import { PreparedFactRegistry } from '../result-registry'
 import { RuntimeCorruptionState } from '../runtime-corruption'
@@ -204,14 +204,16 @@ export async function createSyntheticDatabase(): Promise<MemoryAdapter> {
   return database
 }
 
-export async function createSyntheticHarness(): Promise<SyntheticHarness> {
+export async function createSyntheticHarness(options: {
+  fileDurabilityHooks?: FileDurabilityHooks
+} = {}): Promise<SyntheticHarness> {
   const root = mkdtempSync(join(tmpdir(), 'svets-m5b-coordinator-'))
   const database = await createSyntheticDatabase()
   const harness: SyntheticHarness = {
     root,
     database,
     store: new DurableCommandStore(database),
-    capability: new DurableFileCapability(root),
+    capability: new DurableFileCapability(root, options.fileDurabilityHooks),
     registry: createSyntheticRegistry(),
     mutex: new FairWriterMutex(),
     corruption: new RuntimeCorruptionState(),

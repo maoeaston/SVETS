@@ -28,6 +28,8 @@ import {
   type MutationCommandDefinition
 } from './command-types'
 
+export const PRE_PONR_EXECUTION_ERROR_CODE = 'PRE_PONR_EXECUTION_FAILURE'
+
 export class DurableCommandCoordinatorError extends Error {
   constructor(
     public readonly code:

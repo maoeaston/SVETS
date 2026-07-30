@@ -41,6 +41,7 @@ import {
 } from '../planners/training-planner'
 import {
   DurableCommandCoordinator,
+  PRE_PONR_EXECUTION_ERROR_CODE,
   type DurableCommandAccepted,
   type DurableCommandAcceptance
 } from '../command/durable-command-coordinator'
@@ -138,6 +139,13 @@ export class M5bDomainExecutor {
     return this.dependencies.durableCoordinator.accept<RawInput, ValidatedInput>(request)
   }
 
+  failRetryableBeforePrepare<ValidatedInput>(accepted: DurableCommandAccepted<ValidatedInput>): void {
+    this.dependencies.durableCoordinator.failRetryableBeforePrepare(
+      accepted.envelope,
+      PRE_PONR_EXECUTION_ERROR_CODE
+    )
+  }
+
   async execute<ValidatedInput>(options: {
     accepted: DurableCommandAccepted<ValidatedInput>
     senderId: number
@@ -146,10 +154,15 @@ export class M5bDomainExecutor {
     const { accepted } = options
     const { envelope } = accepted
     if ((M5B_GATE_ONLY_COMMAND_TYPES as readonly string[]).includes(envelope.commandType)) {
-      const completed = this.gates.execute(accepted, ({ envelope: gateEnvelope }) =>
-        applyGateOnlyCommand(this.dependencies.database, gateEnvelope, { senderId: options.senderId })
-      )
-      return Object.freeze({ publicResult: completed.publicResult, batch: null })
+      try {
+        const completed = this.gates.execute(accepted, ({ envelope: gateEnvelope }) =>
+          applyGateOnlyCommand(this.dependencies.database, gateEnvelope, { senderId: options.senderId })
+        )
+        return Object.freeze({ publicResult: completed.publicResult, batch: null })
+      } catch (error) {
+        this.failRetryableBeforePrepare(accepted)
+        throw error
+      }
     }
 
     const result = await this.executeBatch(envelope, options.reportExportInteraction)

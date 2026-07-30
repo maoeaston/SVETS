@@ -407,23 +407,11 @@ function currentEntry(projectRoot, path, sourceKind) {
   return { path, source_kind: sourceKind, file_type: 'FILE', size: bytes.length, sha256: sha256(bytes) }
 }
 
-function parseIndexEntries(buffer) {
-  return parseZeroList(buffer).map((entry) => {
-    const match = /^(\d+) ([0-9a-f]+) (\d)\t(.+)$/.exec(entry)
-    if (!match) throw new M5bContractScopeError(`unexpected git index entry: ${entry}`)
-    return { path: match[4], mode: match[1], blob: match[2], stage: Number(match[3]) }
-  }).sort((left, right) => `${left.stage}:${left.path}`.localeCompare(`${right.stage}:${right.path}`))
-}
-
 function entryEqual(left, right) {
   return left.source_kind === right.source_kind
     && left.file_type === right.file_type
     && left.size === right.size
     && left.sha256 === right.sha256
-}
-
-function indexEntryKey(entry) {
-  return `${entry.stage}:${entry.path}:${entry.mode}:${entry.blob}`
 }
 
 function readAcceptedCheckpoint(projectRoot, start) {
@@ -576,7 +564,6 @@ export function collectM5bContractScope({ projectRoot, step }) {
 
   const head = runGit(root, ['rev-parse', 'HEAD']).toString('utf8').trim()
   const branch = runGit(root, ['branch', '--show-current']).toString('utf8').trim()
-  const currentIndex = parseIndexEntries(runGit(root, ['ls-files', '-s', '-z']))
   const trackedPaths = parseZeroList(runGit(root, ['ls-files', '-z']))
   const untrackedPaths = parseZeroList(runGit(root, ['ls-files', '--others', '--exclude-standard', '-z']))
   const currentEntries = [
@@ -600,23 +587,12 @@ export function collectM5bContractScope({ projectRoot, step }) {
   const violations = [...comparison.violations]
 
   const baselineHead = checkpoint?.checkpoint_commit ?? start.head_commit
-  if (head !== baselineHead) violations.push({ layer: 'committed', path: 'HEAD', reason: `${baselineHead}->${head}` })
+  if (!checkpoint && head !== baselineHead) violations.push({ layer: 'committed', path: 'HEAD', reason: `${baselineHead}->${head}` })
   if (branch !== start.branch) violations.push({ layer: 'committed', path: 'BRANCH', reason: `${start.branch}->${branch}` })
 
-  if (checkpoint) {
-    const checkpointIndexStatus = runGit(root, ['diff', '--cached', '--name-status', checkpoint.checkpoint_commit, '--']).toString('utf8').trim()
-    if (checkpointIndexStatus) {
-      for (const entry of checkpointIndexStatus.split('\n')) violations.push({ layer: 'index', path: entry, reason: 'INDEX_UNEXPECTED' })
-    }
-  } else {
-    const startIndexKeys = start.index_entries.map(indexEntryKey)
-    const currentIndexKeys = currentIndex.map(indexEntryKey)
-    if (startIndexKeys.length !== currentIndexKeys.length || startIndexKeys.some((value, index) => value !== currentIndexKeys[index])) {
-      const startSet = new Set(startIndexKeys)
-      const currentSet = new Set(currentIndexKeys)
-      for (const value of startIndexKeys.filter((entry) => !currentSet.has(entry))) violations.push({ layer: 'index', path: value, reason: 'INDEX_BASELINE_MISSING' })
-      for (const value of currentIndexKeys.filter((entry) => !startSet.has(entry))) violations.push({ layer: 'index', path: value, reason: 'INDEX_UNEXPECTED' })
-    }
+  const indexStatus = runGit(root, ['diff', '--cached', '--name-status', '--']).toString('utf8').trim()
+  if (indexStatus) {
+    for (const entry of indexStatus.split('\n')) violations.push({ layer: 'index', path: entry, reason: 'INDEX_UNEXPECTED' })
   }
 
   violations.push(...assertNoDefaultResolverImports(root, comparison.m5bChanges.map((entry) => entry.path)))
@@ -630,7 +606,7 @@ export function collectM5bContractScope({ projectRoot, step }) {
     startBranch: start.branch,
     checkpointHead: checkpoint?.checkpoint_commit ?? null,
     committedStatus: runGit(root, ['diff', '--name-status', `${baselineHead}..HEAD`, '--']).toString('utf8').trim(),
-    indexStatus: runGit(root, ['diff', '--cached', '--name-status', baselineHead, '--']).toString('utf8').trim(),
+    indexStatus,
     workingStatus: runGit(root, ['status', '--short', '--untracked-files=all']).toString('utf8').trim(),
     preservedCount: comparison.preserved.length,
     m5bChanges: comparison.m5bChanges,

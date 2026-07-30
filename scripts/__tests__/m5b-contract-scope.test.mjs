@@ -144,6 +144,24 @@ describe('M5B implementation-start scope gate', () => {
     expect(() => verifyM5bContractScope({ projectRoot: root, step: 'M5B-10' })).toThrow(/BASELINE_DRIFT/)
   }))
 
+  it('allows reviewed commits after the accepted checkpoint but rejects real staged drift', () => withFixture((root) => {
+    const sourceCommit = git(root, ['rev-parse', 'HEAD']).trim()
+    write(root, 'scripts/check-m5b-event-batch.mjs', 'export const checkpoint = true\n')
+    git(root, ['add', 'scripts/check-m5b-event-batch.mjs'])
+    git(root, ['commit', '-qm', 'accepted checkpoint'])
+    const checkpointCommit = git(root, ['rev-parse', 'HEAD']).trim()
+    writeAcceptedCheckpoint(root, sourceCommit, checkpointCommit)
+
+    write(root, 'scripts/verify-m5b-native-electron.mjs', 'export const reviewed = true\n')
+    git(root, ['add', 'scripts/verify-m5b-native-electron.mjs'])
+    git(root, ['commit', '-qm', 'reviewed M5B-15 progress'])
+    expect(() => verifyM5bContractScope({ projectRoot: root, step: 'M5B-15' })).not.toThrow()
+
+    write(root, 'scripts/verify-m5b-native-electron.mjs', 'export const staged = true\n')
+    git(root, ['add', 'scripts/verify-m5b-native-electron.mjs'])
+    expect(() => verifyM5bContractScope({ projectRoot: root, step: 'M5B-15' })).toThrow(/index/)
+  }))
+
   it('allows only the exact M5B R3 review records introduced by each step', () => withFixture((root) => {
     const m5b6Review = 'doc/features/event-batch-v2.2-runtime-m5b6-r3-review.md'
     const m5b9Review = 'doc/features/event-batch-v2.2-runtime-m5b9-r3-review.md'

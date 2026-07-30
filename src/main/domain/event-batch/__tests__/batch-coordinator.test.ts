@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { PRE_PONR_EXECUTION_ERROR_CODE } from '../../../application/command/durable-command-coordinator'
 import { parseCommandResultJson } from '../../../application/command/command-result'
 import { loadVerifiedProjectionSources } from '../projection-source'
 import { readSegmentIndexFile } from '../segment-index'
@@ -88,6 +89,63 @@ describe('M5B generic event-batch coordinator', () => {
       expect(rowCount(harness.database, 'domain_event_projection')).toBe(0)
       expect(loadVerifiedProjectionSources(harness.capability)).toEqual([])
       expect(harness.capability.listRegularFiles('event-log/segments')).toEqual([])
+    } finally {
+      harness.close()
+    }
+  })
+
+  it('marks a caught planner failure as FAILED before PREPARE without writing a batch', async () => {
+    const harness = await createSyntheticHarness()
+    try {
+      const command = acceptSyntheticCommand({ harness, slot: 3 })
+      await expect(coordinator({ harness }).execute({
+        envelope: command.envelope,
+        readSnapshot: () => syntheticSnapshot(),
+        planner: {
+          plan() {
+            throw new Error('injected planner failure')
+          }
+        }
+      })).rejects.toThrow('injected planner failure')
+
+      expect(harness.store.findByCommandId(command.envelope.commandId)).toMatchObject({
+        status: 'FAILED',
+        errorCode: PRE_PONR_EXECUTION_ERROR_CODE,
+        resultJson: null,
+        leaseOwner: null
+      })
+      expect(rowCount(harness.database, 'applied_event_batch')).toBe(0)
+      expect(loadVerifiedProjectionSources(harness.capability)).toEqual([])
+    } finally {
+      harness.close()
+    }
+  })
+
+  it('leaves an uncertain PREPARE write PROCESSING for recovery when its file sync fails', async () => {
+    let syncCalls = 0
+    const harness = await createSyntheticHarness({
+      fileDurabilityHooks: {
+        syncFile: () => {
+          syncCalls += 1
+          if (syncCalls === 2) throw new Error('injected PREPARE sync failure')
+        },
+        syncDirectory: () => undefined
+      }
+    })
+    try {
+      const command = acceptSyntheticCommand({ harness, slot: 4 })
+      await expect(coordinator({ harness }).execute({
+        envelope: command.envelope,
+        readSnapshot: () => syntheticSnapshot(),
+        planner: syntheticPlanner({ command, slot: 4, values: ['sync-uncertain'] })
+      })).rejects.toThrow(/file sync failed/)
+
+      expect(harness.store.findByCommandId(command.envelope.commandId)).toMatchObject({
+        status: 'PROCESSING',
+        errorCode: null,
+        resultJson: null
+      })
+      expect(loadVerifiedProjectionSources(harness.capability)).toHaveLength(1)
     } finally {
       harness.close()
     }

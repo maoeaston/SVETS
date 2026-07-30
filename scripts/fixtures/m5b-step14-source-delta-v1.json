@@ -199,7 +199,7 @@
       "channel": "runtime:getHealth",
       "file": "src/main/ipc/handler-registry.ts",
       "symbol": "registerCentralIpcHandlers",
-      "line": 406,
+      "line": 411,
       "dynamic": false,
       "fingerprint": "451218c0ab9eb29e1640f14528e873f9f0371e8d6f979c2485695522529bd4de",
       "target_class": "RUNTIME_HEALTH_READ",
