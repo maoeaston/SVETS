@@ -50,7 +50,7 @@ vi.mock('../../../domain/event-writer', () => ({
   )
 }))
 
-import { createSession, seedAssessmentErrorCodes } from '../assessment'
+import { createSession, seedAssessmentErrorCodes } from '../../../application/services/__tests__/assessment-test-support'
 import {
   createTestDb,
   seedCaller,
@@ -314,7 +314,9 @@ describe('TC-N: JOB_SKILL_ASSESSMENT session 固定组卷', () => {
 
   // TC-N05: 支持暂停恢复（smoke test）
   it('TC-N05 JOB_SKILL session 支持情绪中断后恢复', async () => {
-    const { emotionInterrupt, emotionResume } = await import('../assessment')
+    const { emotionInterrupt, emotionResume } = await import(
+      '../../../application/services/__tests__/assessment-test-support'
+    )
     const result = createSession(db, baseParams())
     expect(result.success).toBe(true)
     if (!result.success) return
@@ -389,7 +391,9 @@ describe('TC-N: JOB_SKILL_ASSESSMENT session 固定组卷', () => {
 
   // TC-N08: 安全红线中断 JOB_SKILL session
   it('TC-N08 安全红线触发后 JOB_SKILL session 进入 REDLINE_HALTED', async () => {
-    const { triggerRedline } = await import('../assessment')
+    const { triggerRedline } = await import(
+      '../../../application/services/__tests__/assessment-test-support'
+    )
     const result = createSession(db, baseParams())
     expect(result.success).toBe(true)
     if (!result.success) return

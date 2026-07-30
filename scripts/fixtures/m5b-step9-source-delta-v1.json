@@ -1,0 +1,17 @@
+{
+  "schema_version": "m5b-step-source-delta-v1",
+  "step": "M5B-9",
+  "source_digest": "6d9e30b2adbb67e176a03e1ca23c33dbf72a743b8fe5b6bb8b4f6fa02e62f2ba",
+  "target_digest": "6d9e30b2adbb67e176a03e1ca23c33dbf72a743b8fe5b6bb8b4f6fa02e62f2ba",
+  "expected_counts": {
+    "channels": 74,
+    "direct_callsites": 262,
+    "direct_files": 38,
+    "capability_callsites": 73,
+    "delegating_roots": 13
+  },
+  "removed_source": [],
+  "added_target": [],
+  "capability_removed_source": [],
+  "capability_added_target": []
+}

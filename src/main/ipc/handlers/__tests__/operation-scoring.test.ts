@@ -63,7 +63,10 @@ vi.mock('../../../domain/event-writer', () => ({
   )
 }))
 
-import { submitOperationScores, getOperationScores } from '../operation-scoring'
+import {
+  submitOperationScores,
+  getOperationScores
+} from '../../../application/services/__tests__/scoring-test-support'
 import {
   baseStrategyInput,
   createTestDb,

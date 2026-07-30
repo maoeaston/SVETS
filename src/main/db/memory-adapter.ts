@@ -57,8 +57,16 @@ export class MemoryAdapter implements DBAdapter {
   }
 
   transaction<T>(fn: () => T): () => T {
+    return this.runTransaction('BEGIN', fn)
+  }
+
+  immediateTransaction<T>(fn: () => T): () => T {
+    return this.runTransaction('BEGIN IMMEDIATE', fn)
+  }
+
+  private runTransaction<T>(beginSql: 'BEGIN' | 'BEGIN IMMEDIATE', fn: () => T): () => T {
     return () => {
-      this.db.exec('BEGIN')
+      this.db.exec(beginSql)
       try {
         const result = fn()
         this.db.exec('COMMIT')

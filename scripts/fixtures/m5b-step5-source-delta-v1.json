@@ -1,0 +1,140 @@
+{
+  "schema_version": "m5b-step-source-delta-v1",
+  "step": "M5B-5",
+  "source_digest": "dfc966e46f28603e1fa9de15feabd3fe36b088b0e586b6fe43e47b576d899e37",
+  "target_digest": "c5f20f90046e097ce7323eb92091d6e8900bb0099acbfa1cca9fac8a090a5853",
+  "expected_counts": {
+    "channels": 74,
+    "direct_callsites": 249,
+    "direct_files": 36,
+    "capability_callsites": 73,
+    "delegating_roots": 13
+  },
+  "removed_source": [],
+  "added_target": [
+    {
+      "fingerprint": "562aeb93d9e97ec37e1b2cdc60e9400d5fc62014f0330101418718399628552e",
+      "file": "src/main/domain/event-batch/batch-coordinator.ts",
+      "symbol": "confirmAppliedBatchFenced",
+      "line": 296,
+      "kind": "DB_RUN",
+      "callee": "options.database.prepare( `UPDATE applied_event_batch SET batch_status = 'CONFIRMED', confirmed_at = ? WHERE batch_id = ? AND batch_status = 'APPLIED' AND batch_hash = ?` ).run",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_COORDINATOR_INTERNAL",
+      "planned_step": "M5B-5"
+    },
+    {
+      "fingerprint": "625e2aa3269f520d0fef13fb11c7d2bdae919cc8672ba6f905ad724b44279975",
+      "file": "src/main/domain/event-batch/mixed-domain-replay.ts",
+      "symbol": "confirmRebuiltBatch",
+      "line": 216,
+      "kind": "DB_RUN",
+      "callee": "database.prepare( `UPDATE applied_event_batch SET batch_status = 'CONFIRMED', confirmed_at = ? WHERE batch_id = ? AND batch_status = 'APPLIED' AND batch_hash = ?` ).run",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_REBUILD_INTERNAL",
+      "planned_step": "M5B-5"
+    },
+    {
+      "fingerprint": "941e65870bda48dd2ea857ae1a2f3f0246e07b2fb2a898168e3e43f0facb89e2",
+      "file": "src/main/domain/event-batch/projection-source.ts",
+      "symbol": "writeProjectionSourceInCurrentTransaction",
+      "line": 345,
+      "kind": "DB_RUN",
+      "callee": "options.database.prepare( `INSERT INTO processed_event ( event_id, batch_id, event_type, aggregate_type, aggregate_id, processed_at ) VALUES (?, ?, ?, ?, ?, ?)` ).run",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_PROJECTION_INTERNAL",
+      "planned_step": "M5B-5"
+    },
+    {
+      "fingerprint": "329a69eceb02b06e2448fa32ffa39a0573b01cbfdaf0258e16dd81f48bcafba0",
+      "file": "src/main/domain/event-batch/projection-source.ts",
+      "symbol": "writeProjectionSourceInCurrentTransaction",
+      "line": 357,
+      "kind": "DB_RUN",
+      "callee": "options.database.prepare( `INSERT INTO domain_event_projection ( event_id, aggregate_type, aggregate_id, event_type, event_sequence, payload_json, checksum, source_log_path, source_log_line_no, source_log_byte_offset, schema_version, sitting_no, created_at, applied_to_snapshot, applied_at ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)` ).run",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_PROJECTION_INTERNAL",
+      "planned_step": "M5B-5"
+    },
+    {
+      "fingerprint": "e9ec7b8950e472b436068fcaa600a1e8a4704a4f207bd68170488d26390ac858",
+      "file": "src/main/domain/event-batch/projection-source.ts",
+      "symbol": "insertAppliedBatch",
+      "line": 388,
+      "kind": "DB_RUN",
+      "callee": "options.database.prepare( `INSERT INTO applied_event_batch ( batch_id, batch_sequence, segment_id, command_id, event_count, previous_batch_hash, events_hash, batch_hash, prepared_lease_generation, worker_id, jsonl_offset_start, jsonl_offset_end, batch_status, applied_at, confirmed_at ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'APPLIED', ?, NULL)` ).run",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_PROJECTION_INTERNAL",
+      "planned_step": "M5B-5"
+    },
+    {
+      "fingerprint": "e7a2656340592d5379d8b3359ce37a50ad820f4c9f07d3f9e2ecc4a06e2cabf1",
+      "file": "src/main/domain/event-batch/projection-source.ts",
+      "symbol": "advanceCursor",
+      "line": 427,
+      "kind": "DB_RUN",
+      "callee": "database.prepare( `INSERT INTO projector_cursor ( projector_name, last_batch_id, last_batch_sequence, updated_at ) VALUES (?, ?, ?, ?)` ).run",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_PROJECTION_INTERNAL",
+      "planned_step": "M5B-5"
+    },
+    {
+      "fingerprint": "9003bc1c27d847eebc457e8ca5a94b09464306c610c31da219c2e1dcfce19d5a",
+      "file": "src/main/domain/event-batch/projection-source.ts",
+      "symbol": "advanceCursor",
+      "line": 440,
+      "kind": "DB_RUN",
+      "callee": "database.prepare( `UPDATE projector_cursor SET last_batch_id = ?, last_batch_sequence = ?, updated_at = ? WHERE projector_name = ? AND last_batch_id = ? AND last_batch_sequence = ?` ).run",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_PROJECTION_INTERNAL",
+      "planned_step": "M5B-5"
+    },
+    {
+      "fingerprint": "7f65b9887742b4c78227356cd4a28b6e45635747cc7b9cfcda1e89d4a8d27b6d",
+      "file": "src/main/domain/event-batch/startup-recovery.ts",
+      "symbol": "repairActiveTail",
+      "line": 240,
+      "kind": "FILE_TRUNCATE",
+      "callee": "options.capability.truncate",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_RECOVERY_INTERNAL",
+      "planned_step": "M5B-5"
+    },
+    {
+      "fingerprint": "0f470f337dde1ab56e656d9ad2cb45c898b2002e4a463a3a201ad47f6d4b0359",
+      "file": "src/main/domain/event-batch/startup-recovery.ts",
+      "symbol": "reconcileCursors",
+      "line": 407,
+      "kind": "DB_RUN",
+      "callee": "options.database.prepare( `INSERT INTO projector_cursor ( projector_name, last_batch_id, last_batch_sequence, updated_at ) VALUES (?, ?, ?, ?)` ).run",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_RECOVERY_INTERNAL",
+      "planned_step": "M5B-5"
+    },
+    {
+      "fingerprint": "47cbe1befe96a6ab9cfaaa3f07f5ad4bbb73974a8d40ea91cb2d326348b5a576",
+      "file": "src/main/domain/event-batch/startup-recovery.ts",
+      "symbol": "reconcileCursors",
+      "line": 423,
+      "kind": "DB_RUN",
+      "callee": "options.database.prepare( `UPDATE projector_cursor SET last_batch_id = ?, last_batch_sequence = ?, updated_at = ? WHERE projector_name = ? AND last_batch_id = ? AND last_batch_sequence = ?` ).run",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_RECOVERY_INTERNAL",
+      "planned_step": "M5B-5"
+    }
+  ],
+  "capability_removed_source": [],
+  "capability_added_target": [
+    {
+      "fingerprint": "a6373cc89f9ef9d72fa3bf3627cce721c062834fa14ceefb6cb1a9d8a5e6aed7",
+      "file": "src/main/domain/event-batch/mixed-domain-replay.ts",
+      "symbol": "MixedDomainReplay.run",
+      "line": 297,
+      "kind": "LEGACY_RECOVERY_CALL",
+      "callee": "reconcileActionLogEventGroup",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_REBUILD_LEGACY_COMPATIBILITY",
+      "planned_step": "M5B-5"
+    }
+  ]
+}

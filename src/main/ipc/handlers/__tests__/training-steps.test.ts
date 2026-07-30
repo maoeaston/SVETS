@@ -50,16 +50,19 @@ vi.mock('../../../domain/event-writer', () => ({
   )
 }))
 
-import {
+import { writeEvent } from '../../../domain/event-writer'
+import { createTrainingTestCommands } from '../../../application/services/__tests__/training-test-support'
+import { createTestDb, seedCaller, seedStudent } from '../../../db/test-helpers'
+import type { MemoryAdapter } from '../../../db/memory-adapter'
+
+const {
   createTrainingSession,
   startStep,
   completeStep,
   skipStep,
   failStep,
   retryStep
-} from '../training'
-import { createTestDb, seedCaller, seedStudent } from '../../../db/test-helpers'
-import type { MemoryAdapter } from '../../../db/memory-adapter'
+} = createTrainingTestCommands({ writeEvent })
 
 let db: MemoryAdapter
 let callerId: string

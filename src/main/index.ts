@@ -1,8 +1,16 @@
 import { app, shell, BrowserWindow, dialog, protocol } from 'electron'
-import { mkdirSync } from 'fs'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import { initDatabase, closeDatabase } from './db/connection'
+import {
+  startApplicationRuntime,
+  type ApplicationRuntime
+} from './application/runtime/application-runtime'
+import {
+  createInternalMutationCapability,
+  prepareInternalDirectory
+} from './application/runtime/internal-mutation-capability'
+import { initDatabase, closeDatabase, getDatabase } from './db/connection'
+import { SqliteAdapter } from './db/sqlite-adapter'
 import { registerAppAssetProtocol } from './protocol/app-asset'
 import { registerIpcHandlers } from './ipc'
 import { describeStartupFailure } from './startup-error'
@@ -30,8 +38,20 @@ app.setName('xc-career-guide')
 
 const e2eUserDataPath = process.env['SVETS_E2E'] === '1' ? process.env['SVETS_USER_DATA_DIR'] : undefined
 if (e2eUserDataPath) {
-  mkdirSync(e2eUserDataPath, { recursive: true })
+  prepareInternalDirectory(createInternalMutationCapability({
+    owner: 'electron-main:e2e-user-data-root',
+    phase: 'PRE_DB_INIT',
+    dataRoot: e2eUserDataPath
+  }), e2eUserDataPath)
   app.setPath('userData', e2eUserDataPath)
+}
+
+let applicationRuntime: ApplicationRuntime | null = null
+
+function closeApplicationResources(): void {
+  applicationRuntime?.dispose()
+  applicationRuntime = null
+  closeDatabase()
 }
 
 function createWindow(): void {
@@ -71,7 +91,14 @@ app.whenReady().then(() => {
   })
 
   initDatabase()
-  registerIpcHandlers()
+  const dataRoot = join(app.getPath('userData'), 'data')
+  applicationRuntime = startApplicationRuntime({
+    runtime: {
+      db: new SqliteAdapter(getDatabase()),
+      dataRoot
+    },
+    registerBoundary: registerIpcHandlers
+  })
   registerAppAssetProtocol()
   createWindow()
 
@@ -79,6 +106,7 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 }).catch((error: unknown) => {
+  closeApplicationResources()
   const failure = describeStartupFailure(error)
   console.error(failure.logMessage)
   dialog.showErrorBox(failure.title, failure.message)
@@ -86,6 +114,10 @@ app.whenReady().then(() => {
 })
 
 app.on('window-all-closed', () => {
-  closeDatabase()
-  if (process.platform !== 'darwin') app.quit()
+  if (process.platform !== 'darwin') {
+    closeApplicationResources()
+    app.quit()
+  }
 })
+
+app.on('before-quit', closeApplicationResources)

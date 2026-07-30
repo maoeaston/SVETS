@@ -5,7 +5,10 @@ import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vites
 import { v4 as uuidv4 } from 'uuid'
 
 const { mockState } = vi.hoisted(() => ({
-  mockState: { db: null as unknown as import('../../../db/interface').DBAdapter }
+  mockState: {
+    db: null as unknown as import('../../../db/interface').DBAdapter,
+    calls: [] as Array<{ eventType: string; correlationId?: string }>
+  }
 }))
 
 vi.mock('../../../domain/event-writer', () => ({
@@ -20,9 +23,11 @@ vi.mock('../../../domain/event-writer', () => ({
       const entry: import('@shared/types/event-payloads').ActionLogEntry = {
         event_id: eventId, aggregate_type: params.aggregateType, aggregate_id: params.aggregateId,
         event_type: params.eventType, event_sequence: eventSequence, payload: params.payload,
-        checksum: 'test-checksum', schema_version: 1, created_at: new Date().toISOString(),
-        actor_id: params.actorId, actor_role: params.actorRole, app_version: 'test'
+        checksum: 'test-checksum', schema_version: params.schemaVersion ?? 1, created_at: new Date().toISOString(),
+        actor_id: params.actorId, actor_role: params.actorRole, app_version: 'test',
+        ...(params.correlationId ? { correlation_id: params.correlationId } : {})
       }
+      mockState.calls.push({ eventType: params.eventType, correlationId: params.correlationId })
       mockState.db
         .prepare(
           `INSERT INTO domain_event_projection (event_id, aggregate_type, aggregate_id, event_type, event_sequence, payload_json, checksum, source_log_path, schema_version, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
@@ -35,10 +40,15 @@ vi.mock('../../../domain/event-writer', () => ({
   )
 }))
 
-import { createSession, seedAssessmentErrorCodes } from '../assessment'
-import { submitJobSkillOfflineScores } from '../job-skill-scoring'
-import { recordTeacherObservation } from '../observation'
-import { maybeGenerateJobSkillReport } from '../job-skill-report'
+import { createSession, seedAssessmentErrorCodes } from '../../../application/services/__tests__/assessment-test-support'
+import { submitJobSkillOfflineScores } from '../../../application/services/__tests__/scoring-test-support'
+import { recordTeacherObservation } from '../../../application/services/__tests__/scoring-test-support'
+import {
+  createJobSkillReportAutomation,
+  maybeGenerateJobSkillReport,
+  type JobSkillReportAutomation
+} from '../../../application/services/__tests__/scoring-test-support'
+import { createTestReportCommandCoordinator } from '../../../application/runtime/__tests__/test-helpers'
 import {
   createTestDb,
   seedCaller,
@@ -102,6 +112,7 @@ let callerId: string
 let studentId: string
 let strategyId: string
 let bankIds: { scoredIds: string[]; obsIds: string[]; onlineIds: string[]; offlineIds: string[] }
+let automation: JobSkillReportAutomation
 
 function baseParams(over: Partial<CreateSessionParams> = {}): CreateSessionParams {
   return {
@@ -124,6 +135,7 @@ beforeAll(async () => {
 afterAll(() => db.close())
 
 beforeEach(() => {
+  mockState.calls = []
   db.exec('DELETE FROM task_report')
   db.exec('DELETE FROM assessment_session_question')
   db.exec('DELETE FROM answer_record')
@@ -145,6 +157,11 @@ beforeEach(() => {
   bankIds = seedJobSkillBank(db)
   strategyId = seedStrategy(db, bankIds)
   mockState.db = db
+  automation = createJobSkillReportAutomation(db, createTestReportCommandCoordinator({
+    db,
+    actionLogPath: `/tmp/svets-job-skill-report-${uuidv4()}.jsonl`,
+    recoverPending: () => undefined
+  }))
 })
 
 // 完整流程辅助：submit 6 offline + record 2 observations → 触发 T9(结果) → T10(报告)
@@ -152,7 +169,7 @@ function completeSession(sessionId: string, offlineScore: 0 | 1 | 2 = 2) {
   submitJobSkillOfflineScores(db, {
     callerUserId: callerId, callerRole: 'TEACHER', sessionId,
     scores: bankIds.offlineIds.map((questionId) => ({ questionId, score: offlineScore }))
-  })
+  }, automation)
   for (const questionId of bankIds.obsIds) {
     recordTeacherObservation(db, {
       callerUserId: callerId, callerRole: 'TEACHER', sessionId, questionId,
@@ -162,7 +179,7 @@ function completeSession(sessionId: string, offlineScore: 0 | 1 | 2 = 2) {
         accommodations_used: [], observation_note: '测试观察说明',
         recorded_by: callerId, recorded_at: new Date().toISOString()
       }
-    })
+    }, automation)
   }
 }
 
@@ -319,8 +336,8 @@ describe('TC-P: JOB_SKILL 专业岗位报告', () => {
     completeSession(sessionId)
 
     // 再次调用，应无副作用
-    expect(() => maybeGenerateJobSkillReport(db, sessionId, callerId)).not.toThrow()
-    expect(() => maybeGenerateJobSkillReport(db, sessionId, callerId)).not.toThrow()
+    expect(() => maybeGenerateJobSkillReport(db, sessionId, callerId, automation)).not.toThrow()
+    expect(() => maybeGenerateJobSkillReport(db, sessionId, callerId, automation)).not.toThrow()
 
     const count = db
       .prepare('SELECT COUNT(*) AS n FROM task_report WHERE source_aggregate_id = ?')
@@ -331,7 +348,7 @@ describe('TC-P: JOB_SKILL 专业岗位报告', () => {
   it('守卫：非 COMPLETED session 不生成报告', () => {
     const sessionId = createOfflinePendingSession()
     // session 仍处于 OFFLINE_PENDING，未调用 completeSession
-    expect(() => maybeGenerateJobSkillReport(db, sessionId, callerId)).not.toThrow()
+    expect(() => maybeGenerateJobSkillReport(db, sessionId, callerId, automation)).not.toThrow()
 
     const count = db
       .prepare('SELECT COUNT(*) AS n FROM task_report WHERE source_aggregate_id = ?')
@@ -341,7 +358,7 @@ describe('TC-P: JOB_SKILL 专业岗位报告', () => {
 
   it('守卫：sessionId 不存在时不抛错', () => {
     expect(() =>
-      maybeGenerateJobSkillReport(db, 'non-existent-session', callerId)
+      maybeGenerateJobSkillReport(db, 'non-existent-session', callerId, automation)
     ).not.toThrow()
   })
 
@@ -354,5 +371,20 @@ describe('TC-P: JOB_SKILL 专业岗位报告', () => {
       .get() as { event_type: string; aggregate_type: string } | undefined
     expect(event).toBeDefined()
     expect(event?.aggregate_type).toBe('TASK_REPORT')
+  })
+
+  it('result、completion 与自动报告继承最后一次 accepted observation correlation', () => {
+    const sessionId = createOfflinePendingSession()
+    completeSession(sessionId)
+
+    const reportCall = mockState.calls.find((call) => call.eventType === 'REPORT_GENERATED')
+    expect(reportCall?.correlationId).toMatch(/^[0-9a-f-]{36}$/)
+    expect(mockState.calls.filter((call) => call.correlationId === reportCall?.correlationId)
+      .map((call) => call.eventType)).toEqual([
+      'TEACHER_OBSERVATION_RECORDED',
+      'RESULT_CALCULATED',
+      'SESSION_COMPLETED',
+      'REPORT_GENERATED'
+    ])
   })
 })

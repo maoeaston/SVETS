@@ -1,5 +1,5 @@
 import { createHash } from 'crypto'
-import { existsSync, renameSync, rmSync, statSync, writeFileSync } from 'fs'
+import { existsSync, linkSync, readFileSync, rmSync, unlinkSync, writeFileSync } from 'fs'
 import { basename, dirname, join } from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import type { DBAdapter } from '../db/interface'
@@ -49,6 +49,7 @@ export interface CompleteReportHtmlExportParams {
   targetPath: string
   exportedBy: string
   exportedAt: string
+  correlationId: string
 }
 
 export interface CompleteReportHtmlExportResult {
@@ -60,6 +61,38 @@ export interface CompleteReportHtmlExportResult {
   fileHash: string
   fileSizeBytes: number
 }
+
+/**
+ * File capability owned by one report-export command. The coordinator deliberately
+ * does not claim filesystem/SQLite atomicity: a final file may survive an event
+ * append or projection failure and recovery remains the authority for SQLite.
+ */
+export interface ReportExportFilePort {
+  exists(path: string): boolean
+  writeOwnedTemp(path: string, bytes: Buffer): void
+  readOwnedTemp(path: string): Buffer
+  renameOwnedTemp(tempPath: string, targetPath: string): void
+  cleanupOwnedTemp(tempPath: string): void
+}
+
+const nodeReportExportFilePort: ReportExportFilePort = Object.freeze({
+  exists: existsSync,
+  writeOwnedTemp(path, bytes) {
+    writeFileSync(path, bytes, { flag: 'wx' })
+  },
+  readOwnedTemp(path) {
+    return readFileSync(path)
+  },
+  renameOwnedTemp(tempPath, targetPath) {
+    // Same-directory hard-link publication is atomic and fails with EEXIST. Unlike
+    // POSIX rename(), it cannot replace a target created after the earlier check.
+    linkSync(tempPath, targetPath)
+    unlinkSync(tempPath)
+  },
+  cleanupOwnedTemp(path) {
+    if (existsSync(path)) rmSync(path, { force: true })
+  }
+})
 
 export class ReportExportError extends Error {
   constructor(
@@ -112,23 +145,32 @@ export function prepareReportHtmlExport(
 export async function completeReportHtmlExport(
   db: DBAdapter,
   coordinator: ReportCommandCoordinator,
-  params: CompleteReportHtmlExportParams
+  params: CompleteReportHtmlExportParams,
+  filePort: ReportExportFilePort = nodeReportExportFilePort
 ): Promise<CompleteReportHtmlExportResult> {
   if (!isNonEmptyString(params.targetPath)) {
     throw new ReportExportError('VALIDATION_ERROR', 'targetPath is required')
   }
+  if (!isNonEmptyString(params.correlationId)) {
+    throw new ReportExportError('VALIDATION_ERROR', 'correlationId is required')
+  }
 
+  const ownerToken = uuidv4()
   const tempPath = join(
     dirname(params.targetPath),
-    `.${basename(params.targetPath)}.${uuidv4()}.tmp`
+    `.${basename(params.targetPath)}.${ownerToken}.tmp`
   )
+  assertOwnedTempPath(tempPath, params.targetPath, ownerToken)
   let renamedToFinal = false
 
   try {
-    writeFileSync(tempPath, params.prepared.htmlBytes, { flag: 'wx' })
-    const written = statSync(tempPath)
-    if (written.size !== params.prepared.fileSizeBytes || sha256Bytes(params.prepared.htmlBytes) !== params.prepared.fileHash) {
-      throw new ReportExportError('REPORT_EXPORT_FAILED', 'Prepared HTML bytes changed before export completion')
+    if (filePort.exists(params.targetPath)) {
+      throw new ReportExportError('REPORT_EXPORT_FAILED', 'Export target already exists')
+    }
+    filePort.writeOwnedTemp(tempPath, params.prepared.htmlBytes)
+    const writtenBytes = filePort.readOwnedTemp(tempPath)
+    if (writtenBytes.byteLength !== params.prepared.fileSizeBytes || sha256Bytes(writtenBytes) !== params.prepared.fileHash) {
+      throw new ReportExportError('REPORT_EXPORT_FAILED', 'Written HTML bytes failed export integrity verification')
     }
 
     let payload: ReportExportedV2Payload | null = null
@@ -150,7 +192,7 @@ export async function completeReportHtmlExport(
           throw new ReportExportError('REPORT_STATE_CONFLICT', 'Report changed after export preparation')
         }
 
-        renameSync(tempPath, params.targetPath)
+        filePort.renameOwnedTemp(tempPath, params.targetPath)
         renamedToFinal = true
         const fileAssetId = uuidv4()
         payload = {
@@ -173,7 +215,8 @@ export async function completeReportHtmlExport(
           eventType: 'REPORT_EXPORTED',
           payload: payload as unknown as Record<string, unknown>,
           actorId: params.exportedBy,
-          actorRole: 'TEACHER'
+          actorRole: 'TEACHER',
+          correlationId: params.correlationId
         }
       },
       mapResult: () => {
@@ -191,9 +234,20 @@ export async function completeReportHtmlExport(
     })
     return result
   } catch (error) {
-    if (!renamedToFinal) cleanupTempFile(tempPath)
+    const cleanupError = !renamedToFinal
+      ? cleanupTempFile(filePort, tempPath)
+      : null
+    if (cleanupError) {
+      recordExportFailure(db, params.prepared.reportId, params.targetPath, cleanupError, {
+        phase: 'TEMP_CLEANUP',
+        originalError: error instanceof Error ? error.name : 'UnknownError'
+      })
+      throw new ReportExportError('REPORT_EXPORT_FAILED', 'Report export failed and temporary-file cleanup was incomplete')
+    }
     if (error instanceof ReportExportError && error.code !== 'REPORT_EXPORT_FAILED') throw error
-    recordExportFailure(db, params.prepared.reportId, params.targetPath, error)
+    recordExportFailure(db, params.prepared.reportId, params.targetPath, error, {
+      phase: renamedToFinal ? 'POST_RENAME_EVENT_OR_SQLITE' : 'PRE_RENAME_FILE'
+    })
     if (error instanceof ReportExportError) throw error
     throw new ReportExportError('REPORT_EXPORT_FAILED', 'Report export failed')
   }
@@ -269,26 +323,39 @@ function sha256Bytes(bytes: Buffer): string {
   return createHash('sha256').update(bytes).digest('hex')
 }
 
-function cleanupTempFile(path: string): void {
-  if (!existsSync(path)) return
+function cleanupTempFile(filePort: ReportExportFilePort, path: string): Error | null {
   try {
-    rmSync(path, { force: true })
-  } catch {
-    // The export failure is already reported; retained temp files are inert HTML bytes.
+    filePort.cleanupOwnedTemp(path)
+    return null
+  } catch (error) {
+    return error instanceof Error ? error : new Error(String(error))
   }
 }
 
-function recordExportFailure(db: DBAdapter, reportId: string, targetPath: string, error: unknown): void {
+function recordExportFailure(
+  db: DBAdapter,
+  reportId: string,
+  targetPath: string,
+  error: unknown,
+  extraContext: Record<string, unknown>
+): void {
   try {
     recordReportExportError(db, {
       relatedAggregateType: 'TASK_REPORT',
       relatedAggregateId: reportId,
       message: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack ?? null : null,
-      context: { reportId, targetPath }
+      context: { reportId, targetPath, ...extraContext }
     })
   } catch {
     // Do not mask the original export failure with an audit-write failure.
+  }
+}
+
+function assertOwnedTempPath(tempPath: string, targetPath: string, ownerToken: string): void {
+  const expectedName = `.${basename(targetPath)}.${ownerToken}.tmp`
+  if (dirname(tempPath) !== dirname(targetPath) || basename(tempPath) !== expectedName) {
+    throw new ReportExportError('REPORT_EXPORT_FAILED', 'Export temporary-file ownership check failed')
   }
 }
 

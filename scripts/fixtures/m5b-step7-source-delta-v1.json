@@ -1,0 +1,145 @@
+{
+  "schema_version": "m5b-step-source-delta-v1",
+  "step": "M5B-7",
+  "source_digest": "f1023fbd72501c97a65b68c973cef7385ddf21525e5ec7dc8c55de96375caf9d",
+  "target_digest": "1b29f1facae737e0b6263601ce5fbc3ccb535155fba11f6fea5613fb7f78fc03",
+  "expected_counts": {
+    "channels": 74,
+    "direct_callsites": 253,
+    "direct_files": 37,
+    "capability_callsites": 73,
+    "delegating_roots": 13
+  },
+  "removed_source": [
+    {
+      "fingerprint": "de3582d67201f332039a9eb42d69627483c61eafecf8c97c452f71f64223bbfa",
+      "file": "src/main/application/services/student-service.ts",
+      "symbol": "createStudent",
+      "line": 110,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO user_account (user_id, username, password_hash, role, display_name, status) VALUES (?, ?, ?, 'STUDENT', ?, 'ACTIVE')` ).run",
+      "occurrence": 1,
+      "disposition": "EXTRACTED_TO_GATE_ONLY_EXTERNAL_TRANSACTION_APPLY"
+    },
+    {
+      "fingerprint": "af3369d8b8779b4f4860d88ff2d8341d8ebfbc18037ef694bc723a395a36f272",
+      "file": "src/main/application/services/student-service.ts",
+      "symbol": "createStudent",
+      "line": 114,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO student_profile (student_id, student_name, gender, birth_date, guardian_contact, sensory_profile_json, user_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'ACTIVE')` ).run",
+      "occurrence": 1,
+      "disposition": "EXTRACTED_TO_GATE_ONLY_EXTERNAL_TRANSACTION_APPLY"
+    },
+    {
+      "fingerprint": "b22578d70c9f79feb12f6779cdcc3e72b9cf92306c3d0f5b217b17c22de319ba",
+      "file": "src/main/application/services/student-service.ts",
+      "symbol": "updateStudent",
+      "line": 344,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE student_profile SET ${UPDATE_FIELDS[key]} = ?, updated_at = datetime('now') WHERE student_id = ?` ).run",
+      "occurrence": 1,
+      "disposition": "EXTRACTED_TO_GATE_ONLY_EXTERNAL_TRANSACTION_APPLY"
+    },
+    {
+      "fingerprint": "eb1314df88c3c7d194a94be462b516957d14423ee3e8e5099e7a6fcc50a14989",
+      "file": "src/main/application/services/student-service.ts",
+      "symbol": "updateStudent",
+      "line": 349,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE user_account SET display_name = ?, updated_at = datetime('now') WHERE user_id = ? AND role = 'STUDENT'` ).run",
+      "occurrence": 1,
+      "disposition": "EXTRACTED_TO_GATE_ONLY_EXTERNAL_TRANSACTION_APPLY"
+    },
+    {
+      "fingerprint": "bf5c8261929ff1f41e89b2cf7cb59a7b0a8ac2a10b834b4269d749cbc7e011ff",
+      "file": "src/main/application/services/student-service.ts",
+      "symbol": "archiveStudent",
+      "line": 405,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE student_profile SET status = 'ARCHIVED', updated_at = datetime('now') WHERE student_id = ?` ).run",
+      "occurrence": 1,
+      "disposition": "EXTRACTED_TO_GATE_ONLY_EXTERNAL_TRANSACTION_APPLY"
+    },
+    {
+      "fingerprint": "b08d3cab5113dc62e22fcdcbe7788190e207c46860e1bdd52bca4382286fb357",
+      "file": "src/main/application/services/student-service.ts",
+      "symbol": "archiveStudent",
+      "line": 410,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE user_account SET status = 'DISABLED', updated_at = datetime('now') WHERE user_id = ? AND role = 'STUDENT'` ).run",
+      "occurrence": 1,
+      "disposition": "EXTRACTED_TO_GATE_ONLY_EXTERNAL_TRANSACTION_APPLY"
+    }
+  ],
+  "added_target": [
+    {
+      "fingerprint": "faa2d7ab59234d9d72711dddbe07f8643d2a780338a0430d15e40e4d7dab1ce7",
+      "file": "src/main/application/services/student-service.ts",
+      "symbol": "apply",
+      "line": 118,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO user_account (user_id, username, password_hash, role, display_name, status) VALUES (?, ?, ?, 'STUDENT', ?, 'ACTIVE')` ).run",
+      "occurrence": 1,
+      "target_class": "GATE_ONLY_EXTERNAL_TRANSACTION_DML",
+      "planned_step": "M5B-7"
+    },
+    {
+      "fingerprint": "cd34b3668b74bf73f11678d58378bc1375112da7b5c375c73e27cdf9a89e9750",
+      "file": "src/main/application/services/student-service.ts",
+      "symbol": "apply",
+      "line": 122,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO student_profile (student_id, student_name, gender, birth_date, guardian_contact, sensory_profile_json, user_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'ACTIVE')` ).run",
+      "occurrence": 1,
+      "target_class": "GATE_ONLY_EXTERNAL_TRANSACTION_DML",
+      "planned_step": "M5B-7"
+    },
+    {
+      "fingerprint": "eea300225efbf87521de6349ed3c86dc1b72ba53019e58d84a49a31b39af8622",
+      "file": "src/main/application/services/student-service.ts",
+      "symbol": "apply",
+      "line": 356,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE student_profile SET ${UPDATE_FIELDS[key]} = ?, updated_at = datetime('now') WHERE student_id = ?` ).run",
+      "occurrence": 1,
+      "target_class": "GATE_ONLY_EXTERNAL_TRANSACTION_DML",
+      "planned_step": "M5B-7"
+    },
+    {
+      "fingerprint": "378f59b4910df271fa936ff6814a8ff70debe05e496a8827caaa97ff1f193f97",
+      "file": "src/main/application/services/student-service.ts",
+      "symbol": "apply",
+      "line": 361,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE user_account SET display_name = ?, updated_at = datetime('now') WHERE user_id = ? AND role = 'STUDENT'` ).run",
+      "occurrence": 1,
+      "target_class": "GATE_ONLY_EXTERNAL_TRANSACTION_DML",
+      "planned_step": "M5B-7"
+    },
+    {
+      "fingerprint": "1469a0cbff0358b4673925f15d526d6ce9f61e932ec089161260920fd79830ab",
+      "file": "src/main/application/services/student-service.ts",
+      "symbol": "apply",
+      "line": 418,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE student_profile SET status = 'ARCHIVED', updated_at = datetime('now') WHERE student_id = ?` ).run",
+      "occurrence": 1,
+      "target_class": "GATE_ONLY_EXTERNAL_TRANSACTION_DML",
+      "planned_step": "M5B-7"
+    },
+    {
+      "fingerprint": "075fe929a45c8cfb362e57d8c63ab400aae4d9facaa5c7d085caf815010a92f1",
+      "file": "src/main/application/services/student-service.ts",
+      "symbol": "apply",
+      "line": 423,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE user_account SET status = 'DISABLED', updated_at = datetime('now') WHERE user_id = ? AND role = 'STUDENT'` ).run",
+      "occurrence": 1,
+      "target_class": "GATE_ONLY_EXTERNAL_TRANSACTION_DML",
+      "planned_step": "M5B-7"
+    }
+  ],
+  "capability_removed_source": [],
+  "capability_added_target": []
+}

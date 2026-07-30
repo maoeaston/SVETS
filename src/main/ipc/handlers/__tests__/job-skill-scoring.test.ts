@@ -50,8 +50,12 @@ vi.mock('../../../domain/event-writer', () => ({
   )
 }))
 
-import { createSession, seedAssessmentErrorCodes, submitAnswer } from '../assessment'
-import { submitJobSkillOfflineScores, getJobSkillOfflineScores, getSessionScoringQuestions } from '../job-skill-scoring'
+import { createSession, seedAssessmentErrorCodes, submitAnswer } from '../../../application/services/__tests__/assessment-test-support'
+import {
+  submitJobSkillOfflineScores,
+  getJobSkillOfflineScores,
+  getSessionScoringQuestions
+} from '../../../application/services/__tests__/scoring-test-support'
 import {
   createTestDb,
   seedCaller,

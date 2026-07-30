@@ -78,8 +78,12 @@ import {
   triggerRedline,
   calculateResult,
   seedAssessmentErrorCodes
-} from '../assessment'
-import { createTrainingSession, startStep } from '../training'
+} from '../../../application/services/__tests__/assessment-test-support'
+import { writeEvent } from '../../../domain/event-writer'
+import {
+  acceptedTestContext,
+  createTrainingTestCommands
+} from '../../../application/services/__tests__/training-test-support'
 import { applyAssessmentEvent } from '../../../domain/assessment-reducer'
 import {
   createTestDb,
@@ -96,6 +100,8 @@ import type {
   CalculateResultParams,
   SessionQuestionView
 } from '../../../../shared/types/assessment'
+
+const { createTrainingSession, startStep } = createTrainingTestCommands({ writeEvent })
 
 let db: MemoryAdapter
 let callerId: string
@@ -751,7 +757,20 @@ describe('assessment:triggerRedline 批量熔断', () => {
       stepRecordId: trainingBStepId
     }).success).toBe(true)
 
-    expect(triggerRedline(db, redlineParams(assessment.sessionId)).success).toBe(true)
+    const redlineContext = acceptedTestContext({
+      commandType: 'assessment:triggerRedline',
+      correlationId: `assessment-redline:${assessment.sessionId}`,
+      target: {
+        aggregate_type: 'ASSESSMENT_SESSION',
+        session_id: assessment.sessionId,
+        student_id: studentId,
+        job_code: 'SUPERMARKET_SHELVER',
+        task_code: taskCode
+      }
+    })
+    expect(triggerRedline(db, redlineParams(assessment.sessionId), {
+      context: redlineContext
+    }).success).toBe(true)
 
     const trainingStatus = (trainingSessionId: string) => db
       .prepare('SELECT status FROM training_session WHERE training_session_id = ?')

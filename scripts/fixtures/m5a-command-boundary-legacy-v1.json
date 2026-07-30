@@ -1,0 +1,4239 @@
+{
+  "schema_version": "m5a-command-boundary-inventory-v1",
+  "inventory_version": "legacy-v1",
+  "base_commit": "40541c82ef374f28ce300365e0e5cc82423dd99a",
+  "source_digest": "90391b52a7a44e596533af9cdc11fc2fa2db2a4cf76a8e7ed0e948f1d79d7483",
+  "counts": {
+    "channels": 74,
+    "reads": 28,
+    "mutations": 46,
+    "direct_callsites": 260,
+    "direct_files": 35,
+    "capability_callsites": 40,
+    "delegating_roots": 5
+  },
+  "channels": [
+    {
+      "id": "LEGACY-IPC-001",
+      "channel": "assessment:abortSession",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "registerAssessmentHandlers",
+      "line": 2510,
+      "dynamic": false,
+      "fingerprint": "c8997b73e5cbe939f9e2f9e569ceb0e835d53a4d22dcbe6744a754ec50b08c67",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-002",
+      "channel": "assessment:calculateResult",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "registerAssessmentHandlers",
+      "line": 2524,
+      "dynamic": false,
+      "fingerprint": "c94636ff66d0aff9e10a8b73953e68fdbe363a0602ec19cee9508c0c08f701a6",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-003",
+      "channel": "assessment:createSession",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "registerAssessmentHandlers",
+      "line": 2461,
+      "dynamic": false,
+      "fingerprint": "c35a841c5e74cf6b1aa607f1ecee7aac7b3ce2d79a93bd8aaffd9c8c128ac9b1",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-004",
+      "channel": "assessment:emotionInterrupt",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "registerAssessmentHandlers",
+      "line": 2475,
+      "dynamic": false,
+      "fingerprint": "6146d5ae58c62b7d661a1258430ba0b96d3228c2ebb4c8647d75da5fb2bff475",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-005",
+      "channel": "assessment:emotionResume",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "registerAssessmentHandlers",
+      "line": 2482,
+      "dynamic": false,
+      "fingerprint": "873399cb71a06259ddbb7abff189b91413b0695f1a972f595682933717c06ac4",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-006",
+      "channel": "assessment:getJobSkillOfflineScores",
+      "file": "src/main/ipc/handlers/job-skill-scoring.ts",
+      "symbol": "registerJobSkillScoringHandlers",
+      "line": 456,
+      "dynamic": false,
+      "fingerprint": "48d6d1207908223f3759c5ba7333850125044528cd20995f927f930c184f0d3a",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-007",
+      "channel": "assessment:getOfflineAbilityScores",
+      "file": "src/main/ipc/handlers/ability-scoring.ts",
+      "symbol": "registerAbilityScoringHandlers",
+      "line": 347,
+      "dynamic": false,
+      "fingerprint": "de0b585bbde7a7f1cd336022b382347bdd7ca7567b8179600de5c19c80192e86",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-008",
+      "channel": "assessment:getOperationScores",
+      "file": "src/main/ipc/handlers/operation-scoring.ts",
+      "symbol": "registerOperationScoringHandlers",
+      "line": 365,
+      "dynamic": false,
+      "fingerprint": "14c73aa90b8512865a97d8ac2caac0ac2a6fafca2f82a7cf5b6bdbe923e63e97",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-009",
+      "channel": "assessment:getSession",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "registerAssessmentHandlers",
+      "line": 2531,
+      "dynamic": false,
+      "fingerprint": "c12669a33045c332d018c20ef681094952a18cf794dcc2c53b358ecdb6e78758",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-010",
+      "channel": "assessment:getSessionScoringQuestions",
+      "file": "src/main/ipc/handlers/job-skill-scoring.ts",
+      "symbol": "registerJobSkillScoringHandlers",
+      "line": 460,
+      "dynamic": false,
+      "fingerprint": "a3477623fc2404fea143418c06506862adf8ac31e9ba8baf82e25646a22493ef",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-011",
+      "channel": "assessment:getTeacherObservations",
+      "file": "src/main/ipc/handlers/observation.ts",
+      "symbol": "registerObservationHandlers",
+      "line": 239,
+      "dynamic": false,
+      "fingerprint": "7a2078189c1ae18d287a5c37f82ea04d0e543abdf3786a5cdadc824e94c3ffed",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-012",
+      "channel": "assessment:listMySessions",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "registerAssessmentHandlers",
+      "line": 2552,
+      "dynamic": false,
+      "fingerprint": "5377e80479d3bf22d7e457484a7042fd55060a75598d6ca8a735c0961f35ee80",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-013",
+      "channel": "assessment:listSessions",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "registerAssessmentHandlers",
+      "line": 2538,
+      "dynamic": false,
+      "fingerprint": "2229bdafdb3c0eceaec1ff8818a46133e61fb59b7518fb5aabd6fc945fd952dd",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-014",
+      "channel": "assessment:pauseSitting",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "registerAssessmentHandlers",
+      "line": 2489,
+      "dynamic": false,
+      "fingerprint": "f89c1a441a703f46c9bf8e5023782c784973271e6108a26db7a9465ce76b0090",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-015",
+      "channel": "assessment:recordEmotionCollapse",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "registerAssessmentHandlers",
+      "line": 2503,
+      "dynamic": false,
+      "fingerprint": "702d4481e17d3ed42060d42deeb88162019726fc953ea40d2efc53c2d932fc19",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-016",
+      "channel": "assessment:recordTeacherObservation",
+      "file": "src/main/ipc/handlers/observation.ts",
+      "symbol": "registerObservationHandlers",
+      "line": 234,
+      "dynamic": false,
+      "fingerprint": "7f87b94e53cba52f70bc2bb7a604cc74806799e14e1544b40eed67114de3d0a9",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-017",
+      "channel": "assessment:startNextSitting",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "registerAssessmentHandlers",
+      "line": 2496,
+      "dynamic": false,
+      "fingerprint": "930aaa99856997d7741a327412e54708cc95d2e362d0c68b3538a35c6887794f",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-018",
+      "channel": "assessment:startSession",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "registerAssessmentHandlers",
+      "line": 2545,
+      "dynamic": false,
+      "fingerprint": "67aed285d7b86e3ee48594a7c08bd0df0a75eaaa1c0c54c78eafcd49102bd207",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-019",
+      "channel": "assessment:submitAnswer",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "registerAssessmentHandlers",
+      "line": 2468,
+      "dynamic": false,
+      "fingerprint": "79a80b61bfd0a04e42ecd70d0b28154c471eb26850950f41858574e14f4fc0dd",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-020",
+      "channel": "assessment:submitJobSkillOfflineScores",
+      "file": "src/main/ipc/handlers/job-skill-scoring.ts",
+      "symbol": "registerJobSkillScoringHandlers",
+      "line": 451,
+      "dynamic": false,
+      "fingerprint": "a092011ca2c1ef2876337709d705d2f2f26fae2941ceadcd7bdc1b088a40a7bf",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-021",
+      "channel": "assessment:submitOfflineAbilityScores",
+      "file": "src/main/ipc/handlers/ability-scoring.ts",
+      "symbol": "registerAbilityScoringHandlers",
+      "line": 340,
+      "dynamic": false,
+      "fingerprint": "5deb911de7b292ec6c9669453e74428fba2e2d606ed50ab3f47eb82dac703707",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-022",
+      "channel": "assessment:submitOperationScores",
+      "file": "src/main/ipc/handlers/operation-scoring.ts",
+      "symbol": "registerOperationScoringHandlers",
+      "line": 361,
+      "dynamic": false,
+      "fingerprint": "4e534863bcc9fafb683372519c25cdbc3527b4c3a2feced40f3eccf761686974",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-023",
+      "channel": "assessment:triggerRedline",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "registerAssessmentHandlers",
+      "line": 2517,
+      "dynamic": false,
+      "fingerprint": "f5a2237f4f281f5c5937a10bf7da0458a49eacc46179e392c685c156dcb73d4a",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-024",
+      "channel": "assignment:confirmStudent",
+      "file": "src/main/ipc/handlers/assignment.ts",
+      "symbol": "registerAssignmentHandlers",
+      "line": 680,
+      "dynamic": false,
+      "fingerprint": "c3b9875127b7fd7ed6cd2c8e8b1b75adf76d289d5a03d1f1b3747e976ba3dd9c",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-025",
+      "channel": "assignment:create",
+      "file": "src/main/ipc/handlers/assignment.ts",
+      "symbol": "registerAssignmentHandlers",
+      "line": 674,
+      "dynamic": false,
+      "fingerprint": "3f314295cee1d4dbfd15d5d5c111bc465c4235905880e886f3c065e1e48eea47",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-026",
+      "channel": "assignment:rebind",
+      "file": "src/main/ipc/handlers/assignment.ts",
+      "symbol": "registerAssignmentHandlers",
+      "line": 692,
+      "dynamic": false,
+      "fingerprint": "9c43f53d09529089b6b1211a3cfcf8eaf9cef1a56ec4bd124fbbe84cb7020868",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-027",
+      "channel": "assignment:release",
+      "file": "src/main/ipc/handlers/assignment.ts",
+      "symbol": "registerAssignmentHandlers",
+      "line": 698,
+      "dynamic": false,
+      "fingerprint": "1c7f140a684169f93a67d574de6efce07cd674a07b3e8d44d3ea22eb3fac4bb8",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-028",
+      "channel": "assignment:startAssessment",
+      "file": "src/main/ipc/handlers/assignment.ts",
+      "symbol": "registerAssignmentHandlers",
+      "line": 686,
+      "dynamic": false,
+      "fingerprint": "af1987a3256d7f1e0064e0903349158fc23854f4af5276607785ed7cf9d188d0",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-029",
+      "channel": "auth:createTeacherAccount",
+      "file": "src/main/ipc/handlers/auth.ts",
+      "symbol": "registerAuthHandlers",
+      "line": 374,
+      "dynamic": false,
+      "fingerprint": "b16f1fb6ed9d6c444b8a6b81a7edcd778938d8879d2faae2b3285e43c9c9d915",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-030",
+      "channel": "auth:getCurrentSession",
+      "file": "src/main/ipc/handlers/auth.ts",
+      "symbol": "registerAuthHandlers",
+      "line": 343,
+      "dynamic": false,
+      "fingerprint": "4721ef1dc522a01531ed64e8059a4bb1fa85985da928a7c95bbd581eba8dee1b",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-031",
+      "channel": "auth:listAccounts",
+      "file": "src/main/ipc/handlers/auth.ts",
+      "symbol": "registerAuthHandlers",
+      "line": 365,
+      "dynamic": false,
+      "fingerprint": "35c3885d910cd7f6d16a85a685f1585e4b3f6eff067f5049dbf7aaabd7372cb6",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-032",
+      "channel": "auth:login",
+      "file": "src/main/ipc/handlers/auth.ts",
+      "symbol": "registerAuthHandlers",
+      "line": 319,
+      "dynamic": false,
+      "fingerprint": "be6492a33280081f674f8f5e1eef005b75363eff4882c74797fc73bd11498d7a",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-033",
+      "channel": "auth:logout",
+      "file": "src/main/ipc/handlers/auth.ts",
+      "symbol": "registerAuthHandlers",
+      "line": 354,
+      "dynamic": false,
+      "fingerprint": "234660801525c14bd61b5c1ebbb50e0d25601d62b1b6b461a66dacbd65fe7ea7",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-034",
+      "channel": "auth:setTeacherAccountStatus",
+      "file": "src/main/ipc/handlers/auth.ts",
+      "symbol": "registerAuthHandlers",
+      "line": 383,
+      "dynamic": false,
+      "fingerprint": "02c6da1362ab2a7536a7900a15d3360014837537e6097a44c02aef1b227f2ce7",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-035",
+      "channel": "foundation:getException",
+      "file": "src/main/ipc/handlers/foundation.ts",
+      "symbol": "registerFoundationHandlers",
+      "line": 268,
+      "dynamic": false,
+      "fingerprint": "8e549bcff6dcd35eabe8aa50f46d80f3d8d1928fd335c9a9b533c35222a5a5a0",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-036",
+      "channel": "foundation:getOverview",
+      "file": "src/main/ipc/handlers/foundation.ts",
+      "symbol": "registerFoundationHandlers",
+      "line": 264,
+      "dynamic": false,
+      "fingerprint": "434be03eb36abe4f357cf2514e12aa8cbc274da14392d4d2c3abfcb4437da502",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-037",
+      "channel": "foundation:listExceptions",
+      "file": "src/main/ipc/handlers/foundation.ts",
+      "symbol": "registerFoundationHandlers",
+      "line": 266,
+      "dynamic": false,
+      "fingerprint": "31cd4f4ccf1581436db325b4f650a6dd0345965e7caa03ff5800f406338789e4",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-038",
+      "channel": "reports:confirmPlacementReview",
+      "file": "src/main/ipc/handlers/reports.ts",
+      "symbol": "registerReportsHandlers",
+      "line": 839,
+      "dynamic": false,
+      "fingerprint": "1e12d00dfe9803b706294643078b3bf971078d0cc135b77ec36e704cdacb26ed",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-039",
+      "channel": "reports:confirmTaskClosure",
+      "file": "src/main/ipc/handlers/reports.ts",
+      "symbol": "registerReportsHandlers",
+      "line": 827,
+      "dynamic": false,
+      "fingerprint": "9163fc78bfa0f680ed0e66afcd60809cc4dabd24dcd68c85ee6f91136594e149",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-040",
+      "channel": "reports:export",
+      "file": "src/main/ipc/handlers/reports.ts",
+      "symbol": "registerReportsHandlers",
+      "line": 847,
+      "dynamic": false,
+      "fingerprint": "8b8daff90c1b16842acf64314f996453e525b9c657dfd2b3a1a41e1859911b52",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-041",
+      "channel": "reports:generate",
+      "file": "src/main/ipc/handlers/reports.ts",
+      "symbol": "registerReportsHandlers",
+      "line": 835,
+      "dynamic": false,
+      "fingerprint": "635d32efb7a0c0d9e2b99664dc29ce59dfbe2a01101e787053f9c23fc85821ed",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-042",
+      "channel": "reports:get",
+      "file": "src/main/ipc/handlers/reports.ts",
+      "symbol": "registerReportsHandlers",
+      "line": 819,
+      "dynamic": false,
+      "fingerprint": "e764fe2e105627ffb55262753c78e8303a9dfdb73acfe1c730cb41228643f2fa",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-043",
+      "channel": "reports:list",
+      "file": "src/main/ipc/handlers/reports.ts",
+      "symbol": "registerReportsHandlers",
+      "line": 815,
+      "dynamic": false,
+      "fingerprint": "bc05cb6926690fedf107ec1d03b2e0521c99b4518c31754196a8a093b255fa69",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-044",
+      "channel": "reports:listGenerationCandidates",
+      "file": "src/main/ipc/handlers/reports.ts",
+      "symbol": "registerReportsHandlers",
+      "line": 823,
+      "dynamic": false,
+      "fingerprint": "bb7ad103c3c1f440b8f5530190cd3b540a2cc03cfe6457909af9a10d00625d4c",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-045",
+      "channel": "reports:lock",
+      "file": "src/main/ipc/handlers/reports.ts",
+      "symbol": "registerReportsHandlers",
+      "line": 843,
+      "dynamic": false,
+      "fingerprint": "03066cf74b6211d75c639f9465419e61d96f21f2f5322f9921e041e8d1747f89",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-046",
+      "channel": "reports:replaceTaskClosure",
+      "file": "src/main/ipc/handlers/reports.ts",
+      "symbol": "registerReportsHandlers",
+      "line": 831,
+      "dynamic": false,
+      "fingerprint": "2e99a72f432914eafc5ece7e7579e92ec0fda87ea569175e8ffeb55ece9bb341",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-047",
+      "channel": "results:getCurrent",
+      "file": "src/main/ipc/handlers/results.ts",
+      "symbol": "registerResultsHandlers",
+      "line": 265,
+      "dynamic": false,
+      "fingerprint": "649e064dba00eea5d3c5a72825aa8dc055bb0533cd9077c469af24a543881522",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-048",
+      "channel": "results:listCurrentByStudent",
+      "file": "src/main/ipc/handlers/results.ts",
+      "symbol": "registerResultsHandlers",
+      "line": 272,
+      "dynamic": false,
+      "fingerprint": "285d35a4afad4b81300c43b5b35086e077e7178394fc95ee11ce34cecb3a3ea1",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-049",
+      "channel": "safety:confirm",
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "registerSafetyHandlers",
+      "line": 574,
+      "dynamic": false,
+      "fingerprint": "bbbee5555a13bc228c2b641d29937327ff2ca450eda2e3e510087c0c702ece0e",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-050",
+      "channel": "safety:get",
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "registerSafetyHandlers",
+      "line": 584,
+      "dynamic": false,
+      "fingerprint": "c6a052f7f86affa5b62d4b3e10a0c73cf2593cc8724784a4c0b5ef3b8589f0da",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-051",
+      "channel": "safety:list",
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "registerSafetyHandlers",
+      "line": 582,
+      "dynamic": false,
+      "fingerprint": "62e2e1c94c7e2926dee28ace3f939d2dc2ea8c6af4434c5c3aba1ad28b558a56",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-052",
+      "channel": "safety:replaceForFactualCorrection",
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "registerSafetyHandlers",
+      "line": 580,
+      "dynamic": false,
+      "fingerprint": "80cb91624c2a91af9f17e0d07fb28fd15993b0c646ad4f07e83648408b6d9188",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-053",
+      "channel": "safety:resolve",
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "registerSafetyHandlers",
+      "line": 576,
+      "dynamic": false,
+      "fingerprint": "f2b89bb4a2388382ba12321e92bbd47f341864035328d8279b3bded377dd45dd",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-054",
+      "channel": "safety:void",
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "registerSafetyHandlers",
+      "line": 578,
+      "dynamic": false,
+      "fingerprint": "aac40c8e2a1fe377be497a1dc0a8e5943fe3cef5bdb50b3b6162ec3314a1c561",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-055",
+      "channel": "strategy:createVersion",
+      "file": "src/main/ipc/handlers/strategy.ts",
+      "symbol": "registerStrategyHandlers",
+      "line": 896,
+      "dynamic": false,
+      "fingerprint": "4ba3c95653c19215b29dad7baef66e48c98aa734fdecb65ef558253bd2565ff9",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-056",
+      "channel": "strategy:get",
+      "file": "src/main/ipc/handlers/strategy.ts",
+      "symbol": "registerStrategyHandlers",
+      "line": 874,
+      "dynamic": false,
+      "fingerprint": "6b667288f077aa72c285b5c013e59e6590f337613db0a83f72c46315bfd2a65c",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-057",
+      "channel": "strategy:list",
+      "file": "src/main/ipc/handlers/strategy.ts",
+      "symbol": "registerStrategyHandlers",
+      "line": 866,
+      "dynamic": false,
+      "fingerprint": "5ec8021beac7488bf5397208712538f6efb3a2e4067c894e25157627ca4e1de3",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-058",
+      "channel": "strategy:listVersions",
+      "file": "src/main/ipc/handlers/strategy.ts",
+      "symbol": "registerStrategyHandlers",
+      "line": 885,
+      "dynamic": false,
+      "fingerprint": "ba563487402385aed795a4296e0964854d6e23fdcad664be6b449891d2bbf4b3",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-059",
+      "channel": "strategy:setActive",
+      "file": "src/main/ipc/handlers/strategy.ts",
+      "symbol": "registerStrategyHandlers",
+      "line": 912,
+      "dynamic": false,
+      "fingerprint": "0fd49cd607c9548c64d10743be4dacee8b9e36068d4a10c3f74c87e0f7c77e38",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-060",
+      "channel": "strategy:update",
+      "file": "src/main/ipc/handlers/strategy.ts",
+      "symbol": "registerStrategyHandlers",
+      "line": 904,
+      "dynamic": false,
+      "fingerprint": "82052a37129266bd2bb4538d07124bb32d8005a71eb5eb8841437a89888e630e",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-061",
+      "channel": "student:archive",
+      "file": "src/main/ipc/handlers/student.ts",
+      "symbol": "registerStudentHandlers",
+      "line": 526,
+      "dynamic": false,
+      "fingerprint": "f72b7f635dbb90f852a24d45f8db64159f0e69c4494f228406770ee837402a8c",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-062",
+      "channel": "student:create",
+      "file": "src/main/ipc/handlers/student.ts",
+      "symbol": "registerStudentHandlers",
+      "line": 491,
+      "dynamic": false,
+      "fingerprint": "36b05666bdaf399d0c18a96f09a4391d9e8f7149104f8f3bd1acbdad84f5c30f",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-063",
+      "channel": "student:get",
+      "file": "src/main/ipc/handlers/student.ts",
+      "symbol": "registerStudentHandlers",
+      "line": 499,
+      "dynamic": false,
+      "fingerprint": "e14e74d0652d7c8cb8811ec3a6eb59570f8e7b22756561d5900d0bfa8877089d",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-064",
+      "channel": "student:list",
+      "file": "src/main/ipc/handlers/student.ts",
+      "symbol": "registerStudentHandlers",
+      "line": 510,
+      "dynamic": false,
+      "fingerprint": "4a2e8ab8e3e2f10d186ccea7483c8abe7b8d4b442b885b595078a4a9c8411e62",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-065",
+      "channel": "student:update",
+      "file": "src/main/ipc/handlers/student.ts",
+      "symbol": "registerStudentHandlers",
+      "line": 518,
+      "dynamic": false,
+      "fingerprint": "2beec926133b3c979cff7035372bd7b1d1e660e90f6c763b925e3d18fe922d62",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-066",
+      "channel": "training:completeStep",
+      "file": "src/main/ipc/handlers/training.ts",
+      "symbol": "registerTrainingHandlers",
+      "line": 820,
+      "dynamic": false,
+      "fingerprint": "17c73acdbbc85fb3566435796206c70ff650a96442083d84bb58a7f280438780",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-067",
+      "channel": "training:createSession",
+      "file": "src/main/ipc/handlers/training.ts",
+      "symbol": "registerTrainingHandlers",
+      "line": 790,
+      "dynamic": false,
+      "fingerprint": "6fcde92f33cfe487e03566b5037068a7f4a6261b9a96fcf90f5a6ce0ec4ea4c9",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-068",
+      "channel": "training:failStep",
+      "file": "src/main/ipc/handlers/training.ts",
+      "symbol": "registerTrainingHandlers",
+      "line": 832,
+      "dynamic": false,
+      "fingerprint": "0bf3d97a7bca470812078b1fcd945e8ccfc307573d594d3f988de4a5141d6ba9",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-069",
+      "channel": "training:getSession",
+      "file": "src/main/ipc/handlers/training.ts",
+      "symbol": "registerTrainingHandlers",
+      "line": 808,
+      "dynamic": false,
+      "fingerprint": "78d301c2227c6671e5d01e26f7f00bade0debf733f27b566bbad0e6377fcc5da",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-070",
+      "channel": "training:listMySessions",
+      "file": "src/main/ipc/handlers/training.ts",
+      "symbol": "registerTrainingHandlers",
+      "line": 802,
+      "dynamic": false,
+      "fingerprint": "57fc32e97f02987836d91b0cf9316df2c8c51988b0e6f5de254ae51e86078661",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-071",
+      "channel": "training:listSessions",
+      "file": "src/main/ipc/handlers/training.ts",
+      "symbol": "registerTrainingHandlers",
+      "line": 796,
+      "dynamic": false,
+      "fingerprint": "708272ae5735e7e51dd2aca41949feabe8c06a1f5cf92694cfc9f3f58fd2d594",
+      "mode": "READ"
+    },
+    {
+      "id": "LEGACY-IPC-072",
+      "channel": "training:retryStep",
+      "file": "src/main/ipc/handlers/training.ts",
+      "symbol": "registerTrainingHandlers",
+      "line": 838,
+      "dynamic": false,
+      "fingerprint": "2d62cc2ffd0f55730ac044182f1a1d51ecde61cb8c353b0e3b76a76e9ca0558a",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-073",
+      "channel": "training:skipStep",
+      "file": "src/main/ipc/handlers/training.ts",
+      "symbol": "registerTrainingHandlers",
+      "line": 826,
+      "dynamic": false,
+      "fingerprint": "6db791b8762f40c4b6bdb6f2d72d821f348bc0551b9ba6defa143d079138e7bd",
+      "mode": "MUTATION"
+    },
+    {
+      "id": "LEGACY-IPC-074",
+      "channel": "training:startStep",
+      "file": "src/main/ipc/handlers/training.ts",
+      "symbol": "registerTrainingHandlers",
+      "line": 814,
+      "dynamic": false,
+      "fingerprint": "551b6acefdea7724095238d6e1875b5deab8cbd4f82693217d5b8788f6d4f592",
+      "mode": "MUTATION"
+    }
+  ],
+  "direct_callsites": [
+    {
+      "id": "LEGACY-DIRECT-001",
+      "file": "src/main/db/connection.ts",
+      "symbol": "initDatabase",
+      "line": 40,
+      "kind": "FILE_MKDIRSYNC",
+      "callee": "mkdirSync",
+      "detail": "",
+      "fingerprint": "5bc78f862fa692727a98e3cba484d0e907590c5f3e89c4f12018310829dca5f8",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-002",
+      "file": "src/main/db/connection.ts",
+      "symbol": "initDatabase",
+      "line": 46,
+      "kind": "DB_PRAGMA",
+      "callee": "database.pragma",
+      "detail": "",
+      "fingerprint": "54fefab73fb5f278f1bc58e5740b121c2e51567f9df2e0c37635d8b271c7085e",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-003",
+      "file": "src/main/db/connection.ts",
+      "symbol": "initDatabase",
+      "line": 47,
+      "kind": "DB_PRAGMA",
+      "callee": "database.pragma",
+      "detail": "",
+      "fingerprint": "54b3535f729397ca1b3b7f2845853b474668428f19c5385111c5f9332dbcdcf8",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-004",
+      "file": "src/main/db/connection.ts",
+      "symbol": "initDatabase",
+      "line": 68,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "eb706b88d9f35777bd6be73c322c9a9c1c02b284d55794a74308775c2733aa9f",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-005",
+      "file": "src/main/db/connection.ts",
+      "symbol": "checkpointFull",
+      "line": 109,
+      "kind": "DB_PRAGMA",
+      "callee": "database.pragma",
+      "detail": "",
+      "fingerprint": "463d7071ff70e2b20015db497e942dd8bd0577162c0bc81cf1c37f48e1ad5aab",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-006",
+      "file": "src/main/db/connection.ts",
+      "symbol": "vacuumInto",
+      "line": 110,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "9a0ec3c98ce7edc6c82848bb4fffe4b09f978eea1359de6ad1e3f9a0ec2c8bbf",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-007",
+      "file": "src/main/db/connection.ts",
+      "symbol": "recoverActionLog",
+      "line": 149,
+      "kind": "DB_PRAGMA",
+      "callee": "database.pragma",
+      "detail": "",
+      "fingerprint": "79b6beca70188f23c68a5e1d906a1277a0c0151428790aa5afca213eef761735",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-008",
+      "file": "src/main/db/connection.ts",
+      "symbol": "recoverActionLog",
+      "line": 153,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "7f24ac1cdae36a1f5465533e1db9e156c45feef5f59b8a9a121b399fc1e0aea0",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-009",
+      "file": "src/main/db/connection.ts",
+      "symbol": "seedDevUsers",
+      "line": 192,
+      "kind": "DB_RUN",
+      "callee": "insertAccount.run",
+      "detail": "",
+      "fingerprint": "166a69d68033a204bfe9d4f95e0021db68576452c169a480606c73b71f650f32",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-010",
+      "file": "src/main/db/connection.ts",
+      "symbol": "seedDevUsers",
+      "line": 201,
+      "kind": "DB_RUN",
+      "callee": "database.prepare(` INSERT INTO student_profile (student_id, student_name, user_id, status) SELECT 'seed-student-001', '测试学生', user_id, 'ACTIVE' FROM user_account WHERE username = 'student' ON CONFLICT(student_id) DO UPDATE SET user_id = COALESCE(student_profile.user_id, excluded.user_id) `).run",
+      "detail": "",
+      "fingerprint": "532e0a10084b5c5567407faa5a075425aeb4c5599508365b1091314a1b4dce9c",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-011",
+      "file": "src/main/db/memory-adapter.ts",
+      "symbol": "run",
+      "line": 37,
+      "kind": "DB_RUN",
+      "callee": "this.db.run",
+      "detail": "",
+      "fingerprint": "017d1109006b1d07317ff759128ac97271ec5adcef47d1e6afd5546bf7b8b3f6",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-012",
+      "file": "src/main/db/memory-adapter.ts",
+      "symbol": "MemoryAdapter.transaction",
+      "line": 61,
+      "kind": "DB_EXEC",
+      "callee": "this.db.exec",
+      "detail": "",
+      "fingerprint": "beb6b8785c1bbdff0fe4504546a4cad71d95cb12c9c0b3a5afc87e89540fc0c1",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-013",
+      "file": "src/main/db/memory-adapter.ts",
+      "symbol": "MemoryAdapter.transaction",
+      "line": 64,
+      "kind": "DB_EXEC",
+      "callee": "this.db.exec",
+      "detail": "",
+      "fingerprint": "fb784d3f20dd059cf8fb4727fdb5548898a0f997a7c84d51e836f8c0e16c5d11",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-014",
+      "file": "src/main/db/memory-adapter.ts",
+      "symbol": "MemoryAdapter.transaction",
+      "line": 68,
+      "kind": "DB_EXEC",
+      "callee": "this.db.exec",
+      "detail": "",
+      "fingerprint": "fe06f2ab95bbea0f434a35c9485ee263549dc7cea9fb807ef5b31aa5c06fb8e8",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-015",
+      "file": "src/main/db/memory-adapter.ts",
+      "symbol": "MemoryAdapter.exec",
+      "line": 78,
+      "kind": "DB_EXEC",
+      "callee": "this.db.exec",
+      "detail": "",
+      "fingerprint": "559f38cb5ba52be3582386c84b916b415332e7ea21be8f9a81eeea7615078671",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-016",
+      "file": "src/main/db/migration-backup.ts",
+      "symbol": "createVerifiedMigrationBackup",
+      "line": 37,
+      "kind": "FILE_MKDIRSYNC",
+      "callee": "mkdirSync",
+      "detail": "",
+      "fingerprint": "d63b935d6816e4289630aa7922942d20b4f157fada83bd9a6e5a42dc9b968b3a",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-017",
+      "file": "src/main/db/migration-backup.ts",
+      "symbol": "createVerifiedMigrationBackup",
+      "line": 38,
+      "kind": "FILE_MKDIRSYNC",
+      "callee": "mkdirSync",
+      "detail": "",
+      "fingerprint": "00822e0463ff9ead392a71210918ce621f4f0463574a09df0dbb9624e5bc9b9c",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-018",
+      "file": "src/main/db/migration-backup.ts",
+      "symbol": "createVerifiedMigrationBackup",
+      "line": 47,
+      "kind": "FILE_COPYFILESYNC",
+      "callee": "copyFileSync",
+      "detail": "",
+      "fingerprint": "007a305ae874ffd3ee98c5721742fa8fc4029eb86278cea791d326774da136a9",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-019",
+      "file": "src/main/db/migration-backup.ts",
+      "symbol": "createVerifiedMigrationBackup",
+      "line": 53,
+      "kind": "FILE_WRITEFILESYNC",
+      "callee": "writeFileSync",
+      "detail": "",
+      "fingerprint": "283f410762121a3e325cca300a0babed09a82c5da91c3cbbef08366744cf14c3",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-020",
+      "file": "src/main/db/migration-backup.ts",
+      "symbol": "createVerifiedMigrationBackup",
+      "line": 64,
+      "kind": "FILE_RENAMESYNC",
+      "callee": "renameSync",
+      "detail": "",
+      "fingerprint": "8d7dc07ab352f9310e856d113b3128ff0a5cb5e5bb69ca01f00c05481c5828e3",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-021",
+      "file": "src/main/db/migration-startup.ts",
+      "symbol": "orchestrateDatabaseStartupUpgrade",
+      "line": 69,
+      "kind": "DB_MIGRATION_RUN",
+      "callee": "run",
+      "detail": "injected runDatabaseMigrations capability",
+      "fingerprint": "fd56b6d7d3a3ab84b3a36f24eaebc9d102c99db66954f2539b641a1d2cca5013",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-022",
+      "file": "src/main/db/migration-startup.ts",
+      "symbol": "orchestrateDatabaseStartupUpgrade",
+      "line": 74,
+      "kind": "DB_MIGRATION_RUN",
+      "callee": "run",
+      "detail": "injected runDatabaseMigrations capability",
+      "fingerprint": "e6a51a6927bdd311b11042569448aa4b531ebf67c716e31d18ed34019383e650",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-023",
+      "file": "src/main/db/migration-startup.ts",
+      "symbol": "orchestrateDatabaseStartupUpgrade",
+      "line": 80,
+      "kind": "DB_MIGRATION_RUN",
+      "callee": "run",
+      "detail": "injected runDatabaseMigrations capability",
+      "fingerprint": "082e97aa0e9b6b6fc654c16cea150ad96f52081e41aec9037bc390a013147a18",
+      "occurrence": 2
+    },
+    {
+      "id": "LEGACY-DIRECT-024",
+      "file": "src/main/db/migration-startup.ts",
+      "symbol": "orchestrateDatabaseStartupUpgrade",
+      "line": 100,
+      "kind": "DB_MIGRATION_RUN",
+      "callee": "run",
+      "detail": "injected runDatabaseMigrations capability",
+      "fingerprint": "4e191fbc8100583e3876b27062197d6d36133139c326df7331c04e9727a30187",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-025",
+      "file": "src/main/db/migration-startup.ts",
+      "symbol": "orchestrateDatabaseStartupUpgrade",
+      "line": 105,
+      "kind": "DB_MIGRATION_RUN",
+      "callee": "run",
+      "detail": "injected runDatabaseMigrations capability",
+      "fingerprint": "92056e2ed75927635bbceb1a1bce75c53afb437e982a14cbe6ce7d299a2d3ff8",
+      "occurrence": 2
+    },
+    {
+      "id": "LEGACY-DIRECT-026",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "addColumnIfMissing",
+      "line": 398,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "2910c86d1ba423401dd7255dc872ba1a3ba1ef38e3bee60983b0221235bd8adc",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-027",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "applyM2Migration",
+      "line": 688,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "dc47985dc8a89f5ebe4e80014a13dbb6f79ce38b4da67a6ba18f687480d75ff5",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-028",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "applyM2Migration",
+      "line": 716,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "a7782fd6221b4cf2ee9c0d489e385a4b095dd314ce5a0d184b40fe4b86272727",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-029",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "applyM2Migration",
+      "line": 810,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "ee7d8ce1f80366950dd2b5e509a9abd1d34208d49275ed12a6f88f6b5cf68cbf",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-030",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "rebuildAssessmentSessionForM3",
+      "line": 945,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "49dddaed53badb5b09ed920b9aed4197d413ca09493c4fb90c923d87c181c15f",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-031",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "rebuildAssessmentSessionForM3",
+      "line": 955,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "076e78e2a8724c5c58cb60bbfcdbbe23417ff9b5101f63aa36c049ddcc67f846",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-032",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "rebuildAssessmentSessionForM3",
+      "line": 956,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "777790263a39cb2cda5a05b9d9f010c4ecc9fb0cfeefae72592bfb0bddd4796f",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-033",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "rebuildDomainEventProjectionForM3",
+      "line": 1036,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "c1f4a0afcb7041db4a290d16d135ae37d1fafb14b65a100f3eaf62b54ceeab53",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-034",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "rebuildDomainEventProjectionForM3",
+      "line": 1044,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "52202f54baac57811c8074e7527066ed88e62d2912795cf58e4a881c7909456e",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-035",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "applyM3Migration",
+      "line": 1065,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "6522f2bbc9d0fa00e9ac2c8103f268892464def4569e3cc7821d93decb8bfa5b",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-036",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "applyM3Migration",
+      "line": 1066,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "0368aacea0df676dd28b733530d12797d490a25c514bd02ce0c0ebf893a6bd64",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-037",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "applyM3Migration",
+      "line": 1067,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "85dff1f8727b942f66e312b600792e68545bdae4498f1950163439e5fe563498",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-038",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "applyPhase4AssetRoleMigration",
+      "line": 1108,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "51651d493de3ab0d9c5b725d9e694f9b3afdc1710056385c519de9b6a9a49d18",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-039",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "applyPhase4AssetRoleMigration",
+      "line": 1115,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "986b9d209bc03a171c964b8268f90bc4da7fbdbee71d40dd92f6b55e70e3a8af",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-040",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "applyF4SittingMigration",
+      "line": 1134,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "046fcff104b49b25202f53f1ca132c9799e1e06fd71c0a5aa78cd0f69360276c",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-041",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "applyF6ScoreScopeRequiredMigration",
+      "line": 1237,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "d062ffd13f7b766a49ca5d656eedc3b8b3cb39d511d51cf16140d0e2892e441d",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-042",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "applyF6ScoreScopeRequiredMigration",
+      "line": 1247,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "88006e58660057c175972ab04dca99874b9f4757204bc9c6027efb9ddae8d6b7",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-043",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "applyF6ScoreScopeRequiredMigration",
+      "line": 1248,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "274ab47b683f872d70ec5fc571000e1ec89829bb4740460a740f900ef85e15f0",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-044",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "up",
+      "line": 1282,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "191841cc5c3aefc388b311e33cde99d5252c76472a5156f4ea261fe871fcab6c",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-045",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "up",
+      "line": 1286,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "223fb1b564d55b719b15a6600d7d1014497750abca066a75973daaef57912ac8",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-046",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "ensureMigrationTable",
+      "line": 1347,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "bd50d2fe29684dd3821ed8a06a912d44ad4789038ff89481bc10c2d7581d2b82",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-047",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "recordMigration",
+      "line": 1357,
+      "kind": "DB_RUN",
+      "callee": "database .prepare(` INSERT INTO schema_migration (migration_id, schema_version, description, applied_at) VALUES (?, ?, ?, datetime('now')) ON CONFLICT(migration_id) DO UPDATE SET schema_version = excluded.schema_version, description = excluded.description, applied_at = excluded.applied_at `) .run",
+      "detail": "",
+      "fingerprint": "02711ac0f4623ee2c3459218512aa1100f30a187111cb48961b1859bf08c845e",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-048",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "runDatabaseMigrations",
+      "line": 1415,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "a99419af212e5515e5c2a2b3f132bda6c392e86b99a43d0fb8fd8ff25a8eee05",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-049",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "runDatabaseMigrations",
+      "line": 1420,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "c1a59ac3dbe30514c6b7e591146c3ec0cbf3354ffc775b12a5b61e1e9265fe20",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-050",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "runDatabaseMigrations",
+      "line": 1422,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "67dc97864ca01e9bbc8f8b3f9baa69a87e3d1e66bf63fd7ef3becd742dde3945",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-051",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "runDatabaseMigrations",
+      "line": 1430,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "4daef0bae5feec6272add9d09f9145612e6c687a091c4b0c6dd0155dbdaff749",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-052",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "runDatabaseMigrations",
+      "line": 1433,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "ad653374ca8cb9f953a159cc49787d6991df1c53775e8c4a88d8051453598033",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-053",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "runDatabaseMigrations",
+      "line": 1439,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "91711695b2fc762d8f2f3ec82179f7dbc9d9765565dedd630c1c9c460ce9ef41",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-054",
+      "file": "src/main/db/migrations.ts",
+      "symbol": "runDatabaseMigrations",
+      "line": 1440,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "40f1ffd6f8efac88fba3f17ad93c9723c5efec335f194b9fb72282916e5fa70b",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-055",
+      "file": "src/main/db/report-migration.ts",
+      "symbol": "addColumnIfMissing",
+      "line": 415,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "b2cbc57eeea87ba29569c78230166b0728f628d7c735d70e286ddc6a1745d0bb",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-056",
+      "file": "src/main/db/report-migration.ts",
+      "symbol": "rebuildAggregateCheckTable",
+      "line": 441,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "12b8d208743d4bebc8f68876e10544f38fa503376fd4398c2c8e60df38e4d7b2",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-057",
+      "file": "src/main/db/report-migration.ts",
+      "symbol": "rebuildAggregateCheckTable",
+      "line": 448,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "cd750706d77295e34771a7770547bca43717f14bfbad0f3dcedef25ef30a862e",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-058",
+      "file": "src/main/db/report-migration.ts",
+      "symbol": "dropLegacyReportTriggers",
+      "line": 474,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "5d15063429bc485670fab7b761ae94a287289780fd60491e514da10251358840",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-059",
+      "file": "src/main/db/report-migration.ts",
+      "symbol": "backfillLegacyReports",
+      "line": 593,
+      "kind": "DB_RUN",
+      "callee": "update.run",
+      "detail": "",
+      "fingerprint": "a159f80cf863a1a7060f7cd22d6793ec9fe543773580b5f2709e38d065673531",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-060",
+      "file": "src/main/db/report-migration.ts",
+      "symbol": "applyF7ReportFrameworkMigration",
+      "line": 655,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "986b1f55fd89175ac005908fb03ecb261f2499be575bb0f863629bf21254b8ce",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-061",
+      "file": "src/main/db/report-migration.ts",
+      "symbol": "applyF7ReportFrameworkMigration",
+      "line": 671,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "cfdfae1af2021651910ddf9120523d2b5f8031ed3503ded81e42dc4542d9e6a5",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-062",
+      "file": "src/main/db/report-migration.ts",
+      "symbol": "applyF7ReportFrameworkMigration",
+      "line": 672,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "6597876a05b1a91740a64486233db9ba62e37632ab2c762fa6956740a8379d51",
+      "occurrence": 2
+    },
+    {
+      "id": "LEGACY-DIRECT-063",
+      "file": "src/main/db/report-migration.ts",
+      "symbol": "applyF7ReportFrameworkMigration",
+      "line": 673,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "0640fa75b80dd5c502530296356c052183337bc8e23659ccd54e6c5585853dbd",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-064",
+      "file": "src/main/db/report-migration.ts",
+      "symbol": "applyF7ReportFrameworkMigration",
+      "line": 674,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "8cca00fec68053cc2c6d8287130d3cb046e77f877ce2af39e3bef02a9b4a003d",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-065",
+      "file": "src/main/db/report-migration.ts",
+      "symbol": "applyF7ReportFrameworkMigration",
+      "line": 675,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "44a986f31a5612000205cb05fcacb0149fae8a5da5de8b275cec125be64740f3",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-066",
+      "file": "src/main/db/safety-rekey-migration.ts",
+      "symbol": "applyM4SafetyRekeyMigration",
+      "line": 349,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "a6fd2753e3b7995ad9dffdd280184495ec1b7e262cabdf7e3b0f799f0311206c",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-067",
+      "file": "src/main/db/safety-rekey-migration.ts",
+      "symbol": "applyM4SafetyRekeyMigration",
+      "line": 351,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "5574fd1c1aa9d810cfab73112f2eb71329453aa930bf3523c336bb4c086fb1c7",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-068",
+      "file": "src/main/db/sqlite-adapter.ts",
+      "symbol": "run",
+      "line": 14,
+      "kind": "DB_RUN",
+      "callee": "stmt.run",
+      "detail": "",
+      "fingerprint": "0dfebcf8319e8cc3dfc95d4a707adb6f78ea80daa5cb4566e3524333a63dd5e2",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-069",
+      "file": "src/main/db/sqlite-adapter.ts",
+      "symbol": "SqliteAdapter.exec",
+      "line": 25,
+      "kind": "DB_EXEC",
+      "callee": "this.db.exec",
+      "detail": "",
+      "fingerprint": "d6d35dce35630305f32d646e5a496e9bf399847e031e521948a6c5602da00687",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-070",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "createTestDb",
+      "line": 69,
+      "kind": "DB_EXEC",
+      "callee": "db.exec",
+      "detail": "",
+      "fingerprint": "f2dbf87066984a45d13a7273323425b12f41b64d8b5638b176897641f09cf6a7",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-071",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "seedCaller",
+      "line": 78,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO user_account (user_id, username, password_hash, role, display_name, status) VALUES (?, ?, ?, ?, ?, 'ACTIVE')` ).run",
+      "detail": "",
+      "fingerprint": "74934d58ee37af5d6e68684c017178c426f6c254ea72b66f5fb1c0c3eb3c5f26",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-072",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "seedDisabledCaller",
+      "line": 90,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO user_account (user_id, username, password_hash, role, display_name, status) VALUES (?, ?, ?, ?, ?, 'DISABLED')` ).run",
+      "detail": "",
+      "fingerprint": "f0c5d5fce40b11ebcb28242e5cdba362b5b0d192418ab1fd0919442f0db78ba0",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-073",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "seedLocalRuntimeContextFixture",
+      "line": 119,
+      "kind": "DB_RUN",
+      "callee": "db.prepare('INSERT INTO organization (organization_id, name) VALUES (?, ?)').run",
+      "detail": "",
+      "fingerprint": "c258cc581abba9fcef3b20b30824f6ee5e22d107a93d4ae202bd5d5bc7588e8e",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-074",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "seedLocalRuntimeContextFixture",
+      "line": 123,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO node (node_id, organization_id, node_name) VALUES (?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "92e1ab26785e6a5a2dcf4090bedb4c123a918ef795e6a3e9c2ef36f93ad3e229",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-075",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "seedLocalRuntimeContextFixture",
+      "line": 127,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO device (device_id, node_id, device_name, device_role, trust_state) VALUES (?, ?, ?, 'HYBRID', 'TRUSTED')` ).run",
+      "detail": "",
+      "fingerprint": "a943ac6549153d411da08955d6eddf34b85e57392413904cbdeaa326efdb27c5",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-076",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "seedLocalRuntimeContextFixture",
+      "line": 131,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO device_runtime_session (device_runtime_session_id, device_id) VALUES (?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "bb4b4551fe8f65b8e019184f5bb7e7f1aa066856035a40b2786666740ea82dff",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-077",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "seedLocalRuntimeContextFixture",
+      "line": 135,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO auth_session (auth_session_id, user_id, device_runtime_session_id, auth_method, capabilities_json, token_hash, refresh_token_hash, expires_at, status) VALUES (?, ?, ?, 'DEVICE_KEY', '[]', ?, ?, ${expiresAtSql}, ?)` ).run",
+      "detail": "",
+      "fingerprint": "3f677c3f7973a80953d601e9897c68b6b48a93d70a450bc1fb9508912eda91ca",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-078",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "insertRow",
+      "line": 224,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO ${tableName} (${columns.join(', ')}) VALUES (${placeholders})` ).run",
+      "detail": "",
+      "fingerprint": "54116be8f761a1ee58e4b07c7fa649970968b031360ac77905bbd8c7b5fc6185",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-079",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "advanceAssessmentDeliveryPhaseFixture",
+      "line": 322,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( 'UPDATE assessment_session SET status = ?, delivery_phase = NULL WHERE session_id = ?' ).run",
+      "detail": "",
+      "fingerprint": "dc6d6c4a39522d46d11ba371ed5b8c9ed26fffda9cbcb320c91c55aa6a7bfe30",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-080",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "advanceAssessmentDeliveryPhaseFixture",
+      "line": 342,
+      "kind": "DB_RUN",
+      "callee": "db.prepare('UPDATE assessment_session SET delivery_phase = ? WHERE session_id = ?').run",
+      "detail": "",
+      "fingerprint": "04e2f388ecd272873051dc8e9d200c9b57462f24f4c8c5688a8238051797e664",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-081",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "advanceAssessmentDeliveryPhaseFixture",
+      "line": 348,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( 'UPDATE assessment_session SET status = ?, delivery_phase = ? WHERE session_id = ?' ).run",
+      "detail": "",
+      "fingerprint": "9600c73afdb97fd62a0224678411a5321df6f991d5cd4f27f606738036778653",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-082",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "seedM3GrantAssignmentFixture",
+      "line": 473,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO delegated_access_grant (grant_id, business_session_id, teacher_auth_session_id, teacher_user_id, student_id, device_id, device_runtime_session_id, capabilities_json, identity_confirmation_method, status, granted_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'TEACHER_ATTESTATION', ?, datetime('now'), datetime('now', '+1 day'))` ).run",
+      "detail": "",
+      "fingerprint": "fcdcbd91d2e6cd188acf05e68ea6866aab4a0ad2c837a60e6db5d522e7e6a210",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-083",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "seedM3GrantAssignmentFixture",
+      "line": 491,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO business_session_assignment (assignment_id, business_session_id, student_id, device_id, grant_id, assigned_by, status, student_confirmed_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "5c48bb0ce02f168163297e23d58e6008d725e9e0dcdaa06e30b91e2c57986304",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-084",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "setAssessmentSessionStateFixture",
+      "line": 535,
+      "kind": "DB_RUN",
+      "callee": "db.prepare('UPDATE assessment_session SET status = ? WHERE session_id = ?').run",
+      "detail": "",
+      "fingerprint": "680f40ace04b69b3adcf0570ad547f7b00e8370dcac1375c377427ecc53baacb",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-085",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "seedStrategyReference",
+      "line": 636,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO user_account (user_id, username, password_hash, role, display_name, status) VALUES (?, ?, ?, 'STUDENT', ?, 'ACTIVE')` ).run",
+      "detail": "",
+      "fingerprint": "b5886ce652e8df3eb33b5f6610ead888b555c62ad9c0ff850822426db1f22993",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-086",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "seedStrategyReference",
+      "line": 640,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO student_profile (student_id, student_name, status) VALUES (?, ?, 'ACTIVE')` ).run",
+      "detail": "",
+      "fingerprint": "f6fa31bf696e08cd5c790f8289d517cd0f4cda4ad5a1eef5621dc0694304dcc2",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-087",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "seedStudent",
+      "line": 681,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO user_account (user_id, username, password_hash, role, display_name, status) VALUES (?, ?, ?, 'STUDENT', ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "b28f4caafa8ef1fde3abb97f370d68a9b6f2380ae826fbda0277a34bf900f4e6",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-088",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "seedStudent",
+      "line": 685,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO student_profile (student_id, student_name, status) VALUES (?, ?, 'ACTIVE')` ).run",
+      "detail": "",
+      "fingerprint": "651857c42d0b057cc3e4a36b867dd36ffbb2996183dddd5f81285b99bc122556",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-089",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "seedQuestionBank",
+      "line": 724,
+      "kind": "DB_RUN",
+      "callee": "stmt.run",
+      "detail": "",
+      "fingerprint": "f7b997efcdeb9154af5eefefc3af82a0e38b813ed6f4774a34729bb1ac7df169",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-090",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "seedQuestionBank",
+      "line": 728,
+      "kind": "DB_RUN",
+      "callee": "stmt.run",
+      "detail": "",
+      "fingerprint": "74104e14735e354fa64ee899855201934c9b39ee5dcb8c18f049dcc492674ee2",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-091",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "seedQuestionBank",
+      "line": 732,
+      "kind": "DB_RUN",
+      "callee": "db.prepare(\"UPDATE question_bank SET status = 'ACTIVE' WHERE status = 'DRAFT'\").run",
+      "detail": "",
+      "fingerprint": "2a5f86da43cbb28db891a27f66367577a7d46ed6100b48eb5e32fe55955fa43f",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-092",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "seedQuestionBankDraft",
+      "line": 756,
+      "kind": "DB_RUN",
+      "callee": "stmt.run",
+      "detail": "",
+      "fingerprint": "99c4631d2e0fba9f3802002a2711d5711ca37eeb0b6401f1f490c37c98eb231d",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-093",
+      "file": "src/main/db/test-helpers.ts",
+      "symbol": "seedQuestionBankDraft",
+      "line": 760,
+      "kind": "DB_RUN",
+      "callee": "stmt.run",
+      "detail": "",
+      "fingerprint": "59708206eec164cacc204c31c7483f7838807e5595f272e8ef017a25fe71dee9",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-094",
+      "file": "src/main/domain/action-log-path.ts",
+      "symbol": "getActionLogPath",
+      "line": 7,
+      "kind": "FILE_MKDIRSYNC",
+      "callee": "mkdirSync",
+      "detail": "",
+      "fingerprint": "7e5dd1429aa634c70624d6f6eb268e864cec6293f546ab06b69f2e85a0ae25d3",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-095",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "ensureBusinessSession",
+      "line": 100,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO business_session (business_session_id, session_type, student_id, job_code, task_code, created_by) VALUES (?, ?, ?, ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "3b28a2609153131998e1d11df3d5f00f1e3e0bf8e324174680b016b2daafbfbe",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-096",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "markAssessmentEventApplied",
+      "line": 122,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END, last_applied_event_id = ? WHERE session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "36d8a840c27004122d51921cfb3a22ac705ea871e28f74faaaee53fe261b635d",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-097",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applyAssessmentPhaseAndMark",
+      "line": 196,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET delivery_phase = ?, event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END, last_applied_event_id = ? WHERE session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "a56461fb2b64feb93ed787e09057e46ee0e658286c61cab8a7f69d7719399387",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-098",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applyAssignmentAssessmentStarted",
+      "line": 330,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET status = 'ACTIVE', delivery_phase = ?, current_question_id = ?, started_at = ?, last_status_event_id = ?, last_applied_event_id = ?, event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END WHERE session_id = ? AND current_question_id IS NULL AND delivery_phase = ?` ).run",
+      "detail": "",
+      "fingerprint": "8cc1aaab2be61d915d51915cbe52411e0ed7232e715bed86012889568690fc1e",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-099",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applyEmotionCollapseThresholdReached",
+      "line": 365,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET level_result = 'LEVEL_NOT_COMPETENT', last_applied_event_id = ?, event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END WHERE session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "22deb7b377f1a988c6727e991612d35cea6eac237558c9c337e8224160dbcdc7",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-100",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applySessionStarted",
+      "line": 400,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO assessment_session (session_id, business_session_id, student_id, strategy_id, strategy_type, job_code, task_code, strategy_version, status, delivery_phase, online_question_count, offline_question_count, observation_template_id, created_by, started_at, created_event_id, last_applied_event_id, last_status_event_id, event_sequence_version) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'INIT', ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "5b37de6e29b11b8552b4516f9476239e0d3e865319244b9816657ed8cfcb4ca0",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-101",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applySessionStarted",
+      "line": 459,
+      "kind": "DB_RUN",
+      "callee": "insertQ.run",
+      "detail": "",
+      "fingerprint": "e4fbaa413c1262e0b86ea95078b714808182f5dfbe12fc5937b72511bcd07dd2",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-102",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applySessionFirstQuestionActivated",
+      "line": 491,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET status = 'ACTIVE', delivery_phase = 'ONLINE_IN_PROGRESS', current_question_id = ?, started_at = ?, last_status_event_id = ?, last_applied_event_id = ?, event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END WHERE session_id = ? AND current_question_id IS NULL` ).run",
+      "detail": "",
+      "fingerprint": "25b89c89bd63d95a5743cfd92456d65203c763ca61d977912c7aa88017c55cf1",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-103",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applyAnswerSubmitted",
+      "line": 531,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO answer_record (answer_id, session_id, question_id, question_type, answer_payload_json, is_correct, score, submitted_event_id, submitted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "33d319cd80d494e2544cef92ead9ff2d95eeb7f0f92e90ba5f483429dc5a955e",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-104",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applyAnswerSubmitted",
+      "line": 569,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET online_completed_count = online_completed_count + 1, current_question_id = ?, last_applied_event_id = ?, event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END WHERE session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "db39765ab6a3f5a9527741a09a0bd29ae07c9de54be855e743027eaacacf3456",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-105",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applyAnswerSubmitted",
+      "line": 587,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET online_completed_count = online_completed_count + 1, status = ?, delivery_phase = ?, last_status_event_id = ?, last_applied_event_id = ?, event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END WHERE session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "84ae92166e5483b55beeddff0cfa5880146a005a353169a91991bf6978917d59",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-106",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applyEmotionInterrupted",
+      "line": 624,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET status = 'EMOTION_INTERRUPTED', pause_count = pause_count + 1, pause_started_at = ?, last_interruption_reason = 'EMOTION', last_status_event_id = ?, last_applied_event_id = ?, event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END WHERE session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "1982d9b0bd197806320fa05e8d93529d207ad90b37bdc71037752895ed626a5f",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-107",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applyEmotionResumed",
+      "line": 653,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET status = 'ACTIVE', pause_started_at = NULL, last_status_event_id = ?, last_applied_event_id = ?, event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END WHERE session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "7fb25fdcc10ed90cda062cb2e9aa93f63cdfa3621aa5e55c36f37e0dc782e181",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-108",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applySittingStarted",
+      "line": 684,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO assessment_sitting (sitting_id, session_id, sitting_no, started_at, started_by, started_event_id) VALUES (?, ?, ?, ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "885d090f1cf47d142f80a9f4084cb36856b125ee7f6dca3e9d7188ef8cbb92aa",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-109",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applySittingStarted",
+      "line": 689,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET status = 'ACTIVE', pause_started_at = NULL, last_status_event_id = ?, last_applied_event_id = ?, event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END WHERE session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "4565d48cdde5a64bed8f71a5962f1d88908c972ef987926a9ecc14dc5e050c17",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-110",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applySittingEnded",
+      "line": 716,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_sitting SET ended_at = ?, ended_by = ?, end_reason = ?, current_question_order = ?, ended_event_id = ?, updated_at = datetime('now') WHERE session_id = ? AND sitting_no = ?` ).run",
+      "detail": "",
+      "fingerprint": "b0938873500eb628352827470ce8a5391857670196098fdf4500c7151dd48f4d",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-111",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applySittingEnded",
+      "line": 730,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET status = 'SUSPENDED_REVIEW_REQUIRED', pause_started_at = ?, last_interruption_reason = ?, last_status_event_id = ?, last_applied_event_id = ?, event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END WHERE session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "3ff6a0c9384d46f211ee525f6a16ef078af82dc3a430c528802c7519824a4067",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-112",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applySessionCompleted",
+      "line": 765,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET delivery_phase = 'READY_TO_FINALIZE' WHERE session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "4e9d80820fe977a2c4952317e3e1ac5e71320a29250cec6b7c67e9d019bd96ce",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-113",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applySessionCompleted",
+      "line": 772,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET status = 'COMPLETED', delivery_phase = 'FINALIZED', completed_at = ?, last_status_event_id = ?, last_applied_event_id = ?, event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END WHERE session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "48ada55580b956524c4323bfe5e5e6a90bba29ad8f68788633489dabb48926df",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-114",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applySessionAborted",
+      "line": 800,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET status = 'ABORTED', completed_at = ?, last_status_event_id = ?, last_applied_event_id = ?, event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END WHERE session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "7a1deadddca7df10d008c293ce3207e084f729e619511ea1d5e1f1bedc6566f6",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-115",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applyRedlineTriggered",
+      "line": 833,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET redline_incident_id = COALESCE(redline_incident_id, ?), level_result = COALESCE(level_result, 'LEVEL_FAIL_BY_SAFETY'), last_status_event_id = ?, last_applied_event_id = ?, event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END WHERE session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "1c08fe78feafdf626ebff4dfec7f1218827ac74b082268377e7dd9d31bd157dd",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-116",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applyRedlineTriggered",
+      "line": 847,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET status = 'REDLINE_HALTED', level_result = 'LEVEL_FAIL_BY_SAFETY', redline_incident_id = ?, last_status_event_id = ?, last_applied_event_id = ?, event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END WHERE session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "5ab7644878dadb945ef30b4376226b472d842130403d9fc0ce0d58d6a2d41519",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-117",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applyOfflineScoreSubmitted",
+      "line": 884,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO offline_score_record (offline_score_id, session_id, question_id, score_scope, task_operation_code, score, scoring_rubric_json, observation_note, scored_by, scored_event_id, scored_at, tool_checklist_confirmed, revision_no, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'VALID')` ).run",
+      "detail": "",
+      "fingerprint": "cb8eb0571ddcecfebe371dbc2cd96aa5f98b593a1785658189e95c5be2493c72",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-118",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applyResultCalculated",
+      "line": 945,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO result_record (result_id, student_id, result_type, source_aggregate_type, source_aggregate_id, strategy_id, strategy_type, job_code, module_type, raw_score, max_score, normalized_score, completion_ratio, level_result, safety_overridden, redline_incident_id, result_payload_json, generated_event_id, generated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "eb0dede499b12adda4a284086215c81b67881e3f8a7f57bdc7d2b84ba7648739",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-119",
+      "file": "src/main/domain/assessment-reducer.ts",
+      "symbol": "applyTeacherObservationRecorded",
+      "line": 996,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO offline_score_record (offline_score_id, session_id, question_id, score_scope, task_operation_code, response_status, score, observation_payload_json, scored_by, scored_event_id, scored_at, tool_checklist_confirmed, revision_no, status) VALUES (?, ?, ?, 'TEACHER_OBSERVATION', NULL, 'ANSWERED', NULL, ?, ?, ?, ?, 0, 1, 'VALID')` ).run",
+      "detail": "",
+      "fingerprint": "598af4802a59e593bd4ec92fd109b76ea63c094880e5ef72c6b820456c163f70",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-120",
+      "file": "src/main/domain/assignment-reducer.ts",
+      "symbol": "markAssessmentEventApplied",
+      "line": 42,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END, last_applied_event_id = ? WHERE session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "b3616fc93a94ff64278cf4aa6510da466e58a6eb64fbbf17c036eebd27f17f46",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-121",
+      "file": "src/main/domain/assignment-reducer.ts",
+      "symbol": "advanceAssessmentPhaseIfCurrent",
+      "line": 84,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET delivery_phase = ?, event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END, last_applied_event_id = ? WHERE session_id = ? AND delivery_phase = ?` ).run",
+      "detail": "",
+      "fingerprint": "b62597d797d8ea25fc0930c9ab3534ad9d7e18d3cd002df98eab1b68517c2d90",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-122",
+      "file": "src/main/domain/assignment-reducer.ts",
+      "symbol": "markAssessmentEventIfForward",
+      "line": 118,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE assessment_session SET delivery_phase = ?, event_sequence_version = CASE WHEN event_sequence_version > ? THEN event_sequence_version ELSE ? END, last_applied_event_id = ? WHERE session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "b03b9a86fe8a4e88ab01a566b10e23c104838aa3a08bd32a1fe2e3b8d99b26cc",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-123",
+      "file": "src/main/domain/assignment-reducer.ts",
+      "symbol": "applyAssignmentCreated",
+      "line": 184,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO delegated_access_grant (grant_id, business_session_id, teacher_auth_session_id, teacher_user_id, student_id, device_id, device_runtime_session_id, capabilities_json, identity_confirmation_method, status, granted_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "ab764208dede3aea81b52fed6416b84bd8f06b2e7483df25627bfcb8ab9c2356",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-124",
+      "file": "src/main/domain/assignment-reducer.ts",
+      "symbol": "applyAssignmentCreated",
+      "line": 205,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO business_session_assignment (assignment_id, business_session_id, student_id, device_id, grant_id, assigned_by, assigned_at, status, version) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)` ).run",
+      "detail": "",
+      "fingerprint": "256198bd2b7d38e0461e44823553372db335709cee9c9368271d67cae6d04a6e",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-125",
+      "file": "src/main/domain/assignment-reducer.ts",
+      "symbol": "applyAssignmentStudentConfirmed",
+      "line": 244,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE delegated_access_grant SET confirmed_by = ?, confirmation_evidence = ?, student_pin_verified = ?, teacher_attested = ?, confirmed_at = ?, updated_at = datetime('now') WHERE grant_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "62a7eade43a8f875016a6d1a09fa13f17d594246601421d261ddfffa502e05fa",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-126",
+      "file": "src/main/domain/assignment-reducer.ts",
+      "symbol": "applyAssignmentStudentConfirmed",
+      "line": 262,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE business_session_assignment SET status = ?, student_confirmed_at = ?, updated_at = datetime('now') WHERE assignment_id = ? AND status = ?` ).run",
+      "detail": "",
+      "fingerprint": "7ffddc1534338dcdfacad825490771aa65194b22c66c9dc748f4ef4f8bd179ee",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-127",
+      "file": "src/main/domain/assignment-reducer.ts",
+      "symbol": "applyGrantRebound",
+      "line": 306,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE delegated_access_grant SET status = ?, released_at = ?, release_reason = 'REPLACED', updated_at = datetime('now') WHERE grant_id = ? AND status = 'ACTIVE'` ).run",
+      "detail": "",
+      "fingerprint": "dc21dbeb5e844494c63290ac55dcb2ee71f497247fc7933baf3595790fd88516",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-128",
+      "file": "src/main/domain/assignment-reducer.ts",
+      "symbol": "applyGrantRebound",
+      "line": 316,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO delegated_access_grant (grant_id, business_session_id, teacher_auth_session_id, teacher_user_id, student_id, device_id, device_runtime_session_id, capabilities_json, identity_confirmation_method, status, replaces_grant_id, granted_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "87ed86f661c605cab96035620558c882b44c1c3f5fab2f2e3d627956dca5502d",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-129",
+      "file": "src/main/domain/assignment-reducer.ts",
+      "symbol": "applyGrantRebound",
+      "line": 338,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE business_session_assignment SET grant_id = ?, device_id = ?, status = ?, student_confirmed_at = ?, version = ?, updated_at = datetime('now') WHERE assignment_id = ? AND grant_id = ? AND version = ?` ).run",
+      "detail": "",
+      "fingerprint": "7e7f46548f12717f2fc7044279ffd4418350049295f2d8a24319156a6ef679c6",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-130",
+      "file": "src/main/domain/assignment-reducer.ts",
+      "symbol": "applyAssignmentReleased",
+      "line": 384,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE business_session_assignment SET status = ?, released_at = ?, release_reason = ?, updated_at = datetime('now') WHERE assignment_id = ? AND status = ?` ).run",
+      "detail": "",
+      "fingerprint": "e159d836b2ac0d6d16988950b752e423d13e41236a199fc1f99159bd059612e0",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-131",
+      "file": "src/main/domain/assignment-reducer.ts",
+      "symbol": "applyAssignmentReleased",
+      "line": 400,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE delegated_access_grant SET status = ?, released_at = ?, release_reason = ?, updated_at = datetime('now') WHERE grant_id = ? AND status = ?` ).run",
+      "detail": "",
+      "fingerprint": "f9da18e81c8cc318e2e2a011e93cbc930782b334fb3d4177c0cfa430f10a270b",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-132",
+      "file": "src/main/domain/event-writer.ts",
+      "symbol": "writeEvent",
+      "line": 100,
+      "kind": "FILE_APPENDFILESYNC",
+      "callee": "appendFileSync",
+      "detail": "",
+      "fingerprint": "88d628fdc9496db18104e52c70ba2979f428af3c3a532028341c34b78a8ed86f",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-133",
+      "file": "src/main/domain/event-writer.ts",
+      "symbol": "writeEvent",
+      "line": 103,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO domain_event_projection ( event_id, aggregate_type, aggregate_id, event_type, event_sequence, payload_json, checksum, source_log_path, schema_version, created_at ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "fb37ab8718af4ff3f174182070214b6ba434d9fff7b10925aebc35422d80bdda",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-134",
+      "file": "src/main/domain/local-runtime-context.ts",
+      "symbol": "createLocalRuntime",
+      "line": 77,
+      "kind": "DB_RUN",
+      "callee": "db.prepare('INSERT INTO organization (organization_id, name) VALUES (?, ?)').run",
+      "detail": "",
+      "fingerprint": "9c564f420306d97d273c0eef9252af43e07b8cf2b4fa5a3310b4c9ac3ba3c87c",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-135",
+      "file": "src/main/domain/local-runtime-context.ts",
+      "symbol": "createLocalRuntime",
+      "line": 81,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO node (node_id, organization_id, node_name, node_type) VALUES (?, ?, ?, 'ELECTRON_KIOSK')` ).run",
+      "detail": "",
+      "fingerprint": "75848e2c5cc5c0f73751f1715264622b7a1800eff01d923ac3d1ebb8026b47f9",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-136",
+      "file": "src/main/domain/local-runtime-context.ts",
+      "symbol": "createLocalRuntime",
+      "line": 85,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO device (device_id, node_id, device_name, device_role, trust_state, capabilities_json) VALUES (?, ?, ?, 'HYBRID', 'TRUSTED', ?)` ).run",
+      "detail": "",
+      "fingerprint": "7fdb2d80157c697871cb0252d4d15a6b12813ff3f84bfa6cb2b59248e740316e",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-137",
+      "file": "src/main/domain/local-runtime-context.ts",
+      "symbol": "createLocalRuntime",
+      "line": 90,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO device_runtime_session (device_runtime_session_id, device_id) VALUES (?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "dcffe240e8d24685c06a403743622581683e15a112dafcba1bd0aa60f867e731",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-138",
+      "file": "src/main/domain/local-runtime-context.ts",
+      "symbol": "createDeviceKeyAuthSession",
+      "line": 126,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO auth_session (auth_session_id, user_id, device_runtime_session_id, auth_method, capabilities_json, token_hash, refresh_token_hash, expires_at, status) VALUES (?, ?, ?, 'DEVICE_KEY', ?, ?, ?, datetime('now', '+8 hours'), 'ACTIVE')` ).run",
+      "detail": "",
+      "fingerprint": "f9f73de3f684248c5957e9f23a98c5df8f00557c39499bcb7985639f42ec4d5c",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-139",
+      "file": "src/main/domain/recovery.ts",
+      "symbol": "archiveTail",
+      "line": 178,
+      "kind": "FILE_MKDIRSYNC",
+      "callee": "mkdirSync",
+      "detail": "",
+      "fingerprint": "d26c4fe925097ae62d79f40eb0c68a45a7b0b85706e763188214972f8fc262a8",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-140",
+      "file": "src/main/domain/recovery.ts",
+      "symbol": "archiveTail",
+      "line": 181,
+      "kind": "FILE_WRITEFILESYNC",
+      "callee": "writeFileSync",
+      "detail": "",
+      "fingerprint": "84b55d7eb78a27fa58094d59fb3eff642a857971c6a25015bc08e81d8ae77ac2",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-141",
+      "file": "src/main/domain/recovery.ts",
+      "symbol": "readActionLog",
+      "line": 212,
+      "kind": "FILE_WRITEFILESYNC",
+      "callee": "writeFileSync",
+      "detail": "",
+      "fingerprint": "cc4a326871b7bf0793abdcd0358f152d7ed49cbaed997759700e0207dc137f26",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-142",
+      "file": "src/main/domain/recovery.ts",
+      "symbol": "insertEventProjection",
+      "line": 236,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO domain_event_projection ( event_id, aggregate_type, aggregate_id, event_type, event_sequence, payload_json, checksum, source_log_path, schema_version, created_at ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "0693488761245512141e2b8b208b9b0f161ad5d532a6c5253613e7e461f5ade2",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-143",
+      "file": "src/main/domain/recovery.ts",
+      "symbol": "applySafetyIncidentCreated",
+      "line": 365,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO safety_incident (incident_id, student_id, job_code, task_code, trigger_event_id, reason_code, description, triggered_by, context_phase, occurred_at, status, requires_review_before_next_session) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING_DETAIL', 1)` ).run",
+      "detail": "",
+      "fingerprint": "cd87189724536abef552aead5848c74f2457e8ab07ff715e89cfa61cb6e92939",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-144",
+      "file": "src/main/domain/recovery.ts",
+      "symbol": "applyReportGenerated",
+      "line": 424,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO task_report (report_id, report_type, student_id, source_aggregate_type, source_aggregate_id, source_result_ids_json, report_title, report_content_json, generated_event_id, generated_by, generated_at, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'GENERATED')` ).run",
+      "detail": "",
+      "fingerprint": "6cebb0b505574ba2371f235f447e1c9835ce59ab65f44d4e795658980125d585",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-145",
+      "file": "src/main/domain/recovery.ts",
+      "symbol": "applySafetyIncidentDetailConfirmed",
+      "line": 458,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE safety_incident SET reason_code = ?, context_phase = ?, description = ?, confirmed_by = ?, status = 'CONFIRMED', updated_at = datetime('now') WHERE incident_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "44d363cbebe166f4760c84084934b3c22c069ebfb0924d059bfa67eeee233cc8",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-146",
+      "file": "src/main/domain/recovery.ts",
+      "symbol": "applySafetyIncidentResolved",
+      "line": 484,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE safety_incident SET status = 'RESOLVED', resolved_by = ?, resolved_at = ?, requires_review_before_next_session = 0, updated_at = datetime('now') WHERE incident_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "4b67b3ad12734ff4c0a62a8873b8f9af03ffbb7e11b8fed05f786f71407ba2b4",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-147",
+      "file": "src/main/domain/recovery.ts",
+      "symbol": "applySafetyIncidentVoided",
+      "line": 508,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE safety_incident SET status = 'VOIDED', void_reason = ?, replacement_incident_id = ?, resolved_by = ?, resolved_at = ?, requires_review_before_next_session = 0, updated_at = datetime('now') WHERE incident_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "c3125dd0a2a5c4918bd3f0694950cff1ea1aba8a682bc95d9da840cfb24f4625",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-148",
+      "file": "src/main/domain/recovery.ts",
+      "symbol": "writeRecoverySnapshot",
+      "line": 606,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO snapshot_meta (snapshot_id, snapshot_sequence, last_applied_event_id, last_applied_sequence, sqlite_file_hash, action_log_path, archived_log_path, schema_version, app_version) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "5f4051c079f64798969a28b2b2ab8227975d2825ffaf9bf53260992465c194ca",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-149",
+      "file": "src/main/domain/report-errors.ts",
+      "symbol": "recordReportError",
+      "line": 28,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO error_event_log ( error_event_id, error_code, severity, error_category, related_aggregate_type, related_aggregate_id, message, context_json, stack_trace, recovery_action, recovery_status ) VALUES (?, ?, 'ERROR', 'REPORT', ?, ?, ?, ?, ?, ?, 'UNRESOLVED')` ).run",
+      "detail": "",
+      "fingerprint": "630f4a5a72c0e3bcecb42ac9a773ac11923ff5119e14c7048f27791f0ee16236",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-150",
+      "file": "src/main/domain/report-export.ts",
+      "symbol": "completeReportHtmlExport",
+      "line": 128,
+      "kind": "FILE_WRITEFILESYNC",
+      "callee": "writeFileSync",
+      "detail": "",
+      "fingerprint": "7c5e536fffccf060f52a065b63334513f62e5bd2a450d59cb886ce048589d8bd",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-151",
+      "file": "src/main/domain/report-export.ts",
+      "symbol": "buildIntent",
+      "line": 153,
+      "kind": "FILE_RENAMESYNC",
+      "callee": "renameSync",
+      "detail": "",
+      "fingerprint": "04cd2def290a2efe140926b0a5d3aad54ea7a4348d78218ac40f57002c4fe28f",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-152",
+      "file": "src/main/domain/report-export.ts",
+      "symbol": "cleanupTempFile",
+      "line": 275,
+      "kind": "FILE_RMSYNC",
+      "callee": "rmSync",
+      "detail": "",
+      "fingerprint": "c10d40749876e44866ce06987430dfa81cf64afc7f033e068d55c2eede2daaa4",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-153",
+      "file": "src/main/domain/report-reducer.ts",
+      "symbol": "markReportEventApplied",
+      "line": 145,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE domain_event_projection SET applied_to_snapshot = 1, applied_at = COALESCE(applied_at, ?) WHERE event_id = ? AND schema_version = 2` ).run",
+      "detail": "",
+      "fingerprint": "01af8a12bacf53a5a00acf1e2aa845e5c4428e372a0b67d0b640a9899ec2b4a7",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-154",
+      "file": "src/main/domain/report-reducer.ts",
+      "symbol": "setReportsStatus",
+      "line": 250,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( 'UPDATE task_report SET status = ?, last_applied_event_id = ? WHERE report_id = ?' ).run",
+      "detail": "",
+      "fingerprint": "0a49fd70fd961aa974ad64e6a20043fcb0be322545bc7111ea4440402694f454",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-155",
+      "file": "src/main/domain/report-reducer.ts",
+      "symbol": "supersedeClosures",
+      "line": 263,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE task_closure SET status = 'SUPERSEDED', is_cycle_head = 0, last_applied_event_id = ?, updated_at = datetime('now') WHERE task_closure_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "a62beb2ad336cab0c5efef6bbec4a132e48c1d9cf6bbc538f4cce6d91cb669a7",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-156",
+      "file": "src/main/domain/report-reducer.ts",
+      "symbol": "insertClosure",
+      "line": 278,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO task_closure ( task_closure_id, student_id, job_code, task_code, cycle_no, closure_revision, status, is_cycle_head, ability_result_id, training_completion_result_id, operation_pass_rate_result_id, ability_source_aggregate_id, training_source_aggregate_id, operation_source_aggregate_id, replaces_task_closure_id, correction_reason, confirmed_by, confirmed_event_id, confirmed_at, last_applied_event_id ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "21e0bd7a931521edb5706ac57ce3df880cb757b1101c6e3d294d71f6106ff73a",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-157",
+      "file": "src/main/domain/report-reducer.ts",
+      "symbol": "applyTaskClosureReplaced",
+      "line": 383,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE task_closure SET status = 'SUPERSEDED', is_cycle_head = 0, last_applied_event_id = ?, updated_at = datetime('now') WHERE task_closure_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "a9052541d2bfc9cee70f857e8ab6ce1a4a7232bae006a326555f522ad0154635",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-158",
+      "file": "src/main/domain/report-reducer.ts",
+      "symbol": "applyTaskClosureReplaced",
+      "line": 399,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( 'UPDATE task_closure SET replacement_task_closure_id = ?, last_applied_event_id = ?, updated_at = datetime(\\'now\\') WHERE task_closure_id = ?' ).run",
+      "detail": "",
+      "fingerprint": "ad465610b875cda7a4b6f4d20e6485723b44b700ebab282d52c726de6e145c9e",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-159",
+      "file": "src/main/domain/report-reducer.ts",
+      "symbol": "applyReportGenerated",
+      "line": 417,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO task_report ( report_id, report_type, student_id, source_aggregate_type, source_aggregate_id, source_result_ids_json, report_title, report_content_json, generated_event_id, generated_by, generated_at, task_closure_id, repair_of_report_id, lineage_key, source_set_hash, generation_key, content_hash, report_revision, report_schema_version, report_builder_version, generation_reason, contract_validation_status, last_applied_event_id, status ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'VALID', ?, 'GENERATED')` ).run",
+      "detail": "",
+      "fingerprint": "5989b2901ee72f254a816dc18c1b527bdd9fe51887ca7a9d19dfe97cb9f4b356",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-160",
+      "file": "src/main/domain/report-reducer.ts",
+      "symbol": "applyPlacementReview",
+      "line": 473,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE task_report SET placement_review_by = ?, placement_review_at = ?, last_applied_event_id = ? WHERE report_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "29f6f544fe73e9dc26aef499c851e58913f3731277c190acab108d5cbfbe2fd7",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-161",
+      "file": "src/main/domain/report-reducer.ts",
+      "symbol": "applyReportLocked",
+      "line": 488,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE task_report SET status = 'LOCKED', last_applied_event_id = ? WHERE report_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "bb1a55eb3123536ac2e74cd8c66a448b5c58cd19ac63336201395184909687d5",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-162",
+      "file": "src/main/domain/report-reducer.ts",
+      "symbol": "applyReportExported",
+      "line": 527,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO asset_resource (asset_id, asset_type, asset_role, app_uri, local_path, mime_type, file_hash, file_size_bytes, status, last_verified_at) VALUES (?, 'OTHER', 'REPORT_FILE', ?, ?, ?, ?, ?, 'ACTIVE', ?)` ).run",
+      "detail": "",
+      "fingerprint": "c4e033726a738d9ab0f2ff2e90e3d9d098e538376a8593f16f4fbc6ed2af88cf",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-163",
+      "file": "src/main/domain/report-reducer.ts",
+      "symbol": "applyReportExported",
+      "line": 541,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE task_report SET file_asset_id = ?, file_path = ?, file_hash = ?, status = ?, last_applied_event_id = ? WHERE report_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "2dc4981d4da2852cdfd03d9947eabb1e8d4cdd6cf9c0e8039ecfd630a4353f18",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-164",
+      "file": "src/main/domain/report-reducer.ts",
+      "symbol": "applySafetyIncidentVoided",
+      "line": 567,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE safety_incident SET status = 'VOIDED', void_reason = ?, replacement_incident_id = ?, resolved_by = ?, resolved_at = ?, requires_review_before_next_session = 0, updated_at = datetime('now') WHERE incident_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "5248309afb7372fb0dbec6393595bf6fe3a656006f70336a6f19f0081ea9e3c6",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-165",
+      "file": "src/main/domain/report-reducer.ts",
+      "symbol": "applySafetyIncidentFactualCorrection",
+      "line": 618,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO safety_incident (incident_id, student_id, job_code, task_code, trigger_event_id, reason_code, description, triggered_by, context_phase, occurred_at, status, requires_review_before_next_session) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING_DETAIL', 1)` ).run",
+      "detail": "",
+      "fingerprint": "80bf4a55f5d5c78ade65377b5ce2535054b88cff6863bbb6611e19c0dcfcf8a2",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-166",
+      "file": "src/main/domain/report-reducer.ts",
+      "symbol": "applySafetyIncidentFactualCorrection",
+      "line": 635,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE safety_incident SET status = 'CONFIRMED', confirmed_by = ?, updated_at = datetime('now') WHERE incident_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "11e45b86bbedd92dbab3371fb70aa9677ed4b47d1feb971d00cee411b2827e74",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-167",
+      "file": "src/main/domain/report-reducer.ts",
+      "symbol": "applySafetyIncidentFactualCorrection",
+      "line": 640,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE safety_incident SET status = 'VOIDED', void_reason = 'FACTUAL_CORRECTION', replacement_incident_id = ?, resolved_by = ?, resolved_at = ?, requires_review_before_next_session = 0, updated_at = datetime('now') WHERE incident_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "57a2c6ab97d51359fbf40fa1923cad7bae3e9ec1517b76eed6b8a7e4e588c827",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-168",
+      "file": "src/main/domain/report-service.ts",
+      "symbol": "writeBuiltReportSynchronously",
+      "line": 308,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "f0054dca93c9916720afe2d6955c3b0d6f85bab97b6cd22a8e00331eb1070fd1",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-169",
+      "file": "src/main/domain/report-service.ts",
+      "symbol": "writeBuiltReportSynchronously",
+      "line": 321,
+      "kind": "DB_RUN",
+      "callee": "db.prepare('UPDATE domain_event_projection SET schema_version = 2 WHERE event_id = ?').run",
+      "detail": "",
+      "fingerprint": "2904cc548ded4c9391ec1aae9e9074aca006a6319d1468baa8c397e66e19d64c",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-170",
+      "file": "src/main/domain/training-reducer.ts",
+      "symbol": "ensureBusinessSession",
+      "line": 44,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO business_session (business_session_id, session_type, student_id, job_code, task_code, created_by) VALUES (?, ?, ?, ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "28ebff8fc012ebc326dc8b3fbba791d0cbf3274ac3708aaae87a06728ff9f4d5",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-171",
+      "file": "src/main/domain/training-reducer.ts",
+      "symbol": "applyTrainingStarted",
+      "line": 106,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO training_session ( training_session_id, business_session_id, student_id, job_code, task_code, strategy_id, strategy_type, strategy_version, status, module_type, total_step_count, completed_step_count, created_by, updated_at, created_event_id, last_applied_event_id, last_status_event_id ) VALUES (?, ?, ?, ?, ?, ?, 'TRAINING_PRACTICE', ?, 'INIT', ?, 4, 0, ?, datetime('now'), ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "c7ea7b689315693d7bd90fdc7dba6bac954cbaa0f47e50e9c1ebd7720da1e61b",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-172",
+      "file": "src/main/domain/training-reducer.ts",
+      "symbol": "applyTrainingStarted",
+      "line": 136,
+      "kind": "DB_RUN",
+      "callee": "stepStmt.run",
+      "detail": "",
+      "fingerprint": "3f32e7ec31a75a4cee644b6b103ffd31d47228ba0a939cf524f67c65144c20b2",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-173",
+      "file": "src/main/domain/training-reducer.ts",
+      "symbol": "applyStepStarted",
+      "line": 152,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE training_step_record SET status = 'IN_PROGRESS', started_at = ?, attempt_count = attempt_count + 1, last_applied_event_id = ?, updated_at = datetime('now') WHERE training_step_record_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "4bbb33eac024c41598d84fee91836d8215f3e934602ecb02c8e9a6fa135d508d",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-174",
+      "file": "src/main/domain/training-reducer.ts",
+      "symbol": "applyStepStarted",
+      "line": 164,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE training_session SET status = 'ACTIVE', started_at = ?, last_applied_event_id = ?, last_status_event_id = ?, updated_at = datetime('now') WHERE training_session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "e164c3cd0e2ed5b46c8f82513a3a3c2dbf685bb992d87e42cbfb0dc098ab9a38",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-175",
+      "file": "src/main/domain/training-reducer.ts",
+      "symbol": "applyStepStarted",
+      "line": 170,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE training_session SET last_applied_event_id = ?, updated_at = datetime('now') WHERE training_session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "b11844286effbffc6f4c1e6739a524c59c2122023d3a1e101ad819aa7428ef5d",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-176",
+      "file": "src/main/domain/training-reducer.ts",
+      "symbol": "applyStepCompleted",
+      "line": 184,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE training_step_record SET status = 'COMPLETED', completed_at = ?, last_applied_event_id = ?, updated_at = datetime('now') WHERE training_step_record_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "0b68e8bdaf6a4d1f8ac34d77d9538b031b23b66064dface09e14c7ff351227bb",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-177",
+      "file": "src/main/domain/training-reducer.ts",
+      "symbol": "applyStepCompleted",
+      "line": 190,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE training_session SET completed_step_count = completed_step_count + 1, last_applied_event_id = ?, updated_at = datetime('now') WHERE training_session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "44b7747130d1ac123d965bf484d30274770aceb861959a6c9304bb5958cc1d60",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-178",
+      "file": "src/main/domain/training-reducer.ts",
+      "symbol": "applyStepSkipped",
+      "line": 205,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE training_step_record SET status = 'SKIPPED', last_applied_event_id = ?, updated_at = datetime('now') WHERE training_step_record_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "3144ab5755ce58d968cfa7fd4f7cae6e90d9e6b6a803438ea5e4f329879c13fd",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-179",
+      "file": "src/main/domain/training-reducer.ts",
+      "symbol": "applyStepSkipped",
+      "line": 211,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE training_session SET last_applied_event_id = ?, updated_at = datetime('now') WHERE training_session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "4fbca5194bfd083488628c0d66c6b374eacd6a271e3cc1b3d9bb9620a2bb9677",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-180",
+      "file": "src/main/domain/training-reducer.ts",
+      "symbol": "applyStepFailed",
+      "line": 224,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE training_step_record SET status = 'FAILED', last_applied_event_id = ?, updated_at = datetime('now') WHERE training_step_record_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "584e91e1a194d6514f2ec82a14a988883ab86439b957379db9a1824ddc1b5528",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-181",
+      "file": "src/main/domain/training-reducer.ts",
+      "symbol": "applyStepFailed",
+      "line": 230,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE training_session SET last_applied_event_id = ?, updated_at = datetime('now') WHERE training_session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "1218353dc4dea608786175593269d4eb05f1de85767bdb6246da79e619abee01",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-182",
+      "file": "src/main/domain/training-reducer.ts",
+      "symbol": "applyStepRetried",
+      "line": 243,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE training_step_record SET status = 'IN_PROGRESS', attempt_count = ?, last_applied_event_id = ?, updated_at = datetime('now') WHERE training_step_record_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "0f6c8839dc03fa68735706308399758ae9bd05cbd5cecacdee36aa58faa5c57a",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-183",
+      "file": "src/main/domain/training-reducer.ts",
+      "symbol": "applyStepRetried",
+      "line": 249,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE training_session SET last_applied_event_id = ?, updated_at = datetime('now') WHERE training_session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "6b78eff2854b20e9dd567e34c3e6430c8c3f47b9cc3e2d19ccb3ddb56c161452",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-184",
+      "file": "src/main/domain/training-reducer.ts",
+      "symbol": "applyTrainingCompleted",
+      "line": 264,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE training_session SET status = 'COMPLETED', completed_at = ?, completion_rate = ?, completed_step_count = ?, last_applied_event_id = ?, last_status_event_id = ?, updated_at = datetime('now') WHERE training_session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "953f6245087eb7925b5003232f215d9ea48f3616a70b50d7f61412fc5a7c6c6a",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-185",
+      "file": "src/main/domain/training-reducer.ts",
+      "symbol": "applyTrainingCompleted",
+      "line": 323,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT OR IGNORE INTO result_record ( result_id, result_type, source_aggregate_type, source_aggregate_id, student_id, strategy_id, strategy_type, job_code, module_type, normalized_score, level_result, completion_ratio, generated_event_id, generated_at, safety_overridden ) VALUES (?, 'TRAINING_COMPLETION', 'TRAINING_SESSION', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)` ).run",
+      "detail": "",
+      "fingerprint": "2f2b062a055086a900a0d7e8988b56626aa33d374a2e33214bfb80d011cbaba7",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-186",
+      "file": "src/main/index.ts",
+      "symbol": "<module>",
+      "line": 33,
+      "kind": "FILE_MKDIRSYNC",
+      "callee": "mkdirSync",
+      "detail": "",
+      "fingerprint": "ade924c9748751f2bfa6a9af5da906b47bd90511930cd7653a7d56f2c853da89",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-187",
+      "file": "src/main/ipc/handlers/ability-scoring.ts",
+      "symbol": "submitOfflineAbilityScores",
+      "line": 284,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "0af384a1040a09d2b3b3734f4b666ef024e772f6aa5b1525084adc04df9819c4",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-188",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "seedAssessmentErrorCodes",
+      "line": 275,
+      "kind": "DB_RUN",
+      "callee": "stmt.run",
+      "detail": "",
+      "fingerprint": "6b57dcc842607866361ce4730477f887dbc1bb732ade072559bc2f54e35f66e8",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-189",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "logAssessmentEvent",
+      "line": 294,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO error_event_log (error_event_id, error_code, severity, error_category, related_aggregate_type, related_aggregate_id, message, context_json, recovery_status, created_at) VALUES (?, ?, ?, 'SYSTEM', 'ASSESSMENT_SESSION', ?, ?, ?, ?, datetime('now'))` ).run",
+      "detail": "",
+      "fingerprint": "cf3f07895de7d7dfaa7599eaf0403128e8abee7fed90ee03f17ce6711ea95d8b",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-190",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "createSession",
+      "line": 646,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "143d935c1259184f238dc74ea8c3efb129309d820a8c5da3cd6df2b86d2f51e2",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-191",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "submitAnswer",
+      "line": 930,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "024f653a571f67e8c6544a0d2af8bf383e59aa86591941606a27d2297eb428ea",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-192",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "emotionInterrupt",
+      "line": 999,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "478df72f693f3e7c765b6fda8049005bbd81a86c598e26540d6e0b64a44c0a8a",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-193",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "emotionResume",
+      "line": 1067,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "a98b439776567c7eb0ecb179eceff65de644c99d9e84aebb7821ba663db8796a",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-194",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "pauseSitting",
+      "line": 1119,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "19a4322d18c08bdbe6ca3e737e87453eda5b7510320161f89532cd521cd260cb",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-195",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "startNextSitting",
+      "line": 1156,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "da99872274cc10a1fd5d8319d7b5c7a285d3b58270e71ebfd05f9c484955d354",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-196",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "recordEmotionCollapse",
+      "line": 1201,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "67966c2e9ff53b45cc5a86e0b39bad65352e447d9d94bbbafea9984ec40a5b25",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-197",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "recordEmotionCollapse",
+      "line": 1211,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "60f18e7beec9fdaedb705af169f5089ded9457997307ef8733b4bef90ee6f5f0",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-198",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "recordEmotionCollapse",
+      "line": 1221,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "b1fe7a8bb2955a8b9e671c13c481a62d9b5614556990baa787b7ce63a7bb0a36",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-199",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "recordEmotionCollapse",
+      "line": 1231,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "344ef14e66acd8b38db34a3973d2ac1d8c2c34c6e5e50f5665e0ac1380444efb",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-200",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "abortSession",
+      "line": 1363,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "7f42692c1276778405232eb85cd074903d11395efd80f70d665a9cd93514db17",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-201",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "abortSession",
+      "line": 1380,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "e04536130b0a16174b6104f5bd5c8c8fa4e765e3c2a0b483dde47d366022425b",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-202",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "persistAbilityResult",
+      "line": 1476,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "89060c76b484190c007e36ee2b5c8d12963dce1bfdacbfec52f4c81ee6fba8d7",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-203",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "persistCompletedAbilityResult",
+      "line": 1538,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "3c0e90dd5d32442cbf153c2baaf354543e065cc47fd7d20df4d4196c441dac83",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-204",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "triggerRedline",
+      "line": 1656,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "bbdae37d013a7a4002365c4e2e5e43fa5c2c0498611d4bbe3c0a264c5d9fc267",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-205",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "triggerRedline",
+      "line": 1666,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO safety_incident (incident_id, student_id, job_code, task_code, trigger_event_id, reason_code, triggered_by, context_phase, occurred_at, status, requires_review_before_next_session) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING_DETAIL', 1)` ).run",
+      "detail": "",
+      "fingerprint": "90453621da148ebe2ff205d7c75b08dc7f87e7fc987953bc1c3311d9d9a8ccc4",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-206",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "triggerRedline",
+      "line": 1694,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "8f4946c1f526665a61f38f1adbf23df234c7d756f8ad3a90f24b9b37697be15d",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-207",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "startSession",
+      "line": 2286,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "b5e797fa7bfc31c030d9b8ccbdc85563f2f0c8fb65c0b5e3e9d528abd663b400",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-208",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "startSession",
+      "line": 2353,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "264d019d010262e1f9ee91adb6f67aaccca17f581352ac097c8ab53362ef43b2",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-209",
+      "file": "src/main/ipc/handlers/assessment.ts",
+      "symbol": "startSession",
+      "line": 2363,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "e8af1a7c033b2e47edd6cffc542d1c6bb0d6a75ca6c1f5d690690fa7d1793187",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-210",
+      "file": "src/main/ipc/handlers/assignment.ts",
+      "symbol": "createAssignment",
+      "line": 319,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "887d1913ec4dfe5eeae6c57a1af09d27e560f7e5b13b62a811d5ee2274293818",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-211",
+      "file": "src/main/ipc/handlers/assignment.ts",
+      "symbol": "confirmStudentAssignment",
+      "line": 400,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "2afa350ce4ea58be3f793aee0b59de1d7874acd9af9a481af46f1545b599f978",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-212",
+      "file": "src/main/ipc/handlers/assignment.ts",
+      "symbol": "startAssignedAssessment",
+      "line": 481,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "b13729c13db101ed0868903d805a886d2767b3787b98c127d4008478239d2fce",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-213",
+      "file": "src/main/ipc/handlers/assignment.ts",
+      "symbol": "rebindAssignment",
+      "line": 575,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "e21460df8b9f9e7c173d1fcf08366a353711d185daf87728e54ea24e9f5b3e04",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-214",
+      "file": "src/main/ipc/handlers/assignment.ts",
+      "symbol": "releaseAssignment",
+      "line": 640,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "299df25b318a6897efde43ba61c23069b281bff4b614109fa3efabc48f72b8b0",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-215",
+      "file": "src/main/ipc/handlers/auth.ts",
+      "symbol": "seedAuthErrorCodes",
+      "line": 69,
+      "kind": "DB_RUN",
+      "callee": "stmt.run",
+      "detail": "",
+      "fingerprint": "9b39599a0633bb9bc65e028672275006a6ecc3b0e9c93859b70b3d5f628f5d65",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-216",
+      "file": "src/main/ipc/handlers/auth.ts",
+      "symbol": "logAuth",
+      "line": 75,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO error_event_log (error_event_id, error_code, severity, error_category, message, created_at) VALUES ( ?, ?, COALESCE((SELECT severity FROM error_code_registry WHERE error_code = ?), 'INFO'), 'AUTH', ?, datetime('now') )` ).run",
+      "detail": "",
+      "fingerprint": "7ca7a3c69ac12238341a7682a3b598e55674c156d5a9a2fd235f07e518119a40",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-217",
+      "file": "src/main/ipc/handlers/auth.ts",
+      "symbol": "createTeacherAccount",
+      "line": 215,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO user_account (user_id, username, password_hash, role, display_name, status) VALUES (?, ?, ?, 'TEACHER', ?, 'ACTIVE')` ).run",
+      "detail": "",
+      "fingerprint": "ed668e746078b99c67946f74186edc91cf3dbb50934db9c2c7d06f6c99c198e2",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-218",
+      "file": "src/main/ipc/handlers/auth.ts",
+      "symbol": "setTeacherAccountStatus",
+      "line": 266,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE user_account SET status = ?, updated_at = datetime('now') WHERE user_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "c5918cf50a9b4ff033d49ff2fdda3d6873f5fe30744d8ece7d2e530a5473bd7f",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-219",
+      "file": "src/main/ipc/handlers/auth.ts",
+      "symbol": "setTeacherAccountStatus",
+      "line": 277,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE auth_session SET status = 'REVOKED', revoke_reason = 'ACCOUNT_DISABLED_BY_ADMIN', updated_at = datetime('now') WHERE user_id = ? AND status = 'ACTIVE'` ).run",
+      "detail": "",
+      "fingerprint": "424627cd89fddc52770bb5094d58714f3243794a3c89341c5f5e72dadf03f26c",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-220",
+      "file": "src/main/ipc/handlers/job-skill-result.ts",
+      "symbol": "finalizeJobSkillResultCore",
+      "line": 345,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "3260b18b004de5bea221dcf52f1cfccbb2c5914157a2c9cbaacfd06c70c8c470",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-221",
+      "file": "src/main/ipc/handlers/job-skill-result.ts",
+      "symbol": "finalizeJobSkillResultCore",
+      "line": 362,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "10bcfcd3c5a56d4f4da212c006f614a80b3d453d0b7133604e29d9d67862ee5d",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-222",
+      "file": "src/main/ipc/handlers/job-skill-scoring.ts",
+      "symbol": "submitJobSkillOfflineScores",
+      "line": 289,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "ac37d83bde1c39988b0c25d3c1c38bffc4b8bbf7b02c3fcff1c19fe8c7058660",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-223",
+      "file": "src/main/ipc/handlers/observation.ts",
+      "symbol": "recordTeacherObservation",
+      "line": 148,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "dc2098e7006b41c8ad88f42989d4ca2150e677da007a50da96985d770a22def7",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-224",
+      "file": "src/main/ipc/handlers/operation-scoring.ts",
+      "symbol": "submitOperationScores",
+      "line": 195,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "10c401ee9b8dbdaccab0b9204bb4545b4889506d7bae0e6e2555523ca545ce98",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-225",
+      "file": "src/main/ipc/handlers/operation-scoring.ts",
+      "symbol": "submitOperationScores",
+      "line": 254,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "57cc81498ea350bc2810b63cddb6902d2bab53b5bdd840a14dc6083a768c120f",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-226",
+      "file": "src/main/ipc/handlers/reports.ts",
+      "symbol": "showReportSaveDialog",
+      "line": 793,
+      "kind": "FILE_MKDIRSYNC",
+      "callee": "mkdirSync",
+      "detail": "",
+      "fingerprint": "5d333c5e3c7c3d8f4660ab0017658fc70b35e3b099fcc68ccbe781f0301a6c5f",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-227",
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "confirmSafetyIncident",
+      "line": 271,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "0836b57375c15f4378a8dd4c75e11dc8ca412382b64c506f755e54dc1e106ae5",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-228",
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "confirmSafetyIncident",
+      "line": 276,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE safety_incident SET reason_code = ?, context_phase = ?, description = ?, confirmed_by = ?, status = 'CONFIRMED', updated_at = datetime('now') WHERE incident_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "e16b2a55fcc7f305da194799abadf9366138d9c318d25d111b993cd23bcfcac8",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-229",
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "resolveSafetyIncident",
+      "line": 308,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "a087bd3339acd9225e11513088a76f1b42e8d403c253e6f2ee41eb2c7b179e91",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-230",
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "resolveSafetyIncident",
+      "line": 313,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE safety_incident SET status = 'RESOLVED', resolved_by = ?, resolved_at = ?, requires_review_before_next_session = 0, updated_at = datetime('now') WHERE incident_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "5eaa816a27fa7eac013c7f5892c2a648d27a44abaf3e9860044827d14a4368be",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-231",
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "voidIncident",
+      "line": 340,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "aff9c9a17ec12b8b953886987996e378837424fa59d885360d1922c416a2e398",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-232",
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "voidIncident",
+      "line": 345,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE safety_incident SET status = 'VOIDED', void_reason = ?, replacement_incident_id = ?, resolved_by = ?, resolved_at = ?, requires_review_before_next_session = 0, updated_at = datetime('now') WHERE incident_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "eebdab6e89bc358340e6dea84a9b25a4bd3a31d6cb5efc2dd897949179b43d1a",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-233",
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "replaceSafetyIncidentForFactualCorrection",
+      "line": 494,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "bd55556ca8d49e57fe2a2422a8fc602d4eff96f6e9beafd6c9ce8a6584c68610",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-234",
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "replaceSafetyIncidentForFactualCorrection",
+      "line": 499,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO safety_incident (incident_id, student_id, job_code, task_code, trigger_event_id, reason_code, description, triggered_by, context_phase, occurred_at, status, requires_review_before_next_session) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING_DETAIL', 1)` ).run",
+      "detail": "",
+      "fingerprint": "348aaea90d1d3a2872547dda57d1c70381f19f7bda19266ab3f8f16db5e0cc0c",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-235",
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "replaceSafetyIncidentForFactualCorrection",
+      "line": 510,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "b3f2da4143a319bcbf2edafd0bcf4b8af6679b0c820b22e6c94b841c55400b6d",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-236",
+      "file": "src/main/ipc/handlers/strategy.ts",
+      "symbol": "seedStrategyErrorCodes",
+      "line": 102,
+      "kind": "DB_RUN",
+      "callee": "stmt.run",
+      "detail": "",
+      "fingerprint": "892c1678aa3976b4ffd84a7e12393b4d3cb1a742713f00e9a5059e42dbeb33d3",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-237",
+      "file": "src/main/ipc/handlers/strategy.ts",
+      "symbol": "logStrategyEvent",
+      "line": 123,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO error_event_log (error_event_id, error_code, severity, error_category, related_aggregate_type, related_aggregate_id, message, context_json, recovery_status, created_at) VALUES (?, ?, ?, 'SYSTEM', 'STRATEGY_CONFIG', ?, ?, ?, ?, datetime('now'))` ).run",
+      "detail": "",
+      "fingerprint": "2a91a4d2d269b12d5910ca68d4767bab235d253ca8213a50a239ac730ea0dbd0",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-238",
+      "file": "src/main/ipc/handlers/strategy.ts",
+      "symbol": "createVersion",
+      "line": 493,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO strategy_config (strategy_id, strategy_type, job_code, strategy_name, online_question_count, offline_question_count, max_score, competent_threshold, conditional_threshold, module_veto_threshold, emotion_collapse_threshold, question_policy_json, scoring_policy_json, supports_redline_halt, allows_emotion_interrupt, requires_offline_scoring, version, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "97919952eca2278fff1760a0617a77b3f147a98fcf1d791430587062811ad06a",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-239",
+      "file": "src/main/ipc/handlers/strategy.ts",
+      "symbol": "updateStrategy",
+      "line": 761,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE strategy_config SET ${UPDATE_FIELDS[key]} = ?, updated_at = datetime('now') WHERE strategy_id = ? AND version = ?` ).run",
+      "detail": "",
+      "fingerprint": "2b9836c139a078b44a6c87bc973356ed7e41f486e168c201fb66aa30079a2f19",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-240",
+      "file": "src/main/ipc/handlers/strategy.ts",
+      "symbol": "setActive",
+      "line": 827,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE strategy_config SET is_active = ?, updated_at = datetime('now') WHERE strategy_id = ? AND version = ?` ).run",
+      "detail": "",
+      "fingerprint": "6b5e3af8c4fd8cd754e42f74f0030fe1517921d865a81a6265672b878f96571e",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-241",
+      "file": "src/main/ipc/handlers/student.ts",
+      "symbol": "seedStudentErrorCodes",
+      "line": 81,
+      "kind": "DB_RUN",
+      "callee": "stmt.run",
+      "detail": "",
+      "fingerprint": "1f0994bec6c846530d8ee90537f68536245a0ed9a499934efe6dde7f3fee8eda",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-242",
+      "file": "src/main/ipc/handlers/student.ts",
+      "symbol": "logStudentEvent",
+      "line": 101,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO error_event_log (error_event_id, error_code, severity, error_category, related_aggregate_type, related_aggregate_id, message, context_json, recovery_status, created_at) VALUES (?, ?, ?, 'SYSTEM', 'STUDENT_PROFILE', ?, ?, ?, ?, datetime('now'))` ).run",
+      "detail": "",
+      "fingerprint": "e63ad11ef914518c20b237e03a3b090979509e0220f987062940828cedc85e72",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-243",
+      "file": "src/main/ipc/handlers/student.ts",
+      "symbol": "createStudent",
+      "line": 146,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO user_account (user_id, username, password_hash, role, display_name, status) VALUES (?, ?, ?, 'STUDENT', ?, 'ACTIVE')` ).run",
+      "detail": "",
+      "fingerprint": "62c2ac626bbc952442270189a3cd4039920fccb07cc65c5101e7885cf5c7a94e",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-244",
+      "file": "src/main/ipc/handlers/student.ts",
+      "symbol": "createStudent",
+      "line": 150,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO student_profile (student_id, student_name, gender, birth_date, guardian_contact, sensory_profile_json, user_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'ACTIVE')` ).run",
+      "detail": "",
+      "fingerprint": "954aaf5990008316a7f56c0dd1cb53c8f21a50b7b811e26f25f969bb66b52be4",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-245",
+      "file": "src/main/ipc/handlers/student.ts",
+      "symbol": "updateStudent",
+      "line": 380,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE student_profile SET ${UPDATE_FIELDS[key]} = ?, updated_at = datetime('now') WHERE student_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "0b57a18e97b2d8cb735080180fae24fd463f825dd1f383e63e181b28a58c2882",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-246",
+      "file": "src/main/ipc/handlers/student.ts",
+      "symbol": "updateStudent",
+      "line": 385,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE user_account SET display_name = ?, updated_at = datetime('now') WHERE user_id = ? AND role = 'STUDENT'` ).run",
+      "detail": "",
+      "fingerprint": "11ce4be801d62a2efb3465ac8072c1e3f4059ffca23a38ebf94835c5038ea058",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-247",
+      "file": "src/main/ipc/handlers/student.ts",
+      "symbol": "archiveStudent",
+      "line": 441,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE student_profile SET status = 'ARCHIVED', updated_at = datetime('now') WHERE student_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "b563b7d1e59c46ef000b72a272a1bc35992ea3ad2bd1a4012024d749af089191",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-248",
+      "file": "src/main/ipc/handlers/student.ts",
+      "symbol": "archiveStudent",
+      "line": 446,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE user_account SET status = 'DISABLED', updated_at = datetime('now') WHERE user_id = ? AND role = 'STUDENT'` ).run",
+      "detail": "",
+      "fingerprint": "b0a918fa94f7f2d05a3dc2a4b7f6afde5a96e509e6568ea659c0ffb5b776d4a9",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-249",
+      "file": "src/main/ipc/handlers/training.ts",
+      "symbol": "createTrainingSession",
+      "line": 156,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "4545db558247654a3aab8b51fbfc3b6cb2c69e5c9a294853d10406669cdeae7d",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-250",
+      "file": "src/main/ipc/handlers/training.ts",
+      "symbol": "finalizeTrainingSession",
+      "line": 221,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "4a3187ce7435ca27c69ca61c153230f985d919415cb13eef9b362b7366e054e5",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-251",
+      "file": "src/main/ipc/handlers/training.ts",
+      "symbol": "startStep",
+      "line": 566,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "4b300687fefada1a448522f33d7bfd0b5f6d516e79d64e087888b810083b92b9",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-252",
+      "file": "src/main/ipc/handlers/training.ts",
+      "symbol": "completeStep",
+      "line": 606,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "592e4a468c48931a910b87c7d16d4281cbab64232f117baa8ef5521d9839fa02",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-253",
+      "file": "src/main/ipc/handlers/training.ts",
+      "symbol": "skipStep",
+      "line": 649,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "fa663d810e79db29acf65b0c75e54105fd6041f2fc1b77f0b045865a829d6a8b",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-254",
+      "file": "src/main/ipc/handlers/training.ts",
+      "symbol": "failStep",
+      "line": 690,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "d5260eafb5118b89efd09d521561459c80418e00ba8bb57ccbeb20503f72b8fd",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-255",
+      "file": "src/main/ipc/handlers/training.ts",
+      "symbol": "retryStep",
+      "line": 733,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "bbfce0b6882b28ecfc2be926fefc35cadcf4818a7ebf7830a31a4dd9c620cd0c",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-256",
+      "file": "src/main/ipc/handlers/training.ts",
+      "symbol": "haltTrainingSessionSteps",
+      "line": 777,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE training_step_record SET status = 'FAILED', updated_at = datetime('now') WHERE training_session_id = ? AND status = 'IN_PROGRESS'` ).run",
+      "detail": "",
+      "fingerprint": "db041e56798f5ac3d70215f8c0c1cdd71dad01927365714ae8a7599b61a83c98",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-257",
+      "file": "src/main/utils/auth-session.ts",
+      "symbol": "markSessionExpired",
+      "line": 70,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE auth_session SET status = 'EXPIRED', updated_at = datetime('now') WHERE auth_session_id = ? AND status = 'ACTIVE'` ).run",
+      "detail": "",
+      "fingerprint": "f9ee0cb04bc6ad4203a3cfe947474d833d15d3d8a9a9a9ff9ba684aac1cc6e72",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-258",
+      "file": "src/main/utils/auth-session.ts",
+      "symbol": "revokeAuthSessionByToken",
+      "line": 84,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE auth_session SET status = 'REVOKED', revoke_reason = ?, updated_at = datetime('now') WHERE token_hash = ? AND status = 'ACTIVE'` ).run",
+      "detail": "",
+      "fingerprint": "442b3bcf9cce519593957a1abcedfb74adfda6c699d685a9e8483937a078aec6",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-259",
+      "file": "src/main/utils/auth-session.ts",
+      "symbol": "issuePasswordAuthSession",
+      "line": 101,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO auth_session (auth_session_id, user_id, auth_method, capabilities_json, token_hash, expires_at, status) VALUES (?, ?, 'PASSWORD', ?, ?, datetime('now', '+8 hours'), 'ACTIVE')` ).run",
+      "detail": "",
+      "fingerprint": "767d3c84f25e58789bbca4dd52b81593140193b67b5137b93bfb27d224c829b9",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-DIRECT-260",
+      "file": "src/main/utils/auth-session.ts",
+      "symbol": "resolveAuthSessionByToken",
+      "line": 173,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `UPDATE auth_session SET last_activity_at = datetime('now'), updated_at = datetime('now') WHERE auth_session_id = ?` ).run",
+      "detail": "",
+      "fingerprint": "7c17e03f0332dedb50bfe791963bcfb9f71d627bc2ffc5d7f7badc19479081c7",
+      "occurrence": 1
+    }
+  ],
+  "direct_files": [
+    {
+      "path": "src/main/db/connection.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    },
+    {
+      "path": "src/main/db/memory-adapter.ts",
+      "classification": "TEST_ONLY_EXCEPTION"
+    },
+    {
+      "path": "src/main/db/migration-backup.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    },
+    {
+      "path": "src/main/db/migration-startup.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    },
+    {
+      "path": "src/main/db/migrations.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    },
+    {
+      "path": "src/main/db/report-migration.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    },
+    {
+      "path": "src/main/db/safety-rekey-migration.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    },
+    {
+      "path": "src/main/db/sqlite-adapter.ts",
+      "classification": "LOW_LEVEL_PORT"
+    },
+    {
+      "path": "src/main/db/test-helpers.ts",
+      "classification": "TEST_ONLY_EXCEPTION"
+    },
+    {
+      "path": "src/main/domain/action-log-path.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    },
+    {
+      "path": "src/main/domain/assessment-reducer.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    },
+    {
+      "path": "src/main/domain/assignment-reducer.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    },
+    {
+      "path": "src/main/domain/event-writer.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    },
+    {
+      "path": "src/main/domain/local-runtime-context.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    },
+    {
+      "path": "src/main/domain/recovery.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    },
+    {
+      "path": "src/main/domain/report-errors.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    },
+    {
+      "path": "src/main/domain/report-export.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    },
+    {
+      "path": "src/main/domain/report-reducer.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    },
+    {
+      "path": "src/main/domain/report-service.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    },
+    {
+      "path": "src/main/domain/training-reducer.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    },
+    {
+      "path": "src/main/index.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    },
+    {
+      "path": "src/main/ipc/handlers/ability-scoring.ts",
+      "classification": "BUS_COMMAND_DIRECT"
+    },
+    {
+      "path": "src/main/ipc/handlers/assessment.ts",
+      "classification": "BUS_COMMAND_DIRECT"
+    },
+    {
+      "path": "src/main/ipc/handlers/assignment.ts",
+      "classification": "BUS_COMMAND_DIRECT"
+    },
+    {
+      "path": "src/main/ipc/handlers/auth.ts",
+      "classification": "BUS_COMMAND_DIRECT"
+    },
+    {
+      "path": "src/main/ipc/handlers/job-skill-result.ts",
+      "classification": "BUS_COMMAND_DIRECT"
+    },
+    {
+      "path": "src/main/ipc/handlers/job-skill-scoring.ts",
+      "classification": "BUS_COMMAND_DIRECT"
+    },
+    {
+      "path": "src/main/ipc/handlers/observation.ts",
+      "classification": "BUS_COMMAND_DIRECT"
+    },
+    {
+      "path": "src/main/ipc/handlers/operation-scoring.ts",
+      "classification": "BUS_COMMAND_DIRECT"
+    },
+    {
+      "path": "src/main/ipc/handlers/reports.ts",
+      "classification": "BUS_COMMAND_DIRECT"
+    },
+    {
+      "path": "src/main/ipc/handlers/safety.ts",
+      "classification": "BUS_COMMAND_DIRECT"
+    },
+    {
+      "path": "src/main/ipc/handlers/strategy.ts",
+      "classification": "BUS_COMMAND_DIRECT"
+    },
+    {
+      "path": "src/main/ipc/handlers/student.ts",
+      "classification": "BUS_COMMAND_DIRECT"
+    },
+    {
+      "path": "src/main/ipc/handlers/training.ts",
+      "classification": "BUS_COMMAND_DIRECT"
+    },
+    {
+      "path": "src/main/utils/auth-session.ts",
+      "classification": "PRODUCTION_INTERNAL_DIRECT"
+    }
+  ],
+  "capability_callsites": [
+    {
+      "id": "LEGACY-CAP-001",
+      "file": "src/main/db/connection.ts",
+      "symbol": "initDatabase",
+      "line": 72,
+      "kind": "LEGACY_RECOVERY_CALL",
+      "callee": "recoverActionLog",
+      "detail": "",
+      "fingerprint": "aefd74ce3bbfac1be0511456e79165ef2c9a9a3e25bf415e52057435d5e9c1d1",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-002",
+      "file": "src/main/db/connection.ts",
+      "symbol": "recoverActionLog",
+      "line": 142,
+      "kind": "LEGACY_RECOVERY_CALL",
+      "callee": "reconcileActionLog",
+      "detail": "",
+      "fingerprint": "56d4f8c9a8b59df89b9dbc275edd2c6d802f293fc0088a2c79baee616abaeee1",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-003",
+      "file": "src/main/domain/legacy-upgrade-recovery.ts",
+      "symbol": "preReconcileLegacyActionLog",
+      "line": 120,
+      "kind": "LEGACY_RECOVERY_CALL",
+      "callee": "reconcileActionLogEventGroup",
+      "detail": "",
+      "fingerprint": "5317c64ef8702fbe5976b255e374ce133a2aa0afc6fb9bdecd986ee6ed08af23",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-004",
+      "file": "src/main/domain/recovery.ts",
+      "symbol": "reconcileActionLog",
+      "line": 535,
+      "kind": "LEGACY_RECOVERY_CALL",
+      "callee": "reconcileActionLogEventGroup",
+      "detail": "",
+      "fingerprint": "cd1e582d3f290de861c702e6c5696d507799f90e77e2f5a1c634502642f77dfb",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-005",
+      "file": "src/main/domain/report-command-coordinator.ts",
+      "symbol": "<module>",
+      "line": 77,
+      "kind": "REPORT_COORDINATOR_DECLARATION",
+      "callee": "ReportCommandCoordinator",
+      "detail": "",
+      "fingerprint": "abe6e1b75a9e540cd0166a7a7087f2a4e0a3c8601a8e58cd12aec0d398db65cf",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-006",
+      "file": "src/main/domain/report-command-coordinator.ts",
+      "symbol": "ReportCommandCoordinator.constructor",
+      "line": 86,
+      "kind": "LEGACY_RECOVERY_CALL",
+      "callee": "reconcileActionLog",
+      "detail": "",
+      "fingerprint": "2b3168036d5c5c9b6134d8226ee42c1fa739031f4f3a8c9007b979360a1375db",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-007",
+      "file": "src/main/domain/report-export.ts",
+      "symbol": "<module>",
+      "line": 11,
+      "kind": "REPORT_COORDINATOR_IMPORT",
+      "callee": "ReportCommandCoordinator",
+      "detail": "./report-command-coordinator",
+      "fingerprint": "0048345882698a55717943bf2ea56c12e2c814c67fd2c667a674edd94e897daf",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-008",
+      "file": "src/main/domain/report-export.ts",
+      "symbol": "completeReportHtmlExport",
+      "line": 114,
+      "kind": "REPORT_COORDINATOR_INJECTION",
+      "callee": "ReportCommandCoordinator",
+      "detail": "",
+      "fingerprint": "3084edc6b6dadd075081cefd9e810b1322ad3a9f59a35309993012392ef0f583",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-009",
+      "file": "src/main/domain/report-export.ts",
+      "symbol": "completeReportHtmlExport",
+      "line": 135,
+      "kind": "REPORT_COMMAND_CALL",
+      "callee": "coordinator.runSingleEventCommand",
+      "detail": "",
+      "fingerprint": "b9619957f28a49534ca1d54c55455419236c1e71faaa7ad6f131b2587dc09cf6",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-010",
+      "file": "src/main/domain/report-service.ts",
+      "symbol": "<module>",
+      "line": 14,
+      "kind": "REPORT_COORDINATOR_IMPORT",
+      "callee": "ReportCommandCoordinator",
+      "detail": "./report-command-coordinator",
+      "fingerprint": "d3b97de5ae67df3d410bf2b073789c9b27713705158297e48a2a8a2cd8a120e3",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-011",
+      "file": "src/main/domain/report-service.ts",
+      "symbol": "ReportService.constructor",
+      "line": 80,
+      "kind": "REPORT_COORDINATOR_INJECTION",
+      "callee": "ReportCommandCoordinator",
+      "detail": "",
+      "fingerprint": "57bcc88fac6a87fd0be2452093b8290112a3648ab51b15989c46fd08e664324a",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-012",
+      "file": "src/main/domain/report-service.ts",
+      "symbol": "ReportService.generateInternal",
+      "line": 119,
+      "kind": "REPORT_COMMAND_CALL",
+      "callee": "this.coordinator.runSingleEventCommand",
+      "detail": "",
+      "fingerprint": "41e9f923152cc5c3ea2bbf9e9e9e6cb4f1013e979cfbb4b46514f9daa793cd02",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-013",
+      "file": "src/main/domain/report-service.ts",
+      "symbol": "ReportService.generateInternalSync",
+      "line": 196,
+      "kind": "REPORT_COMMAND_CALL",
+      "callee": "this.coordinator.runSingleEventCommandSync",
+      "detail": "",
+      "fingerprint": "422a42079f621d5840d5d6ee764e5a684ac3a54ccf0ba949631444a197c75ea8",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-014",
+      "file": "src/main/domain/task-closure-service.ts",
+      "symbol": "<module>",
+      "line": 9,
+      "kind": "REPORT_COORDINATOR_IMPORT",
+      "callee": "ReportCommandCoordinator",
+      "detail": "./report-command-coordinator",
+      "fingerprint": "a33a0a4a5314547faba1ebeb9ac8af5950dbeb083fa01caf71e2cd230933447f",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-015",
+      "file": "src/main/domain/task-closure-service.ts",
+      "symbol": "TaskClosureService.constructor",
+      "line": 81,
+      "kind": "REPORT_COORDINATOR_INJECTION",
+      "callee": "ReportCommandCoordinator",
+      "detail": "",
+      "fingerprint": "68733e237bff5b9240651fabba7cc2978155a1736373eb6455e6dfa8f423fd24",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-016",
+      "file": "src/main/domain/task-closure-service.ts",
+      "symbol": "TaskClosureService.confirmBaseTaskClosure",
+      "line": 100,
+      "kind": "REPORT_COMMAND_CALL",
+      "callee": "this.coordinator.runSingleEventCommand",
+      "detail": "",
+      "fingerprint": "de7b89b3cc64b09e950b1b57ac4baadba28d315eea1888b8a7e0f235b6a8f857",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-017",
+      "file": "src/main/domain/task-closure-service.ts",
+      "symbol": "TaskClosureService.replaceBaseTaskClosure",
+      "line": 156,
+      "kind": "REPORT_COMMAND_CALL",
+      "callee": "this.coordinator.runSingleEventCommand",
+      "detail": "",
+      "fingerprint": "ea15561b2888053f332f28087eaaac1761ca1d61a5849e74ebafe2f8fc94c0a5",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-018",
+      "file": "src/main/ipc/handlers/job-skill-report.ts",
+      "symbol": "<module>",
+      "line": 9,
+      "kind": "REPORT_COORDINATOR_IMPORT",
+      "callee": "ReportCommandCoordinator",
+      "detail": "../../domain/report-command-coordinator",
+      "fingerprint": "dd9251f59a6ee689f2ccc4e70ef942915f645659284bffe8399f1a57c331f683",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-019",
+      "file": "src/main/ipc/handlers/job-skill-report.ts",
+      "symbol": "createJobSkillReportAutomation",
+      "line": 18,
+      "kind": "REPORT_COORDINATOR_CONSTRUCTION",
+      "callee": "ReportCommandCoordinator",
+      "detail": "",
+      "fingerprint": "58c97b7bc38dacb9d19836670d16fed92d2b8eac6fa636361cc942fb232b160a",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-020",
+      "file": "src/main/ipc/handlers/reports.ts",
+      "symbol": "<module>",
+      "line": 7,
+      "kind": "REPORT_COORDINATOR_IMPORT",
+      "callee": "ReportCommandCoordinator",
+      "detail": "../../domain/report-command-coordinator",
+      "fingerprint": "16d5a905d2b1a81c5f2731a896240a21fb9c09cd5ca0ae74784fa86f6ab04945",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-021",
+      "file": "src/main/ipc/handlers/reports.ts",
+      "symbol": "coordinator",
+      "line": 140,
+      "kind": "REPORT_COORDINATOR_CONSTRUCTION",
+      "callee": "ReportCommandCoordinator",
+      "detail": "",
+      "fingerprint": "f67bfcde11f8ca0772afb75e946afffc0f5beabb11f7766eb5c3811aff39ae88",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-022",
+      "file": "src/main/ipc/handlers/reports.ts",
+      "symbol": "confirmPlacementReview",
+      "line": 455,
+      "kind": "REPORT_COMMAND_CALL",
+      "callee": "coordinator(db, options).runSingleEventCommand",
+      "detail": "",
+      "fingerprint": "fa945c825cff7aeb8e3a6c72c653093ffb18232126366837ea1e1fd54a70541a",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-023",
+      "file": "src/main/ipc/handlers/reports.ts",
+      "symbol": "lockReport",
+      "line": 504,
+      "kind": "REPORT_COMMAND_CALL",
+      "callee": "coordinator(db, options).runSingleEventCommand",
+      "detail": "",
+      "fingerprint": "5a56a8705ee2e474026ae9147c0ab710e09e1aade163b993a036c40de8d6fa6e",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-024",
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "<module>",
+      "line": 10,
+      "kind": "REPORT_COORDINATOR_IMPORT",
+      "callee": "ReportCommandCoordinator",
+      "detail": "../../domain/report-command-coordinator",
+      "fingerprint": "d30739c260d1756ad31e47e0eb3fcc5d3e2c34b9b1eaecc75f46b9a234c3dede",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-025",
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "createSafetyReportAutomation",
+      "line": 99,
+      "kind": "REPORT_COORDINATOR_CONSTRUCTION",
+      "callee": "ReportCommandCoordinator",
+      "detail": "",
+      "fingerprint": "f4be82b65bffa6e24adaedfa0579ce7fa5832db51f075f408800401af30e590a",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-026",
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "runSafetyMutation",
+      "line": 110,
+      "kind": "REPORT_COMMAND_CALL",
+      "callee": "coordinator.runSingleEventCommandSync",
+      "detail": "",
+      "fingerprint": "4e3293445d7f77a45f715de8fe2cee87a426820528640c2c6320e39fc2dac9c5",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-027",
+      "file": "src/main/ipc/index.ts",
+      "symbol": "registerIpcHandlers",
+      "line": 19,
+      "kind": "IPC_HANDLER_REGISTRATION",
+      "callee": "registerAuthHandlers",
+      "detail": "",
+      "fingerprint": "6261dc012118e734ee74ff1db214bc8589cdd11207c44971e9aed291f5661927",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-028",
+      "file": "src/main/ipc/index.ts",
+      "symbol": "registerIpcHandlers",
+      "line": 20,
+      "kind": "IPC_HANDLER_REGISTRATION",
+      "callee": "registerStudentHandlers",
+      "detail": "",
+      "fingerprint": "d565e704e50aeb27bed86b4e83d713c678d6412137aaa1994b57574bf6f9ac37",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-029",
+      "file": "src/main/ipc/index.ts",
+      "symbol": "registerIpcHandlers",
+      "line": 21,
+      "kind": "IPC_HANDLER_REGISTRATION",
+      "callee": "registerStrategyHandlers",
+      "detail": "",
+      "fingerprint": "f2cd0ff4548f98d50ce690112740a407f0ffe23783096d77ef19a7bbc52e4c36",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-030",
+      "file": "src/main/ipc/index.ts",
+      "symbol": "registerIpcHandlers",
+      "line": 22,
+      "kind": "IPC_HANDLER_REGISTRATION",
+      "callee": "registerAssessmentHandlers",
+      "detail": "",
+      "fingerprint": "9239645fe45378527eedd15cfc23faffee8923cbd4d58a9743e0d91c05d7ac21",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-031",
+      "file": "src/main/ipc/index.ts",
+      "symbol": "registerIpcHandlers",
+      "line": 23,
+      "kind": "IPC_HANDLER_REGISTRATION",
+      "callee": "registerTrainingHandlers",
+      "detail": "",
+      "fingerprint": "aa774ba26147a47786e39ab48a174f40bd81e65ae6825e5bea8daffeed660d7e",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-032",
+      "file": "src/main/ipc/index.ts",
+      "symbol": "registerIpcHandlers",
+      "line": 24,
+      "kind": "IPC_HANDLER_REGISTRATION",
+      "callee": "registerOperationScoringHandlers",
+      "detail": "",
+      "fingerprint": "5da51df0ecc618fc0354a1e160ad5c6dc5ceec7b6f5adaf11b21cf8e48338478",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-033",
+      "file": "src/main/ipc/index.ts",
+      "symbol": "registerIpcHandlers",
+      "line": 25,
+      "kind": "IPC_HANDLER_REGISTRATION",
+      "callee": "registerAbilityScoringHandlers",
+      "detail": "",
+      "fingerprint": "9947c16e59250e08b49911d2e67973a3fc25ab99f054d13e5021f36d21186268",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-034",
+      "file": "src/main/ipc/index.ts",
+      "symbol": "registerIpcHandlers",
+      "line": 26,
+      "kind": "IPC_HANDLER_REGISTRATION",
+      "callee": "registerJobSkillScoringHandlers",
+      "detail": "",
+      "fingerprint": "2b57db750fb74c0b2df7094525fd013939694b7de92a130d5442aee7a8358f3b",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-035",
+      "file": "src/main/ipc/index.ts",
+      "symbol": "registerIpcHandlers",
+      "line": 27,
+      "kind": "IPC_HANDLER_REGISTRATION",
+      "callee": "registerObservationHandlers",
+      "detail": "",
+      "fingerprint": "399ae58e7e3639c15bec1a6d9241966a6f04805da63c2182a1c95e5ba162b127",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-036",
+      "file": "src/main/ipc/index.ts",
+      "symbol": "registerIpcHandlers",
+      "line": 28,
+      "kind": "IPC_HANDLER_REGISTRATION",
+      "callee": "registerAssignmentHandlers",
+      "detail": "",
+      "fingerprint": "745c5e2e7ace8089bdb855cfb252458adde7fbb57e6bbf56c8e1fac9d030a854",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-037",
+      "file": "src/main/ipc/index.ts",
+      "symbol": "registerIpcHandlers",
+      "line": 29,
+      "kind": "IPC_HANDLER_REGISTRATION",
+      "callee": "registerSafetyHandlers",
+      "detail": "",
+      "fingerprint": "d2d1858e839a6c9f967c8633fbccb92c27cd1c49a52a6afe5d38075cbec12600",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-038",
+      "file": "src/main/ipc/index.ts",
+      "symbol": "registerIpcHandlers",
+      "line": 30,
+      "kind": "IPC_HANDLER_REGISTRATION",
+      "callee": "registerFoundationHandlers",
+      "detail": "",
+      "fingerprint": "a3503c45a794510856271ecf34cfea165848d9b9a52efc6b5aeff16abf2dcc98",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-039",
+      "file": "src/main/ipc/index.ts",
+      "symbol": "registerIpcHandlers",
+      "line": 31,
+      "kind": "IPC_HANDLER_REGISTRATION",
+      "callee": "registerResultsHandlers",
+      "detail": "",
+      "fingerprint": "fe0fc8dedc4d7584e4df8828893f8f8ae9575cf3810e0ec5866725c79ca5a9dd",
+      "occurrence": 1
+    },
+    {
+      "id": "LEGACY-CAP-040",
+      "file": "src/main/ipc/index.ts",
+      "symbol": "registerIpcHandlers",
+      "line": 32,
+      "kind": "IPC_HANDLER_REGISTRATION",
+      "callee": "registerReportsHandlers",
+      "detail": "",
+      "fingerprint": "4cc2f6b42ae51da91096406e2a153f929e3fec8543ade098431bcd57a8a6186d",
+      "occurrence": 1
+    }
+  ],
+  "delegating_roots": [
+    {
+      "path": "src/main/domain/legacy-upgrade-recovery.ts",
+      "capability_kinds": [
+        "LEGACY_RECOVERY_CALL"
+      ]
+    },
+    {
+      "path": "src/main/domain/report-command-coordinator.ts",
+      "capability_kinds": [
+        "LEGACY_RECOVERY_CALL",
+        "REPORT_COORDINATOR_DECLARATION"
+      ]
+    },
+    {
+      "path": "src/main/domain/task-closure-service.ts",
+      "capability_kinds": [
+        "REPORT_COMMAND_CALL",
+        "REPORT_COORDINATOR_IMPORT",
+        "REPORT_COORDINATOR_INJECTION"
+      ]
+    },
+    {
+      "path": "src/main/ipc/handlers/job-skill-report.ts",
+      "capability_kinds": [
+        "REPORT_COORDINATOR_CONSTRUCTION",
+        "REPORT_COORDINATOR_IMPORT"
+      ]
+    },
+    {
+      "path": "src/main/ipc/index.ts",
+      "capability_kinds": [
+        "IPC_HANDLER_REGISTRATION"
+      ]
+    }
+  ]
+}

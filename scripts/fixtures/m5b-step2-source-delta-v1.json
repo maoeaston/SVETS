@@ -1,0 +1,104 @@
+{
+  "schema_version": "m5b-step-source-delta-v1",
+  "step": "M5B-2",
+  "source_digest": "f97ef382ab9a9678ab20f06310e6906e811cdd765526d69a4fcc11bca6939527",
+  "target_digest": "b9d4d98f89c5dde6ed1466c31a75d12a152a990a8337e103eb04e66536e1199f",
+  "expected_counts": {
+    "channels": 74,
+    "direct_callsites": 218,
+    "direct_files": 29,
+    "capability_callsites": 72,
+    "delegating_roots": 13
+  },
+  "removed_source": [
+    {
+      "active_id": "ACTIVE-DIRECT-012",
+      "fingerprint": "beb6b8785c1bbdff0fe4504546a4cad71d95cb12c9c0b3a5afc87e89540fc0c1",
+      "file": "src/main/db/memory-adapter.ts",
+      "symbol": "MemoryAdapter.transaction",
+      "disposition": "REFACTORED_TO_SHARED_TRANSACTION_KERNEL"
+    },
+    {
+      "active_id": "ACTIVE-DIRECT-013",
+      "fingerprint": "fb784d3f20dd059cf8fb4727fdb5548898a0f997a7c84d51e836f8c0e16c5d11",
+      "file": "src/main/db/memory-adapter.ts",
+      "symbol": "MemoryAdapter.transaction",
+      "disposition": "REFACTORED_TO_SHARED_TRANSACTION_KERNEL"
+    },
+    {
+      "active_id": "ACTIVE-DIRECT-014",
+      "fingerprint": "fe06f2ab95bbea0f434a35c9485ee263549dc7cea9fb807ef5b31aa5c06fb8e8",
+      "file": "src/main/db/memory-adapter.ts",
+      "symbol": "MemoryAdapter.transaction",
+      "disposition": "REFACTORED_TO_SHARED_TRANSACTION_KERNEL"
+    }
+  ],
+  "added_target": [
+    {
+      "fingerprint": "131a16561527477846e6feac941d679bb4dc86cea6bde3c07c79cd482bf088fd",
+      "file": "src/main/db/event-batch-migration.ts",
+      "symbol": "ensureMigrationTable",
+      "line": 444,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "occurrence": 1,
+      "target_class": "PRE_GATE_MIGRATION_INTERNAL",
+      "planned_step": "M5B-2"
+    },
+    {
+      "fingerprint": "345d536294dce44d84b02b30bd3754bbdacfeb818747eb8d9bfa30c35e2f4ae1",
+      "file": "src/main/db/event-batch-migration.ts",
+      "symbol": "applyEventBatchMigration",
+      "line": 510,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "occurrence": 1,
+      "target_class": "PRE_GATE_MIGRATION_INTERNAL",
+      "planned_step": "M5B-2"
+    },
+    {
+      "fingerprint": "7b32fdd54aeb4a1541c922683176cba36cf75844180a1e5f6ed7e94d6e637431",
+      "file": "src/main/db/event-batch-migration.ts",
+      "symbol": "applyEventBatchMigration",
+      "line": 519,
+      "kind": "DB_RUN",
+      "callee": "database.prepare(` INSERT INTO schema_migration (migration_id, schema_version, description, applied_at) VALUES (?, ?, ?, datetime('now')) `).run",
+      "occurrence": 1,
+      "target_class": "PRE_GATE_MIGRATION_INTERNAL",
+      "planned_step": "M5B-2"
+    },
+    {
+      "fingerprint": "0ee04d4dfcbe411c16b64fd723d5a0e507a0828aaa16d99f2c78091c2b0f0114",
+      "file": "src/main/db/memory-adapter.ts",
+      "symbol": "MemoryAdapter.runTransaction",
+      "line": 69,
+      "kind": "DB_EXEC",
+      "callee": "this.db.exec",
+      "occurrence": 1,
+      "target_class": "TEST_ONLY_ADAPTER_INFRASTRUCTURE",
+      "planned_step": "M5B-2"
+    },
+    {
+      "fingerprint": "1ad9f31743ed4725b1d4f6e46d132f871a1c170d82fab12a25cd51cfdb47bff6",
+      "file": "src/main/db/memory-adapter.ts",
+      "symbol": "MemoryAdapter.runTransaction",
+      "line": 72,
+      "kind": "DB_EXEC",
+      "callee": "this.db.exec",
+      "occurrence": 1,
+      "target_class": "TEST_ONLY_ADAPTER_INFRASTRUCTURE",
+      "planned_step": "M5B-2"
+    },
+    {
+      "fingerprint": "0e593d3f689dd9cd729bb45f479d8619c8f81e6c1f6517207699e3a9e637e885",
+      "file": "src/main/db/memory-adapter.ts",
+      "symbol": "MemoryAdapter.runTransaction",
+      "line": 76,
+      "kind": "DB_EXEC",
+      "callee": "this.db.exec",
+      "occurrence": 1,
+      "target_class": "TEST_ONLY_ADAPTER_INFRASTRUCTURE",
+      "planned_step": "M5B-2"
+    }
+  ]
+}

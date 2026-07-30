@@ -11,10 +11,11 @@ import {
   seedStudent
 } from '../../db/test-helpers'
 import type { DBAdapter } from '../../db/interface'
-import { ReportCommandCoordinator } from '../report-command-coordinator'
+import { createTestReportCommandCoordinator } from '../../application/runtime/__tests__/test-helpers'
 import { TaskClosureService } from '../task-closure-service'
 
 const ISO = '2026-07-25T10:00:00.000Z'
+const CORRELATION_ID = 'task-closure-service-test-correlation'
 const JOB_CODE = 'SUPERMARKET_SHELVER'
 const TASK_CODE = 'SHELVE_TASK'
 const HASH = 'a'.repeat(64)
@@ -32,7 +33,7 @@ afterEach(() => {
 })
 
 function service(db: DBAdapter): TaskClosureService {
-  return new TaskClosureService(db, new ReportCommandCoordinator({ db, actionLogPath: createLogPath() }))
+  return new TaskClosureService(db, createTestReportCommandCoordinator({ db, actionLogPath: createLogPath() }))
 }
 
 function eventId(db: DBAdapter, aggregateId: string): string {
@@ -230,8 +231,8 @@ describe('TaskClosureService', () => {
       const set = seedBaseResults(db, teacherId, studentId)
       const svc = service(db)
 
-      const first = await svc.confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: resultIds(set), confirmedAt: ISO })
-      const second = await svc.confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: resultIds(set), confirmedAt: ISO })
+      const first = await svc.confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: resultIds(set), confirmedAt: ISO, correlationId: CORRELATION_ID })
+      const second = await svc.confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: resultIds(set), confirmedAt: ISO, correlationId: CORRELATION_ID })
 
       expect(first.created).toBe(true)
       expect(second).toEqual({ taskClosureId: first.taskClosureId, created: false, eventId: null })
@@ -257,14 +258,15 @@ describe('TaskClosureService', () => {
       const studentId = seedStudent(db)
       const set = seedBaseResults(db, teacherId, studentId)
       const svc = service(db)
-      await svc.confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: resultIds(set), confirmedAt: ISO })
+      await svc.confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: resultIds(set), confirmedAt: ISO, correlationId: CORRELATION_ID })
 
       const next = seedBaseResults(db, teacherId, studentId, { operationScore: 17 })
       await expect(svc.confirmBaseTaskClosure({
         callerUserId: teacherId,
         callerRole: 'TEACHER',
         resultIds: [set.abilityResultId, next.trainingResultId, next.operationResultId],
-        confirmedAt: ISO
+        confirmedAt: ISO,
+        correlationId: CORRELATION_ID
       })).rejects.toMatchObject({ code: 'RESULT_ALREADY_USED' })
       expect(countEvents(db, 'TASK_CLOSURE_CONFIRMED')).toBe(1)
     } finally {
@@ -279,11 +281,11 @@ describe('TaskClosureService', () => {
       const studentId = seedStudent(db)
       const svc = service(db)
       const firstSet = seedBaseResults(db, teacherId, studentId)
-      const first = await svc.confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: resultIds(firstSet), confirmedAt: ISO })
+      const first = await svc.confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: resultIds(firstSet), confirmedAt: ISO, correlationId: CORRELATION_ID })
       const reportId = seedLockedReport(db, first.taskClosureId, studentId, teacherId)
       const secondSet = seedBaseResults(db, teacherId, studentId, { abilityScore: 70 })
 
-      const second = await svc.confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: resultIds(secondSet), confirmedAt: ISO })
+      const second = await svc.confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: resultIds(secondSet), confirmedAt: ISO, correlationId: CORRELATION_ID })
 
       expect(closureRow(db, first.taskClosureId)).toMatchObject({ status: 'SUPERSEDED', is_cycle_head: 0 })
       expect(closureRow(db, second.taskClosureId)).toMatchObject({ status: 'CONFIRMED', is_cycle_head: 1, cycle_no: 2 })
@@ -300,7 +302,7 @@ describe('TaskClosureService', () => {
       const studentId = seedStudent(db)
       const svc = service(db)
       const firstSet = seedBaseResults(db, teacherId, studentId)
-      const first = await svc.confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: resultIds(firstSet), confirmedAt: ISO })
+      const first = await svc.confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: resultIds(firstSet), confirmedAt: ISO, correlationId: CORRELATION_ID })
       const reportId = seedLockedReport(db, first.taskClosureId, studentId, teacherId)
       const correctedSet = seedBaseResults(db, teacherId, studentId, { operationScore: 17 })
 
@@ -310,7 +312,8 @@ describe('TaskClosureService', () => {
         oldTaskClosureId: first.taskClosureId,
         resultIds: [firstSet.abilityResultId, firstSet.trainingResultId, correctedSet.operationResultId],
         correctionReason: '修正线下操作评分来源',
-        replacedAt: ISO
+        replacedAt: ISO,
+        correlationId: CORRELATION_ID
       })
       const retry = await svc.replaceBaseTaskClosure({
         callerUserId: teacherId,
@@ -318,7 +321,8 @@ describe('TaskClosureService', () => {
         oldTaskClosureId: first.taskClosureId,
         resultIds: [firstSet.abilityResultId, firstSet.trainingResultId, correctedSet.operationResultId],
         correctionReason: '修正线下操作评分来源',
-        replacedAt: ISO
+        replacedAt: ISO,
+        correlationId: CORRELATION_ID
       })
 
       expect(retry).toEqual({ taskClosureId: replacement.taskClosureId, created: false, eventId: null })
@@ -347,7 +351,7 @@ describe('TaskClosureService', () => {
       const studentId = seedStudent(db)
       const svc = service(db)
       const set = seedBaseResults(db, teacherId, studentId)
-      const first = await svc.confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: resultIds(set), confirmedAt: ISO })
+      const first = await svc.confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: resultIds(set), confirmedAt: ISO, correlationId: CORRELATION_ID })
 
       const unchanged = await svc.replaceBaseTaskClosure({
         callerUserId: teacherId,
@@ -355,7 +359,8 @@ describe('TaskClosureService', () => {
         oldTaskClosureId: first.taskClosureId,
         resultIds: resultIds(set),
         correctionReason: '重复提交',
-        replacedAt: ISO
+        replacedAt: ISO,
+        correlationId: CORRELATION_ID
       })
 
       expect(unchanged).toEqual({ taskClosureId: first.taskClosureId, created: false, eventId: null })
@@ -372,9 +377,9 @@ describe('TaskClosureService', () => {
       const studentId = seedStudent(db)
       const svc = service(db)
       const firstSet = seedBaseResults(db, teacherId, studentId)
-      const first = await svc.confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: resultIds(firstSet), confirmedAt: ISO })
+      const first = await svc.confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: resultIds(firstSet), confirmedAt: ISO, correlationId: CORRELATION_ID })
       const secondSet = seedBaseResults(db, teacherId, studentId, { abilityScore: 70 })
-      await svc.confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: resultIds(secondSet), confirmedAt: ISO })
+      await svc.confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: resultIds(secondSet), confirmedAt: ISO, correlationId: CORRELATION_ID })
       const correction = seedBaseResults(db, teacherId, studentId, { operationScore: 17 })
 
       await expect(svc.replaceBaseTaskClosure({
@@ -383,7 +388,8 @@ describe('TaskClosureService', () => {
         oldTaskClosureId: first.taskClosureId,
         resultIds: [firstSet.abilityResultId, secondSet.trainingResultId, correction.operationResultId],
         correctionReason: '跨历史复用',
-        replacedAt: ISO
+        replacedAt: ISO,
+        correlationId: CORRELATION_ID
       })).rejects.toMatchObject({ code: 'INVALID_REPLACEMENT' })
 
       const historical = await svc.replaceBaseTaskClosure({
@@ -392,7 +398,8 @@ describe('TaskClosureService', () => {
         oldTaskClosureId: first.taskClosureId,
         resultIds: [firstSet.abilityResultId, firstSet.trainingResultId, correction.operationResultId],
         correctionReason: '补正历史轮次',
-        replacedAt: ISO
+        replacedAt: ISO,
+        correlationId: CORRELATION_ID
       })
 
       expect(closureRow(db, historical.taskClosureId)).toMatchObject({ status: 'SUPERSEDED', is_cycle_head: 0, cycle_no: 1 })
@@ -412,7 +419,8 @@ describe('TaskClosureService', () => {
         callerUserId: adminId,
         callerRole: 'TEACHER',
         resultIds: resultIds(set),
-        confirmedAt: ISO
+        confirmedAt: ISO,
+        correlationId: CORRELATION_ID
       })).rejects.toMatchObject({ code: 'FORBIDDEN' })
     } finally {
       db.close()

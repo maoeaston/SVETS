@@ -11,6 +11,7 @@ import {
 } from '../../../db/test-helpers'
 import type { DBAdapter } from '../../../db/interface'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
+import { createTestReportCommandCoordinator } from '../../../application/runtime/__tests__/test-helpers'
 import { buildSafetyReport } from '../../../domain/report-builders'
 import {
   generateReport,
@@ -19,7 +20,7 @@ import {
   listReports,
   lockReport,
   confirmPlacementReview
-} from '../reports'
+} from '../../../application/services/__tests__/reports-test-support'
 
 const ISO = '2026-07-26T00:00:00.000Z'
 const JOB_CODE = 'SUPERMARKET_SHELVER'
@@ -173,7 +174,7 @@ describe('reports IPC pure handlers', () => {
       reportScope: 'JOB_SKILL',
       resultId: 'result-1',
       incidentId: 'incident-1'
-    } as never, { actionLogPath: logPath() })
+    } as never, { coordinator: createTestReportCommandCoordinator({ db, actionLogPath: logPath() }) })
 
     expect(result).toEqual({ success: false, errorCode: 'VALIDATION_ERROR' })
   })
@@ -205,7 +206,7 @@ describe('reports IPC pure handlers', () => {
       callerRole: 'TEACHER',
       reportId,
       lockReason: '教师确认'
-    }, { actionLogPath: logPath(), now: () => ISO })
+    }, { coordinator: createTestReportCommandCoordinator({ db, actionLogPath: logPath() }), now: () => ISO })
 
     expect(result).toEqual({ success: true, reportId, status: 'LOCKED' })
     expect(db.prepare('SELECT status FROM task_report WHERE report_id = ?').get(reportId))
@@ -224,7 +225,7 @@ describe('reports IPC pure handlers', () => {
       callerUserId: teacherId,
       callerRole: 'TEACHER',
       reportId
-    }, { actionLogPath: logPath() })).resolves.toEqual({
+    }, { coordinator: createTestReportCommandCoordinator({ db, actionLogPath: logPath() }) })).resolves.toEqual({
       success: false,
       errorCode: 'REPORT_STATE_CONFLICT'
     })

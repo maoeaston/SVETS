@@ -1,6 +1,5 @@
 import type { DBAdapter } from '../db/interface'
-import { writeEvent, type WriteEventParams } from './event-writer'
-import { reconcileActionLog } from './recovery'
+import type { WriteEventParams } from './event-writer'
 import { parseF7EventPayload } from './report-contract'
 import { applyReportEvent, markReportEventApplied } from './report-reducer'
 import {
@@ -60,14 +59,14 @@ export class ReportCommandValidationError extends Error {
   }
 }
 
-type EventWriter = (params: WriteEventParams) => ActionLogEntry
-type PendingRecovery = (db: DBAdapter, actionLogPath: string) => void
+export interface ReportMutationPort {
+  writeEvent(params: Omit<WriteEventParams, 'database' | 'actionLogPath'>): ActionLogEntry
+  recoverPending(): void
+}
 
 export interface ReportCommandCoordinatorOptions {
   db: DBAdapter
-  actionLogPath: string
-  eventWriter?: EventWriter
-  recoverPending?: PendingRecovery
+  eventPort: ReportMutationPort
 }
 
 /**
@@ -77,15 +76,8 @@ export interface ReportCommandCoordinatorOptions {
 export class ReportCommandCoordinator {
   private readonly queues = new Map<string, Promise<unknown>>()
   private readonly syncActiveKeys = new Set<string>()
-  private readonly eventWriter: EventWriter
-  private readonly recoverPending: PendingRecovery
 
-  constructor(private readonly options: ReportCommandCoordinatorOptions) {
-    this.eventWriter = options.eventWriter ?? writeEvent
-    this.recoverPending = options.recoverPending ?? ((db, actionLogPath) => {
-      reconcileActionLog(db, { logPath: actionLogPath })
-    })
-  }
+  constructor(private readonly options: ReportCommandCoordinatorOptions) {}
 
   assertWriteAllowed(area: F7WriteArea): void {
     try {
@@ -98,7 +90,7 @@ export class ReportCommandCoordinator {
 
   async recoverPendingF7EventsOrThrow(): Promise<void> {
     try {
-      this.recoverPending(this.options.db, this.options.actionLogPath)
+      this.options.eventPort.recoverPending()
       clearF7WriteBlockAfterRecovery()
     } catch (error) {
       const reason = error instanceof Error ? error : new Error(String(error))
@@ -109,6 +101,9 @@ export class ReportCommandCoordinator {
 
   async runSingleEventCommand<T>(options: RunSingleEventCommandOptions<T>): Promise<T> {
     const queueKey = reportCommandKey(options.key)
+    if (this.syncActiveKeys.has(queueKey)) {
+      throw new ReportRecoveryRequiredError(`Concurrent F7 command is already running for ${queueKey}`)
+    }
     const previous = this.queues.get(queueKey) ?? Promise.resolve()
     const current = previous.catch(() => undefined).then(async () => {
       await this.recoverPendingF7EventsOrThrow()
@@ -120,11 +115,9 @@ export class ReportCommandCoordinator {
 
       try {
         const event = this.options.db.transaction(() => {
-          const written = this.eventWriter({
+          const written = this.options.eventPort.writeEvent({
             ...intent,
-            schemaVersion: 2,
-            database: this.options.db,
-            actionLogPath: this.options.actionLogPath
+            schemaVersion: 2
           })
           applyReportEvent(this.options.db, written)
           markReportEventApplied(this.options.db, written)
@@ -148,7 +141,7 @@ export class ReportCommandCoordinator {
 
   runSingleEventCommandSync<T>(options: RunSingleEventCommandSyncOptions<T>): T {
     const queueKey = reportCommandKey(options.key)
-    if (this.syncActiveKeys.has(queueKey)) {
+    if (this.syncActiveKeys.has(queueKey) || this.queues.has(queueKey)) {
       throw new ReportRecoveryRequiredError(`Concurrent F7 command is already running for ${queueKey}`)
     }
     this.syncActiveKeys.add(queueKey)
@@ -162,11 +155,9 @@ export class ReportCommandCoordinator {
 
       try {
         const event = this.options.db.transaction(() => {
-          const written = this.eventWriter({
+          const written = this.options.eventPort.writeEvent({
             ...intent,
-            schemaVersion: 2,
-            database: this.options.db,
-            actionLogPath: this.options.actionLogPath
+            schemaVersion: 2
           })
           applyReportEvent(this.options.db, written)
           markReportEventApplied(this.options.db, written)
@@ -185,7 +176,7 @@ export class ReportCommandCoordinator {
 
   private recoverPendingF7EventsOrThrowSync(): void {
     try {
-      this.recoverPending(this.options.db, this.options.actionLogPath)
+      this.options.eventPort.recoverPending()
       clearF7WriteBlockAfterRecovery()
     } catch (error) {
       const reason = error instanceof Error ? error : new Error(String(error))

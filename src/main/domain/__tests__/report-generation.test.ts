@@ -11,12 +11,13 @@ import {
   seedStudent
 } from '../../db/test-helpers'
 import type { DBAdapter } from '../../db/interface'
-import { ReportCommandCoordinator } from '../report-command-coordinator'
+import { createTestReportCommandCoordinator } from '../../application/runtime/__tests__/test-helpers'
 import { TaskClosureService } from '../task-closure-service'
 import { buildJobSkillReport } from '../report-builders'
 import { ReportService, ReportServiceError } from '../report-service'
 
 const ISO = '2026-07-25T10:00:00.000Z'
+const CORRELATION_ID = 'report-generation-test-correlation'
 const JOB_CODE = 'SUPERMARKET_SHELVER'
 const TASK_CODE = 'SHELVE_TASK'
 const HASH = 'a'.repeat(64)
@@ -34,7 +35,7 @@ function logPath(): string {
 }
 
 function service(db: DBAdapter): ReportService {
-  return new ReportService(db, new ReportCommandCoordinator({ db, actionLogPath: logPath() }))
+  return new ReportService(db, createTestReportCommandCoordinator({ db, actionLogPath: logPath() }))
 }
 
 function eventId(db: DBAdapter, aggregateId: string, createdAt = ISO): string {
@@ -192,12 +193,12 @@ describe('ReportService generation', () => {
     try {
       const teacherId = seedCaller(db, 'TEACHER')
       const studentId = seedStudent(db)
-      const closure = await new TaskClosureService(db, new ReportCommandCoordinator({ db, actionLogPath: logPath() }))
-        .confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: seedBaseResults(db, teacherId, studentId), confirmedAt: ISO })
+      const closure = await new TaskClosureService(db, createTestReportCommandCoordinator({ db, actionLogPath: logPath() }))
+        .confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds: seedBaseResults(db, teacherId, studentId), confirmedAt: ISO, correlationId: CORRELATION_ID })
       const svc = service(db)
 
-      const first = await svc.generateReport({ callerUserId: teacherId, callerRole: 'TEACHER', reportScope: 'BASE_ABILITY', taskClosureId: closure.taskClosureId, generatedAt: ISO })
-      const second = await svc.generateReport({ callerUserId: teacherId, callerRole: 'TEACHER', reportScope: 'BASE_ABILITY', taskClosureId: closure.taskClosureId, generatedAt: '2026-07-25T10:01:00.000Z' })
+      const first = await svc.generateReport({ callerUserId: teacherId, callerRole: 'TEACHER', reportScope: 'BASE_ABILITY', taskClosureId: closure.taskClosureId, generatedAt: ISO, correlationId: CORRELATION_ID })
+      const second = await svc.generateReport({ callerUserId: teacherId, callerRole: 'TEACHER', reportScope: 'BASE_ABILITY', taskClosureId: closure.taskClosureId, generatedAt: '2026-07-25T10:01:00.000Z', correlationId: CORRELATION_ID })
 
       expect(first.generated).toBe(true)
       expect(second).toEqual({ reportId: first.reportId, generated: false, eventId: null })
@@ -239,7 +240,7 @@ describe('ReportService generation', () => {
         HASH
       )
 
-      const generated = await service(db).generateReport({ callerUserId: teacherId, callerRole: 'TEACHER', reportScope: 'JOB_SKILL', resultId, generatedAt: ISO })
+      const generated = await service(db).generateReport({ callerUserId: teacherId, callerRole: 'TEACHER', reportScope: 'JOB_SKILL', resultId, generatedAt: ISO, correlationId: CORRELATION_ID })
       const row = db.prepare('SELECT report_revision, generation_reason, repair_of_report_id FROM task_report WHERE report_id = ?').get(generated.reportId) as {
         report_revision: number
         generation_reason: string
@@ -267,7 +268,7 @@ describe('ReportService generation', () => {
          VALUES (?, ?, ?, ?, ?, 'BLADE_TOWARD_SELF', '待确认', ?, 'OFFLINE_SCORING', ?, 'PENDING_DETAIL')`
       ).run(incidentId, studentId, JOB_CODE, TASK_CODE, eventId(db, incidentId), teacherId, ISO)
 
-      await expect(service(db).generateReport({ callerUserId: teacherId, callerRole: 'TEACHER', reportScope: 'SAFETY', incidentId, generatedAt: ISO }))
+      await expect(service(db).generateReport({ callerUserId: teacherId, callerRole: 'TEACHER', reportScope: 'SAFETY', incidentId, generatedAt: ISO, correlationId: CORRELATION_ID }))
         .rejects.toBeInstanceOf(ReportServiceError)
       expect(countRows(db, "SELECT COUNT(*) AS count FROM error_event_log WHERE error_code = 'REPORT_GENERATION_FAILED'")).toBe(1)
       expect(countRows(db, "SELECT COUNT(*) AS count FROM task_report WHERE status = 'FAILED'")).toBe(0)

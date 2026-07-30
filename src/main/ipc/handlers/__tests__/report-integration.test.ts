@@ -50,14 +50,14 @@ vi.mock('../../../domain/event-writer', () => ({
 
 import { createTestDb, seedCaller, seedStudent } from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
-import { ReportCommandCoordinator } from '../../../domain/report-command-coordinator'
+import { createTestReportCommandCoordinator } from '../../../application/runtime/__tests__/test-helpers'
 import { recordReportGenerationError } from '../../../domain/report-errors'
 import {
   confirmSafetyIncident,
   replaceSafetyIncidentForFactualCorrection,
   voidSafetyIncident,
   type SafetyReportAutomation
-} from '../safety'
+} from '../../../application/services/__tests__/safety-test-support'
 
 const ISO = '2026-07-26T00:00:00.000Z'
 const JOB_CODE = 'SUPERMARKET_SHELVER'
@@ -138,7 +138,7 @@ function seedActiveSafetyReport(incidentId: string): string {
 }
 
 function coordinatorAutomation(): SafetyReportAutomation {
-  const coordinator = new ReportCommandCoordinator({ db, actionLogPath: actionLogPath() })
+  const coordinator = createTestReportCommandCoordinator({ db, actionLogPath: actionLogPath() })
   return {
     generateSafetyReportFromIncident(): void {
       throw new Error('not used')

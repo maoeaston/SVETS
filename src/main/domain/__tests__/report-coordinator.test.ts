@@ -4,10 +4,10 @@ import { join } from 'path'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createTestDb, seedCaller, seedStudent } from '../../db/test-helpers'
 import type { DBAdapter, DBStatement } from '../../db/interface'
+import { createTestReportCommandCoordinator } from '../../application/runtime/__tests__/test-helpers'
 import { writeEvent } from '../event-writer'
 import { readActionLog } from '../recovery'
 import {
-  ReportCommandCoordinator,
   ReportCommandValidationError,
   ReportRecoveryRequiredError
 } from '../report-command-coordinator'
@@ -53,6 +53,10 @@ class FailNextProjectionInsertAdapter implements DBAdapter {
 
   transaction<T>(fn: () => T): () => T {
     return this.delegate.transaction(fn)
+  }
+
+  immediateTransaction<T>(fn: () => T): () => T {
+    return this.delegate.immediateTransaction(fn)
   }
 
   exec(sql: string): void {
@@ -115,7 +119,7 @@ describe('ReportCommandCoordinator', () => {
   it('serializes commands with the same business key while independent keys can proceed', async () => {
     const db = await createTestDb()
     try {
-      const coordinator = new ReportCommandCoordinator({
+      const coordinator = createTestReportCommandCoordinator({
         db,
         actionLogPath: '/tmp/report-coordinator-unused.jsonl',
         recoverPending: () => undefined
@@ -169,6 +173,108 @@ describe('ReportCommandCoordinator', () => {
     }
   })
 
+  it('rejects sync admission while the same key has queued or active async work', async () => {
+    const db = await createTestDb()
+    try {
+      const coordinator = createTestReportCommandCoordinator({
+        db,
+        actionLogPath: '/tmp/report-coordinator-sync-vs-async-unused.jsonl',
+        recoverPending: () => undefined
+      })
+      const gate = deferred()
+      const running = coordinator.runSingleEventCommand({
+        key,
+        areas: ['TASK_CLOSURE'],
+        buildIntent: async () => {
+          await gate.promise
+          return null
+        },
+        mapResult: () => 'async'
+      })
+
+      expect(() => coordinator.runSingleEventCommandSync({
+        key,
+        areas: ['TASK_CLOSURE'],
+        buildIntent: () => null,
+        mapResult: () => 'sync'
+      })).toThrow(ReportRecoveryRequiredError)
+
+      gate.resolve()
+      await expect(running).resolves.toBe('async')
+      expect(coordinator.runSingleEventCommandSync({
+        key,
+        areas: ['TASK_CLOSURE'],
+        buildIntent: () => null,
+        mapResult: () => 'sync-after-release'
+      })).toBe('sync-after-release')
+    } finally {
+      db.close()
+    }
+  })
+
+  it('rejects async admission re-entered from active sync work on the same key', async () => {
+    const db = await createTestDb()
+    try {
+      const coordinator = createTestReportCommandCoordinator({
+        db,
+        actionLogPath: '/tmp/report-coordinator-async-vs-sync-unused.jsonl',
+        recoverPending: () => undefined
+      })
+      let reentered: Promise<string> | null = null
+      expect(coordinator.runSingleEventCommandSync({
+        key,
+        areas: ['TASK_CLOSURE'],
+        buildIntent: () => {
+          reentered = coordinator.runSingleEventCommand({
+            key,
+            areas: ['TASK_CLOSURE'],
+            buildIntent: () => null,
+            mapResult: () => 'async'
+          })
+          return null
+        },
+        mapResult: () => 'sync'
+      })).toBe('sync')
+      await expect(reentered).rejects.toBeInstanceOf(ReportRecoveryRequiredError)
+    } finally {
+      db.close()
+    }
+  })
+
+  it('keeps different-key sync work available while async work is active', async () => {
+    const db = await createTestDb()
+    try {
+      const coordinator = createTestReportCommandCoordinator({
+        db,
+        actionLogPath: '/tmp/report-coordinator-different-key-unused.jsonl',
+        recoverPending: () => undefined
+      })
+      const gate = deferred()
+      const running = coordinator.runSingleEventCommand({
+        key,
+        areas: ['TASK_CLOSURE'],
+        buildIntent: async () => {
+          await gate.promise
+          return null
+        },
+        mapResult: () => 'async'
+      })
+      await flushMicrotasks()
+
+      expect(coordinator.runSingleEventCommandSync({
+        key: { ...key, studentId: 'student-independent' },
+        areas: ['TASK_CLOSURE'],
+        buildIntent: () => null,
+        mapResult: () => 'sync-independent'
+      })).toBe('sync-independent')
+
+      gate.resolve()
+      await expect(running).resolves.toBe('async')
+    } finally {
+      db.close()
+    }
+  })
+
   it('recovers a real JSONL append when domain_event_projection insertion fails', async () => {
     const db = await createTestDb()
     try {
@@ -181,7 +287,7 @@ describe('ReportCommandCoordinator', () => {
       seedPendingIncident(db, incidentId, created.event_id, teacherId, studentId)
       const faultingDb = new FailNextProjectionInsertAdapter(db)
       faultingDb.failNextDomainEventProjectionInsert()
-      const coordinator = new ReportCommandCoordinator({
+      const coordinator = createTestReportCommandCoordinator({
         db: faultingDb,
         actionLogPath
       })
@@ -214,7 +320,7 @@ describe('ReportCommandCoordinator', () => {
     const db = await createTestDb()
     try {
       const actionLogPath = createLogPath()
-      const coordinator = new ReportCommandCoordinator({ db, actionLogPath })
+      const coordinator = createTestReportCommandCoordinator({ db, actionLogPath })
       await expect(coordinator.runSingleEventCommand({
         key: { ...key, scope: 'SAFETY' },
         areas: ['TASK_REPORT'],
@@ -251,7 +357,7 @@ describe('ReportCommandCoordinator', () => {
       const pending = writeEvent({
         ...voidIntent(incidentId, adminId), schemaVersion: 2, database: db, actionLogPath
       })
-      const coordinator = new ReportCommandCoordinator({ db, actionLogPath })
+      const coordinator = createTestReportCommandCoordinator({ db, actionLogPath })
 
       await expect(coordinator.recoverPendingF7EventsOrThrow()).rejects.toBeInstanceOf(ReportRecoveryRequiredError)
       expect(db.prepare('SELECT applied_to_snapshot FROM domain_event_projection WHERE event_id = ?').get(pending.event_id))

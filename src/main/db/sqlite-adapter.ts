@@ -21,6 +21,16 @@ export class SqliteAdapter implements DBAdapter {
     return this.db.transaction(fn) as () => T
   }
 
+  immediateTransaction<T>(fn: () => T): () => T {
+    const transaction = this.db.transaction(fn)
+    return () => {
+      if (this.db.inTransaction) {
+        throw new Error('[DB] BEGIN IMMEDIATE transaction cannot be nested')
+      }
+      return transaction.immediate() as T
+    }
+  }
+
   exec(sql: string): void {
     this.db.exec(sql)
   }

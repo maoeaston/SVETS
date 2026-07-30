@@ -1,0 +1,109 @@
+{
+  "schema_version": "m5b-crash-matrix-v1",
+  "cases": [
+    {
+      "point": "AFTER_PLAN",
+      "ponr": false,
+      "event_index": null,
+      "expected_before_recovery": "NO_PREPARE",
+      "allowed_recovery_action": "RESET_THEN_EXPLICIT_REPLAN",
+      "expected_total_planner_calls": 2
+    },
+    {
+      "point": "BEFORE_PREPARE",
+      "ponr": false,
+      "event_index": null,
+      "expected_before_recovery": "NO_PREPARE",
+      "allowed_recovery_action": "RESET_THEN_EXPLICIT_REPLAN",
+      "expected_total_planner_calls": 2
+    },
+    {
+      "point": "AFTER_PREPARE_FSYNC",
+      "ponr": true,
+      "event_index": null,
+      "expected_before_recovery": "PREPARED_ONLY",
+      "allowed_recovery_action": "APPLY_CONFIRM_INDEX_RESULT_FROM_PREPARED",
+      "expected_total_planner_calls": 1
+    },
+    {
+      "point": "BEFORE_APPLY",
+      "ponr": true,
+      "event_index": null,
+      "expected_before_recovery": "PREPARED_ONLY",
+      "allowed_recovery_action": "APPLY_CONFIRM_INDEX_RESULT_FROM_PREPARED",
+      "expected_total_planner_calls": 1
+    },
+    {
+      "point": "APPLY_EVENT",
+      "ponr": true,
+      "event_index": 1,
+      "expected_before_recovery": "PREPARED_WITH_ZERO_PARTIAL_PROJECTION",
+      "allowed_recovery_action": "APPLY_CONFIRM_INDEX_RESULT_FROM_PREPARED",
+      "expected_total_planner_calls": 1
+    },
+    {
+      "point": "AFTER_APPLY_COMMIT",
+      "ponr": true,
+      "event_index": null,
+      "expected_before_recovery": "SQLITE_APPLIED",
+      "allowed_recovery_action": "CONFIRM_INDEX_RESULT_FROM_PREPARED",
+      "expected_total_planner_calls": 1
+    },
+    {
+      "point": "BEFORE_CONFIRM",
+      "ponr": true,
+      "event_index": null,
+      "expected_before_recovery": "SQLITE_APPLIED",
+      "allowed_recovery_action": "CONFIRM_INDEX_RESULT_FROM_PREPARED",
+      "expected_total_planner_calls": 1
+    },
+    {
+      "point": "AFTER_COMMITTED_FSYNC",
+      "ponr": true,
+      "event_index": null,
+      "expected_before_recovery": "DURABLE_COMMITTED_SQLITE_APPLIED",
+      "allowed_recovery_action": "SQLITE_CONFIRM_INDEX_RESULT_FROM_PREPARED",
+      "expected_total_planner_calls": 1
+    },
+    {
+      "point": "AFTER_SQLITE_CONFIRM",
+      "ponr": true,
+      "event_index": null,
+      "expected_before_recovery": "SQLITE_CONFIRMED",
+      "allowed_recovery_action": "INDEX_RESULT_FROM_PREPARED",
+      "expected_total_planner_calls": 1
+    },
+    {
+      "point": "BEFORE_INDEX",
+      "ponr": true,
+      "event_index": null,
+      "expected_before_recovery": "SQLITE_CONFIRMED",
+      "allowed_recovery_action": "INDEX_RESULT_FROM_PREPARED",
+      "expected_total_planner_calls": 1
+    },
+    {
+      "point": "AFTER_INDEX",
+      "ponr": true,
+      "event_index": null,
+      "expected_before_recovery": "INDEX_CURRENT",
+      "allowed_recovery_action": "RESULT_FROM_PREPARED",
+      "expected_total_planner_calls": 1
+    },
+    {
+      "point": "BEFORE_RESULT",
+      "ponr": true,
+      "event_index": null,
+      "expected_before_recovery": "INDEX_CURRENT",
+      "allowed_recovery_action": "RESULT_FROM_PREPARED",
+      "expected_total_planner_calls": 1
+    },
+    {
+      "point": "AFTER_RESULT",
+      "ponr": true,
+      "event_index": null,
+      "expected_before_recovery": "RESULT_DURABLE",
+      "allowed_recovery_action": "VERIFY_ONLY",
+      "expected_total_planner_calls": 1
+    }
+  ]
+}

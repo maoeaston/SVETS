@@ -16,10 +16,17 @@ import { hashPassword } from '../../../utils/password'
 import {
   bindAuthSessionToSender,
   clearAuthSessionBinding,
+  hasAuthSessionBinding,
+  heartbeatAcceptedAuthSession,
   issuePasswordAuthSession,
+  replaceSenderAuthSession,
+  sweepInvalidAuthSessions,
   resolveTrustedAuthSessionCaller
 } from '../../../utils/auth-session'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
+import type { DBAdapter, DBStatement } from '../../../db/interface'
+import type { AcceptedCommandContext } from '../../../application/command/command-types'
+import { createInternalMutationCapability } from '../../../application/runtime/internal-mutation-capability'
 import type { AuthRole } from '../../../../shared/types/auth'
 
 let db: MemoryAdapter
@@ -36,6 +43,59 @@ function seedUser(role: AuthRole, status: 'ACTIVE' | 'DISABLED' = 'ACTIVE') {
      VALUES (?, ?, ?, ?, ?, ?)`
   ).run(userId, username, hashPassword(password), role, `${role} 用户`, status)
   return { userId, username, password, displayName: `${role} 用户` }
+}
+
+function maintenanceCapability() {
+  return createInternalMutationCapability({
+    owner: 'test:auth-session-sweep',
+    phase: 'RUNTIME_MAINTENANCE',
+    dataRoot: '/tmp/svets-auth-session-test'
+  })
+}
+
+function acceptedUserContext(params: {
+  authSessionId: string
+  userId: string
+  role: AuthRole
+}): AcceptedCommandContext {
+  return {
+    envelope: {
+      actor: {
+        kind: 'USER',
+        authSessionId: params.authSessionId,
+        userId: params.userId,
+        role: params.role
+      }
+    }
+  } as unknown as AcceptedCommandContext
+}
+
+class FailAuthSessionUpdateAdapter implements DBAdapter {
+  constructor(private readonly delegate: DBAdapter) {}
+
+  prepare(sql: string): DBStatement {
+    const statement = this.delegate.prepare(sql)
+    if (!sql.toUpperCase().includes('UPDATE AUTH_SESSION')) return statement
+    return {
+      run: () => {
+        throw new Error('injected auth_session update failure')
+      },
+      get: statement.get,
+      all: statement.all
+    }
+  }
+
+  transaction<T>(fn: () => T): () => T {
+    return this.delegate.transaction(fn)
+  }
+
+  immediateTransaction<T>(fn: () => T): () => T {
+    return this.delegate.immediateTransaction(fn)
+  }
+
+  exec(sql: string): void {
+    this.delegate.exec(sql)
+  }
 }
 
 beforeAll(async () => {
@@ -149,7 +209,7 @@ describe('auth current session / logout', () => {
     })
   })
 
-  it('过期会话恢复失败，并被标记为 EXPIRED', () => {
+  it('过期会话只读恢复失败，但不写状态或删除 binding', () => {
     const teacher = seedUser('TEACHER')
     const issued = issuePasswordAuthSession(db, {
       userId: teacher.userId,
@@ -169,10 +229,11 @@ describe('auth current session / logout', () => {
     const row = db
       .prepare('SELECT status FROM auth_session WHERE auth_session_id = ?')
       .get(issued.snapshot.authSessionId) as { status: string }
-    expect(row.status).toBe('EXPIRED')
+    expect(row.status).toBe('ACTIVE')
+    expect(hasAuthSessionBinding(SENDER_ID)).toBe(true)
   })
 
-  it('账号停用后，会话恢复失败并撤销', () => {
+  it('账号停用后只读恢复失败，但不撤销会话或删除 binding', () => {
     const teacher = seedUser('TEACHER')
     const issued = issuePasswordAuthSession(db, {
       userId: teacher.userId,
@@ -190,8 +251,132 @@ describe('auth current session / logout', () => {
     const row = db
       .prepare('SELECT status, revoke_reason FROM auth_session WHERE auth_session_id = ?')
       .get(issued.snapshot.authSessionId) as { status: string; revoke_reason: string | null }
-    expect(row.status).toBe('REVOKED')
-    expect(row.revoke_reason).toBe('ACCOUNT_DISABLED')
+    expect(row.status).toBe('ACTIVE')
+    expect(row.revoke_reason).toBeNull()
+    expect(hasAuthSessionBinding(SENDER_ID)).toBe(true)
+  })
+})
+
+describe('auth snapshot / accepted heartbeat / SYSTEM sweep', () => {
+  it('ACTIVE snapshot does not update last_activity_at; accepted heartbeat updates it once', () => {
+    const teacher = seedUser('TEACHER')
+    const issued = issuePasswordAuthSession(db, {
+      userId: teacher.userId,
+      role: 'TEACHER',
+      displayName: teacher.displayName
+    })
+    db.prepare(
+      `UPDATE auth_session
+          SET last_activity_at = '2000-01-01 00:00:00',
+              updated_at = '2000-01-01 00:00:00'
+        WHERE auth_session_id = ?`
+    ).run(issued.snapshot.authSessionId)
+    bindAuthSessionToSender(SENDER_ID, issued.rawToken)
+
+    expect(getCurrentSession(db, SENDER_ID)).toMatchObject({ success: true, userId: teacher.userId })
+    expect(db.prepare('SELECT last_activity_at FROM auth_session WHERE auth_session_id = ?').get(
+      issued.snapshot.authSessionId
+    )).toEqual({ last_activity_at: '2000-01-01 00:00:00' })
+
+    heartbeatAcceptedAuthSession(db, acceptedUserContext({
+      authSessionId: issued.snapshot.authSessionId,
+      userId: teacher.userId,
+      role: 'TEACHER'
+    }))
+    const heartbeat = db.prepare(
+      'SELECT last_activity_at FROM auth_session WHERE auth_session_id = ?'
+    ).get(issued.snapshot.authSessionId) as { last_activity_at: string }
+    expect(heartbeat.last_activity_at).not.toBe('2000-01-01 00:00:00')
+  })
+
+  it('SYSTEM sweep persists EXPIRED before clearing the runtime-owned binding', () => {
+    const teacher = seedUser('TEACHER')
+    const issued = issuePasswordAuthSession(db, {
+      userId: teacher.userId,
+      role: 'TEACHER',
+      displayName: teacher.displayName
+    })
+    db.prepare("UPDATE auth_session SET expires_at = datetime('now', '-1 minute') WHERE auth_session_id = ?")
+      .run(issued.snapshot.authSessionId)
+    replaceSenderAuthSession(db, SENDER_ID, issued.rawToken, 'runtime-auth-test')
+
+    expect(sweepInvalidAuthSessions(db, maintenanceCapability(), {
+      bindingOwnerId: 'runtime-auth-test'
+    })).toEqual({
+      expiredSessionCount: 1,
+      revokedSessionCount: 0,
+      clearedBindingCount: 1
+    })
+    expect(db.prepare('SELECT status FROM auth_session WHERE auth_session_id = ?').get(
+      issued.snapshot.authSessionId
+    )).toEqual({ status: 'EXPIRED' })
+    expect(hasAuthSessionBinding(SENDER_ID)).toBe(false)
+  })
+
+  it('trusted-caller preflight rejection does not delete an invalid sender binding', () => {
+    const teacher = seedUser('TEACHER')
+    const issued = issuePasswordAuthSession(db, {
+      userId: teacher.userId,
+      role: 'TEACHER',
+      displayName: teacher.displayName
+    })
+    db.prepare("UPDATE auth_session SET expires_at = datetime('now', '-1 minute') WHERE auth_session_id = ?")
+      .run(issued.snapshot.authSessionId)
+    bindAuthSessionToSender(SENDER_ID, issued.rawToken)
+
+    expect(resolveTrustedAuthSessionCaller(db, SENDER_ID, {
+      callerUserId: teacher.userId,
+      callerRole: 'TEACHER'
+    })).toEqual({ ok: false, errorCode: 'FORBIDDEN' })
+    expect(hasAuthSessionBinding(SENDER_ID)).toBe(true)
+    expect(db.prepare('SELECT status FROM auth_session WHERE auth_session_id = ?').get(
+      issued.snapshot.authSessionId
+    )).toEqual({ status: 'ACTIVE' })
+  })
+
+  it('SYSTEM sweep persists disabled-account revocation before clearing binding', () => {
+    const teacher = seedUser('TEACHER')
+    const issued = issuePasswordAuthSession(db, {
+      userId: teacher.userId,
+      role: 'TEACHER',
+      displayName: teacher.displayName
+    })
+    db.prepare("UPDATE user_account SET status = 'DISABLED' WHERE user_id = ?").run(teacher.userId)
+    replaceSenderAuthSession(db, SENDER_ID, issued.rawToken, 'runtime-auth-test')
+
+    expect(sweepInvalidAuthSessions(db, maintenanceCapability(), {
+      bindingOwnerId: 'runtime-auth-test'
+    })).toEqual({
+      expiredSessionCount: 0,
+      revokedSessionCount: 1,
+      clearedBindingCount: 1
+    })
+    expect(db.prepare('SELECT status, revoke_reason FROM auth_session WHERE auth_session_id = ?').get(
+      issued.snapshot.authSessionId
+    )).toEqual({ status: 'REVOKED', revoke_reason: 'ACCOUNT_DISABLED' })
+    expect(hasAuthSessionBinding(SENDER_ID)).toBe(false)
+  })
+
+  it('sweep DB failure rolls back and preserves binding for a later retry', () => {
+    const teacher = seedUser('TEACHER')
+    const issued = issuePasswordAuthSession(db, {
+      userId: teacher.userId,
+      role: 'TEACHER',
+      displayName: teacher.displayName
+    })
+    db.prepare("UPDATE auth_session SET expires_at = datetime('now', '-1 minute') WHERE auth_session_id = ?")
+      .run(issued.snapshot.authSessionId)
+    replaceSenderAuthSession(db, SENDER_ID, issued.rawToken, 'runtime-auth-test')
+
+    expect(() => sweepInvalidAuthSessions(
+      new FailAuthSessionUpdateAdapter(db),
+      maintenanceCapability(),
+      { bindingOwnerId: 'runtime-auth-test' }
+    )).toThrow('injected auth_session update failure')
+    expect(db.prepare('SELECT status FROM auth_session WHERE auth_session_id = ?').get(
+      issued.snapshot.authSessionId
+    )).toEqual({ status: 'ACTIVE' })
+    expect(hasAuthSessionBinding(SENDER_ID)).toBe(true)
   })
 })
 

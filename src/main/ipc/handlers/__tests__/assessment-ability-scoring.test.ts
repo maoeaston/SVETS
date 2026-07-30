@@ -64,11 +64,11 @@ vi.mock('../../../domain/event-writer', () => ({
   )
 }))
 
-import { calculateResult, createSession, seedAssessmentErrorCodes } from '../assessment'
+import { calculateResult, createSession, seedAssessmentErrorCodes } from '../../../application/services/__tests__/assessment-test-support'
 import {
   getOfflineAbilityScores,
   submitOfflineAbilityScores
-} from '../ability-scoring'
+} from '../../../application/services/__tests__/scoring-test-support'
 import {
   baseStrategyInput,
   createTestDb,

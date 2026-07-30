@@ -1,0 +1,49 @@
+{
+  "schema_version": "m5b-step-source-delta-v1",
+  "step": "M5B-4",
+  "source_digest": "307d39d891ac35075462998b98ab00c59381d244072fcff5f10a705a5841e29f",
+  "target_digest": "dfc966e46f28603e1fa9de15feabd3fe36b088b0e586b6fe43e47b576d899e37",
+  "expected_counts": {
+    "channels": 74,
+    "direct_callsites": 239,
+    "direct_files": 32,
+    "capability_callsites": 72,
+    "delegating_roots": 13
+  },
+  "removed_source": [],
+  "added_target": [
+    {
+      "fingerprint": "a27a340dd1a36edc355125d025afcaef02290a1e52384b3ac82b27311a94f17e",
+      "file": "src/main/application/command/durable-command-store.ts",
+      "symbol": "DurableCommandStore.run",
+      "line": 227,
+      "kind": "DB_RUN",
+      "callee": "this.database.prepare(sql).run",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_COMMAND_STORE_INTERNAL",
+      "planned_step": "M5B-4"
+    },
+    {
+      "fingerprint": "524d6e7ebb9e5422379b8064c343878eae987c9b72f38bb5fa38e48793971c2f",
+      "file": "src/main/application/command/durable-command-store.ts",
+      "symbol": "DurableCommandStore.updateOne",
+      "line": 231,
+      "kind": "DB_RUN",
+      "callee": "this.run",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_COMMAND_STORE_INTERNAL",
+      "planned_step": "M5B-4"
+    },
+    {
+      "fingerprint": "5ec2b0abf6647a53717899ecd1b47988d69268274f9b77b2585fa8e513dd8d0f",
+      "file": "src/main/application/command/durable-command-store.ts",
+      "symbol": "DurableCommandStore.registerOrLoad",
+      "line": 264,
+      "kind": "DB_RUN",
+      "callee": "this.run",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_COMMAND_STORE_INTERNAL",
+      "planned_step": "M5B-4"
+    }
+  ]
+}

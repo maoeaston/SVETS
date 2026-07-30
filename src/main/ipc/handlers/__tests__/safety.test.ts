@@ -33,7 +33,7 @@ import {
   replaceSafetyIncidentForFactualCorrection,
   listSafetyIncidents,
   getSafetyIncident
-} from '../safety'
+} from '../../../application/services/__tests__/safety-test-support'
 import { createTestDb, seedCaller, seedStudent } from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
 

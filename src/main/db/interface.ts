@@ -18,6 +18,11 @@ export interface DBAdapter {
   prepare(sql: string): DBStatement
   /** 包裹事务：返回的函数被调用时在事务内执行 fn，任一抛错回滚。 */
   transaction<T>(fn: () => T): () => T
+  /**
+   * 包裹写者事务：调用时必须以 BEGIN IMMEDIATE 获取写锁，任一抛错回滚。
+   * 该边界不得嵌套；适用于 durable command claim、batch APPLY 与迁移核。
+   */
+  immediateTransaction<T>(fn: () => T): () => T
   /** 执行多条 SQL（建表、schema 加载等），无绑定参数。 */
   exec(sql: string): void
 }

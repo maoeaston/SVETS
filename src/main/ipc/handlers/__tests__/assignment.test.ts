@@ -67,8 +67,8 @@ import {
   rebindAssignment,
   releaseAssignment,
   startAssignedAssessment
-} from '../assignment'
-import { listMySessions } from '../assessment'
+} from '../../../application/services/__tests__/assignment-test-support'
+import { listMySessions } from '../../../application/services/__tests__/assessment-test-support'
 import {
   baseStrategyInput,
   createTestDb,

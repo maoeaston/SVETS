@@ -1,4 +1,3 @@
-import { ipcMain } from 'electron'
 import type { DBAdapter } from '../../db/interface'
 import { SqliteAdapter } from '../../db/sqlite-adapter'
 import { getDatabase } from '../../db/connection'
@@ -21,6 +20,7 @@ import type {
   TrustedCallerParams,
   WorkspaceOverview
 } from '../../../shared/types/foundation'
+import type { LegacyIpcHandlerRegistrar } from '../legacy-handler-collector'
 
 const PRIORITIES = new Set<ExceptionPriority>(['P0', 'P1', 'P2', 'P3'])
 const CATEGORIES = new Set<ExceptionCategory>([
@@ -249,7 +249,10 @@ export function getWorkspaceOverview(
   }
 }
 
-export function registerFoundationHandlers(getDb: () => DBAdapter = defaultGetDb): void {
+export function registerFoundationHandlers(
+  registrar: LegacyIpcHandlerRegistrar,
+  getDb: () => DBAdapter = defaultGetDb
+): void {
   function trusted<T extends TrustedCallerParams, R>(
     event: Electron.IpcMainInvokeEvent,
     params: T,
@@ -261,10 +264,10 @@ export function registerFoundationHandlers(getDb: () => DBAdapter = defaultGetDb
     return run(db, resolved.params)
   }
 
-  ipcMain.handle('foundation:getOverview', (event, params: TrustedCallerParams) =>
+  registrar.handle('foundation:getOverview', (event, params: TrustedCallerParams) =>
     trusted(event, params, getWorkspaceOverview))
-  ipcMain.handle('foundation:listExceptions', (event, params: ListExceptionsParams) =>
+  registrar.handle('foundation:listExceptions', (event, params: ListExceptionsParams) =>
     trusted(event, params, listExceptions))
-  ipcMain.handle('foundation:getException', (event, params: GetExceptionParams) =>
+  registrar.handle('foundation:getException', (event, params: GetExceptionParams) =>
     trusted(event, params, getException))
 }

@@ -33,7 +33,7 @@ interface ConfirmTaskClosureParams {
   callerRole: 'TEACHER'
   resultIds: readonly string[]
   confirmedAt?: string
-  correlationId?: string
+  correlationId: string
 }
 
 interface ReplaceTaskClosureParams {
@@ -43,7 +43,7 @@ interface ReplaceTaskClosureParams {
   resultIds: readonly string[]
   correctionReason: string
   replacedAt?: string
-  correlationId?: string
+  correlationId: string
 }
 
 export interface TaskClosureCommandResult {
@@ -94,6 +94,7 @@ export class TaskClosureService {
   }
 
   async confirmBaseTaskClosure(params: ConfirmTaskClosureParams): Promise<TaskClosureCommandResult> {
+    if (!params.correlationId.trim()) throw new Error('Task closure correlation is required')
     const teacherId = requireActiveTeacher(this.db, params.callerUserId, params.callerRole)
     const initialBinding = readBaseTaskResultBinding(this.db, params.resultIds)
 
@@ -150,6 +151,7 @@ export class TaskClosureService {
   }
 
   async replaceBaseTaskClosure(params: ReplaceTaskClosureParams): Promise<TaskClosureCommandResult> {
+    if (!params.correlationId.trim()) throw new Error('Task closure correlation is required')
     const teacherId = requireActiveTeacher(this.db, params.callerUserId, params.callerRole)
     const oldClosure = requireClosure(this.db, params.oldTaskClosureId)
 

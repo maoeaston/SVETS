@@ -3,7 +3,6 @@ import type { DBAdapter } from '../db/interface'
 import { assertCaller } from '../utils/auth-context'
 import { sha256CanonicalJson } from './report-canonical'
 import { parseReportContent } from './report-contract'
-import { writeEvent } from './event-writer'
 import {
   buildBaseAbilityReport,
   buildJobSkillReport,
@@ -12,7 +11,6 @@ import {
 } from './report-builders'
 import { recordReportGenerationError } from './report-errors'
 import type { F7EventIntent, ReportCommandCoordinator } from './report-command-coordinator'
-import { applyReportEvent, markReportEventApplied } from './report-reducer'
 import type { ReportGeneratedV2Payload } from '@shared/types/event-payloads'
 import type { GenerateReportParams, GenerateReportResult } from '@shared/types/report'
 
@@ -32,7 +30,7 @@ interface ExistingReportRow {
   task_closure_id: string | null
 }
 
-interface SourceKey {
+export interface ReportSourceKey {
   studentId: string
   jobCode: string
   taskCode: string
@@ -49,7 +47,7 @@ export interface GenerateReportServiceParams {
   callerUserId: string
   callerRole: 'TEACHER'
   generatedAt?: string
-  correlationId?: string
+  correlationId: string
 }
 
 export interface GenerateReportServiceResult {
@@ -85,28 +83,59 @@ export class ReportService {
     return this.generateInternal(params, actorId, 'TEACHER')
   }
 
-  async generateFromSharedParams(params: GenerateReportParams): Promise<GenerateReportResult> {
+  async generateFromSharedParams(
+    params: GenerateReportParams,
+    correlationId: string
+  ): Promise<GenerateReportResult> {
     const result = await this.generateReport({
       reportScope: params.reportScope,
       taskClosureId: 'taskClosureId' in params ? params.taskClosureId : undefined,
       resultId: 'resultId' in params ? params.resultId : undefined,
       incidentId: 'incidentId' in params ? params.incidentId : undefined,
       callerUserId: params.callerUserId,
-      callerRole: params.callerRole as 'TEACHER'
+      callerRole: params.callerRole as 'TEACHER',
+      correlationId
     })
     return { success: true, reportId: result.reportId, generated: result.generated }
   }
 
-  async generateJobSkillReportFromResult(resultId: string, actorId: string, actorRole: ActorRole = 'SYSTEM'): Promise<GenerateReportServiceResult> {
-    return this.generateInternal({ reportScope: 'JOB_SKILL', resultId, callerUserId: actorId, callerRole: 'TEACHER' }, actorId, actorRole)
+  async generateJobSkillReportFromResult(
+    resultId: string,
+    actorId: string,
+    actorRole: ActorRole,
+    correlationId: string
+  ): Promise<GenerateReportServiceResult> {
+    return this.generateInternal(
+      { reportScope: 'JOB_SKILL', resultId, callerUserId: actorId, callerRole: 'TEACHER', correlationId },
+      actorId,
+      actorRole
+    )
   }
 
-  generateJobSkillReportFromResultSync(resultId: string, actorId: string, actorRole: ActorRole = 'SYSTEM'): GenerateReportServiceResult {
-    return this.generateInternalSync({ reportScope: 'JOB_SKILL', resultId, callerUserId: actorId, callerRole: 'TEACHER' }, actorId, actorRole)
+  generateJobSkillReportFromResultSync(
+    resultId: string,
+    actorId: string,
+    actorRole: ActorRole,
+    correlationId: string
+  ): GenerateReportServiceResult {
+    return this.generateInternalSync(
+      { reportScope: 'JOB_SKILL', resultId, callerUserId: actorId, callerRole: 'TEACHER', correlationId },
+      actorId,
+      actorRole
+    )
   }
 
-  generateSafetyReportFromIncidentSync(incidentId: string, actorId: string, actorRole: ActorRole = 'SYSTEM'): GenerateReportServiceResult {
-    return this.generateInternalSync({ reportScope: 'SAFETY', incidentId, callerUserId: actorId, callerRole: 'TEACHER' }, actorId, actorRole)
+  generateSafetyReportFromIncidentSync(
+    incidentId: string,
+    actorId: string,
+    actorRole: ActorRole,
+    correlationId: string
+  ): GenerateReportServiceResult {
+    return this.generateInternalSync(
+      { reportScope: 'SAFETY', incidentId, callerUserId: actorId, callerRole: 'TEACHER', correlationId },
+      actorId,
+      actorRole
+    )
   }
 
   private async generateInternal(
@@ -114,7 +143,8 @@ export class ReportService {
     actorId: string,
     actorRole: ActorRole
   ): Promise<GenerateReportServiceResult> {
-    const sourceKey = resolveSourceKey(this.db, params)
+    requireCorrelation(params.correlationId)
+    const sourceKey = resolveReportSourceKey(this.db, params)
     try {
       return await this.coordinator.runSingleEventCommand({
         key: { studentId: sourceKey.studentId, jobCode: sourceKey.jobCode, taskCode: sourceKey.taskCode, scope: sourceKey.scope },
@@ -191,7 +221,8 @@ export class ReportService {
     actorId: string,
     actorRole: ActorRole
   ): GenerateReportServiceResult {
-    const sourceKey = resolveSourceKey(this.db, params)
+    requireCorrelation(params.correlationId)
+    const sourceKey = resolveReportSourceKey(this.db, params)
     try {
       return this.coordinator.runSingleEventCommandSync({
         key: { studentId: sourceKey.studentId, jobCode: sourceKey.jobCode, taskCode: sourceKey.taskCode, scope: sourceKey.scope },
@@ -264,75 +295,18 @@ export class ReportService {
   }
 }
 
-export function writeBuiltReportSynchronously(
-  db: DBAdapter,
-  built: BuiltReportSnapshot,
-  actorId: string,
-  actorRole: ActorRole,
-  actionLogPath?: string
-): GenerateReportServiceResult {
-  const generation = generationFacts(db, built)
-  const existing = findValidReportByGenerationKey(db, generation.generationKey)
-  if (existing) return { reportId: existing.report_id, generated: false, eventId: null }
-
-  const reportId = uuidv4()
-  const facts = businessFactsForBuiltReport(built)
-  const payload: ReportGeneratedV2Payload = {
-    report_id: reportId,
-    student_id: facts.studentId,
-    job_code: facts.jobCode,
-    task_code: facts.taskCode,
-    report_type: built.reportType,
-    report_scope: built.scope,
-    source_aggregate_type: built.sourceAggregateType,
-    source_aggregate_id: built.sourceAggregateId,
-    result_ids: built.resultIds,
-    incident_ids: built.incidentIds,
-    report_title: built.reportTitle,
-    report_content: built.content,
-    generated_at: built.content.generated_at,
-    generated_by: actorId,
-    report_revision: generation.revision,
-    report_schema_version: built.reportSchemaVersion,
-    report_builder_version: built.reportBuilderVersion,
-    lineage_key: built.lineageKey,
-    source_set_hash: built.sourceSetHash,
-    content_hash: built.contentHash,
-    generation_key: generation.generationKey,
-    generation_reason: generation.reason,
-    task_closure_id: built.taskClosureId,
-    repair_of_report_id: generation.repairOfReportId,
-    superseded_report_ids: generation.supersededReportIds
-  }
-  const event = db.transaction(() => {
-    const written = writeEvent({
-      aggregateType: 'TASK_REPORT',
-      aggregateId: reportId,
-      eventType: 'REPORT_GENERATED',
-      payload: payload as unknown as Record<string, unknown>,
-      actorId,
-      actorRole,
-      schemaVersion: 2,
-      database: db,
-      actionLogPath
-    })
-    const f7Written = { ...written, schema_version: 2 as const }
-    if (written.schema_version !== 2) {
-      db.prepare('UPDATE domain_event_projection SET schema_version = 2 WHERE event_id = ?').run(written.event_id)
-    }
-    applyReportEvent(db, f7Written)
-    markReportEventApplied(db, f7Written)
-    return f7Written
-  })()
-  return { reportId, generated: true, eventId: event.event_id }
-}
-
 function requireActiveTeacher(db: DBAdapter, callerUserId: string, callerRole: 'TEACHER'): string {
   const caller = assertCaller(db, callerUserId, callerRole)
   if (!caller.ok || caller.row.role !== 'TEACHER') {
     throw new ReportServiceError('FORBIDDEN', 'Report generation requires an ACTIVE TEACHER')
   }
   return caller.row.user_id
+}
+
+function requireCorrelation(correlationId: string): void {
+  if (!correlationId.trim()) {
+    throw new ReportServiceError('INVALID_INPUT', 'Report generation correlation is required')
+  }
 }
 
 function buildForParams(db: DBAdapter, params: Pick<GenerateReportServiceParams, 'reportScope' | 'taskClosureId' | 'resultId' | 'incidentId'>, generatedAt: string): BuiltReportSnapshot {
@@ -348,7 +322,10 @@ function buildForParams(db: DBAdapter, params: Pick<GenerateReportServiceParams,
   return buildSafetyReport(db, params.incidentId, generatedAt)
 }
 
-function resolveSourceKey(db: DBAdapter, params: Pick<GenerateReportServiceParams, 'reportScope' | 'taskClosureId' | 'resultId' | 'incidentId'>): SourceKey {
+export function resolveReportSourceKey(
+  db: DBAdapter,
+  params: Pick<GenerateReportServiceParams, 'reportScope' | 'taskClosureId' | 'resultId' | 'incidentId'>
+): ReportSourceKey {
   if (params.reportScope === 'BASE_ABILITY') {
     if (!params.taskClosureId) throw new ReportServiceError('INVALID_INPUT', 'Missing taskClosureId')
     const row = db.prepare('SELECT student_id, job_code, task_code FROM task_closure WHERE task_closure_id = ?').get(params.taskClosureId) as {
@@ -440,8 +417,4 @@ function reportContentStillValid(report: ExistingReportRow): boolean {
   } catch {
     return false
   }
-}
-
-function businessFactsForBuiltReport(built: BuiltReportSnapshot): { studentId: string; jobCode: string; taskCode: string } {
-  return { studentId: built.studentId, jobCode: built.jobCode, taskCode: built.taskCode }
 }

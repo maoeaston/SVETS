@@ -1,7 +1,6 @@
 // 统一当前结果读取 IPC（F6-5）。
 // 只读 result_record.is_current = 1，不在读取时补算，也不修改当前结果标记。
 
-import { ipcMain } from 'electron'
 import type { DBAdapter } from '../../db/interface'
 import { SqliteAdapter } from '../../db/sqlite-adapter'
 import { getDatabase } from '../../db/connection'
@@ -18,6 +17,7 @@ import type {
   ResultsErrorCode
 } from '../../../shared/types/results'
 import type { ResultType, StrategyType } from '../../../shared/types/json-schemas'
+import type { LegacyIpcHandlerRegistrar } from '../legacy-handler-collector'
 
 const RESULT_TYPES = new Set<ResultType>([
   'ABILITY_SCORE',
@@ -261,15 +261,18 @@ export function listCurrentResultsByStudent(
   }
 }
 
-export function registerResultsHandlers(getDb: () => DBAdapter = defaultGetDb): void {
-  ipcMain.handle('results:getCurrent', (event, params: GetCurrentResultParams) => {
+export function registerResultsHandlers(
+  registrar: LegacyIpcHandlerRegistrar,
+  getDb: () => DBAdapter = defaultGetDb
+): void {
+  registrar.handle('results:getCurrent', (event, params: GetCurrentResultParams) => {
     const db = getDb()
     const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
     if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }
     return getCurrentResult(db, trusted.params)
   })
 
-  ipcMain.handle('results:listCurrentByStudent', (event, params: ListCurrentByStudentParams) => {
+  registrar.handle('results:listCurrentByStudent', (event, params: ListCurrentByStudentParams) => {
     const db = getDb()
     const trusted = resolveTrustedAuthSessionCaller(db, event.sender.id, params)
     if (!trusted.ok) return { success: false as const, errorCode: 'FORBIDDEN' as const }

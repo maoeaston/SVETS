@@ -79,6 +79,10 @@ class FailingExecAdapter implements DBAdapter {
     return this.database.transaction(fn)
   }
 
+  immediateTransaction<T>(fn: () => T): () => T {
+    return this.database.immediateTransaction(fn)
+  }
+
   exec(sql: string): void {
     this.execCount += 1
     if (this.execCount === this.failAtExec) throw new Error('injected M4 DDL failure')

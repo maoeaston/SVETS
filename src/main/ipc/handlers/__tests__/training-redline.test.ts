@@ -50,9 +50,16 @@ vi.mock('../../../domain/event-writer', () => ({
   )
 }))
 
-import { createTrainingSession, startStep, haltTrainingSessionSteps } from '../training'
+import { writeEvent } from '../../../domain/event-writer'
+import { haltTrainingSessionSteps as executeTrainingHalt } from '../../../application/services/training-service'
+import {
+  acceptedTestContext,
+  createTrainingTestCommands
+} from '../../../application/services/__tests__/training-test-support'
 import { createTestDb, seedCaller, seedStudent } from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
+
+const { createTrainingSession, startStep } = createTrainingTestCommands({ writeEvent })
 
 let db: MemoryAdapter
 let callerId: string
@@ -63,6 +70,24 @@ const taskCode = 'SHELVE_TASK'
 const jobCode = 'SUPERMARKET_SHELVER'
 const strategyId = 'strategy_training_shelver_v1'
 const strategyVersion = 1
+
+function haltTrainingSessionSteps(
+  targetDb: MemoryAdapter,
+  targetStudentId: string,
+  targetJobCode: string,
+  targetTaskCode: string
+): void {
+  executeTrainingHalt(targetDb, acceptedTestContext({
+    commandType: 'assessment:triggerRedline',
+    correlationId: `training-redline:${targetStudentId}:${targetJobCode}:${targetTaskCode}`,
+    target: {
+      aggregate_type: 'ASSESSMENT_SESSION',
+      student_id: targetStudentId,
+      job_code: targetJobCode,
+      task_code: targetTaskCode
+    }
+  }))
+}
 
 function seedTrainingStrategyForJob(jobCode: string): string {
   const strategyIdForJob = `strategy_training_${jobCode.toLowerCase()}_v1`

@@ -51,16 +51,12 @@ vi.mock('../../../domain/event-writer', () => ({
 }))
 
 import {
-  createTrainingSession,
-  startStep,
-  completeStep,
-  skipStep,
-  failStep,
-  retryStep,
   getTrainingSession,
   listTrainingSessions,
   listMyTrainingSessions
 } from '../training'
+import { writeEvent } from '../../../domain/event-writer'
+import { createTrainingTestCommands } from '../../../application/services/__tests__/training-test-support'
 import {
   createTestDb,
   seedAssessmentSessionFixture,
@@ -69,6 +65,15 @@ import {
   seedStudent
 } from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
+
+const {
+  createTrainingSession,
+  startStep,
+  completeStep,
+  skipStep,
+  failStep,
+  retryStep
+} = createTrainingTestCommands({ writeEvent })
 
 let db: MemoryAdapter
 let callerId: string

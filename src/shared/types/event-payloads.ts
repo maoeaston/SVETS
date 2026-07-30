@@ -571,6 +571,204 @@ export interface ReportLockedV2Payload extends ReportLockedPayload {
   status_after: 'LOCKED'
 }
 
+// M5B event-batch records keep the existing schema-v2 business payload intact,
+// while adding the durable metadata required to replay a prepared batch without
+// consulting request-time state. These fields are deliberately shared by every
+// report/closure event emitted by the v2 batch planner.
+export interface EventBatchContextV1Payload {
+  schema_version: 'batch-context-v1'
+  plan_version: string
+  result_recipe_version: string
+  root_command_type: string
+  root_command_id: string
+  child_ordinal: number
+}
+
+export interface ReportEventBatchMetadataV2 {
+  event_payload_version: 2
+  batch_context: EventBatchContextV1Payload
+  actor_role: 'TEACHER' | 'SYSTEM'
+  app_version: string
+  correlation_id: string
+}
+
+/** M5B prepared training EVENT metadata; legacy training payloads remain schema-v1. */
+export interface TrainingEventBatchMetadataV2 {
+  event_payload_version: 2
+  batch_context: EventBatchContextV1Payload
+  actor_role: 'TEACHER' | 'STUDENT'
+  app_version: string
+  correlation_id: string
+}
+
+export interface TrainingStepRecordBatchV2Payload {
+  step_record_id: string
+  step_code: string
+  step_name: string
+  step_type: 'WATCH' | 'LEARN' | 'PRACTICE' | 'DO'
+  step_order: number
+}
+
+export type TrainingStartedBatchV2Payload = Omit<TrainingStartedPayload, 'business_session_id' | 'module_type' | 'step_order'>
+  & TrainingEventBatchMetadataV2
+  & {
+    business_session_id: string
+    module_type: TrainingModuleType
+    created_by: string
+    step_records: TrainingStepRecordBatchV2Payload[]
+  }
+
+export interface TrainingStepBatchV2Payload extends TrainingEventBatchMetadataV2 {
+  training_session_id: string
+  step_record_id: string
+  step_type: 'WATCH' | 'LEARN' | 'PRACTICE' | 'DO'
+  step_order: number
+  status_before: 'NOT_STARTED' | 'IN_PROGRESS' | 'FAILED'
+  status_after: 'IN_PROGRESS' | 'COMPLETED' | 'SKIPPED' | 'FAILED'
+  attempt_count_before: number
+  attempt_count_after: number
+  session_status_before: 'INIT' | 'ACTIVE' | 'EMOTION_INTERRUPTED' | 'SUSPENDED_REVIEW_REQUIRED'
+  session_status_after: 'ACTIVE' | 'EMOTION_INTERRUPTED' | 'SUSPENDED_REVIEW_REQUIRED'
+  session_completed: boolean
+  occurred_at: string
+}
+
+export type TrainingCompletedBatchV2Payload = TrainingCompletedPayload
+  & TrainingEventBatchMetadataV2
+  & {
+    result_id: string
+    level_result: 'LEVEL_COMPETENT' | 'LEVEL_CONDITIONAL' | 'LEVEL_NOT_COMPETENT'
+    completion_ratio: number
+    student_id: string
+    strategy_id: string
+    strategy_version: number
+    job_code: string
+    module_type: TrainingModuleType | null
+  }
+
+export type TrainingEventPayload =
+  | TrainingStartedPayload
+  | TrainingStepPayload
+  | TrainingStepRetriedPayload
+  | TrainingCompletedPayload
+  | TrainingStartedBatchV2Payload
+  | TrainingStepBatchV2Payload
+  | TrainingCompletedBatchV2Payload
+
+/** M5B prepared assessment EVENT metadata; legacy assessment payloads remain schema-v1. */
+export interface AssessmentEventBatchMetadataV2 {
+  event_payload_version: 2
+  batch_context: EventBatchContextV1Payload
+  actor_role: 'TEACHER' | 'STUDENT' | 'ADMIN'
+  app_version: string
+  correlation_id: string
+}
+
+/**
+ * M5B prepared SESSION_STARTED 的完整 session-question 投影事实。
+ * 这是 v2 batch/recovery 的事实来源；legacy SESSION_STARTED 继续使用 question_ids。
+ */
+export interface AssessmentSessionQuestionSnapshotV2 {
+  session_question_id: string
+  question_id: string
+  question_order: number
+  question_phase: 'ONLINE' | 'OFFLINE' | 'OBSERVATION'
+  bank_domain: 'BASE_ABILITY' | 'JOB_SPECIFIC'
+  module_type: string | null
+  question_type: 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG' | 'SOFTWARE_TASK' | 'OFFLINE_OPERATION'
+  item_usage: 'SCORED_ITEM' | 'OBSERVATION_ONLY'
+  job_module_code: string | null
+}
+
+export type AssessmentSessionStartedBatchV2Payload = SessionStartedPayload
+  & AssessmentEventBatchMetadataV2
+  & {
+    business_session_id: string
+    created_by: string
+    session_questions: AssessmentSessionQuestionSnapshotV2[]
+    online_questions: Array<{
+      question_id: string
+      question_order: number
+      module_type: string
+      question_type: 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG' | 'SOFTWARE_TASK'
+    }>
+  }
+
+export type AssessmentAnswerSubmittedBatchV2Payload = AnswerSubmittedPayload
+  & AssessmentEventBatchMetadataV2
+
+export type AssessmentSessionFirstQuestionBatchV2Payload = SessionFirstQuestionActivatedPayload
+  & AssessmentEventBatchMetadataV2
+
+export type AssessmentEmotionInterruptedBatchV2Payload = EmotionInterruptedPayload
+  & AssessmentEventBatchMetadataV2
+
+export type AssessmentEmotionResumedBatchV2Payload = EmotionResumedPayload
+  & AssessmentEventBatchMetadataV2
+
+export type AssessmentSittingStartedBatchV2Payload = SittingStartedPayload
+  & AssessmentEventBatchMetadataV2
+
+export type AssessmentSittingEndedBatchV2Payload = SittingEndedPayload
+  & AssessmentEventBatchMetadataV2
+
+export type AssessmentEmotionCollapseRecordedBatchV2Payload = EmotionCollapseRecordedPayload
+  & AssessmentEventBatchMetadataV2
+
+export type AssessmentEmotionCollapseThresholdBatchV2Payload = EmotionCollapseThresholdReachedPayload
+  & AssessmentEventBatchMetadataV2
+
+export type AssessmentSessionCompletedBatchV2Payload = SessionCompletedPayload
+  & AssessmentEventBatchMetadataV2
+
+export type AssessmentSessionAbortedBatchV2Payload = SessionAbortedPayload
+  & AssessmentEventBatchMetadataV2
+
+export type AssessmentResultCalculatedBatchV2Payload = ResultCalculatedPayload
+  & AssessmentEventBatchMetadataV2
+
+export type AssessmentEventPayload =
+  | SessionStartedPayload
+  | SessionFirstQuestionActivatedPayload
+  | AnswerSubmittedPayload
+  | EmotionInterruptedPayload
+  | EmotionResumedPayload
+  | SittingStartedPayload
+  | SittingEndedPayload
+  | EmotionCollapseRecordedPayload
+  | EmotionCollapseThresholdReachedPayload
+  | SessionCompletedPayload
+  | SessionAbortedPayload
+  | ResultCalculatedPayload
+  | AssessmentSessionStartedBatchV2Payload
+  | AssessmentAnswerSubmittedBatchV2Payload
+  | AssessmentSessionFirstQuestionBatchV2Payload
+  | AssessmentEmotionInterruptedBatchV2Payload
+  | AssessmentEmotionResumedBatchV2Payload
+  | AssessmentSittingStartedBatchV2Payload
+  | AssessmentSittingEndedBatchV2Payload
+  | AssessmentEmotionCollapseRecordedBatchV2Payload
+  | AssessmentEmotionCollapseThresholdBatchV2Payload
+  | AssessmentSessionCompletedBatchV2Payload
+  | AssessmentSessionAbortedBatchV2Payload
+  | AssessmentResultCalculatedBatchV2Payload
+
+export type TaskClosureConfirmedBatchV2Payload = TaskClosureConfirmedPayload
+  & ReportEventBatchMetadataV2
+
+export type TaskClosureReplacedBatchV2Payload = TaskClosureReplacedPayload
+  & ReportEventBatchMetadataV2
+
+export type ReportGeneratedBatchV2Payload = ReportGeneratedV2Payload
+  & ReportEventBatchMetadataV2
+
+export type PlacementReviewConfirmedBatchV2Payload = PlacementReviewConfirmedV2Payload
+  & ReportEventBatchMetadataV2
+  & { result_status: 'GENERATED' | 'EXPORTED' | 'LOCKED' }
+
+export type ReportLockedBatchV2Payload = ReportLockedV2Payload
+  & ReportEventBatchMetadataV2
+
 export interface SafetyIncidentCreatedPayload {
   incident_id: string
   student_id: string

@@ -11,8 +11,9 @@ import {
 } from '../../../db/test-helpers'
 import type { DBAdapter } from '../../../db/interface'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
+import { createTestReportCommandCoordinator } from '../../../application/runtime/__tests__/test-helpers'
 import { buildSafetyReport } from '../../../domain/report-builders'
-import { exportReport } from '../reports'
+import { exportReport } from '../../../application/services/__tests__/reports-test-support'
 
 const ISO = '2026-07-26T00:00:00.000Z'
 const JOB_CODE = 'SUPERMARKET_SHELVER'
@@ -122,13 +123,14 @@ describe('reports export handler', () => {
   it('exports anonymized self-contained HTML and records event, asset, and report file metadata', async () => {
     const reportId = seedSafetyReport()
     const output = join(tempDir('svets-report-export-out-'), 'report.html')
+    const actionLog = logPath()
 
     const result = await exportReport(db, {
       callerUserId: teacherId,
       callerRole: 'TEACHER',
       reportId
     }, {
-      actionLogPath: logPath(),
+      coordinator: createTestReportCommandCoordinator({ db, actionLogPath: actionLog }),
       now: () => ISO,
       showSaveDialog: () => ({ canceled: false, filePath: output })
     })
@@ -153,6 +155,8 @@ describe('reports export handler', () => {
          FROM domain_event_projection
         WHERE aggregate_id = ? AND event_type = 'REPORT_EXPORTED'`
     ).get(reportId)).toEqual({ schema_version: 2, applied_to_snapshot: 1 })
+    const exportedEvent = JSON.parse(readFileSync(actionLog, 'utf8').trim()) as { correlation_id?: string }
+    expect(exportedEvent.correlation_id).toMatch(/\S+/)
   })
 
   it('treats save dialog cancel as a non-mutating success', async () => {
@@ -163,7 +167,7 @@ describe('reports export handler', () => {
       callerRole: 'TEACHER',
       reportId
     }, {
-      actionLogPath: logPath(),
+      coordinator: createTestReportCommandCoordinator({ db, actionLogPath: logPath() }),
       now: () => ISO,
       showSaveDialog: () => ({ canceled: true })
     })
@@ -185,7 +189,7 @@ describe('reports export handler', () => {
       callerRole: 'TEACHER',
       reportId
     }, {
-      actionLogPath: logPath(),
+      coordinator: createTestReportCommandCoordinator({ db, actionLogPath: logPath() }),
       now: () => ISO,
       showSaveDialog: () => ({ canceled: false, filePath: output })
     })
@@ -202,7 +206,7 @@ describe('reports export handler', () => {
       callerUserId: adminId,
       callerRole: 'ADMIN',
       reportId
-    }, { actionLogPath: logPath() })).resolves.toEqual({ success: false, errorCode: 'FORBIDDEN' })
+    }, { coordinator: createTestReportCommandCoordinator({ db, actionLogPath: logPath() }) })).resolves.toEqual({ success: false, errorCode: 'FORBIDDEN' })
 
     const targetDirectory = tempDir('svets-report-export-fail-')
     const failed = await exportReport(db, {
@@ -210,7 +214,7 @@ describe('reports export handler', () => {
       callerRole: 'TEACHER',
       reportId
     }, {
-      actionLogPath: logPath(),
+      coordinator: createTestReportCommandCoordinator({ db, actionLogPath: logPath() }),
       now: () => ISO,
       showSaveDialog: () => ({ canceled: false, filePath: targetDirectory })
     })

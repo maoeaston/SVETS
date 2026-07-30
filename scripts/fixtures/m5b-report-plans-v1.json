@@ -1,0 +1,58 @@
+{
+  "schema_version": "m5b-report-plans-v1",
+  "commands": [
+    {
+      "command_type": "reports:confirmTaskClosure",
+      "plan_version": "m5b.reports.confirm-task-closure.plan.v1",
+      "result_recipe_version": "m5b.reports:confirmTaskClosure.result.v1",
+      "event_type": "TASK_CLOSURE_CONFIRMED",
+      "event_count": 1,
+      "no_op_event_count": 0,
+      "result_keys": ["success", "taskClosure"]
+    },
+    {
+      "command_type": "reports:replaceTaskClosure",
+      "plan_version": "m5b.reports.replace-task-closure.plan.v1",
+      "result_recipe_version": "m5b.reports:replaceTaskClosure.result.v1",
+      "event_type": "TASK_CLOSURE_REPLACED",
+      "event_count": 1,
+      "no_op_event_count": 0,
+      "result_keys": ["success", "taskClosure"]
+    },
+    {
+      "command_type": "reports:generate",
+      "plan_version": "m5b.reports.generate.plan.v1",
+      "result_recipe_version": "m5b.reports:generate.result.v1",
+      "event_type": "REPORT_GENERATED",
+      "event_count": 1,
+      "no_op_event_count": 0,
+      "result_keys": ["generated", "reportId", "success"]
+    },
+    {
+      "command_type": "reports:confirmPlacementReview",
+      "plan_version": "m5b.reports.confirm-placement-review.plan.v1",
+      "result_recipe_version": "m5b.reports:confirmPlacementReview.result.v1",
+      "event_type": "PLACEMENT_REVIEW_CONFIRMED",
+      "event_count": 1,
+      "no_op_event_count": 0,
+      "result_keys": ["reportId", "status", "success"]
+    },
+    {
+      "command_type": "reports:lock",
+      "plan_version": "m5b.reports.lock.plan.v1",
+      "result_recipe_version": "m5b.reports:lock.result.v1",
+      "event_type": "REPORT_LOCKED",
+      "event_count": 1,
+      "no_op_event_count": 0,
+      "result_keys": ["reportId", "status", "success"]
+    }
+  ],
+  "required_batch_context_keys": [
+    "child_ordinal",
+    "plan_version",
+    "result_recipe_version",
+    "root_command_id",
+    "root_command_type",
+    "schema_version"
+  ]
+}

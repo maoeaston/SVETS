@@ -11,7 +11,7 @@ import {
   seedStudent
 } from '../../db/test-helpers'
 import type { DBAdapter } from '../../db/interface'
-import { ReportCommandCoordinator } from '../report-command-coordinator'
+import { createTestReportCommandCoordinator } from '../../application/runtime/__tests__/test-helpers'
 import { TaskClosureService } from '../task-closure-service'
 import { buildBaseAbilityReport, buildJobSkillReport, buildSafetyReport } from '../report-builders'
 import { parseReportContent } from '../report-contract'
@@ -198,8 +198,14 @@ describe('report builders', () => {
       const teacherId = seedCaller(db, 'TEACHER')
       const studentId = seedStudent(db)
       const resultIds = seedBaseResults(db, teacherId, studentId)
-      const closure = await new TaskClosureService(db, new ReportCommandCoordinator({ db, actionLogPath: logPath() }))
-        .confirmBaseTaskClosure({ callerUserId: teacherId, callerRole: 'TEACHER', resultIds, confirmedAt: ISO })
+      const closure = await new TaskClosureService(db, createTestReportCommandCoordinator({ db, actionLogPath: logPath() }))
+        .confirmBaseTaskClosure({
+          callerUserId: teacherId,
+          callerRole: 'TEACHER',
+          resultIds,
+          confirmedAt: ISO,
+          correlationId: 'report-builders-test-correlation'
+        })
 
       const built = buildBaseAbilityReport(db, closure.taskClosureId, ISO)
 

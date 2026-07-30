@@ -1,0 +1,214 @@
+{
+  "schema_version": "m5b-step-source-delta-v1",
+  "step": "M5B-3",
+  "source_digest": "b9d4d98f89c5dde6ed1466c31a75d12a152a990a8337e103eb04e66536e1199f",
+  "target_digest": "307d39d891ac35075462998b98ab00c59381d244072fcff5f10a705a5841e29f",
+  "expected_counts": {
+    "channels": 74,
+    "direct_callsites": 236,
+    "direct_files": 31,
+    "capability_callsites": 72,
+    "delegating_roots": 13
+  },
+  "removed_source": [],
+  "added_target": [
+    {
+      "fingerprint": "c6c47c34e514cdf66d51c4d5463d1cbd5bfa654e9930ebb7592d0fe66d14dda8",
+      "file": "src/main/domain/event-batch/file-capability.ts",
+      "symbol": "syncFile",
+      "line": 80,
+      "kind": "FILE_FSYNCSYNC",
+      "callee": "fsyncSync",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_FILE_CAPABILITY_INTERNAL",
+      "planned_step": "M5B-3"
+    },
+    {
+      "fingerprint": "dba2136752b1c9e671734d5f8e9f99c8e5a5bdb696dbf33ee50038ca864743a8",
+      "file": "src/main/domain/event-batch/file-capability.ts",
+      "symbol": "syncDirectory",
+      "line": 81,
+      "kind": "FILE_FSYNCSYNC",
+      "callee": "fsyncSync",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_FILE_CAPABILITY_INTERNAL",
+      "planned_step": "M5B-3"
+    },
+    {
+      "fingerprint": "29e6bad92f25bb903519f8f0c48bbc6be0a30e6f755a72107429cb2bfbc9b923",
+      "file": "src/main/domain/event-batch/file-capability.ts",
+      "symbol": "DurableFileCapability.ensureDirectory",
+      "line": 177,
+      "kind": "FILE_MKDIRSYNC",
+      "callee": "mkdirSync",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_FILE_CAPABILITY_INTERNAL",
+      "planned_step": "M5B-3"
+    },
+    {
+      "fingerprint": "dfd36fad6f8dfdeffa563d365d208ea465c0a603b523e71afb8ae7a509c28d86",
+      "file": "src/main/domain/event-batch/file-capability.ts",
+      "symbol": "DurableFileCapability.createExclusive",
+      "line": 191,
+      "kind": "FILE_OPENSYNC",
+      "callee": "openSync",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_FILE_CAPABILITY_INTERNAL",
+      "planned_step": "M5B-3"
+    },
+    {
+      "fingerprint": "1f7688a88092d52df93a0072e492af243713b59e5f0b466041dace26ba0ea953",
+      "file": "src/main/domain/event-batch/file-capability.ts",
+      "symbol": "DurableFileCapability.openAppend",
+      "line": 215,
+      "kind": "FILE_OPENSYNC",
+      "callee": "openSync",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_FILE_CAPABILITY_INTERNAL",
+      "planned_step": "M5B-3"
+    },
+    {
+      "fingerprint": "6987d6e1836f8d43b4ef49ee5ea1aa167d8b8e8cb9538e32caf9a2f36e3fee3d",
+      "file": "src/main/domain/event-batch/file-capability.ts",
+      "symbol": "DurableFileCapability.appendExact",
+      "line": 259,
+      "kind": "FILE_WRITESYNC",
+      "callee": "writeSync",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_FILE_CAPABILITY_INTERNAL",
+      "planned_step": "M5B-3"
+    },
+    {
+      "fingerprint": "278e2a036327518883be3243107ce5fa512dca3a9b3dac30c18f2d8c1bb39e6c",
+      "file": "src/main/domain/event-batch/file-capability.ts",
+      "symbol": "DurableFileCapability.truncate",
+      "line": 275,
+      "kind": "FILE_FTRUNCATESYNC",
+      "callee": "ftruncateSync",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_FILE_CAPABILITY_INTERNAL",
+      "planned_step": "M5B-3"
+    },
+    {
+      "fingerprint": "73779754bfa9159715d32c478c99162add0dea8034cc6640f4f44d66d24ccdc4",
+      "file": "src/main/domain/event-batch/file-capability.ts",
+      "symbol": "DurableFileCapability.syncDirectory",
+      "line": 298,
+      "kind": "FILE_OPENSYNC",
+      "callee": "openSync",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_FILE_CAPABILITY_INTERNAL",
+      "planned_step": "M5B-3"
+    },
+    {
+      "fingerprint": "b2f0e08d1ecb328f541f1da0f70dfec5eb924e48e99b161eac3d5bbc9d9fd876",
+      "file": "src/main/domain/event-batch/file-capability.ts",
+      "symbol": "DurableFileCapability.readStable",
+      "line": 337,
+      "kind": "FILE_OPENSYNC",
+      "callee": "openSync",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_FILE_CAPABILITY_INTERNAL",
+      "planned_step": "M5B-3"
+    },
+    {
+      "fingerprint": "22c28a00d43c9435f4573c7ee7f6075164ca244ef49fc3528ca4226ff9a4eb33",
+      "file": "src/main/domain/event-batch/file-capability.ts",
+      "symbol": "DurableFileCapability.linkNoClobber",
+      "line": 393,
+      "kind": "FILE_LINKSYNC",
+      "callee": "linkSync",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_FILE_CAPABILITY_INTERNAL",
+      "planned_step": "M5B-3"
+    },
+    {
+      "fingerprint": "546e171c57e6523d0fcd90335db16104a08de9074a70b9366840ad322a95b860",
+      "file": "src/main/domain/event-batch/file-capability.ts",
+      "symbol": "DurableFileCapability.publishNoClobber",
+      "line": 417,
+      "kind": "FILE_UNLINKSYNC",
+      "callee": "unlinkSync",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_FILE_CAPABILITY_INTERNAL",
+      "planned_step": "M5B-3"
+    },
+    {
+      "fingerprint": "270866bc337123a9ba8fb101cd9a6a8c672ebbf4a0d10344d3897324e7d3b411",
+      "file": "src/main/domain/event-batch/file-capability.ts",
+      "symbol": "DurableFileCapability.atomicReplace",
+      "line": 443,
+      "kind": "FILE_RENAMESYNC",
+      "callee": "renameSync",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_FILE_CAPABILITY_INTERNAL",
+      "planned_step": "M5B-3"
+    },
+    {
+      "fingerprint": "75d24e06141242442751635e26d889e7b2920fea23c2a08580335d2bdbf78416",
+      "file": "src/main/domain/event-batch/file-capability.ts",
+      "symbol": "probeRequiredFileCapabilities",
+      "line": 471,
+      "kind": "FILE_MKDIRSYNC",
+      "callee": "mkdirSync",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_FILE_CAPABILITY_INTERNAL",
+      "planned_step": "M5B-3"
+    },
+    {
+      "fingerprint": "e8920623f61c1e21bdc15a5746ab61435cdc88b311c5122849c5e21b018d4b93",
+      "file": "src/main/domain/event-batch/file-capability.ts",
+      "symbol": "probeRequiredFileCapabilities",
+      "line": 512,
+      "kind": "FILE_UNLINKSYNC",
+      "callee": "unlinkSync",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_FILE_CAPABILITY_INTERNAL",
+      "planned_step": "M5B-3"
+    },
+    {
+      "fingerprint": "2dccb1b7e9d9f4fcc516d5c9c9db9adf144227d489df2934d3a136c83eed7d4c",
+      "file": "src/main/domain/event-batch/file-capability.ts",
+      "symbol": "probeRequiredFileCapabilities",
+      "line": 523,
+      "kind": "FILE_UNLINKSYNC",
+      "callee": "unlinkSync",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_FILE_CAPABILITY_INTERNAL",
+      "planned_step": "M5B-3"
+    },
+    {
+      "fingerprint": "943811f5ccaacfa74b3f51d286ff59d702fe4c6ecd0fa4b0696516a65657bfce",
+      "file": "src/main/domain/event-batch/file-capability.ts",
+      "symbol": "probeRequiredFileCapabilities",
+      "line": 524,
+      "kind": "FILE_UNLINKSYNC",
+      "callee": "unlinkSync",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_FILE_CAPABILITY_INTERNAL",
+      "planned_step": "M5B-3"
+    },
+    {
+      "fingerprint": "902eb9be030c1ac069c091137d3fb892128b83811a5359e01b43cc6bc79e9afd",
+      "file": "src/main/domain/event-batch/file-capability.ts",
+      "symbol": "probeRequiredFileCapabilities",
+      "line": 526,
+      "kind": "FILE_RMDIRSYNC",
+      "callee": "rmdirSync",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_FILE_CAPABILITY_INTERNAL",
+      "planned_step": "M5B-3"
+    },
+    {
+      "fingerprint": "cea6dab3a8980b3a9dd288e202da2dba4bf7f453befcf6ffc6bd3d704196dbc2",
+      "file": "src/main/domain/event-batch/legacy-reader.ts",
+      "symbol": "archiveAndTruncateLegacyTail",
+      "line": 617,
+      "kind": "FILE_TRUNCATE",
+      "callee": "capability.truncate",
+      "occurrence": 1,
+      "target_class": "LEGACY_REPAIR_INTERNAL",
+      "planned_step": "M5B-3"
+    }
+  ]
+}

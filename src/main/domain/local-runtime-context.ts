@@ -1,6 +1,7 @@
 import { createHash } from 'crypto'
 import { v4 as uuidv4 } from 'uuid'
 import type { DBAdapter } from '../db/interface'
+import type { AcceptedCommandContext } from '../application/command/command-types'
 
 export interface LocalRuntimeContext {
   organizationId: string
@@ -25,6 +26,46 @@ interface RuntimeRow {
 
 interface AuthSessionRow {
   auth_session_id: string
+}
+
+export const LOCAL_RUNTIME_ASSIGNMENT_CHILD_CAPABILITY = Object.freeze({
+  owner: 'local-runtime-context.ensureLocalRuntimeContext',
+  parentCommandTypes: Object.freeze(['assignment:create', 'assignment:rebind'] as const),
+  phase: 'RUNTIME_ACCEPTED_CHILD',
+  actorRoles: Object.freeze(['TEACHER', 'ADMIN'] as const),
+  correlationPolicy: 'INHERIT_PARENT' as const
+})
+
+function assertAcceptedAssignmentChild(
+  context: AcceptedCommandContext,
+  teacherUserId: string
+): void {
+  if (!context || typeof context !== 'object' || !('envelope' in context)) {
+    throw new Error('local runtime requires accepted assignment child context')
+  }
+  const { envelope } = context
+  if (!LOCAL_RUNTIME_ASSIGNMENT_CHILD_CAPABILITY.parentCommandTypes.some(
+    (commandType) => commandType === envelope.commandType
+  )) {
+    throw new Error('local runtime requires accepted assignment:create or assignment:rebind parent')
+  }
+  if (!envelope.correlationId.trim()) {
+    throw new Error('local runtime assignment child correlation must be non-empty')
+  }
+  const actor = envelope.actor
+  if (
+    actor.kind !== 'USER'
+    || actor.userId !== teacherUserId
+    || !LOCAL_RUNTIME_ASSIGNMENT_CHILD_CAPABILITY.actorRoles.some((role) => role === actor.role)
+  ) {
+    throw new Error('local runtime assignment child requires the accepted TEACHER or ADMIN actor')
+  }
+  const expectedAggregateType = envelope.commandType === 'assignment:create'
+    ? 'BUSINESS_SESSION'
+    : 'BUSINESS_SESSION_ASSIGNMENT'
+  if (envelope.target.aggregate_type !== expectedAggregateType) {
+    throw new Error('local runtime assignment child requires the authoritative assignment target')
+  }
 }
 
 function shortId(id: string): string {
@@ -100,18 +141,23 @@ function createLocalRuntime(db: DBAdapter): RuntimeRow {
   }
 }
 
-function findReusableAuthSession(db: DBAdapter, teacherUserId: string): AuthSessionRow | undefined {
+function findReusableAuthSession(
+  db: DBAdapter,
+  teacherUserId: string,
+  deviceRuntimeSessionId: string
+): AuthSessionRow | undefined {
   return db
     .prepare(
       `SELECT auth_session_id
        FROM auth_session
        WHERE user_id = ?
+         AND device_runtime_session_id = ?
          AND status = 'ACTIVE'
          AND expires_at > datetime('now')
        ORDER BY expires_at DESC, auth_session_id ASC
        LIMIT 1`
     )
-    .get(teacherUserId) as AuthSessionRow | undefined
+    .get(teacherUserId, deviceRuntimeSessionId) as AuthSessionRow | undefined
 }
 
 function createDeviceKeyAuthSession(
@@ -142,13 +188,15 @@ function createDeviceKeyAuthSession(
 
 export function ensureLocalRuntimeContext(
   db: DBAdapter,
-  teacherUserId: string
+  teacherUserId: string,
+  context: AcceptedCommandContext
 ): LocalRuntimeContext {
+  assertAcceptedAssignmentChild(context, teacherUserId)
   const tx = db.transaction(() => {
     assertActiveTeacherOrAdmin(db, teacherUserId)
     const runtime = findActiveRuntime(db) ?? createLocalRuntime(db)
     const authSession =
-      findReusableAuthSession(db, teacherUserId) ??
+      findReusableAuthSession(db, teacherUserId, runtime.device_runtime_session_id) ??
       createDeviceKeyAuthSession(db, teacherUserId, runtime.device_runtime_session_id)
 
     return {

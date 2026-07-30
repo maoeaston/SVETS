@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { ensureLocalRuntimeContext } from '../local-runtime-context'
+import { acceptedAssignmentTestContext } from '../../application/services/__tests__/assignment-test-support'
+import type { UserCommandRole } from '../../application/command/command-types'
 import {
   createTestDb,
   seedCaller,
@@ -10,6 +12,14 @@ import {
 import type { MemoryAdapter } from '../../db/memory-adapter'
 
 let db: MemoryAdapter
+
+function acceptedContext(userId: string, role: UserCommandRole = 'TEACHER') {
+  return acceptedAssignmentTestContext(db, 'assignment:create', {
+    callerUserId: userId,
+    callerRole: role,
+    businessSessionId: 'local-runtime-context-test'
+  })
+}
 
 function countRows(tableName: string): number {
   const row = db.prepare(`SELECT COUNT(*) AS c FROM ${tableName}`).get() as { c: number }
@@ -28,7 +38,7 @@ describe('ensureLocalRuntimeContext', () => {
   it('空拓扑首次调用创建 organization/node/device/runtime/auth 完整 FK 链', () => {
     const teacherId = seedCaller(db, 'TEACHER')
 
-    const context = ensureLocalRuntimeContext(db, teacherId)
+    const context = ensureLocalRuntimeContext(db, teacherId, acceptedContext(teacherId))
 
     expect(context.organizationId).toBeTruthy()
     expect(context.nodeId).toBeTruthy()
@@ -94,8 +104,8 @@ describe('ensureLocalRuntimeContext', () => {
   it('重复调用复用同一个 ACTIVE runtime 与未过期 auth_session', () => {
     const teacherId = seedCaller(db, 'TEACHER')
 
-    const first = ensureLocalRuntimeContext(db, teacherId)
-    const second = ensureLocalRuntimeContext(db, teacherId)
+    const first = ensureLocalRuntimeContext(db, teacherId, acceptedContext(teacherId))
+    const second = ensureLocalRuntimeContext(db, teacherId, acceptedContext(teacherId))
 
     expect(second).toEqual(first)
     expect(countRows('organization')).toBe(1)
@@ -109,7 +119,7 @@ describe('ensureLocalRuntimeContext', () => {
     const teacherId = seedCaller(db, 'TEACHER')
     const fixture = seedLocalRuntimeContextFixture(db, { teacherUserId: teacherId })
 
-    const context = ensureLocalRuntimeContext(db, teacherId)
+    const context = ensureLocalRuntimeContext(db, teacherId, acceptedContext(teacherId))
 
     expect(context).toEqual(fixture)
     expect(countRows('device_runtime_session')).toBe(1)
@@ -124,7 +134,7 @@ describe('ensureLocalRuntimeContext', () => {
       authExpiresAt: 'past'
     })
 
-    const context = ensureLocalRuntimeContext(db, teacherId)
+    const context = ensureLocalRuntimeContext(db, teacherId, acceptedContext(teacherId))
 
     expect(context.organizationId).toBe(fixture.organizationId)
     expect(context.nodeId).toBe(fixture.nodeId)
@@ -138,7 +148,7 @@ describe('ensureLocalRuntimeContext', () => {
   it('不生成固定 org_default、固定 device_id 或明文 token_hash', () => {
     const teacherId = seedCaller(db, 'TEACHER')
 
-    const context = ensureLocalRuntimeContext(db, teacherId)
+    const context = ensureLocalRuntimeContext(db, teacherId, acceptedContext(teacherId))
     const auth = db
       .prepare(
         `SELECT token_hash, refresh_token_hash
@@ -158,7 +168,7 @@ describe('ensureLocalRuntimeContext', () => {
   it('ACTIVE ADMIN 可创建本地 runtime context', () => {
     const adminId = seedCaller(db, 'ADMIN')
 
-    const context = ensureLocalRuntimeContext(db, adminId)
+    const context = ensureLocalRuntimeContext(db, adminId, acceptedContext(adminId, 'ADMIN'))
 
     const auth = db
       .prepare('SELECT user_id, status FROM auth_session WHERE auth_session_id = ?')
@@ -169,7 +179,11 @@ describe('ensureLocalRuntimeContext', () => {
   it('teacher 非 ACTIVE 时拒绝且不创建拓扑', () => {
     const disabledTeacherId = seedDisabledCaller(db, 'TEACHER')
 
-    expect(() => ensureLocalRuntimeContext(db, disabledTeacherId)).toThrow(/ACTIVE TEACHER or ADMIN/)
+    expect(() => ensureLocalRuntimeContext(
+      db,
+      disabledTeacherId,
+      acceptedContext(disabledTeacherId)
+    )).toThrow(/ACTIVE TEACHER or ADMIN/)
     expect(countRows('organization')).toBe(0)
     expect(countRows('device_runtime_session')).toBe(0)
     expect(countRows('auth_session')).toBe(0)
@@ -178,9 +192,25 @@ describe('ensureLocalRuntimeContext', () => {
   it('非 TEACHER/ADMIN 账号拒绝且不创建拓扑', () => {
     const studentId = seedStudent(db)
 
-    expect(() => ensureLocalRuntimeContext(db, studentId)).toThrow(/ACTIVE TEACHER or ADMIN/)
+    expect(() => ensureLocalRuntimeContext(
+      db,
+      studentId,
+      acceptedContext(studentId)
+    )).toThrow(/ACTIVE TEACHER or ADMIN/)
     expect(countRows('organization')).toBe(0)
     expect(countRows('device_runtime_session')).toBe(0)
+    expect(countRows('auth_session')).toBe(0)
+  })
+
+  it('拒绝缺少 accepted assignment child context 的直接调用', () => {
+    const teacherId = seedCaller(db, 'TEACHER')
+
+    expect(() => ensureLocalRuntimeContext(
+      db,
+      teacherId,
+      undefined as never
+    )).toThrow(/accepted assignment/)
+    expect(countRows('organization')).toBe(0)
     expect(countRows('auth_session')).toBe(0)
   })
 })

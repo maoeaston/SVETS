@@ -2,8 +2,8 @@
   "": "./multi-device-m4-safety-sql-inventory-v1.schema.json",
   "schema_version": "multi-device-m4-safety-sql-inventory-v1",
   "inventory_version": "v1",
-  "generated_at": "2026-07-27T00:00:00+08:00",
-  "scope": "Production src/main TypeScript SQL only; tests and migration modules are excluded.",
+  "generated_at": "2026-07-29T00:00:00+08:00",
+  "scope": "Executable src/main TypeScript SQL, including pre-production M5B runtime modules; tests and migration modules are excluded.",
   "entries": [
     {
       "id": "M4-SQL-001",
@@ -274,8 +274,8 @@
     {
       "id": "M4-SQL-020",
       "file": "src/main/domain/report-service.ts",
-      "symbol": "resolveSourceKey",
-      "sql_fingerprint": "2762580d8551641f5c157f80b9e54120fc1bfd07b27f0cdda14f5de08c833e04",
+      "symbol": "resolveReportSourceKey",
+      "sql_fingerprint": "2536629ecd555a983f7aded9d900c118f0d7abea160f85d0a8d12bde7f30436f",
       "classification": "INCIDENT_PRIMARY_KEY_LOOKUP",
       "current_predicate": "incident_id unique lookup or lifecycle write",
       "target_predicate": "unchanged; no aggregate re-key required",
@@ -315,23 +315,25 @@
     },
     {
       "id": "M4-SQL-023",
-      "file": "src/main/ipc/handlers/ability-scoring.ts",
+      "file": "src/main/application/services/ability-scoring-service.ts",
       "symbol": "hasBlockingSafetyIncident",
-      "sql_fingerprint": "4c43c882928171c29e3b9042c629db15fd4be3cabc71a27469684f0fcfbf2eab",
+      "sql_fingerprint": "96c786a9a1934bed68053f580e6e574ba16dca239d463fae933265fd55dcfb5a",
       "classification": "AGGREGATE_MATCH_REKEY",
       "current_predicate": "student_id + job_code + task_code (M4-4 re-keyed)",
       "target_predicate": "student_id + job_code + task_code (M4 required)",
       "allowed_reason": "Session-owned job_code scopes the ability scoring safety gate to its aggregate.",
       "test_evidence": [
-        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/application/services/__tests__/scoring-command-bus.test.ts",
+        "src/main/ipc/handlers/__tests__/assessment-ability-scoring.test.ts"
       ],
       "status": "REKEYED"
     },
     {
       "id": "M4-SQL-024",
-      "file": "src/main/ipc/handlers/assessment.ts",
+      "file": "src/main/application/services/assessment-service.ts",
       "symbol": "createSession",
-      "sql_fingerprint": "ba576adf17dcb47562b62ddf19626bc2a5e49bad5d3407cf5d9bb4e75bdfcc3d",
+      "sql_fingerprint": "628ea75ad59f8b4b50b1a3b8ce864f1b85403942c7ff29b3c606a940d6d52c67",
       "classification": "AGGREGATE_MATCH_REKEY",
       "current_predicate": "student_id + job_code + task_code (M4-4 re-keyed)",
       "target_predicate": "student_id + job_code + task_code (M4 required)",
@@ -343,9 +345,9 @@
     },
     {
       "id": "M4-SQL-025",
-      "file": "src/main/ipc/handlers/assessment.ts",
+      "file": "src/main/application/services/assessment-service.ts",
       "symbol": "createSession",
-      "sql_fingerprint": "ce019b5472dc1b740232a8359b6746b97329f472284de6ff34bb8ce83ea91469",
+      "sql_fingerprint": "09f6491669ffc735affcc0bad9f2bd2a9ff08512bbbc8afec1fe55d3de530f60",
       "classification": "AGGREGATE_MATCH_REKEY",
       "current_predicate": "student_id + job_code + task_code (M4-4 re-keyed)",
       "target_predicate": "student_id + job_code + task_code (M4 required)",
@@ -357,9 +359,9 @@
     },
     {
       "id": "M4-SQL-026",
-      "file": "src/main/ipc/handlers/assessment.ts",
+      "file": "src/main/application/services/assessment-service.ts",
       "symbol": "readSessionForRedline",
-      "sql_fingerprint": "4ea853da505cfe2775d6233648c8ae0c0f962241cbacb1066f3de7d94264b4ef",
+      "sql_fingerprint": "fd81734e1557e16a23e0c851ff4065ab434ee63e0bdd1cd89e9603f9d318a6ba",
       "classification": "NON_SAFETY_QUERY",
       "current_predicate": "not a safety aggregate match",
       "target_predicate": "unchanged; no aggregate re-key required",
@@ -371,9 +373,9 @@
     },
     {
       "id": "M4-SQL-027",
-      "file": "src/main/ipc/handlers/assessment.ts",
+      "file": "src/main/application/services/assessment-service.ts",
       "symbol": "triggerRedline",
-      "sql_fingerprint": "1e99ef54eb38c01556f503b8adcf409c501f56685f767fdf11054044d8ae6f28",
+      "sql_fingerprint": "f1a4aa53d40cbaadc0ba9f6b4627222667c5b30a0f31caa8d6ea0e71309736ac",
       "classification": "NON_SAFETY_QUERY",
       "current_predicate": "not a safety aggregate match",
       "target_predicate": "unchanged; no aggregate re-key required",
@@ -385,9 +387,9 @@
     },
     {
       "id": "M4-SQL-028",
-      "file": "src/main/ipc/handlers/assessment.ts",
+      "file": "src/main/application/query/assessment-query-service.ts",
       "symbol": "getSession",
-      "sql_fingerprint": "f7159e68ff63ad10a99989c36907c37965b9037b9078adedbc02bbdb0467afbe",
+      "sql_fingerprint": "3efc2a2f0461b7c13c973d5fc12761655368020188689865703bf7f890575a76",
       "classification": "NON_SAFETY_QUERY",
       "current_predicate": "not a safety aggregate match",
       "target_predicate": "unchanged; no aggregate re-key required",
@@ -399,9 +401,9 @@
     },
     {
       "id": "M4-SQL-029",
-      "file": "src/main/ipc/handlers/assessment.ts",
+      "file": "src/main/application/query/assessment-query-service.ts",
       "symbol": "listSessions",
-      "sql_fingerprint": "8251a417873333dbe2bca03172e042794681f01e44b1c4fe4a223eca4ba54b02",
+      "sql_fingerprint": "f40ae0b06f2e8ca435cfc92a1662f9432bedad856ae52260b5b62b12cf44d12c",
       "classification": "NON_SAFETY_QUERY",
       "current_predicate": "not a safety aggregate match",
       "target_predicate": "unchanged; no aggregate re-key required",
@@ -413,9 +415,9 @@
     },
     {
       "id": "M4-SQL-030",
-      "file": "src/main/ipc/handlers/assessment.ts",
+      "file": "src/main/application/query/assessment-query-service.ts",
       "symbol": "listMySessions",
-      "sql_fingerprint": "a44f61feac1686c7263ffc6fdc5f58ebcdb59bd5fd28fc6103bf19c6fa75f443",
+      "sql_fingerprint": "e59180e74097f2f86efc2bc6bf83aa21c592cf484010273552258ac6ba3f8483",
       "classification": "NON_SAFETY_QUERY",
       "current_predicate": "not a safety aggregate match",
       "target_predicate": "unchanged; no aggregate re-key required",
@@ -469,52 +471,57 @@
     },
     {
       "id": "M4-SQL-033",
-      "file": "src/main/ipc/handlers/job-skill-result.ts",
+      "file": "src/main/application/services/job-skill-result-service.ts",
       "symbol": "finalizeJobSkillResultCore",
-      "sql_fingerprint": "5f78189e352a4e5dcf39760549c9f28de535e68885cfc3005b8a0eaa74ed426f",
+      "sql_fingerprint": "a4d498ead876803759e65562be97c19665561388703e8f0cafb9f4ecf1724507",
       "classification": "AGGREGATE_MATCH_REKEY",
       "current_predicate": "student_id + job_code + task_code (M4-5 re-keyed)",
       "target_predicate": "student_id + job_code + task_code (M4 required)",
       "allowed_reason": "JOB_SKILL safety summary joins the source assessment session to incidents on the complete M4 aggregate key.",
       "test_evidence": [
         "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
-        "src/main/ipc/handlers/__tests__/job-skill-result.test.ts"
+        "src/main/ipc/handlers/__tests__/job-skill-result.test.ts",
+        "src/main/application/services/__tests__/scoring-command-bus.test.ts"
       ],
       "status": "REKEYED"
     },
     {
       "id": "M4-SQL-034",
-      "file": "src/main/ipc/handlers/job-skill-scoring.ts",
+      "file": "src/main/application/services/job-skill-scoring-service.ts",
       "symbol": "submitJobSkillOfflineScores",
-      "sql_fingerprint": "1e7f2356a9eb927b59e9ff3a8d90199a4e6eecaab268bca33abe83a14cd7245d",
+      "sql_fingerprint": "376b604456904edbdc56577de8d978efc85024942e74fcb0281855a9cc46d2d6",
       "classification": "AGGREGATE_MATCH_REKEY",
       "current_predicate": "student_id + job_code + task_code (M4-4 re-keyed)",
       "target_predicate": "student_id + job_code + task_code (M4 required)",
       "allowed_reason": "Persisted session job_code scopes the JOB_SKILL scoring safety gate to its aggregate.",
       "test_evidence": [
-        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/ipc/handlers/__tests__/job-skill-scoring.test.ts",
+        "src/main/application/services/__tests__/scoring-command-bus.test.ts"
       ],
       "status": "REKEYED"
     },
     {
       "id": "M4-SQL-035",
-      "file": "src/main/ipc/handlers/operation-scoring.ts",
+      "file": "src/main/application/services/operation-scoring-service.ts",
       "symbol": "submitOperationScores",
-      "sql_fingerprint": "ba7fdb947d937ed74b2fd5e8eb254a84c0849767f563f7d9e822a98500f4e144",
+      "sql_fingerprint": "a1361b43e5fb43a77736749122bbe28f6acc7655bb10eeb84f227ebb48f83d2e",
       "classification": "AGGREGATE_MATCH_REKEY",
       "current_predicate": "student_id + job_code + task_code (M4-4 re-keyed)",
       "target_predicate": "student_id + job_code + task_code (M4 required)",
       "allowed_reason": "Persisted session job_code scopes the operation scoring safety gate to its aggregate.",
       "test_evidence": [
-        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/ipc/handlers/__tests__/operation-scoring.test.ts",
+        "src/main/application/services/__tests__/scoring-command-bus.test.ts"
       ],
       "status": "REKEYED"
     },
     {
       "id": "M4-SQL-036",
-      "file": "src/main/ipc/handlers/reports.ts",
+      "file": "src/main/application/query/reports-query-service.ts",
       "symbol": "baseCandidates",
-      "sql_fingerprint": "9a1789715e30c53ca965e8a31350956b22b0c1023bb759f506eba90f9e3129d7",
+      "sql_fingerprint": "94cf8b0a392f889db5456e7399199a1ad399af52469d0e9ac1e0032e0e064354",
       "classification": "NON_SAFETY_QUERY",
       "current_predicate": "not a safety aggregate match",
       "target_predicate": "unchanged; no aggregate re-key required",
@@ -526,9 +533,9 @@
     },
     {
       "id": "M4-SQL-037",
-      "file": "src/main/ipc/handlers/reports.ts",
+      "file": "src/main/application/query/reports-query-service.ts",
       "symbol": "safetyCandidates",
-      "sql_fingerprint": "1aeb36a176e4a4a1a6ad6bfb48ea3b01c024fe6e34a8dbc47b76922c28fd7cc5",
+      "sql_fingerprint": "01e8aa820413a275c8d899499bbc9a825393f92ff58a176ebec8ec75096a937e",
       "classification": "STUDENT_WIDE_LIST",
       "current_predicate": "read-only incident list; not a blocker, halt, ownership, or result join",
       "target_predicate": "unchanged; no aggregate re-key required",
@@ -540,107 +547,114 @@
     },
     {
       "id": "M4-SQL-038",
-      "file": "src/main/ipc/handlers/safety.ts",
+      "file": "src/main/application/services/safety-service.ts",
       "symbol": "readIncident",
-      "sql_fingerprint": "2034a002606fda842ba8ba96cd72b2c0aece330ae837fc97ee995cdd048a317b",
+      "sql_fingerprint": "22621722527c0ee02161e0cd62229ea4b0900292b72a9d0825f7a287e60cfcc6",
       "classification": "INCIDENT_PRIMARY_KEY_LOOKUP",
       "current_predicate": "incident_id unique lookup or lifecycle write",
       "target_predicate": "unchanged; no aggregate re-key required",
       "allowed_reason": "A unique incident_id already identifies one safety fact; extra aggregate predicates would not improve ownership.",
       "test_evidence": [
-        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/application/services/__tests__/assignment-safety-command-bus.test.ts"
       ],
       "status": "BASELINE_CLASSIFIED"
     },
     {
       "id": "M4-SQL-039",
-      "file": "src/main/ipc/handlers/safety.ts",
+      "file": "src/main/application/query/safety-query-service.ts",
       "symbol": "safetyViewSelect",
-      "sql_fingerprint": "fb47c14bbf5265328ba78e5d530cb8c076cf21ffc4a07f288777453b8dac0ee7",
+      "sql_fingerprint": "fc43de9f194d849d4d25f5a1a10445fb12a75382fe89154f680fcfaad01ed8bb",
       "classification": "STUDENT_WIDE_LIST",
       "current_predicate": "read-only incident list; not a blocker, halt, ownership, or result join",
       "target_predicate": "unchanged; no aggregate re-key required",
       "allowed_reason": "Read-only teacher/report listing is explicitly not used for safety enforcement or result association.",
       "test_evidence": [
-        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/ipc/handlers/__tests__/safety.test.ts"
       ],
       "status": "BASELINE_CLASSIFIED"
     },
     {
       "id": "M4-SQL-040",
-      "file": "src/main/ipc/handlers/safety.ts",
+      "file": "src/main/application/query/safety-query-service.ts",
       "symbol": "listSafetyIncidents",
-      "sql_fingerprint": "9546ab92517393c84d9021bdcd09254ad237e290f9612b0bd6580d8817c38e02",
+      "sql_fingerprint": "d699cf913a01169e1d06a224f02ea02610b1106feddb856a3e49839cb93e0b0e",
       "classification": "STUDENT_WIDE_LIST",
       "current_predicate": "read-only incident list; not a blocker, halt, ownership, or result join",
       "target_predicate": "unchanged; no aggregate re-key required",
       "allowed_reason": "Read-only teacher/report listing is explicitly not used for safety enforcement or result association.",
       "test_evidence": [
-        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/ipc/handlers/__tests__/safety.test.ts"
       ],
       "status": "BASELINE_CLASSIFIED"
     },
     {
       "id": "M4-SQL-041",
-      "file": "src/main/ipc/handlers/safety.ts",
+      "file": "src/main/application/services/safety-service.ts",
       "symbol": "confirmSafetyIncident",
-      "sql_fingerprint": "dba0058e7d91afa542e2ed172f842a381f02b07c6aa840fc36a5141f4c13413f",
+      "sql_fingerprint": "7f82958ebc4b75580138679dedfaf7fa2aa221ff987529715468ad3c1e3367e2",
       "classification": "INCIDENT_PRIMARY_KEY_LOOKUP",
       "current_predicate": "incident_id unique lookup or lifecycle write",
       "target_predicate": "unchanged; no aggregate re-key required",
       "allowed_reason": "A unique incident_id already identifies one safety fact; extra aggregate predicates would not improve ownership.",
       "test_evidence": [
-        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/application/services/__tests__/assignment-safety-command-bus.test.ts"
       ],
       "status": "BASELINE_CLASSIFIED"
     },
     {
       "id": "M4-SQL-042",
-      "file": "src/main/ipc/handlers/safety.ts",
+      "file": "src/main/application/services/safety-service.ts",
       "symbol": "resolveSafetyIncident",
-      "sql_fingerprint": "d780ea3194dd3435244f7488cf83c09ec1be5305953a858422420503842a69bc",
+      "sql_fingerprint": "dd5fc49f4d8a46201571b42be11dd0ab59c46a19a8a83032ee09233e91d84e4d",
       "classification": "INCIDENT_PRIMARY_KEY_LOOKUP",
       "current_predicate": "incident_id unique lookup or lifecycle write",
       "target_predicate": "unchanged; no aggregate re-key required",
       "allowed_reason": "A unique incident_id already identifies one safety fact; extra aggregate predicates would not improve ownership.",
       "test_evidence": [
-        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/application/services/__tests__/assignment-safety-command-bus.test.ts"
       ],
       "status": "BASELINE_CLASSIFIED"
     },
     {
       "id": "M4-SQL-043",
-      "file": "src/main/ipc/handlers/safety.ts",
+      "file": "src/main/application/services/safety-service.ts",
       "symbol": "voidIncident",
-      "sql_fingerprint": "29459545a1481b11d38b33700c13e874fa95b7367a193b17d29ad20a222c8775",
+      "sql_fingerprint": "130b75530a8b0b2ce3df0b629bcf9215c0ebbc8292563bd760d1639ce4d06e6b",
       "classification": "INCIDENT_PRIMARY_KEY_LOOKUP",
       "current_predicate": "incident_id unique lookup or lifecycle write",
       "target_predicate": "unchanged; no aggregate re-key required",
       "allowed_reason": "A unique incident_id already identifies one safety fact; extra aggregate predicates would not improve ownership.",
       "test_evidence": [
-        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/ipc/handlers/__tests__/report-integration.test.ts"
       ],
       "status": "BASELINE_CLASSIFIED"
     },
     {
       "id": "M4-SQL-044",
-      "file": "src/main/ipc/handlers/safety.ts",
+      "file": "src/main/application/services/safety-service.ts",
       "symbol": "replaceSafetyIncidentForFactualCorrection",
-      "sql_fingerprint": "0f4d3e986fd9d2df7d4851ed406f1903a08008d6797a14dd668ecef5b3e5d770",
+      "sql_fingerprint": "ac9317e2fc370359fe2e1382f84504d9a2a8d6a17278bf4ed87cf109e15ad5ed",
       "classification": "NON_SAFETY_QUERY",
       "current_predicate": "not a safety aggregate match",
       "target_predicate": "unchanged; no aggregate re-key required",
       "allowed_reason": "The hit is a projection, lineage, insert, or known-ID step operation rather than an incident/session aggregate match.",
       "test_evidence": [
-        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/ipc/handlers/__tests__/report-integration.test.ts"
       ],
       "status": "BASELINE_CLASSIFIED"
     },
     {
       "id": "M4-SQL-045",
-      "file": "src/main/ipc/handlers/training.ts",
+      "file": "src/main/application/services/training-service.ts",
       "symbol": "createTrainingSession",
-      "sql_fingerprint": "a30f91835e071debcee16bdba7884304cda1c68ba6a738ca0880e7f8eb698295",
+      "sql_fingerprint": "0e94d6af0cd51664858e21e3b81ed5e720a4ea96bd4a88f9652e3b7d017f574a",
       "classification": "AGGREGATE_MATCH_REKEY",
       "current_predicate": "student_id + job_code + task_code (M4-4 re-keyed)",
       "target_predicate": "student_id + job_code + task_code (M4 required)",
@@ -652,9 +666,9 @@
     },
     {
       "id": "M4-SQL-046",
-      "file": "src/main/ipc/handlers/training.ts",
+      "file": "src/main/application/services/training-service.ts",
       "symbol": "createTrainingSession",
-      "sql_fingerprint": "7b4a8e1282f66d7bbe381bbd686751b97f9d27f3d95d7b6c4430440275285101",
+      "sql_fingerprint": "88b31b557761db7a8ab3a2ed510f1f26b068f21251215149b8b46b709f0754c4",
       "classification": "AGGREGATE_MATCH_REKEY",
       "current_predicate": "student_id + job_code + task_code (M4-4 re-keyed)",
       "target_predicate": "student_id + job_code + task_code (M4 required)",
@@ -666,9 +680,9 @@
     },
     {
       "id": "M4-SQL-047",
-      "file": "src/main/ipc/handlers/training.ts",
+      "file": "src/main/application/services/training-service.ts",
       "symbol": "haltTrainingSessionSteps",
-      "sql_fingerprint": "63e8b1c40a10fb3a89cbd3ec9e0378758b050eb66174836c26d850b5858ef6da",
+      "sql_fingerprint": "c37314b80f9c3ab6e5e62eeaeab75b7b37a04c04eef0fb0789f16008edd54ce4",
       "classification": "AGGREGATE_MATCH_REKEY",
       "current_predicate": "student_id + job_code + task_code (M4-4 re-keyed)",
       "target_predicate": "student_id + job_code + task_code (M4 required)",
@@ -680,9 +694,9 @@
     },
     {
       "id": "M4-SQL-048",
-      "file": "src/main/ipc/handlers/training.ts",
+      "file": "src/main/application/services/training-service.ts",
       "symbol": "haltTrainingSessionSteps",
-      "sql_fingerprint": "8205717ec8805899bbd8b366984ebbb8135bbd70698dd810364335dddc785cc8",
+      "sql_fingerprint": "eb17d89f75307f6f076ef376a388519b38698fc6dbcec398065a9f48ef88ff6e",
       "classification": "NON_SAFETY_QUERY",
       "current_predicate": "not a safety aggregate match",
       "target_predicate": "unchanged; no aggregate re-key required",
@@ -691,6 +705,127 @@
         "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs"
       ],
       "status": "BASELINE_CLASSIFIED"
+    },
+    {
+      "id": "M4-SQL-050",
+      "file": "src/main/application/command/m5a-command-definitions.ts",
+      "symbol": "safetyTarget",
+      "sql_fingerprint": "c509c4b9c1f6f8db76e6258710f844cd9762f6142c0eeb76a4ed6fb03f12db67",
+      "classification": "INCIDENT_PRIMARY_KEY_LOOKUP",
+      "current_predicate": "incident_id unique lookup for canonical Command Bus target",
+      "target_predicate": "unchanged; unique incident_id resolves persisted student_id + job_code + task_code",
+      "allowed_reason": "The resolver trusts only the unique safety_incident row and exposes its persisted M4 triple before command acceptance.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/application/command/__tests__/preflight-no-side-effect.test.ts",
+        "src/main/application/services/__tests__/assignment-safety-command-bus.test.ts"
+      ],
+      "status": "BASELINE_CLASSIFIED"
+    },
+    {
+      "id": "M4-SQL-051",
+      "file": "src/main/application/command/m5a-command-definitions.ts",
+      "symbol": "reportTarget",
+      "sql_fingerprint": "7e0eaf59acf01602fdd102762d7f89000a5a056f7bd6faefbfaa971a6fa77dd6",
+      "classification": "NON_SAFETY_QUERY",
+      "current_predicate": "known report_id lookup with optional safety lineage join",
+      "target_predicate": "unchanged; no safety aggregate match or enforcement write",
+      "allowed_reason": "The read-only resolver follows a known report source by primary identifiers and does not block, halt, mutate, or associate incidents by a partial aggregate key.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/ipc/__tests__/handler-registry.test.ts"
+      ],
+      "status": "BASELINE_CLASSIFIED"
+    },
+    {
+      "id": "M4-SQL-052",
+      "file": "src/main/application/command/m5a-command-definitions.ts",
+      "symbol": "reportGenerationTarget",
+      "sql_fingerprint": "e15626043287c3f735bd91aef90839aca835f32f97f9b7588c89b5f88889d2d2",
+      "classification": "INCIDENT_PRIMARY_KEY_LOOKUP",
+      "current_predicate": "incident_id unique lookup for SAFETY report target",
+      "target_predicate": "unchanged; unique incident_id resolves persisted student_id + job_code + task_code",
+      "allowed_reason": "SAFETY report generation reads one incident by its unique ID and carries the persisted M4 triple into the canonical target.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/ipc/__tests__/handler-registry.test.ts"
+      ],
+      "status": "BASELINE_CLASSIFIED"
+    },
+    {
+      "id": "M4-SQL-053",
+      "file": "src/main/application/planners/assessment-planner.ts",
+      "symbol": "sessionRow",
+      "sql_fingerprint": "7d6a2d07ce825ff0148d750e61df60512ca0da5e50fd8e8e58b5fa716b929558",
+      "classification": "NON_SAFETY_QUERY",
+      "current_predicate": "known assessment session_id lookup",
+      "target_predicate": "unchanged; no safety aggregate match or enforcement write",
+      "allowed_reason": "The prepared planner reads one assessment session by its unique ID before deriving immutable facts.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/application/planners/__tests__/assessment-planner.test.ts"
+      ],
+      "status": "BASELINE_CLASSIFIED"
+    },
+    {
+      "id": "M4-SQL-054",
+      "file": "src/main/application/planners/assessment-planner.ts",
+      "symbol": "buildCreateFacts",
+      "sql_fingerprint": "1f0288aab27a7adfad29837a7c1745139545c4e06c82c7a29e514146326e3d72",
+      "classification": "AGGREGATE_MATCH_REKEY",
+      "current_predicate": "student_id + job_code + task_code (M4 re-keyed)",
+      "target_predicate": "student_id + job_code + task_code (M4 required)",
+      "allowed_reason": "The prepared assessment safety gate uses the complete persisted aggregate key before allowing a new session.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/application/planners/__tests__/assessment-planner.test.ts"
+      ],
+      "status": "REKEYED"
+    },
+    {
+      "id": "M4-SQL-055",
+      "file": "src/main/application/planners/assessment-planner.ts",
+      "symbol": "buildCreateFacts",
+      "sql_fingerprint": "73449188f3668b0328d89d71e6b1e926670523428d9a87ab4a77ec0e4189a41b",
+      "classification": "AGGREGATE_MATCH_REKEY",
+      "current_predicate": "student_id + job_code + task_code (M4 re-keyed)",
+      "target_predicate": "student_id + job_code + task_code (M4 required)",
+      "allowed_reason": "The prepared assessment open-session check scopes duplicates to the complete session aggregate.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/application/planners/__tests__/assessment-planner.test.ts"
+      ],
+      "status": "REKEYED"
+    },
+    {
+      "id": "M4-SQL-056",
+      "file": "src/main/application/planners/training-planner.ts",
+      "symbol": "loadTrainingPlannerSnapshot",
+      "sql_fingerprint": "67d56b3b71c34fe6ad795a7f33c09fe31a3397b6d8beda2ffaa16d15adef439b",
+      "classification": "AGGREGATE_MATCH_REKEY",
+      "current_predicate": "student_id + job_code + task_code (M4 re-keyed)",
+      "target_predicate": "student_id + job_code + task_code (M4 required)",
+      "allowed_reason": "The prepared training safety gate uses the complete persisted aggregate key before allowing a new session.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/application/planners/__tests__/training-planner.test.ts"
+      ],
+      "status": "REKEYED"
+    },
+    {
+      "id": "M4-SQL-057",
+      "file": "src/main/application/planners/training-planner.ts",
+      "symbol": "loadTrainingPlannerSnapshot",
+      "sql_fingerprint": "57c6b34f22c94b2a5c767af923e8df040bce7ce3ad6e7199f8637302efcc3020",
+      "classification": "AGGREGATE_MATCH_REKEY",
+      "current_predicate": "student_id + job_code + task_code (M4 re-keyed)",
+      "target_predicate": "student_id + job_code + task_code (M4 required)",
+      "allowed_reason": "The prepared training open-session check scopes duplicates to the complete training aggregate.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/application/planners/__tests__/training-planner.test.ts"
+      ],
+      "status": "REKEYED"
     }
   ]
 }

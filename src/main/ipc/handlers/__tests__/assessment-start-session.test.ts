@@ -76,7 +76,7 @@ import {
   startSession,
   listMySessions,
   seedAssessmentErrorCodes
-} from '../assessment'
+} from '../../../application/services/__tests__/assessment-test-support'
 import {
   createTestDb,
   seedCaller,

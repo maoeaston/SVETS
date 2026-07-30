@@ -20,7 +20,7 @@ vi.mock('../../../domain/event-writer', () => ({
       const entry: import('@shared/types/event-payloads').ActionLogEntry = {
         event_id: eventId, aggregate_type: params.aggregateType, aggregate_id: params.aggregateId,
         event_type: params.eventType, event_sequence: eventSequence, payload: params.payload,
-        checksum: 'test-checksum', schema_version: 1, created_at: new Date().toISOString(),
+        checksum: 'test-checksum', schema_version: params.schemaVersion ?? 1, created_at: new Date().toISOString(),
         actor_id: params.actorId, actor_role: params.actorRole, app_version: 'test'
       }
       mockState.db
@@ -35,10 +35,15 @@ vi.mock('../../../domain/event-writer', () => ({
   )
 }))
 
-import { createSession, seedAssessmentErrorCodes } from '../assessment'
-import { submitJobSkillOfflineScores } from '../job-skill-scoring'
-import { recordTeacherObservation } from '../observation'
-import { maybeGenerateJobSkillResult } from '../job-skill-result'
+import { createSession, seedAssessmentErrorCodes } from '../../../application/services/__tests__/assessment-test-support'
+import { submitJobSkillOfflineScores } from '../../../application/services/__tests__/scoring-test-support'
+import { recordTeacherObservation } from '../../../application/services/__tests__/scoring-test-support'
+import { maybeGenerateJobSkillResult } from '../../../application/services/__tests__/scoring-test-support'
+import {
+  createJobSkillReportAutomation,
+  type JobSkillReportAutomation
+} from '../../../application/services/__tests__/scoring-test-support'
+import { createTestReportCommandCoordinator } from '../../../application/runtime/__tests__/test-helpers'
 import {
   createTestDb,
   seedCaller,
@@ -101,6 +106,7 @@ let callerId: string
 let studentId: string
 let strategyId: string
 let bankIds: { scoredIds: string[]; obsIds: string[]; onlineIds: string[]; offlineIds: string[] }
+let automation: JobSkillReportAutomation
 
 function baseParams(over: Partial<CreateSessionParams> = {}): CreateSessionParams {
   return {
@@ -182,6 +188,11 @@ beforeEach(() => {
   bankIds = seedJobSkillBank(db)
   strategyId = seedStrategy(db, bankIds)
   mockState.db = db
+  automation = createJobSkillReportAutomation(db, createTestReportCommandCoordinator({
+    db,
+    actionLogPath: `/tmp/svets-job-skill-result-${uuidv4()}.jsonl`,
+    recoverPending: () => undefined
+  }))
 })
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -191,7 +202,7 @@ function completeSession(sessionId: string, offlineScore: 0 | 1 | 2 = 2) {
   submitJobSkillOfflineScores(db, {
     callerUserId: callerId, callerRole: 'TEACHER', sessionId,
     scores: bankIds.offlineIds.map((questionId) => ({ questionId, score: offlineScore }))
-  })
+  }, automation)
   for (const questionId of bankIds.obsIds) {
     recordTeacherObservation(db, {
       callerUserId: callerId, callerRole: 'TEACHER', sessionId, questionId,
@@ -201,7 +212,7 @@ function completeSession(sessionId: string, offlineScore: 0 | 1 | 2 = 2) {
         accommodations_used: [], observation_note: null, recorded_by: callerId,
         recorded_at: new Date().toISOString()
       }
-    })
+    }, automation)
   }
 }
 
@@ -509,7 +520,7 @@ describe('TC-O: JOB_SKILL_SCORE 自动生成', () => {
     expect(sessAfter.status).toBe('REDLINE_HALTED')
 
     // maybeGenerateJobSkillResult 对终态 session 应直接返回，不抛错
-    expect(() => maybeGenerateJobSkillResult(db, sessionId, callerId)).not.toThrow()
+    expect(() => maybeGenerateJobSkillResult(db, sessionId, callerId, automation)).not.toThrow()
 
     // 未创建任何 result_record（T9 不处理红线场景）
     const count = db
@@ -580,8 +591,8 @@ describe('TC-O: JOB_SKILL_SCORE 自动生成', () => {
     completeSession(sessionId) // 触发自动生成
 
     // 再次调用 maybeGenerateJobSkillResult 应无副作用
-    expect(() => maybeGenerateJobSkillResult(db, sessionId, callerId)).not.toThrow()
-    expect(() => maybeGenerateJobSkillResult(db, sessionId, callerId)).not.toThrow()
+    expect(() => maybeGenerateJobSkillResult(db, sessionId, callerId, automation)).not.toThrow()
+    expect(() => maybeGenerateJobSkillResult(db, sessionId, callerId, automation)).not.toThrow()
 
     const count = db
       .prepare("SELECT COUNT(*) AS n FROM result_record WHERE source_aggregate_id = ? AND result_type = 'JOB_SKILL_SCORE'")
@@ -602,8 +613,8 @@ describe('TC-O: JOB_SKILL_SCORE 自动生成', () => {
     expect(before.delivery_phase).toBe('READY_TO_FINALIZE')
     expect(countSessionEvents(sessionId, 'RESULT_CALCULATED')).toBe(0)
 
-    expect(() => maybeGenerateJobSkillResult(db, sessionId, callerId)).not.toThrow()
-    expect(() => maybeGenerateJobSkillResult(db, sessionId, callerId)).not.toThrow()
+    expect(() => maybeGenerateJobSkillResult(db, sessionId, callerId, automation)).not.toThrow()
+    expect(() => maybeGenerateJobSkillResult(db, sessionId, callerId, automation)).not.toThrow()
 
     const after = db
       .prepare('SELECT status, delivery_phase, completed_at FROM assessment_session WHERE session_id = ?')

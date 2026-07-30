@@ -1,0 +1,117 @@
+{
+  "schema_version": "m5b-step-source-delta-v1",
+  "step": "M5B-8",
+  "source_digest": "1b29f1facae737e0b6263601ce5fbc3ccb535155fba11f6fea5613fb7f78fc03",
+  "target_digest": "6d9e30b2adbb67e176a03e1ca23c33dbf72a743b8fe5b6bb8b4f6fa02e62f2ba",
+  "expected_counts": {
+    "channels": 74,
+    "direct_callsites": 262,
+    "direct_files": 38,
+    "capability_callsites": 73,
+    "delegating_roots": 13
+  },
+  "removed_source": [],
+  "added_target": [
+    {
+      "fingerprint": "848832e4a96bdf91ae29bf17c210f92a74296b4405533556edc68260a48f08b9",
+      "file": "src/main/domain/projectors/training-projector.ts",
+      "symbol": "markApplied",
+      "line": 141,
+      "kind": "DB_RUN",
+      "callee": "context.database.prepare( `UPDATE domain_event_projection SET applied_to_snapshot = 1, applied_at = ? WHERE event_id = ? AND applied_to_snapshot = 0` ).run",
+      "occurrence": 1,
+      "target_class": "TRAINING_PREPARED_PROJECTOR_INTERNAL",
+      "planned_step": "M5B-8"
+    },
+    {
+      "fingerprint": "3027072707c91d5c72552ada043f0f8c5edf23714e3634dcc0022e1d59a28c10",
+      "file": "src/main/domain/projectors/training-projector.ts",
+      "symbol": "projectStarted",
+      "line": 153,
+      "kind": "DB_RUN",
+      "callee": "context.database.prepare( `INSERT INTO business_session (business_session_id, session_type, student_id, job_code, task_code, created_by) VALUES (?, 'TRAINING', ?, ?, ?, ?)` ).run",
+      "occurrence": 1,
+      "target_class": "TRAINING_PREPARED_PROJECTOR_INTERNAL",
+      "planned_step": "M5B-8"
+    },
+    {
+      "fingerprint": "2a611aeb3d2c4dad1a1570a59f0962160b18b5572b75b4478e49a368ee4ff4c9",
+      "file": "src/main/domain/projectors/training-projector.ts",
+      "symbol": "projectStarted",
+      "line": 157,
+      "kind": "DB_RUN",
+      "callee": "context.database.prepare( `INSERT INTO training_session ( training_session_id, business_session_id, student_id, job_code, task_code, strategy_id, strategy_type, strategy_version, status, module_type, total_step_count, completed_step_count, created_by, updated_at, created_event_id, last_applied_event_id, last_status_event_id ) VALUES (?, ?, ?, ?, ?, ?, 'TRAINING_PRACTICE', ?, 'INIT', ?, ?, 0, ?, ?, ?, ?, ?)` ).run",
+      "occurrence": 1,
+      "target_class": "TRAINING_PREPARED_PROJECTOR_INTERNAL",
+      "planned_step": "M5B-8"
+    },
+    {
+      "fingerprint": "0c6464f26e6495617206e4067620787e5671ac59f70280281001bf42315cc039",
+      "file": "src/main/domain/projectors/training-projector.ts",
+      "symbol": "projectStarted",
+      "line": 178,
+      "kind": "DB_RUN",
+      "callee": "insert.run",
+      "occurrence": 1,
+      "target_class": "TRAINING_PREPARED_PROJECTOR_INTERNAL",
+      "planned_step": "M5B-8"
+    },
+    {
+      "fingerprint": "809079b28216406aa75bf4fee3df7ce9a51cb99361cf752d63c0b40354c401d3",
+      "file": "src/main/domain/projectors/training-projector.ts",
+      "symbol": "projectStep",
+      "line": 202,
+      "kind": "DB_RUN",
+      "callee": "context.database.prepare( `UPDATE training_step_record SET status = ?, attempt_count = ?, ${timestampField} = ?, last_applied_event_id = ?, updated_at = ? WHERE training_step_record_id = ?` ).run",
+      "occurrence": 1,
+      "target_class": "TRAINING_PREPARED_PROJECTOR_INTERNAL",
+      "planned_step": "M5B-8"
+    },
+    {
+      "fingerprint": "4f0d2d14ffd12d0024c6ebe882b452b5bed4ff814ba03f2c876001f3eb24c827",
+      "file": "src/main/domain/projectors/training-projector.ts",
+      "symbol": "projectStep",
+      "line": 207,
+      "kind": "DB_RUN",
+      "callee": "context.database.prepare( `UPDATE training_step_record SET status = ?, attempt_count = ?, last_applied_event_id = ?, updated_at = ? WHERE training_step_record_id = ?` ).run",
+      "occurrence": 1,
+      "target_class": "TRAINING_PREPARED_PROJECTOR_INTERNAL",
+      "planned_step": "M5B-8"
+    },
+    {
+      "fingerprint": "70b4bbfbf5be27917c3dcd69885602273d3c043b8fe6195899b58a7bb0fe6bc7",
+      "file": "src/main/domain/projectors/training-projector.ts",
+      "symbol": "projectStep",
+      "line": 213,
+      "kind": "DB_RUN",
+      "callee": "context.database.prepare( `UPDATE training_session SET status = ?, completed_step_count = completed_step_count + ?, started_at = CASE WHEN status = 'INIT' AND ? = 'ACTIVE' THEN ? ELSE started_at END, last_applied_event_id = ?, last_status_event_id = CASE WHEN status <> ? THEN ? ELSE last_status_event_id END, updated_at = ? WHERE training_session_id = ?` ).run",
+      "occurrence": 1,
+      "target_class": "TRAINING_PREPARED_PROJECTOR_INTERNAL",
+      "planned_step": "M5B-8"
+    },
+    {
+      "fingerprint": "bcc7bce275e0b49dce9e2d01875ebdb70afe8b0c68db3f52ce7bdbe4a375cbf6",
+      "file": "src/main/domain/projectors/training-projector.ts",
+      "symbol": "projectCompleted",
+      "line": 234,
+      "kind": "DB_RUN",
+      "callee": "context.database.prepare( `UPDATE training_session SET status = 'COMPLETED', completed_at = ?, completion_rate = ?, completed_step_count = ?, last_applied_event_id = ?, last_status_event_id = ?, updated_at = ? WHERE training_session_id = ?` ).run",
+      "occurrence": 1,
+      "target_class": "TRAINING_PREPARED_PROJECTOR_INTERNAL",
+      "planned_step": "M5B-8"
+    },
+    {
+      "fingerprint": "08277555ecb3b4f95ceca82870695e3d388c24f4bde0f5b363a046592f6e248d",
+      "file": "src/main/domain/projectors/training-projector.ts",
+      "symbol": "projectCompleted",
+      "line": 240,
+      "kind": "DB_RUN",
+      "callee": "context.database.prepare( `INSERT INTO result_record ( result_id, result_type, source_aggregate_type, source_aggregate_id, student_id, strategy_id, strategy_type, job_code, module_type, normalized_score, level_result, completion_ratio, generated_event_id, generated_at, safety_overridden ) VALUES (?, 'TRAINING_COMPLETION', 'TRAINING_SESSION', ?, ?, ?, 'TRAINING_PRACTICE', ?, ?, ?, ?, ?, ?, ?, 0)` ).run",
+      "occurrence": 1,
+      "target_class": "TRAINING_PREPARED_PROJECTOR_INTERNAL",
+      "planned_step": "M5B-8"
+    }
+  ],
+  "capability_removed_source": [],
+  "capability_added_target": []
+}

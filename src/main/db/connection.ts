@@ -2,11 +2,15 @@ import Database from 'better-sqlite3'
 import { createHash } from 'crypto'
 import { dirname, join } from 'path'
 import { app } from 'electron'
-import { existsSync, readFileSync, mkdirSync } from 'fs'
+import { existsSync, readFileSync } from 'fs'
 import { hashPassword } from '../utils/password'
 import devAccounts from '../../shared/config/dev-accounts.json'
 import type { DBAdapter } from './interface'
-import { getActionLogPath } from '../domain/action-log-path'
+import { resolveActionLogPath } from '../domain/action-log-path'
+import {
+  createInternalMutationCapability,
+  prepareInternalDirectory
+} from '../application/runtime/internal-mutation-capability'
 import { writeEvent } from '../domain/event-writer'
 import { preReconcileLegacyActionLog, StartupRecoveryRequiredError } from '../domain/legacy-upgrade-recovery'
 import { reconcileActionLog, writeRecoverySnapshot } from '../domain/recovery'
@@ -37,7 +41,11 @@ export function getDatabase(): Database.Database {
 
 export function initDatabase(): void {
   const dataDir = join(app.getPath('userData'), 'data')
-  mkdirSync(dataDir, { recursive: true })
+  prepareInternalDirectory(createInternalMutationCapability({
+    owner: 'database-connection:startup-upgrade-recovery',
+    phase: 'DB_INIT_RECOVERY',
+    dataRoot: dataDir
+  }), dataDir)
 
   const dbPath = join(dataDir, 'xc-career-guide.db')
   const database = new Database(dbPath)
@@ -50,7 +58,7 @@ export function initDatabase(): void {
     const schema = readFileSync(schemaPath, 'utf-8')
     const adapter = database as unknown as DBAdapter
     const fresh = isFreshDatabase(adapter)
-    const actionLogPath = getActionLogPath()
+    const actionLogPath = resolveActionLogPath(dataDir)
     if (fresh && hasNonEmptyActionLog(actionLogPath)) {
       throw new StartupRecoveryRequiredError(
         'FRESH_DATABASE_WITH_ACTION_LOG',
@@ -69,7 +77,7 @@ export function initDatabase(): void {
     assertCurrentDatabaseSchema(adapter)
     seedDevUsers(database)
     db = database
-    const recovery = recoverActionLog(database, dbPath)
+    const recovery = recoverActionLog(database, dbPath, actionLogPath)
 
     if (fresh) console.log('[DB] Initialized fresh schema')
     if (migrated.length > 0) console.log(`[DB] Applied migrations: ${migrated.join(', ')}`)
@@ -133,12 +141,11 @@ export function runConnectionStartupUpgrade(options: {
   }
 }
 
-function recoverActionLog(database: Database.Database, dbPath: string): {
+function recoverActionLog(database: Database.Database, dbPath: string, actionLogPath: string): {
   replayedEventCount: number
   skippedEventCount: number
   truncatedTail: boolean
 } {
-  const actionLogPath = getActionLogPath()
   const recovery = reconcileActionLog(database as unknown as DBAdapter, {
     logPath: actionLogPath,
     archiveDir: join(dirname(actionLogPath), 'recovery-archive')
@@ -161,7 +168,9 @@ function recoverActionLog(database: Database.Database, dbPath: string): {
         archived_tail_path: recovery.archivedTailPath
       },
       actorId: 'SYSTEM',
-      actorRole: 'SYSTEM'
+      actorRole: 'SYSTEM',
+      database: database as unknown as DBAdapter,
+      actionLogPath
     })
     writeRecoverySnapshot(database as unknown as DBAdapter, {
       lastAppliedEvent: recoveryEvent,

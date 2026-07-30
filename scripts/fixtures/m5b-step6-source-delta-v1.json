@@ -1,0 +1,62 @@
+{
+  "schema_version": "m5b-step-source-delta-v1",
+  "step": "M5B-6",
+  "source_digest": "c5f20f90046e097ce7323eb92091d6e8900bb0099acbfa1cca9fac8a090a5853",
+  "target_digest": "f1023fbd72501c97a65b68c973cef7385ddf21525e5ec7dc8c55de96375caf9d",
+  "expected_counts": {
+    "channels": 74,
+    "direct_callsites": 253,
+    "direct_files": 37,
+    "capability_callsites": 73,
+    "delegating_roots": 13
+  },
+  "removed_source": [],
+  "added_target": [
+    {
+      "fingerprint": "807687f0b54b2ef6f7506488e1a409de50e4e02fd1f6b1af281e047d315c120f",
+      "file": "src/main/domain/projectors/task-closure-projector.ts",
+      "symbol": "normalizeProjectionTimes",
+      "line": 120,
+      "kind": "DB_RUN",
+      "callee": "context.database.prepare( 'UPDATE task_closure SET created_at = ?, updated_at = ? WHERE task_closure_id = ?' ).run",
+      "occurrence": 1,
+      "target_class": "REPORT_CLOSURE_PROJECTOR_INTERNAL",
+      "planned_step": "M5B-6"
+    },
+    {
+      "fingerprint": "2e43688f0c3ed9a6212fa336edbb9f13ab557865c86c20516082c7011b47e3d6",
+      "file": "src/main/domain/projectors/task-closure-projector.ts",
+      "symbol": "normalizeProjectionTimes",
+      "line": 124,
+      "kind": "DB_RUN",
+      "callee": "context.database.prepare( 'UPDATE task_closure SET updated_at = ? WHERE task_closure_id = ?' ).run",
+      "occurrence": 1,
+      "target_class": "REPORT_CLOSURE_PROJECTOR_INTERNAL",
+      "planned_step": "M5B-6"
+    },
+    {
+      "fingerprint": "572b2e09798c10ddcad09c5b1559b0a6f1199cc687c2029be71b1dcb829c1dd3",
+      "file": "src/main/domain/projectors/task-closure-projector.ts",
+      "symbol": "normalizeProjectionTimes",
+      "line": 132,
+      "kind": "DB_RUN",
+      "callee": "context.database.prepare( 'UPDATE task_closure SET created_at = ?, updated_at = ? WHERE task_closure_id = ?' ).run",
+      "occurrence": 1,
+      "target_class": "REPORT_CLOSURE_PROJECTOR_INTERNAL",
+      "planned_step": "M5B-6"
+    },
+    {
+      "fingerprint": "8861f11ec90c216563b91fda8cee7866be9be94c243c411aed31249c526d72d4",
+      "file": "src/main/domain/projectors/task-closure-projector.ts",
+      "symbol": "normalizeProjectionTimes",
+      "line": 135,
+      "kind": "DB_RUN",
+      "callee": "context.database.prepare( 'UPDATE task_closure SET updated_at = ? WHERE task_closure_id = ?' ).run",
+      "occurrence": 2,
+      "target_class": "REPORT_CLOSURE_PROJECTOR_INTERNAL",
+      "planned_step": "M5B-6"
+    }
+  ],
+  "capability_removed_source": [],
+  "capability_added_target": []
+}

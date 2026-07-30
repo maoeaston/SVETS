@@ -287,9 +287,10 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | `base-ability-42plus8-pilot-readiness` | [features/base-ability-42plus8-pilot-readiness-prd.md](features/base-ability-42plus8-pilot-readiness-prd.md) | [features/base-ability-42plus8-pilot-readiness-impl.md](features/base-ability-42plus8-pilot-readiness-impl.md) |
 | `data-persistence-recovery` | [features/data-persistence-recovery-prd.md](features/data-persistence-recovery-prd.md) | [features/data-persistence-recovery-impl.md](features/data-persistence-recovery-impl.md) |
 | `drag-render` | [features/drag-render-prd.md](features/drag-render-prd.md) | [features/drag-render-impl.md](features/drag-render-impl.md) |
-| `event-batch-v2.2-runtime` | [features/event-batch-v2.2-runtime-prd.md](features/event-batch-v2.2-runtime-prd.md) | 缺失 |
+| `event-batch-v2.2-runtime` | [features/event-batch-v2.2-runtime-prd.md](features/event-batch-v2.2-runtime-prd.md) | [features/event-batch-v2.2-runtime-impl.md](features/event-batch-v2.2-runtime-impl.md) |
 | `foundation-pages-exception-center` | [features/foundation-pages-exception-center-prd.md](features/foundation-pages-exception-center-prd.md) | [features/foundation-pages-exception-center-impl.md](features/foundation-pages-exception-center-impl.md) |
 | `login-by-role` | [features/login-by-role-prd.md](features/login-by-role-prd.md) | [features/login-by-role-impl.md](features/login-by-role-impl.md) |
+| `m5a-command-bus-boundary` | [features/m5a-command-bus-boundary-prd.md](features/m5a-command-bus-boundary-prd.md) | [features/m5a-command-bus-boundary-impl.md](features/m5a-command-bus-boundary-impl.md) |
 | `multi-device-m4-m5` | [features/multi-device-m4-m5-prd.md](features/multi-device-m4-m5-prd.md) | [features/multi-device-m4-m5-impl.md](features/multi-device-m4-m5-impl.md) |
 | `multi-device-m4-safety-rekey` | [features/multi-device-m4-safety-rekey-prd.md](features/multi-device-m4-safety-rekey-prd.md) | [features/multi-device-m4-safety-rekey-impl.md](features/multi-device-m4-safety-rekey-impl.md) |
 | `multi-device-v2.2-migration` | [features/multi-device-v2.2-migration-prd.md](features/multi-device-v2.2-migration-prd.md) | [features/multi-device-v2.2-migration-impl.md](features/multi-device-v2.2-migration-impl.md) |
@@ -307,7 +308,13 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | 文件 | 标题 |
 |---|---|
 | [features/base-ability-42plus8-evaluation-memo.md](features/base-ability-42plus8-evaluation-memo.md) | 基础能力测评 42+8 方案评估备忘录 |
+| [features/base-ability-42plus8-vibe-review.md](features/base-ability-42plus8-vibe-review.md) | BASE_ABILITY 42+8 正式 `/vibe-review` 记录 |
 | [features/base-ability-current-contracts.md](features/base-ability-current-contracts.md) | 基础能力题库与 42+8 当前合同入口 |
+| [features/event-batch-v2.2-runtime-impl-review.md](features/event-batch-v2.2-runtime-impl-review.md) | M5B Event Batch Runtime — 独立 R3 实施计划审查 |
+| [features/event-batch-v2.2-runtime-m5b6-r3-review.md](features/event-batch-v2.2-runtime-m5b6-r3-review.md) | M5B-6 Independent R3 Review and Acceptance |
+| [features/event-batch-v2.2-runtime-m5b9-r3-review.md](features/event-batch-v2.2-runtime-m5b9-r3-review.md) | M5B-9 Independent R3 Review and Acceptance |
+| [features/event-batch-v2.2-runtime-prd-review.md](features/event-batch-v2.2-runtime-prd-review.md) | M5B Event Batch Runtime — 独立 R3 PRD 审查 |
+| [features/event-batch-v2.2-runtime-validation.md](features/event-batch-v2.2-runtime-validation.md) | M5B Event Batch Runtime 验收记录 |
 | [features/full-product-1.0-planning-review-2026-07-18.md](features/full-product-1.0-planning-review-2026-07-18.md) | SVETS MVP Pilot 收口与全量产品 1.0 规划审查报告 |
 | [features/job-skill-shelver-298-content-review-result-2026-07-19.md](features/job-skill-shelver-298-content-review-result-2026-07-19.md) | 超市理货员 298 题来源池内容全量审核包（剩余 274 题） |
 | [features/job-skill-shelver-298-question-content-review-packet-remaining-274-v1.md](features/job-skill-shelver-298-question-content-review-packet-remaining-274-v1.md) | 超市理货员 298 题来源池内容全量审核包（剩余 274 题） |
@@ -336,6 +343,12 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | [features/job-skill-shelver-pilot-13-question-revision-and-renderer-fix-v1.0.md](features/job-skill-shelver-pilot-13-question-revision-and-renderer-fix-v1.0.md) | 超市理货员 Pilot 13 道退回题修订与学习端渲染修复稿 v1.0 |
 | [features/job-skill-shelver-pilot-current-question-authority.md](features/job-skill-shelver-pilot-current-question-authority.md) | 超市理货员 Pilot 当前题目门禁追溯入口 |
 | [features/local-database-sync-sop.md](features/local-database-sync-sop.md) | 本地多开发机数据库同步 SOP |
+| [features/m5a-command-bus-boundary-code-review.md](features/m5a-command-bus-boundary-code-review.md) | M5A Command Bus Boundary 代码独立审查 |
+| [features/m5a-command-bus-boundary-impl-review.md](features/m5a-command-bus-boundary-impl-review.md) | M5A Command Bus Boundary 实施计划独立审查 |
+| [features/m5a-command-bus-boundary-r3-rereview.md](features/m5a-command-bus-boundary-r3-rereview.md) | M5A Command Bus Boundary — Independent R3 Re-review |
+| [features/m5a-command-bus-boundary-r4-rereview.md](features/m5a-command-bus-boundary-r4-rereview.md) | 审查报告 |
+| [features/m5a-command-bus-boundary-r4-review-prompt.md](features/m5a-command-bus-boundary-r4-review-prompt.md) | M5A Command Bus Boundary 独立 R3 审查提示 |
+| [features/m5a-command-bus-boundary-validation.md](features/m5a-command-bus-boundary-validation.md) | M5A Command Bus Boundary 验收记录 |
 | [features/multi-device-m4-safety-rekey-validation.md](features/multi-device-m4-safety-rekey-validation.md) | 多设备 M4 安全聚合三元键升级验收记录 |
 | [features/mvp-pilot-freeze-plan.md](features/mvp-pilot-freeze-plan.md) | MVP Pilot 冻结与收口计划 |
 | [features/pilot-r0-foundation-development-plan-2026-07-22.md](features/pilot-r0-foundation-development-plan-2026-07-22.md) | Pilot R0 基础能力开发与验收计划 |
