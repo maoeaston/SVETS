@@ -28,6 +28,16 @@ async function freshDatabase(): Promise<MemoryAdapter> {
 
 async function m4Database(): Promise<MemoryAdapter> {
   const database = await createTestDb()
+  database.exec(`
+    DROP INDEX IF EXISTS ux_command_idempotency;
+    DROP INDEX IF EXISTS idx_applied_event_batch_segment;
+    DROP INDEX IF EXISTS idx_processed_event_batch;
+    DROP TABLE IF EXISTS processed_event;
+    DROP TABLE IF EXISTS applied_event_batch;
+    DROP TABLE IF EXISTS projector_cursor;
+    DROP TABLE IF EXISTS command_log;
+  `)
+  database.prepare('DELETE FROM schema_migration WHERE migration_id = ?').run(EVENT_BATCH_MIGRATION_ID)
   databases.push(database)
   return database
 }
@@ -104,6 +114,15 @@ describe('M5B event-batch migration kernel', () => {
     expect(migration()).toEqual({ source: 'ALREADY_TARGET', applied: false })
     expect(calls).toEqual(['backup'])
     expect(count(database, 'SELECT COUNT(*) AS count FROM schema_migration')).toBe(9)
+  })
+
+  it('recognizes the authoritative fresh schema as an already complete v2.2 target', async () => {
+    const database = await createTestDb()
+    databases.push(database)
+
+    expect(preflightEventBatchMigration(database)).toBe('ALREADY_TARGET')
+    expect(applyEventBatchMigration(database)).toEqual({ source: 'ALREADY_TARGET', applied: false })
+    assertExactEventBatchStructure(database)
   })
 
   it('creates exactly T11-T14 and their three named indexes, without later v2.2 tables', async () => {
@@ -282,12 +301,12 @@ describe('M5B event-batch migration kernel', () => {
     expect(() => adapter.immediateTransaction(() => undefined)()).toThrow(/cannot be nested/)
   })
 
-  it('keeps the migration kernel inactive in production until M5B-14', () => {
+  it('activates the M5B target schema at the M5B-14 production boundary', () => {
     const schema = readFileSync(resolve(process.cwd(), 'src/main/db/schema.sql'), 'utf8')
     const migrationRegistry = readFileSync(resolve(process.cwd(), 'src/main/db/migrations.ts'), 'utf8')
 
-    expect(schema).not.toContain(EVENT_BATCH_MIGRATION_ID)
-    expect(schema).not.toContain('CREATE TABLE IF NOT EXISTS command_log')
+    expect(schema).toContain(EVENT_BATCH_MIGRATION_ID)
+    expect(schema).toContain('CREATE TABLE IF NOT EXISTS command_log')
     expect(migrationRegistry).not.toContain(EVENT_BATCH_MIGRATION_ID)
     expect(migrationRegistry).not.toContain("from './event-batch-migration'")
   })

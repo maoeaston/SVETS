@@ -30,6 +30,16 @@ export class MemoryAdapter implements DBAdapter {
     return new MemoryAdapter(db)
   }
 
+  /**
+   * Creates an isolated in-memory copy for test-only prepared-fact planning.
+   * This is intentionally absent from DBAdapter so production adapters cannot
+   * accidentally opt into a planning path that mutates its input state.
+   */
+  async cloneForPlanning(): Promise<MemoryAdapter> {
+    const SQL = await ensureSqlJs()
+    return new MemoryAdapter(new SQL.Database(this.db.export()))
+  }
+
   prepare(sql: string): DBStatement {
     return {
       run: (...params: unknown[]) => {

@@ -1,11 +1,13 @@
 import { createHash } from 'node:crypto'
-import { lstatSync, readFileSync, readlinkSync } from 'node:fs'
+import { existsSync, lstatSync, readFileSync, readlinkSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
 
 import { M5B_START_SCHEMA_VERSION } from './m5b-runtime-inventory.mjs'
 
 const STEP_ORDER = Object.freeze(Array.from({ length: 15 }, (_, index) => `M5B-${index + 1}`))
+const CHECKPOINT_SCHEMA_VERSION = 'm5b-accepted-checkpoint-v1'
+const CHECKPOINT_PATH = 'scripts/fixtures/m5b-accepted-checkpoint-v1.json'
 
 const STEP1_ALLOWED = Object.freeze([
   'package.json',
@@ -184,6 +186,160 @@ const STEP9_ALLOWED = Object.freeze([
   'src/main/domain/projectors/__tests__/assessment-projector.test.ts'
 ])
 
+const STEP10_ALLOWED = Object.freeze([
+  ...STEP9_ALLOWED,
+  'doc/features/event-batch-v2.2-runtime-m5b10-r3-review.md',
+  'scripts/fixtures/m5b-step10-source-delta-v1.json',
+  'scripts/fixtures/m5b-accepted-checkpoint-v1.json',
+  'scripts/update-m5b-step10-fixture.mjs',
+  'scripts/lib/m5b-runtime-inventory.mjs',
+  'scripts/__tests__/m5b-contract-scope.test.mjs',
+  'scripts/__tests__/m5b-runtime-inventory.test.mjs',
+  'src/main/db/memory-adapter.ts',
+  'src/main/application/planners/scoring-planner.ts',
+  'src/main/application/planners/__tests__/scoring-planner.test.ts',
+  'src/main/application/planners/__tests__/scoring-test-support.ts',
+  'src/main/domain/projectors/scoring-projector.ts',
+  'src/main/domain/projectors/__tests__/scoring-projector.test.ts',
+  'src/main/application/services/__tests__/scoring-command-bus.test.ts',
+  'src/main/application/services/__tests__/multi-event-command-failure.test.ts',
+  'src/main/application/services/__tests__/scoring-test-support.ts'
+])
+
+const STEP11_ALLOWED = Object.freeze([
+  ...STEP10_ALLOWED,
+  'doc/features/event-batch-v2.2-runtime-m5b11-r3-review.md',
+  'scripts/fixtures/m5b-step11-source-delta-v1.json',
+  'scripts/update-m5b-step11-fixture.mjs',
+  'scripts/lib/m5b-runtime-inventory.mjs',
+  'scripts/__tests__/m5b-contract-scope.test.mjs',
+  'scripts/__tests__/m5b-runtime-inventory.test.mjs',
+  'src/shared/types/event-payloads.ts',
+  'src/main/domain/local-runtime-context.ts',
+  'src/main/domain/__tests__/local-runtime-context.test.ts',
+  'src/main/application/planners/assignment-planner.ts',
+  'src/main/application/planners/__tests__/assignment-planner.test.ts',
+  'src/main/application/planners/__tests__/assignment-test-support.ts',
+  'src/main/domain/projectors/assignment-projector.ts',
+  'src/main/domain/projectors/__tests__/assignment-projector.test.ts'
+])
+
+const STEP13_ALLOWED = Object.freeze([
+  ...STEP11_ALLOWED,
+  'doc/features/event-batch-v2.2-runtime-m5b13-r3-review.md',
+  'scripts/fixtures/m5b-step13-source-delta-v1.json',
+  'scripts/update-m5b-step13-fixture.mjs',
+  'scripts/lib/m5b-runtime-inventory.mjs',
+  'scripts/__tests__/m5b-contract-scope.test.mjs',
+  'scripts/__tests__/m5b-runtime-inventory.test.mjs',
+  'src/shared/types/event-payloads.ts',
+  'src/main/domain/event-batch/command-plan.ts',
+  'src/main/domain/event-batch/result-registry.ts',
+  'src/main/domain/event-batch/batch-coordinator.ts',
+  'src/main/domain/event-batch/startup-recovery.ts',
+  'src/main/domain/event-batch/artifact-probe.ts',
+  'src/main/domain/event-batch/artifact-publisher.ts',
+  'src/main/domain/event-batch/artifact-recovery.ts',
+  'src/main/domain/event-batch/__tests__/artifact-probe.test.ts',
+  'src/main/domain/event-batch/__tests__/artifact-publisher.test.ts',
+  'src/main/domain/event-batch/__tests__/artifact-recovery.test.ts',
+  'src/main/application/planners/report-export-planner.ts',
+  'src/main/application/planners/__tests__/report-export-planner.test.ts',
+  'src/main/application/planners/__tests__/report-export-test-support.ts',
+  'src/main/domain/projectors/report-export-projector.ts',
+  'src/main/domain/projectors/__tests__/report-export-projector.test.ts'
+])
+
+// M5B-12 is deliberately applied after the already accepted test-only M5B-13
+// artifact slice. Its allowlist inherits that exact boundary and opens only
+// the prepared safety lifecycle surface.
+const STEP12_ALLOWED = Object.freeze([
+  ...STEP13_ALLOWED,
+  'doc/features/event-batch-v2.2-runtime-m5b12-r3-review.md',
+  'scripts/fixtures/m5b-step12-source-delta-v1.json',
+  'scripts/update-m5b-step12-fixture.mjs',
+  'scripts/lib/m5b-runtime-inventory.mjs',
+  'scripts/lib/m5b-isolated-db.mjs',
+  'scripts/verify-m5b-isolated-db.mjs',
+  'scripts/__tests__/m5b-contract-scope.test.mjs',
+  'scripts/__tests__/m5b-isolated-db.test.mjs',
+  'scripts/__tests__/m5b-runtime-inventory.test.mjs',
+  'src/shared/types/event-payloads.ts',
+  'src/main/application/planners/safety-planner.ts',
+  'src/main/application/planners/__tests__/safety-planner.test.ts',
+  'src/main/application/planners/__tests__/safety-test-support.ts',
+  'src/main/domain/projectors/safety-projector.ts',
+  'src/main/domain/projectors/__tests__/safety-projector.test.ts'
+])
+
+// M5B-14 is the single production-composition cutover.  It opens the runtime,
+// startup, IPC and renderer health boundary, while retaining the reviewed
+// prepared-domain files inherited from the earlier test-only steps.
+const STEP14_ALLOWED = Object.freeze([
+  ...STEP12_ALLOWED,
+  '.continue-here.md',
+  'doc/会话启动.md',
+  'doc/features/event-batch-v2.2-runtime-validation.md',
+  'doc/features/event-batch-v2.2-runtime-m5b14-r3-review.md',
+  'scripts/fixtures/m5b-step14-source-delta-v1.json',
+  'scripts/update-m5b-step14-fixture.mjs',
+  'scripts/lib/m5b-contract-scope.mjs',
+  'scripts/lib/m5b-runtime-inventory.mjs',
+  'scripts/lib/m5b-isolated-db.mjs',
+  'scripts/verify-m5b-isolated-db.mjs',
+  'scripts/__tests__/m5b-contract-scope.test.mjs',
+  'scripts/__tests__/m5b-isolated-db.test.mjs',
+  'scripts/__tests__/m5b-runtime-inventory.test.mjs',
+  'src/main/index.ts',
+  'src/main/db/connection.ts',
+  'src/main/db/migration-startup.ts',
+  'src/main/db/schema.sql',
+  'src/main/db/migrations.ts',
+  'src/main/db/sqlite-adapter.ts',
+  'src/main/db/__tests__/connection-event-batch.test.ts',
+  'src/main/db/__tests__/migration-startup.test.ts',
+  'src/main/application/runtime/application-runtime.ts',
+  'src/main/application/runtime/error-code-bootstrap.ts',
+  'src/main/application/services/__tests__/account-command-bus.test.ts',
+  'src/main/application/services/__tests__/assessment-command-bus.test.ts',
+  'src/main/application/services/__tests__/assignment-safety-command-bus.test.ts',
+  'src/main/application/services/__tests__/scoring-command-bus.test.ts',
+  'src/main/application/services/__tests__/training-command-bus.test.ts',
+  'src/main/application/runtime/m5b-domain-executor.ts',
+  'src/main/application/runtime/__tests__/application-runtime.test.ts',
+  'src/main/application/command/gate-only-executor.ts',
+  'src/main/application/command/gate-only-command-apply.ts',
+  'src/main/application/command/m5a-command-definitions.ts',
+  'src/main/application/planners/assignment-planner.ts',
+  'src/main/application/planners/scoring-planner.ts',
+  'src/main/application/planners/report-export-planner.ts',
+  'src/main/domain/event-batch/runtime-corruption.ts',
+  'src/main/ipc/handler-registry.ts',
+  'src/main/ipc/handlers/reports.ts',
+  'src/main/ipc/handlers/safety.ts',
+  'src/main/ipc/__tests__/handler-registry.test.ts',
+  'src/preload/index.ts',
+  'src/shared/types/command-transport.ts',
+  'src/shared/types/ipc-api.ts',
+  'src/renderer/src/stores/runtime-health.ts',
+  'src/renderer/src/stores/__tests__/runtime-health.test.ts',
+  'src/renderer/src/components/runtime-health-banner.vue',
+  'src/renderer/src/components/__tests__/runtime-health-banner.test.ts',
+  'src/renderer/src/App.vue'
+])
+
+const STEP15_ALLOWED = Object.freeze([
+  ...STEP14_ALLOWED,
+  'doc/features/event-batch-v2.2-runtime-m5b15-r3-review.md',
+  'doc/specs/baseline.yaml',
+  'doc/specs/project-invariants.md',
+  'doc/index.md',
+  'package.json',
+  'scripts/e2e/m5b-ui-smoke.mjs',
+  'scripts/e2e/m5b-native-electron.ts',
+  'scripts/verify-m5b-native-electron.mjs'
+])
+
 const NEVER_ALLOWED = Object.freeze([
   'package-lock.json'
 ])
@@ -203,6 +359,28 @@ function runGit(projectRoot, args) {
 
 function parseZeroList(buffer) {
   return buffer.toString('utf8').split('\0').filter(Boolean)
+}
+
+function parseNameStatus(buffer) {
+  const fields = parseZeroList(buffer)
+  const entries = []
+  for (let index = 0; index < fields.length; ) {
+    const status = fields[index++]
+    if (!status) throw new M5bContractScopeError('empty git name-status entry')
+    const kind = status[0]
+    if (kind === 'R' || kind === 'C') {
+      const previousPath = fields[index++]
+      const path = fields[index++]
+      if (!previousPath || !path) throw new M5bContractScopeError(`incomplete git ${kind} entry`)
+      entries.push({ status, path: previousPath })
+      entries.push({ status, path })
+      continue
+    }
+    const path = fields[index++]
+    if (!path) throw new M5bContractScopeError(`incomplete git ${kind} entry`)
+    entries.push({ status, path })
+  }
+  return entries
 }
 
 function sha256(value) {
@@ -248,6 +426,65 @@ function indexEntryKey(entry) {
   return `${entry.stage}:${entry.path}:${entry.mode}:${entry.blob}`
 }
 
+function readAcceptedCheckpoint(projectRoot, start) {
+  const checkpointPath = resolve(projectRoot, CHECKPOINT_PATH)
+  if (!existsSync(checkpointPath)) return null
+  const checkpoint = JSON.parse(readFileSync(checkpointPath, 'utf8'))
+  if (checkpoint.schema_version !== CHECKPOINT_SCHEMA_VERSION) {
+    throw new M5bContractScopeError(`invalid accepted checkpoint schema ${checkpoint.schema_version}`)
+  }
+  if (checkpoint.source_start_commit !== start.head_commit || checkpoint.checkpoint_parent !== start.head_commit) {
+    throw new M5bContractScopeError('accepted checkpoint is not bound to the frozen implementation start')
+  }
+  for (const field of ['checkpoint_commit', 'checkpoint_tree', 'source_to_checkpoint_name_status_sha256']) {
+    if (typeof checkpoint[field] !== 'string' || !checkpoint[field].trim()) {
+      throw new M5bContractScopeError(`accepted checkpoint ${field} is required`)
+    }
+  }
+  if (!Number.isSafeInteger(checkpoint.source_to_checkpoint_path_count) || checkpoint.source_to_checkpoint_path_count < 0) {
+    throw new M5bContractScopeError('accepted checkpoint source_to_checkpoint_path_count is invalid')
+  }
+
+  const tree = runGit(projectRoot, ['rev-parse', `${checkpoint.checkpoint_commit}^{tree}`]).toString('utf8').trim()
+  if (tree !== checkpoint.checkpoint_tree) throw new M5bContractScopeError('accepted checkpoint tree drifted')
+  const delta = runGit(projectRoot, ['diff', '--name-status', '-z', `${start.head_commit}..${checkpoint.checkpoint_commit}`, '--'])
+  if (sha256(delta) !== checkpoint.source_to_checkpoint_name_status_sha256) {
+    throw new M5bContractScopeError('accepted checkpoint name-status digest drifted')
+  }
+  if (parseNameStatus(delta).length !== checkpoint.source_to_checkpoint_path_count) {
+    throw new M5bContractScopeError('accepted checkpoint name-status count drifted')
+  }
+  return checkpoint
+}
+
+function compareM5bCheckpointWorktree({ projectRoot, checkpointCommit, trackedPaths, untrackedPaths, allowedPaths }) {
+  const changed = parseNameStatus(runGit(projectRoot, ['diff', '--name-status', '-z', checkpointCommit, '--']))
+  const changedPaths = new Set(changed.map((entry) => entry.path))
+  const m5bChanges = []
+  const violations = []
+  const addChange = (path, change) => {
+    if (NEVER_ALLOWED.includes(path)) {
+      violations.push({ layer: 'working-tree', path, reason: 'NEVER_ALLOWED' })
+    } else if (allowedPaths.has(path)) {
+      m5bChanges.push({ path, change })
+    } else {
+      violations.push({ layer: 'working-tree', path, reason: change === 'DELETED' ? 'BASELINE_DELETED' : change === 'ADDED' ? 'UNEXPECTED_NEW_PATH' : 'BASELINE_DRIFT' })
+    }
+  }
+  for (const entry of changed) {
+    const kind = entry.status[0]
+    addChange(entry.path, kind === 'A' ? 'ADDED' : kind === 'D' ? 'DELETED' : 'MODIFIED')
+  }
+  for (const path of untrackedPaths) {
+    if (!changedPaths.has(path)) addChange(path, 'ADDED')
+  }
+  return {
+    preserved: trackedPaths.filter((path) => !changedPaths.has(path)),
+    m5bChanges,
+    violations
+  }
+}
+
 export function allowedM5bPathsForStep(step) {
   if (!STEP_ORDER.includes(step)) throw new M5bContractScopeError(`unknown step ${step}`)
   if (step === 'M5B-1') return new Set(STEP1_ALLOWED)
@@ -259,7 +496,13 @@ export function allowedM5bPathsForStep(step) {
   if (step === 'M5B-7') return new Set(STEP7_ALLOWED)
   if (step === 'M5B-8') return new Set(STEP8_ALLOWED)
   if (step === 'M5B-9') return new Set(STEP9_ALLOWED)
-  if (!['M5B-1', 'M5B-2', 'M5B-3', 'M5B-4', 'M5B-5', 'M5B-6', 'M5B-7', 'M5B-8', 'M5B-9'].includes(step)) {
+  if (step === 'M5B-10') return new Set(STEP10_ALLOWED)
+  if (step === 'M5B-11') return new Set(STEP11_ALLOWED)
+  if (step === 'M5B-12') return new Set(STEP12_ALLOWED)
+  if (step === 'M5B-13') return new Set(STEP13_ALLOWED)
+  if (step === 'M5B-14') return new Set(STEP14_ALLOWED)
+  if (step === 'M5B-15') return new Set(STEP15_ALLOWED)
+  if (!['M5B-1', 'M5B-2', 'M5B-3', 'M5B-4', 'M5B-5', 'M5B-6', 'M5B-7', 'M5B-8', 'M5B-9', 'M5B-10', 'M5B-11', 'M5B-12', 'M5B-13', 'M5B-14', 'M5B-15'].includes(step)) {
     throw new M5bContractScopeError(`${step} scope allowlist is not implemented yet; update it in that atomic step before editing production files`)
   }
   throw new M5bContractScopeError(`unreachable scope step ${step}`)
@@ -299,6 +542,7 @@ function assertNoDefaultResolverImports(projectRoot, changedPaths) {
   const defaultResolverSymbol = ['resolve', 'Default', 'Db', 'Path'].join('')
   const defaultConnectionModule = ['src', 'main', 'db', 'connection'].join('/')
   for (const path of changedPaths) {
+    if (path === 'scripts/lib/m5b-contract-scope.mjs') continue
     if (!path.startsWith('scripts/') || !/m5b/i.test(path) || !/\.(?:mjs|js|ts)$/.test(path)) continue
     const absolutePath = resolve(projectRoot, path)
     let source
@@ -327,6 +571,7 @@ export function collectM5bContractScope({ projectRoot, step }) {
   const root = resolve(projectRoot)
   const start = JSON.parse(readFileSync(resolve(root, 'scripts/fixtures/m5b-implementation-start-v1.json'), 'utf8'))
   if (start.schema_version !== M5B_START_SCHEMA_VERSION) throw new M5bContractScopeError(`invalid start schema ${start.schema_version}`)
+  const checkpoint = readAcceptedCheckpoint(root, start)
   const allowedPaths = allowedM5bPathsForStep(step)
 
   const head = runGit(root, ['rev-parse', 'HEAD']).toString('utf8').trim()
@@ -339,23 +584,39 @@ export function collectM5bContractScope({ projectRoot, step }) {
     ...untrackedPaths.map((path) => currentEntry(root, path, 'UNTRACKED'))
   ].sort((left, right) => left.path.localeCompare(right.path))
 
-  const comparison = compareM5bWorktreeSnapshot({
-    baselineEntries: start.entries,
-    currentEntries,
-    allowedPaths
-  })
+  const comparison = checkpoint
+    ? compareM5bCheckpointWorktree({
+      projectRoot: root,
+      checkpointCommit: checkpoint.checkpoint_commit,
+      trackedPaths,
+      untrackedPaths,
+      allowedPaths
+    })
+    : compareM5bWorktreeSnapshot({
+      baselineEntries: start.entries,
+      currentEntries,
+      allowedPaths
+    })
   const violations = [...comparison.violations]
 
-  if (head !== start.head_commit) violations.push({ layer: 'committed', path: 'HEAD', reason: `${start.head_commit}->${head}` })
+  const baselineHead = checkpoint?.checkpoint_commit ?? start.head_commit
+  if (head !== baselineHead) violations.push({ layer: 'committed', path: 'HEAD', reason: `${baselineHead}->${head}` })
   if (branch !== start.branch) violations.push({ layer: 'committed', path: 'BRANCH', reason: `${start.branch}->${branch}` })
 
-  const startIndexKeys = start.index_entries.map(indexEntryKey)
-  const currentIndexKeys = currentIndex.map(indexEntryKey)
-  if (startIndexKeys.length !== currentIndexKeys.length || startIndexKeys.some((value, index) => value !== currentIndexKeys[index])) {
-    const startSet = new Set(startIndexKeys)
-    const currentSet = new Set(currentIndexKeys)
-    for (const value of startIndexKeys.filter((entry) => !currentSet.has(entry))) violations.push({ layer: 'index', path: value, reason: 'INDEX_BASELINE_MISSING' })
-    for (const value of currentIndexKeys.filter((entry) => !startSet.has(entry))) violations.push({ layer: 'index', path: value, reason: 'INDEX_UNEXPECTED' })
+  if (checkpoint) {
+    const checkpointIndexStatus = runGit(root, ['diff', '--cached', '--name-status', checkpoint.checkpoint_commit, '--']).toString('utf8').trim()
+    if (checkpointIndexStatus) {
+      for (const entry of checkpointIndexStatus.split('\n')) violations.push({ layer: 'index', path: entry, reason: 'INDEX_UNEXPECTED' })
+    }
+  } else {
+    const startIndexKeys = start.index_entries.map(indexEntryKey)
+    const currentIndexKeys = currentIndex.map(indexEntryKey)
+    if (startIndexKeys.length !== currentIndexKeys.length || startIndexKeys.some((value, index) => value !== currentIndexKeys[index])) {
+      const startSet = new Set(startIndexKeys)
+      const currentSet = new Set(currentIndexKeys)
+      for (const value of startIndexKeys.filter((entry) => !currentSet.has(entry))) violations.push({ layer: 'index', path: value, reason: 'INDEX_BASELINE_MISSING' })
+      for (const value of currentIndexKeys.filter((entry) => !startSet.has(entry))) violations.push({ layer: 'index', path: value, reason: 'INDEX_UNEXPECTED' })
+    }
   }
 
   violations.push(...assertNoDefaultResolverImports(root, comparison.m5bChanges.map((entry) => entry.path)))
@@ -365,10 +626,11 @@ export function collectM5bContractScope({ projectRoot, step }) {
     step,
     head,
     branch,
-    startHead: start.head_commit,
+    startHead: baselineHead,
     startBranch: start.branch,
-    committedStatus: runGit(root, ['diff', '--name-status', `${start.head_commit}..HEAD`, '--']).toString('utf8').trim(),
-    indexStatus: runGit(root, ['diff', '--cached', '--name-status', start.head_commit, '--']).toString('utf8').trim(),
+    checkpointHead: checkpoint?.checkpoint_commit ?? null,
+    committedStatus: runGit(root, ['diff', '--name-status', `${baselineHead}..HEAD`, '--']).toString('utf8').trim(),
+    indexStatus: runGit(root, ['diff', '--cached', '--name-status', baselineHead, '--']).toString('utf8').trim(),
     workingStatus: runGit(root, ['status', '--short', '--untracked-files=all']).toString('utf8').trim(),
     preservedCount: comparison.preserved.length,
     m5bChanges: comparison.m5bChanges,

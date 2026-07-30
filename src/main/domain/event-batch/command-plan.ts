@@ -48,6 +48,13 @@ export interface CommandPlanV1 {
   readonly resultRecipeVersion: string
   readonly events: readonly EventIntentV1[]
   readonly operationalEffects: readonly OperationalEffectDescriptorV1[]
+  /**
+   * Effects that must run after PREPARE fsync but before SQLite APPLY. They are
+   * derived from frozen EVENT facts and therefore remain safe to repeat during
+   * startup recovery. This is intentionally distinct from transaction-bound
+   * operationalEffects.
+   */
+  readonly preApplyEffects?: readonly OperationalEffectDescriptorV1[]
   readonly noOpResult: Readonly<Record<string, CanonicalJsonValue>> | null
 }
 
@@ -185,8 +192,12 @@ function eventIntent(value: unknown, index: number): EventIntentV1 {
   }
 }
 
-function operationalEffect(value: unknown, index: number): OperationalEffectDescriptorV1 {
-  const field = `$.operationalEffects[${index}]`
+function operationalEffect(
+  value: unknown,
+  index: number,
+  collection = 'operationalEffects'
+): OperationalEffectDescriptorV1 {
+  const field = `$.${collection}[${index}]`
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     throw new CommandPlanError('operational effect must be an object', field)
   }
@@ -226,6 +237,9 @@ export function freezeCommandPlan(value: CommandPlanV1, envelope: CommandEnvelop
   if (!Array.isArray(value.operationalEffects)) {
     throw new CommandPlanError('operationalEffects must be an array', '$.operationalEffects')
   }
+  if (value.preApplyEffects !== undefined && !Array.isArray(value.preApplyEffects)) {
+    throw new CommandPlanError('preApplyEffects must be an array', '$.preApplyEffects')
+  }
   const events = value.events.map(eventIntent)
   const eventIds = new Set(events.map((event) => event.eventId))
   if (eventIds.size !== events.length) throw new CommandPlanError('event IDs must be unique', '$.events')
@@ -241,20 +255,32 @@ export function freezeCommandPlan(value: CommandPlanV1, envelope: CommandEnvelop
       throw new CommandPlanError('EVENT actor does not match durable command actor', `$.events[${index}].actorId`)
     }
   }
-  const effects = value.operationalEffects.map(operationalEffect)
-  const effectKeys = new Set<string>()
-  for (const [index, effect] of effects.entries()) {
-    const event = events.find((candidate) => candidate.eventId === effect.sourceEventId)
-    if (!event || event.eventType !== effect.eventType) {
-      throw new CommandPlanError('operational effect is not derived from a planned EVENT', `$.operationalEffects[${index}]`)
+  const effects = value.operationalEffects.map((effect, index) => operationalEffect(effect, index))
+  const preApplyEffects = (value.preApplyEffects ?? []).map((effect, index) =>
+    operationalEffect(effect, index, 'preApplyEffects')
+  )
+  const validateEffects = (
+    candidates: readonly OperationalEffectDescriptorV1[],
+    collection: 'operationalEffects' | 'preApplyEffects'
+  ) => {
+    const effectKeys = new Set<string>()
+    for (const [index, effect] of candidates.entries()) {
+      const event = events.find((candidate) => candidate.eventId === effect.sourceEventId)
+      if (!event || event.eventType !== effect.eventType) {
+        throw new CommandPlanError('operational effect is not derived from a planned EVENT', `$.${collection}[${index}]`)
+      }
+      const key = `${effect.sourceEventId}\u0000${effect.effectType}\u0000${effect.effectVersion}`
+      if (effectKeys.has(key)) {
+        throw new CommandPlanError('operational effect descriptor is duplicated', `$.${collection}[${index}]`)
+      }
+      effectKeys.add(key)
     }
-    const key = `${effect.sourceEventId}\u0000${effect.effectType}\u0000${effect.effectVersion}`
-    if (effectKeys.has(key)) throw new CommandPlanError('operational effect descriptor is duplicated', `$.operationalEffects[${index}]`)
-    effectKeys.add(key)
   }
+  validateEffects(effects, 'operationalEffects')
+  validateEffects(preApplyEffects, 'preApplyEffects')
   let noOpResult: Readonly<Record<string, CanonicalJsonValue>> | null = null
   if (events.length === 0) {
-    if (effects.length !== 0) throw new CommandPlanError('no-op plan cannot have operational effects')
+    if (effects.length !== 0 || preApplyEffects.length !== 0) throw new CommandPlanError('no-op plan cannot have operational effects')
     const cloned = canonicalClone(value.noOpResult as CanonicalJsonValue)
     if (typeof cloned !== 'object' || cloned === null || Array.isArray(cloned) || typeof cloned.success !== 'boolean') {
       throw new CommandPlanError('no-op plan requires an object result with boolean success', '$.noOpResult')
@@ -271,6 +297,7 @@ export function freezeCommandPlan(value: CommandPlanV1, envelope: CommandEnvelop
     resultRecipeVersion,
     events,
     operationalEffects: effects,
+    preApplyEffects,
     noOpResult
   })
 }

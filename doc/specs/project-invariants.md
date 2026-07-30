@@ -58,6 +58,46 @@ action_log.jsonl append → domain_event_projection persist → reducer/projecto
 - `src/main/domain/__tests__/training-reducer.test.ts`
 - `src/main/domain/__tests__/recovery.test.ts`
 
+### INV-EVT-004 已受理命令只能产生一个确定结果
+
+状态：VERIFIED
+
+每个 `(client_instance_id, idempotency_key)` 只对应一个 request hash 和一个 durable `SUCCEEDED` 或 `FAILED` 结果。重放必须返回已持久化的公开结果；同 key 不同请求必须拒绝，不能覆盖历史命令或重复执行业务副作用。
+
+证据：
+
+- `src/main/application/command/durable-command-coordinator.ts`
+- `src/main/application/command/durable-command-store.ts`
+- `src/main/application/command/__tests__/durable-command-coordinator.test.ts`
+- `src/main/db/schema.sql` 中 `ux_command_idempotency`
+
+### INV-EVT-005 已准备批次只能由冻结事件恢复
+
+状态：VERIFIED
+
+事件批次在 durable PREPARE 后发生重启或租约交接时，恢复路径只可读取持久化的 batch/EVENT 事实并继续 APPLY 或进入只读故障状态；不得重新调用 planner、使用当前业务资料重新计算，或产生第二个 batch。
+
+证据：
+
+- `src/main/domain/event-batch/startup-recovery.ts`
+- `src/main/domain/event-batch/batch-coordinator.ts`
+- `src/main/domain/event-batch/__tests__/startup-recovery.test.ts`
+- `src/main/domain/event-batch/__tests__/fault-matrix.test.ts`
+
+### INV-EVT-006 生产 mutation 只能走 v2 批次边界
+
+状态：VERIFIED
+
+生产 IPC mutation 必须经过 durable command coordinator 与 v2 batch/gate executor；不得重新接入 legacy JSONL writer。为保持既有行为而保留的 legacy service 仅可在隔离的 planning clone 中作为事实来源，不能获得 production 写入能力或成为运行时 mutation writer。
+
+证据：
+
+- `src/main/application/runtime/application-runtime.ts`
+- `src/main/application/runtime/m5b-domain-executor.ts`
+- `src/main/ipc/handler-registry.ts`
+- `scripts/lib/m5b-runtime-inventory.mjs`
+- `scripts/__tests__/m5b-runtime-inventory.test.mjs`
+
 ## 安全红线与权限
 
 ### INV-SAFE-001 先熔断后归因

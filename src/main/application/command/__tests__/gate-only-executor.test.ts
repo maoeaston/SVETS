@@ -268,7 +268,7 @@ describe('M5B-7 gate-only executor', () => {
       commandType: 'auth:createTeacherAccount',
       rawInput: { username: 'must_not_create', password: 'teacher-password', displayName: '禁止创建' },
       transport: { source: 'IPC', transportId: 'revoked-actor' }, transportMetadata: metadata(clientInstanceId)
-    })).rejects.toMatchObject({ code: 'INVALID_ACTOR' })
+    })).rejects.toMatchObject({ reason: 'INVALID_ACTOR' })
     expect(database.prepare("SELECT COUNT(*) AS count FROM user_account WHERE username = 'must_not_create'").get())
       .toMatchObject({ count: 0 })
     database.close()

@@ -40,6 +40,18 @@ export interface PreparedOperationalEffectV1 {
   assertApplied(context: PreparedProjectorContext): void
 }
 
+/**
+ * A pre-APPLY effect is intentionally outside the SQLite projection
+ * transaction. It may only depend on frozen EVENT facts and must be safe to
+ * repeat after a PONR restart.
+ */
+export interface PreparedPreApplyEffectV1 {
+  readonly effectType: string
+  readonly effectVersion: number
+  ensurePrepared(context: PreparedProjectorContext): void
+  assertPrepared(context: PreparedProjectorContext): void
+}
+
 export interface PreparedEventRegistrationV1 {
   readonly eventType: string
   readonly eventPayloadVersion: number
@@ -48,6 +60,7 @@ export interface PreparedEventRegistrationV1 {
   project(context: PreparedProjectorContext): void
   assertProjected(context: PreparedProjectorContext): void
   readonly operationalEffects: readonly PreparedOperationalEffectV1[]
+  readonly preApplyEffects?: readonly PreparedPreApplyEffectV1[]
 }
 
 export interface PreparedResultRecipeV1 {
@@ -168,6 +181,23 @@ export class PreparedFactRegistry {
       }
       effectKeys.add(key)
     }
+    const preApplyEffects = registration.preApplyEffects ?? []
+    if (!Array.isArray(preApplyEffects)) {
+      throw new PreparedFactRegistryError('PAYLOAD_INVALID', 'preApplyEffects must be an array')
+    }
+    const preApplyEffectKeys = new Set<string>()
+    for (const effect of preApplyEffects) {
+      const effectType = text(effect.effectType, 'preApply.effectType', true)
+      const effectVersion = positiveInteger(effect.effectVersion, 'preApply.effectVersion')
+      if (typeof effect.ensurePrepared !== 'function' || typeof effect.assertPrepared !== 'function') {
+        throw new PreparedFactRegistryError('PAYLOAD_INVALID', 'pre-APPLY effect handlers are required')
+      }
+      const key = `${effectType}\u0000${effectVersion}`
+      if (preApplyEffectKeys.has(key)) {
+        throw new PreparedFactRegistryError('DUPLICATE_REGISTRATION', `duplicate pre-APPLY effect ${key}`)
+      }
+      preApplyEffectKeys.add(key)
+    }
     const key = eventKey(eventType, eventPayloadVersion)
     if (this.events.has(key)) {
       throw new PreparedFactRegistryError('DUPLICATE_REGISTRATION', `duplicate EVENT registration ${key}`)
@@ -178,6 +208,12 @@ export class PreparedFactRegistry {
       apply: effect.apply,
       assertApplied: effect.assertApplied
     })))
+    const frozenPreApplyEffects = Object.freeze(preApplyEffects.map((effect) => Object.freeze({
+      effectType: effect.effectType,
+      effectVersion: effect.effectVersion,
+      ensurePrepared: effect.ensurePrepared,
+      assertPrepared: effect.assertPrepared
+    })))
     this.events.set(key, Object.freeze({
       eventType,
       eventPayloadVersion,
@@ -185,7 +221,8 @@ export class PreparedFactRegistry {
       validatePayload: registration.validatePayload,
       project: registration.project,
       assertProjected: registration.assertProjected,
-      operationalEffects
+      operationalEffects,
+      preApplyEffects: frozenPreApplyEffects
     }))
     return this
   }
@@ -300,6 +337,19 @@ export class PreparedFactRegistry {
     return Object.freeze(descriptors)
   }
 
+  derivedPreApplyEffects(batch: PreparedBatchSource): readonly OperationalEffectDescriptorV1[] {
+    const descriptors = batch.events.flatMap((event) => {
+      const registration = this.eventRegistration(event)
+      return (registration.preApplyEffects ?? []).map((effect) => Object.freeze({
+        sourceEventId: event.record.event_id,
+        eventType: event.record.event_type,
+        effectType: effect.effectType,
+        effectVersion: effect.effectVersion
+      }))
+    })
+    return Object.freeze(descriptors)
+  }
+
   assertOperationalEffectView(
     planned: readonly OperationalEffectDescriptorV1[],
     batch: PreparedBatchSource
@@ -311,10 +361,29 @@ export class PreparedFactRegistry {
     }
   }
 
+  assertPreApplyEffectView(
+    planned: readonly OperationalEffectDescriptorV1[],
+    batch: PreparedBatchSource
+  ): void {
+    const actual = exactDescriptorSet(planned)
+    const expected = exactDescriptorSet(this.derivedPreApplyEffects(batch))
+    if (actual.length !== expected.length || actual.some((entry, index) => entry !== expected[index])) {
+      throw new PreparedFactRegistryError('EFFECT_VIEW_CONFLICT', 'pre-APPLY effect view is not prepared-EVENT-derived')
+    }
+  }
+
   applyEvent(context: PreparedProjectorContext): void {
     const registration = this.eventRegistration(context.event)
     registration.project(context)
     for (const effect of registration.operationalEffects) effect.apply(context)
+  }
+
+  ensurePreApplyEffects(context: PreparedProjectorContext): void {
+    const registration = this.eventRegistration(context.event)
+    for (const effect of registration.preApplyEffects ?? []) {
+      effect.ensurePrepared(context)
+      effect.assertPrepared(context)
+    }
   }
 
   projectorContext(input: Readonly<{

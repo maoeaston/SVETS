@@ -217,7 +217,8 @@ export class DurableCommandCoordinator {
     try {
       assertNoTrustedEnvelopeOverrides(request.rawInput)
       input = definition.validateStructure(request.rawInput)
-    } catch {
+    } catch (error) {
+      if (error instanceof CommandPreflightError) throw error
       throw new DurableCommandCoordinatorError('INVALID_PAYLOAD', 'business structure is invalid')
     }
 
@@ -243,6 +244,7 @@ export class DurableCommandCoordinator {
       actor = await definition.resolveActor(request.transport, input)
       assertActorPolicy(actor, definition as unknown as AnyMutationCommandDefinition)
     } catch (error) {
+      if (error instanceof CommandPreflightError) throw error
       if (error instanceof DurableCommandCoordinatorError) throw error
       throw new DurableCommandCoordinatorError('INVALID_ACTOR', 'actor validation failed')
     }
@@ -258,7 +260,8 @@ export class DurableCommandCoordinator {
         normalizedBusinessInput,
         contract: contract.requestHash
       })
-    } catch {
+    } catch (error) {
+      if (error instanceof CommandPreflightError) throw error
       throw new DurableCommandCoordinatorError('INVALID_PAYLOAD', 'normalized business input is invalid')
     }
 
@@ -295,9 +298,7 @@ export class DurableCommandCoordinator {
         '$.payload'
       )
     } catch (error) {
-      if (error instanceof CommandPreflightError) {
-        throw new DurableCommandCoordinatorError('INVALID_PAYLOAD', 'target or payload preflight failed')
-      }
+      if (error instanceof CommandPreflightError) throw error
       throw new DurableCommandCoordinatorError('INVALID_PAYLOAD', 'target or payload resolution failed')
     }
 

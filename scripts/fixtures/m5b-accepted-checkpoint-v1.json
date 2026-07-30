@@ -1,0 +1,9 @@
+{
+  "schema_version": "m5b-accepted-checkpoint-v1",
+  "source_start_commit": "40541c82ef374f28ce300365e0e5cc82423dd99a",
+  "checkpoint_parent": "40541c82ef374f28ce300365e0e5cc82423dd99a",
+  "checkpoint_commit": "9a0cbb6dcd11fc952e8a1dec9975950d1de424fc",
+  "checkpoint_tree": "bf7cc90b54ffa76846849448ca6341cc29200eec",
+  "source_to_checkpoint_name_status_sha256": "4c541348957376eccb1439c2fb93ba0693cfa2c3c96fd740b1528be3674c0044",
+  "source_to_checkpoint_path_count": 266
+}

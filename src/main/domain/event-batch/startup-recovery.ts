@@ -325,6 +325,22 @@ function commandForSource(store: DurableCommandStore, source: PreparedBatchSourc
   return row
 }
 
+function ensurePreparedPreApplyEffects(options: {
+  database: DBAdapter
+  registry: PreparedFactRegistry
+  command: DurableCommandRow
+  source: PreparedBatchSource
+}): void {
+  for (const event of options.source.events) {
+    options.registry.ensurePreApplyEffects(options.registry.projectorContext({
+      database: options.database,
+      command: options.command,
+      batch: options.source,
+      event
+    }))
+  }
+}
+
 function recoveryLease(options: {
   store: DurableCommandStore
   source: PreparedBatchSource
@@ -511,6 +527,12 @@ export class StartupRecovery {
           if (command.status === 'SUCCEEDED' && row.batch_status !== 'CONFIRMED') {
             throw new StartupRecoveryError('COMMAND_STATE_CONFLICT', 'SUCCEEDED command owns a non-confirmed batch')
           }
+          ensurePreparedPreApplyEffects({
+            database: this.database,
+            registry: this.registry,
+            command,
+            source
+          })
           if (row.batch_status === 'APPLIED') {
             applyPreparedBatch({
               database: this.database,
@@ -570,6 +592,12 @@ export class StartupRecovery {
             source,
             workerId: this.workerId,
             now: nowIso(this.clock)
+          })
+          ensurePreparedPreApplyEffects({
+            database: this.database,
+            registry: this.registry,
+            command,
+            source
           })
           this.fault?.hit('BEFORE_APPLY', { commandId: command.commandId, batchId: source.prepared.batch_id })
           applyPreparedBatch({

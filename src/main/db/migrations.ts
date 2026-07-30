@@ -604,10 +604,6 @@ const M3_TRIGGER_SQL_BY_NAME = triggerSqlByName(M3_TRIGGER_SQL)
 const FUTURE_MULTI_DEVICE_TABLES = [
   'learning_session',
   'learning_progress',
-  'command_log',
-  'applied_event_batch',
-  'processed_event',
-  'projector_cursor',
   'backup_manifest',
   'session_invalidation_record',
   'correction_record',

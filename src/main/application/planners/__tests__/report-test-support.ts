@@ -25,6 +25,7 @@ import type { EventBatchFaultInjector } from '../../../domain/event-batch/fault-
 import { DurableFileCapability } from '../../../domain/event-batch/file-capability'
 import { RuntimeCorruptionState } from '../../../domain/event-batch/runtime-corruption'
 import { FairWriterMutex } from '../../../domain/event-batch/writer-mutex'
+import type { PreparedFactRegistry } from '../../../domain/event-batch/result-registry'
 import { ReportService } from '../../../domain/report-service'
 import { TaskClosureService } from '../../../domain/task-closure-service'
 import { registerM5bReportAndClosurePreparedFacts } from '../../../domain/projectors/task-closure-projector'
@@ -60,6 +61,7 @@ export interface ReportBatchHarness {
 export async function createReportBatchHarness(options: Readonly<{
   faultInjector?: EventBatchFaultInjector
   root?: string
+  registry?: PreparedFactRegistry
 }> = {}): Promise<ReportBatchHarness> {
   const ownsRoot = options.root === undefined
   const root = options.root ?? mkdtempSync(join(tmpdir(), 'svets-m5b-report-'))
@@ -67,7 +69,8 @@ export async function createReportBatchHarness(options: Readonly<{
   database.exec(EVENT_BATCH_SCHEMA_SQL)
   const store = new DurableCommandStore(database)
   const capability = new DurableFileCapability(root)
-  const registry = registerM5bReportAndClosurePreparedFacts().seal()
+  const registry = options.registry ?? registerM5bReportAndClosurePreparedFacts().seal()
+  if (!registry.isSealed()) throw new Error('report batch harness requires a sealed prepared registry')
   const coordinator = new EventBatchCoordinator({
     database,
     commandStore: store,

@@ -33,7 +33,6 @@ import {
   type ApplicationRuntime,
   type RuntimeScheduler
 } from '../../runtime/application-runtime'
-import type { ReportMutationPort } from '../../../domain/report-command-coordinator'
 import {
   clearAuthSessionBinding,
   hasAuthSessionBinding,
@@ -64,15 +63,6 @@ class InertScheduler implements RuntimeScheduler {
   clearInterval(): void {}
 }
 
-function inertReportPort(): ReportMutationPort {
-  return Object.freeze({
-    writeEvent() {
-      throw new Error('inert report port')
-    },
-    recoverPending() {}
-  })
-}
-
 const databases: MemoryAdapter[] = []
 const runtimes: ApplicationRuntime[] = []
 const senderIds = new Set<number>()
@@ -89,7 +79,6 @@ async function createRuntime(): Promise<{
     dataRoot: `/tmp/svets-m5a5-account-${uuidv4()}`,
     dependencies: {
       prepareDirectory: () => undefined,
-      createLegacyMutationPort: inertReportPort,
       scheduler: new InertScheduler()
     }
   })
@@ -125,7 +114,16 @@ function bindUser(
 function requireHandler(channel: string) {
   const handler = electronState.handlers.get(channel)
   if (!handler) throw new Error(`missing test IPC handler: ${channel}`)
-  return handler
+  return (event: unknown, rawInput?: unknown) => (handler as unknown as (
+    event: unknown,
+    input?: unknown,
+    transportMetadata?: unknown
+  ) => Promise<unknown>)(event, rawInput, {
+    schemaVersion: 1,
+    clientInstanceId: uuidv4(),
+    idempotencyKey: uuidv4(),
+    deviceId: null
+  })
 }
 
 beforeEach(() => {

@@ -2,15 +2,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { v4 as uuidv4 } from 'uuid'
 import { createTestDb, seedCaller } from '../../../db/test-helpers'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
-import type { ReportMutationPort } from '../../../domain/report-command-coordinator'
 import {
   hasAuthSessionBinding,
   issuePasswordAuthSession,
   replaceSenderAuthSession
 } from '../../../utils/auth-session'
-import { createJobSkillReportAutomation } from '../../../ipc/handlers/job-skill-report'
-import { createReportsApplicationService } from '../../services/reports-service'
-import { createSafetyReportAutomation } from '../../services/safety-service'
 import {
   createApplicationRuntime,
   startApplicationRuntime,
@@ -35,13 +31,6 @@ class FakeScheduler implements RuntimeScheduler {
   }
 }
 
-const inertReportPort = (): ReportMutationPort => Object.freeze({
-  writeEvent() {
-    throw new Error('test report port is inert')
-  },
-  recoverPending() {}
-})
-
 const runtimes: ApplicationRuntime[] = []
 const databases: MemoryAdapter[] = []
 
@@ -57,7 +46,6 @@ function runtimeOptions(db: MemoryAdapter, dataRoot = `/tmp/svets-runtime-${uuid
     dataRoot,
     dependencies: {
       prepareDirectory: () => undefined,
-      createLegacyMutationPort: inertReportPort,
       scheduler: new FakeScheduler()
     }
   }
@@ -73,7 +61,7 @@ describe('application runtime startup boundary', () => {
     const db = await testDb()
     const dataRoot = `/tmp/svets-runtime-seed-${uuidv4()}`
     const order: string[] = []
-    const first = startApplicationRuntime({
+    const first = await startApplicationRuntime({
       runtime: runtimeOptions(db, dataRoot),
       registerBoundary(runtime) {
         order.push('register')
@@ -96,7 +84,7 @@ describe('application runtime startup boundary', () => {
     const countAfterFirst = (db.prepare('SELECT COUNT(*) AS count FROM error_code_registry').get() as { count: number }).count
 
     first.dispose()
-    const second = startApplicationRuntime({
+    const second = await startApplicationRuntime({
       runtime: runtimeOptions(db, dataRoot),
       registerBoundary: () => undefined
     })
@@ -109,7 +97,7 @@ describe('application runtime startup boundary', () => {
     const db = await testDb()
     const dataRoot = `/tmp/svets-runtime-seed-failure-${uuidv4()}`
     const registerBoundary = vi.fn()
-    expect(() => startApplicationRuntime({
+    await expect(startApplicationRuntime({
       runtime: {
         ...runtimeOptions(db, dataRoot),
         dependencies: {
@@ -120,7 +108,7 @@ describe('application runtime startup boundary', () => {
         }
       },
       registerBoundary
-    })).toThrow('injected seed failure')
+    })).rejects.toThrow('injected seed failure')
     expect(registerBoundary).not.toHaveBeenCalled()
 
     const recovered = createApplicationRuntime({
@@ -138,7 +126,7 @@ describe('application runtime startup boundary', () => {
     const db = await testDb()
     const seed = vi.fn()
     const callbackState: { firstIpc?: () => string } = {}
-    const runtime = startApplicationRuntime({
+    const runtime = await startApplicationRuntime({
       runtime: {
         ...runtimeOptions(db),
         dependencies: {
@@ -190,25 +178,6 @@ describe('application runtime startup boundary', () => {
 })
 
 describe('application runtime ownership and disposal', () => {
-  it('shares one report coordinator with reports, safety, and job-skill automation', async () => {
-    const db = await testDb()
-    const runtime = createApplicationRuntime({
-      ...runtimeOptions(db),
-      dependencies: {
-        ...runtimeOptions(db).dependencies,
-        bootstrapErrorCodes: () => undefined
-      }
-    })
-    runtimes.push(runtime)
-
-    expect(createSafetyReportAutomation(db, runtime.reportCoordinator).coordinator)
-      .toBe(runtime.reportCoordinator)
-    expect(createJobSkillReportAutomation(db, runtime.reportCoordinator).coordinator)
-      .toBe(runtime.reportCoordinator)
-    expect(createReportsApplicationService(db, runtime.reportCoordinator).coordinator)
-      .toBe(runtime.reportCoordinator)
-  })
-
   it('renderer destruction and dispose clear only runtime-owned bindings and stop the timer', async () => {
     const db = await testDb()
     const scheduler = new FakeScheduler()

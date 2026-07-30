@@ -1,5 +1,5 @@
 -- ============================================================================
--- 炫灿-职途向导系统 MVP schema.sql v0.1.17-multi-device-m4-safety-rekey
+-- 炫灿-职途向导系统 MVP schema.sql v0.1.18-event-batch-v2.2
 -- Architecture baseline:
 --   1. Lightweight event sourcing + SQLite projection.
 --   2. action_log.jsonl is the source of truth; SQLite is a query snapshot.
@@ -13,8 +13,15 @@
 --  10. task_report + asset_resource support report snapshots and local asset integrity.
 --  11. question_bank supports bank_domain isolation (BASE_ABILITY / JOB_SPECIFIC).
 --  12. JOB_SKILL_ASSESSMENT strategy supports fixed demo paper with M1-M6 modules.
+--  13. M5B v2.2 durable command ledger and event-batch apply cursors are the
+--      production write/recovery boundary; action_log.jsonl is sealed legacy input.
 -- ----------------------------------------------------------------------------
 -- Merged from v0.1.10-scoring-closure + PRD v1.0.7 + v1.0.8 + v1.0.9.
+-- M5B v0.1.18 patch notes:
+--   1. command_log makes mutation idempotency, leases, attempts and public
+--      completion results durable.
+--   2. applied_event_batch, processed_event and projector_cursor make v2
+--      prepare/apply/recovery progress independently verifiable.
 -- v0.1.15 patch notes (multi-device M3 — grant assignment foundation):
 --   Ref: doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md §6.2, §6.3, §7.5 D1/D9-D11
 --   1. assessment_session.delivery_phase now includes ASSIGNED and STUDENT_CONFIRMED.
@@ -2409,6 +2416,78 @@ INSERT OR IGNORE INTO strategy_config (
   1, 1, 1, 1, 1
 );
 
+-- ----------------------------------------------------------------------------
+-- 19. M5B v2.2 durable command ledger and event-batch apply cursors
+-- ----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS command_log (
+  command_id          TEXT PRIMARY KEY,
+  idempotency_key     TEXT NOT NULL,
+  client_instance_id  TEXT NOT NULL,
+  command_type        TEXT NOT NULL,
+  actor_id            TEXT NOT NULL,
+  device_id           TEXT,
+  auth_session_id     TEXT,
+  request_hash        TEXT NOT NULL,
+  event_batch_id      TEXT,
+  status              TEXT NOT NULL DEFAULT 'PENDING'
+                       CHECK (status IN ('PENDING','PROCESSING','SUCCEEDED','FAILED')),
+  result_json         TEXT CHECK (result_json IS NULL OR json_valid(result_json)),
+  error_code          TEXT,
+  error_message       TEXT,
+  lease_owner         TEXT,
+  current_lease_generation INTEGER NOT NULL DEFAULT 0,
+  lease_expires_at    TEXT,
+  worker_id           TEXT,
+  attempt_count       INTEGER NOT NULL DEFAULT 0,
+  last_attempt_at     TEXT,
+  max_attempts        INTEGER NOT NULL DEFAULT 3,
+  created_at          TEXT NOT NULL DEFAULT (datetime('now')),
+  completed_at        TEXT,
+  updated_at          TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS applied_event_batch (
+  batch_id            TEXT PRIMARY KEY,
+  batch_sequence      INTEGER NOT NULL UNIQUE,
+  segment_id          TEXT NOT NULL,
+  command_id          TEXT,
+  event_count         INTEGER NOT NULL CHECK (event_count >= 1),
+  previous_batch_hash TEXT NOT NULL,
+  events_hash         TEXT NOT NULL,
+  batch_hash          TEXT NOT NULL,
+  prepared_lease_generation INTEGER NOT NULL DEFAULT 0,
+  worker_id           TEXT,
+  jsonl_offset_start  INTEGER NOT NULL,
+  jsonl_offset_end    INTEGER NOT NULL,
+  batch_status        TEXT NOT NULL DEFAULT 'APPLIED'
+                       CHECK (batch_status IN ('APPLIED','CONFIRMED')),
+  applied_at          TEXT NOT NULL DEFAULT (datetime('now')),
+  confirmed_at        TEXT
+);
+
+CREATE TABLE IF NOT EXISTS processed_event (
+  event_id            TEXT PRIMARY KEY,
+  batch_id            TEXT NOT NULL REFERENCES applied_event_batch(batch_id),
+  event_type          TEXT NOT NULL,
+  aggregate_type      TEXT NOT NULL,
+  aggregate_id        TEXT NOT NULL,
+  processed_at        TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS projector_cursor (
+  projector_name      TEXT PRIMARY KEY,
+  last_batch_id       TEXT NOT NULL,
+  last_batch_sequence INTEGER NOT NULL,
+  updated_at          TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_command_idempotency
+  ON command_log(client_instance_id, idempotency_key);
+CREATE INDEX IF NOT EXISTS idx_applied_event_batch_segment
+  ON applied_event_batch(segment_id, batch_sequence);
+CREATE INDEX IF NOT EXISTS idx_processed_event_batch ON processed_event(batch_id);
+
 -- Record the baseline only after every table, index, trigger, and seed above succeeded.
 INSERT OR IGNORE INTO schema_migration (
   migration_id, schema_version, description
@@ -2452,8 +2531,13 @@ INSERT OR IGNORE INTO schema_migration (
   '2026-07-27_mvp_schema_v0_1_17_multi_device_m4_safety_rekey',
   '0.1.17-multi-device-m4-safety-rekey',
   'M4: re-key safety aggregation from student/task to student/job/task'
+),
+(
+  '2026-07-29_mvp_schema_v0_1_18_event_batch_v2_2',
+  '0.1.18-event-batch-v2.2',
+  'M5B: durable command ledger and event batch apply cursors'
 );
 
 -- ============================================================================
--- End of schema.sql v0.1.17-multi-device-m4-safety-rekey
+-- End of schema.sql v0.1.18-event-batch-v2.2
 -- ============================================================================

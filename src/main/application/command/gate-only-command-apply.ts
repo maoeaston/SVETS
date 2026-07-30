@@ -19,10 +19,11 @@ import {
   bindPersistentAuthSessionToSender,
   boundAuthSessionIdForSender,
   clearPersistentAuthSessionBindingIfMatches,
+  heartbeatAcceptedAuthSession,
   revokeAuthSessionById
 } from '../../utils/auth-session'
 import type { CanonicalJsonValue } from '../../domain/event-batch/canonical-json'
-import type { CommandActor, CommandEnvelopeV2 } from './command-types'
+import type { AcceptedCommandContext, CommandActor, CommandEnvelopeV2 } from './command-types'
 import type { M5bGateOnlyCommandType } from './gate-only-executor'
 
 const EXTERNAL_IMMEDIATE = { transactionScope: 'EXTERNAL_IMMEDIATE' } as const
@@ -67,6 +68,10 @@ export function applyGateOnlyCommand(
   envelope: CommandEnvelopeV2,
   options: GateOnlyApplyOptions = {}
 ): object {
+  if (envelope.actor.kind === 'USER') {
+    // GateOnlyExecutor invokes this only after durable acceptance and lease validation.
+    heartbeatAcceptedAuthSession(database, { envelope } as unknown as AcceptedCommandContext)
+  }
   switch (envelope.commandType as M5bGateOnlyCommandType) {
     case 'auth:createTeacherAccount':
       return createTeacherAccount(database, userParams(envelope) as never)

@@ -141,6 +141,65 @@ describe('M5B isolated schema verification', () => {
     expect(existsSync(result.paths.runRoot)).toBe(false)
   })
 
+  it('publishes and rebuilds a frozen report artifact without overwriting an external target', async () => {
+    const result = await runM5bIsolatedDatabaseVerification({ stage: 'artifact' })
+    expect(result).toMatchObject({
+      ok: true,
+      stage: 'artifact',
+      artifact: {
+        probeClean: true,
+        published: true,
+        rebuilt: true,
+        externalTargetPreserved: true
+      },
+      storage: {
+        capability: { supported: true },
+        index: { status: 'CURRENT' }
+      },
+      cleaned: true
+    })
+    expect(existsSync(result.paths.runRoot)).toBe(false)
+  })
+
+  it('runs one redline event through native M4 safety triggers and persists its prepared projection', async () => {
+    const result = await runM5bIsolatedDatabaseVerification({ stage: 'safety' })
+    expect(result).toMatchObject({
+      ok: true,
+      stage: 'safety',
+      safety: {
+        eventCount: 1,
+        bindingCount: 2,
+        plannerCalls: 1,
+        persisted: true
+      },
+      storage: {
+        capability: { supported: true },
+        index: { status: 'CURRENT' }
+      },
+      cleaned: true
+    })
+    expect(result.safety.incidentId).toMatch(/^[0-9a-f-]{36}$/)
+    expect(existsSync(result.paths.runRoot)).toBe(false)
+  })
+
+  it('runs the complete production cutover harness across isolated M4 databases', async () => {
+    const result = await runM5bIsolatedDatabaseVerification({ stage: 'cutover' })
+    expect(result).toMatchObject({
+      ok: true,
+      stage: 'cutover',
+      components: {
+        command: { command: { persisted: true } },
+        'gate-only': { gate: { persisted: true, batchCount: 0 } },
+        coordinator: { coordinator: { persisted: true, confirmedCount: 2 } },
+        artifact: { artifact: { published: true, rebuilt: true } },
+        safety: { safety: { persisted: true, eventCount: 1 } },
+        storage: { storage: { index: { status: 'CURRENT' } } },
+        schema: { migration: { source: 'EXACT_M4', applied: true } }
+      },
+      cleaned: true
+    })
+  }, 20_000)
+
   it('rejects an unknown stage before creating or opening paths', async () => {
     let pathsCreated = false
     await expect(runM5bIsolatedDatabaseVerification({

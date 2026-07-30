@@ -15,7 +15,7 @@ import {
 } from './safety-rekey-migration'
 import { isF7ReportFrameworkStructurallyApplied } from './report-migration'
 
-export type MigrationBackupStage = 'F7' | 'M4'
+export type MigrationBackupStage = 'F7' | 'M4' | 'M5B'
 
 export type DatabaseStartupUpgradeDependencies = {
   preReconcileF7: () => void

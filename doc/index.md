@@ -311,6 +311,12 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | [features/base-ability-42plus8-vibe-review.md](features/base-ability-42plus8-vibe-review.md) | BASE_ABILITY 42+8 正式 `/vibe-review` 记录 |
 | [features/base-ability-current-contracts.md](features/base-ability-current-contracts.md) | 基础能力题库与 42+8 当前合同入口 |
 | [features/event-batch-v2.2-runtime-impl-review.md](features/event-batch-v2.2-runtime-impl-review.md) | M5B Event Batch Runtime — 独立 R3 实施计划审查 |
+| [features/event-batch-v2.2-runtime-m5b10-r3-review.md](features/event-batch-v2.2-runtime-m5b10-r3-review.md) | M5B-10 R3 Code Review |
+| [features/event-batch-v2.2-runtime-m5b11-r3-review.md](features/event-batch-v2.2-runtime-m5b11-r3-review.md) | M5B-11 R3 Code Review |
+| [features/event-batch-v2.2-runtime-m5b12-r3-review.md](features/event-batch-v2.2-runtime-m5b12-r3-review.md) | M5B-12 R3 Code Review |
+| [features/event-batch-v2.2-runtime-m5b13-r3-review.md](features/event-batch-v2.2-runtime-m5b13-r3-review.md) | M5B-13 R3 Code Review |
+| [features/event-batch-v2.2-runtime-m5b14-r3-review.md](features/event-batch-v2.2-runtime-m5b14-r3-review.md) | M5B-14 R3 Production Cutover Review |
+| [features/event-batch-v2.2-runtime-m5b15-r3-review.md](features/event-batch-v2.2-runtime-m5b15-r3-review.md) | M5B-15 Final R3 Acceptance |
 | [features/event-batch-v2.2-runtime-m5b6-r3-review.md](features/event-batch-v2.2-runtime-m5b6-r3-review.md) | M5B-6 Independent R3 Review and Acceptance |
 | [features/event-batch-v2.2-runtime-m5b9-r3-review.md](features/event-batch-v2.2-runtime-m5b9-r3-review.md) | M5B-9 Independent R3 Review and Acceptance |
 | [features/event-batch-v2.2-runtime-prd-review.md](features/event-batch-v2.2-runtime-prd-review.md) | M5B Event Batch Runtime — 独立 R3 PRD 审查 |

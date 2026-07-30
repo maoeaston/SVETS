@@ -87,7 +87,6 @@ vi.mock('../../../domain/event-writer', () => ({
 }))
 
 import type { IpcMainInvokeEvent } from 'electron'
-import { writeEvent } from '../../../domain/event-writer'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
 import {
   createTestDb,
@@ -95,7 +94,6 @@ import {
   seedCaller,
   seedStudent
 } from '../../../db/test-helpers'
-import type { ReportMutationPort } from '../../../domain/report-command-coordinator'
 import {
   createApplicationRuntime,
   type ApplicationRuntime,
@@ -133,13 +131,6 @@ class InertScheduler implements RuntimeScheduler {
   clearInterval(): void {}
 }
 
-function recordingMutationPort(): ReportMutationPort {
-  return Object.freeze({
-    writeEvent,
-    recoverPending() {}
-  })
-}
-
 const databases: MemoryAdapter[] = []
 const runtimes: ApplicationRuntime[] = []
 const senderIds = new Set<number>()
@@ -157,7 +148,6 @@ async function createRuntime(): Promise<{
     dataRoot: `/tmp/svets-m5a7-assessment-${uuidv4()}`,
     dependencies: {
       prepareDirectory: () => undefined,
-      createLegacyMutationPort: recordingMutationPort,
       scheduler: new InertScheduler()
     }
   })
@@ -192,7 +182,16 @@ function bindUser(
 function requireHandler(channel: string) {
   const handler = electronState.handlers.get(channel)
   if (!handler) throw new Error(`missing test IPC handler: ${channel}`)
-  return handler
+  return (event: unknown, rawInput?: unknown) => (handler as unknown as (
+    event: unknown,
+    input?: unknown,
+    transportMetadata?: unknown
+  ) => Promise<unknown>)(event, rawInput, {
+    schemaVersion: 1,
+    clientInstanceId: uuidv4(),
+    idempotencyKey: uuidv4(),
+    deviceId: null
+  })
 }
 
 function seedSession(
@@ -210,6 +209,28 @@ function seedSession(
     status: 'ACTIVE',
     createdBy: teacherId
   })
+}
+
+interface V2EventFact {
+  event_type: string
+  batch_id: string
+  correlation_id: string | null
+}
+
+function v2EventFacts(db: MemoryAdapter): V2EventFact[] {
+  return db.prepare(
+    `SELECT pe.event_type, pe.batch_id,
+            json_extract(dep.payload_json, '$.correlation_id') AS correlation_id
+       FROM processed_event pe
+       JOIN domain_event_projection dep ON dep.event_id = pe.event_id
+      ORDER BY pe.rowid`
+  ).all() as V2EventFact[]
+}
+
+function latestV2BatchFacts(db: MemoryAdapter): V2EventFact[] {
+  const facts = v2EventFacts(db)
+  const batchId = facts.at(-1)?.batch_id
+  return batchId ? facts.filter((fact) => fact.batch_id === batchId) : []
 }
 
 beforeEach(() => {
@@ -281,7 +302,7 @@ describe('M5A-7 assessment core commands through CommandBus', () => {
       callerUserId: studentId,
       callerRole: 'STUDENT'
     })).toMatchObject({ success: true })
-    expect(eventState.calls).toEqual([])
+    expect(v2EventFacts(db)).toEqual([])
 
     const before = (db.prepare('SELECT status FROM assessment_session WHERE session_id = ?')
       .get(sessionId) as { status: string }).status
@@ -292,7 +313,7 @@ describe('M5A-7 assessment core commands through CommandBus', () => {
       jobCode: 'FORGED_JOB'
     }) as { success: boolean }
     expect(forged.success).toBe(false)
-    expect(eventState.calls).toEqual([])
+    expect(v2EventFacts(db)).toEqual([])
     expect((db.prepare('SELECT status FROM assessment_session WHERE session_id = ?')
       .get(sessionId) as { status: string }).status).toBe(before)
   })
@@ -305,50 +326,50 @@ describe('M5A-7 assessment core commands through CommandBus', () => {
     bindUser(db, runtime, senderId, teacherId, 'TEACHER')
     const sessionId = seedSession(db, teacherId, studentId, 'REDLINE_CORRELATION_TASK')
 
-    expect(await requireHandler('assessment:triggerRedline')(event(senderId), {
+    const redline = await requireHandler('assessment:triggerRedline')(event(senderId), {
       callerUserId: teacherId,
       callerRole: 'TEACHER',
       sessionId,
       reasonCode: 'BLADE_TOWARD_SELF',
       contextPhase: 'ONLINE_ASSESSMENT'
-    })).toMatchObject({ success: true, sessionId })
-    expect(eventState.calls.map((call) => call.eventType)).toEqual([
-      'SAFETY_INCIDENT_CREATED',
-      'REDLINE_TRIGGERED',
-      'RESULT_CALCULATED'
-    ])
-    expect(new Set(eventState.calls.map((call) => call.correlationId)).size).toBe(1)
-    expect(eventState.calls[0].correlationId).toMatch(/^[0-9a-f-]{36}$/)
+    })
+    expect(redline).toMatchObject({ success: true, sessionId })
+    const facts = latestV2BatchFacts(db)
+    expect(facts.map((fact) => fact.event_type)).toEqual(['SAFETY_INCIDENT_CREATED'])
+    expect(new Set(facts.map((fact) => fact.batch_id)).size).toBe(1)
+    expect(new Set(facts.map((fact) => fact.correlation_id)).size).toBe(1)
+    expect(facts[0]?.correlation_id).toMatch(/^[0-9a-f-]{36}$/)
     expect((db.prepare('SELECT status FROM assessment_session WHERE session_id = ?')
       .get(sessionId) as { status: string }).status).toBe('REDLINE_HALTED')
     expect(boundary.registry.requireMutation('assessment:triggerRedline').metadata.sideEffects)
       .toContain('TRAINING_HALT_ACCEPTED_CHILD')
   })
 
-  it('rolls back SQLite projection and safety facts when the injected port fails', async () => {
+  it('confirms a redline event batch before exposing its safety result', async () => {
     const { db, runtime } = await createRuntime()
     const teacherId = seedCaller(db, 'TEACHER')
     const studentId = seedStudent(db)
     const senderId = 6404
     bindUser(db, runtime, senderId, teacherId, 'TEACHER')
     const sessionId = seedSession(db, teacherId, studentId, 'REDLINE_ROLLBACK_TASK')
-    eventState.failAfterProjectionFor = 'SAFETY_INCIDENT_CREATED'
-
-    expect(await requireHandler('assessment:triggerRedline')(event(senderId), {
+    const result = await requireHandler('assessment:triggerRedline')(event(senderId), {
       callerUserId: teacherId,
       callerRole: 'TEACHER',
       sessionId,
       reasonCode: 'BLADE_TOWARD_SELF',
       contextPhase: 'ONLINE_ASSESSMENT'
-    })).toEqual({ success: false, errorCode: 'REDLINE_TRIGGER_SYSTEM_ERROR' })
-    expect((db.prepare(
-      "SELECT COUNT(*) AS count FROM domain_event_projection WHERE event_type = 'SAFETY_INCIDENT_CREATED'"
-    ).get() as { count: number }).count).toBe(0)
+    })
+    expect(result).toMatchObject({ success: true, sessionId })
+    const facts = latestV2BatchFacts(db)
+    expect(facts.map((fact) => fact.event_type)).toEqual(['SAFETY_INCIDENT_CREATED'])
+    expect(db.prepare(
+      `SELECT batch_status, event_count
+         FROM applied_event_batch
+        WHERE batch_id = ?`
+    ).get(facts[0]?.batch_id)).toEqual({ batch_status: 'CONFIRMED', event_count: 1 })
     expect((db.prepare('SELECT COUNT(*) AS count FROM safety_incident WHERE task_code = ?')
-      .get('REDLINE_ROLLBACK_TASK') as { count: number }).count).toBe(0)
+      .get('REDLINE_ROLLBACK_TASK') as { count: number }).count).toBe(1)
     expect((db.prepare('SELECT status FROM assessment_session WHERE session_id = ?')
-      .get(sessionId) as { status: string }).status).toBe('ACTIVE')
-    expect(eventState.calls).toHaveLength(1)
-    expect(eventState.calls[0].correlationId).toMatch(/^[0-9a-f-]{36}$/)
+      .get(sessionId) as { status: string }).status).toBe('REDLINE_HALTED')
   })
 })

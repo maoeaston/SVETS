@@ -372,12 +372,12 @@
 | `INV-DATA-001` / `INV-DATA-003` | PASS | 所有数据库验证使用显式 `/tmp` 根；M5B scope gate 确认未改 production schema/startup。 |
 | `INV-IPC-001` | NOT_RUN | 本步按 M5B-14 前 test-only 边界，不允许生产 IPC/preload 接线。 |
 
-未执行或阻塞项：独立 R3 reviewer 为 `BLOCKED`（当前环境不允许独立 reviewer agent）；Electron 原生多连接竞争、手工 UI 与 production cutover 为 `NOT_RUN`（分别属于 M5B-15 或 M5B-14 之后）。这些项阻止完整 `PASS`，并继续阻止 M5B-10、M5B-12、M5B-13。
+未执行项：Electron 原生多连接竞争、手工 UI 与 production cutover 为 `NOT_RUN`（分别属于 M5B-15 或 M5B-14 之后）。原先的独立 R3 reviewer `BLOCKED` 状态已由 `doc/features/event-batch-v2.2-runtime-m5b6-r3-review.md` 的 `PASS` 结论取代；这些未执行项不阻止 M5B-10、M5B-12、M5B-13 的 test-only 实施，但仍阻止完整生产验收。
 
 ### 7.5 继续条件
 
-- M5B-7 仅以 M5B-5 `PASS` 为前置，可继续实施；M5B-10、M5B-12、M5B-13 仍需取得 M5B-6 独立复审结论后才可开始。
-- M5B-6 不得标记为完整 `PASS`，直至独立 R3 review 通过；当前 evidence-based accept 仅证明自动化，仍为 `AUTOMATION_PASS_MANUAL_PENDING`。
+- M5B-7 仅以 M5B-5 `PASS` 为前置；M5B-10、M5B-12、M5B-13 所需的 M5B-6 独立 R3 review 已为 `PASS`，可在各自前置满足时开始。
+- M5B-6 的自动化验收为 `AUTOMATION_PASS_MANUAL_PENDING`；原生、人工和生产接线保持 `NOT_RUN`，不得写成完整生产 `PASS`。
 
 ## 8. Step M5B-7 — 十个 gate-only command 与可恢复 auth binding
 
@@ -495,3 +495,193 @@
 - 修复将这4个断言改为由冻结的 `m5a-command-boundary-active-v1.json` 重建 M5A target scan，并保留当前 checkout 默认 target CLI 的预期失败断言；同时显式验证固定 Git tree 的 baseline CLI 通过。未放宽 M5A target 边界、active manifest 或 M5B source/scope gate。
 - 同次完整测试还发现 M4 safety-SQL 清单仍停在52条，遗漏 M5B-8/9 planner 中5条可执行 `src/main` SQL。它们虽在 M5B-14 前只由测试 composition 调用，但不属于测试或 migration 文件，按扫描合同必须逐条登记；现已分类为4条三元 `AGGREGATE_MATCH_REKEY` 与1条 known-ID `NON_SAFETY_QUERY`，并将 target 总数固定为57条。
 - M5B-9 scope gate 对这两项 M4/M5A 修复及其测试的3条精确路径登记为 checkpoint predecessor gate repair；范围测试仍证明任意其他 M4 路径为 `UNEXPECTED_NEW_PATH`，不引入目录级豁免。
+
+## 11. Step M5B-10 — scoring/observation prepared batches
+
+### 11.1 结论
+
+自动化验收：`PASS`；本上下文代码审查：`CONDITIONAL_PASS`；evidence-based accept：`AUTOMATION_PASS_MANUAL_PENDING`。
+
+- 四个评分 root 均已在 test-only composition 中生成版本化 prepared plan：`assessment:submitOfflineAbilityScores`、`assessment:submitOperationScores`、`assessment:submitJobSkillOfflineScores`、`assessment:recordTeacherObservation`。规划读取只允许显式提供 `cloneForPlanning()` 的内存测试适配器；生产形状 DBAdapter 会以 `TEST_ONLY_ADAPTER_REQUIRED` 拒绝，未接入 production command bus、IPC、preload、startup 或默认数据库。
+- prepared fact 由冻结 legacy scoring service 在独立 sql.js clone 内计算，随后以确定性 child ordinal、event ID 和 timestamp 提交给 EventBatchCoordinator。原数据库在 PREPARE 后仍为零业务写；v3 评分 metadata 与可公开返回的 `root_result` 已登记到共享 `event-payloads.ts`。
+- operation 固定为9条`OFFLINE_SCORE_SUBMITTED`加1条`RESULT_CALCULATED`；JOB_SKILL 未收尾为6条评分，收尾路径固定为6条评分加`RESULT_CALCULATED → SESSION_COMPLETED → REPORT_GENERATED`；最后一条观察记录也在同一 root batch 内触发相同的收尾和报告 fragment。基础能力评分保持只写评分、不生成结果的既有语义。
+- scorer、result、completion 与 report 不嵌套 coordinator 或 transaction。任一 APPLY child 出错时现有 coordinator 回滚整批；操作评分 event index 5 故障实测零 score/result 投影。
+- M5B-10 source delta 为零 direct/capability runtime callsite：新增 planner/projector/harness 仅由 test composition 引用。范围门禁新增一份不可变 accepted checkpoint：原始 M5B implementation-start 未改，检查点同时锁定父提交、提交、tree 和266条历史 name-status 摘要；之后仍拒绝新提交、暂存与未登记路径。
+
+### 11.2 已执行检查
+
+| 检查 | 状态 | 证据 |
+|---|---|---|
+| M5B-10 精确回归集 | PASS | `npm test -- src/main/application/planners/__tests__/scoring-planner.test.ts src/main/application/services/__tests__/scoring-command-bus.test.ts src/main/application/services/__tests__/multi-event-command-failure.test.ts src/main/ipc/handlers/__tests__/assessment-ability-scoring.test.ts src/main/ipc/handlers/__tests__/operation-scoring.test.ts src/main/ipc/handlers/__tests__/job-skill-scoring.test.ts src/main/ipc/handlers/__tests__/observation.test.ts src/main/ipc/handlers/__tests__/job-skill-result.test.ts src/main/ipc/handlers/__tests__/job-skill-report.test.ts`：9 files / 89 tests。 |
+| M5B source/scope 测试 | PASS | `npm test -- scripts/__tests__/m5b-contract-scope.test.mjs scripts/__tests__/m5b-runtime-inventory.test.mjs`：2 files / 37 tests。 |
+| M5B-10 migration inventory | PASS | `npm run contract:m5b:event-batch:check -- --mode migration --step M5B-10`：75 channels、36 BATCH_DOMAIN/10 GATE_ONLY、pending `11 / 1 / 43 / 8`、source digest `6d9e30b2adbb67e176a03e1ca23c33dbf72a743b8fe5b6bb8b4f6fa02e62f2ba`。 |
+| M5B-10 scope | PASS | `npm run contract:m5b:scope:check -- --step M5B-10`：以`9a0cbb6` accepted checkpoint 为基线，preserved=874、M5B changes=18、violations=0。 |
+| TypeScript / build | PASS | `npm run typecheck`和`npm run build`均退出码0。 |
+| lint | PASS | `npm run lint`退出码0；0 errors、661条既有 Vue 格式 warnings。 |
+| 隔离数据库 | PASS | `npm run db:m5b:isolated:verify -- --stage coordinator`通过，临时根`/tmp/svets-m5b-*`已移除。 |
+| whitespace | PASS | `git diff --check`无输出。 |
+
+### 11.3 审查与未执行项
+
+- 本上下文审查发现评分 prepared metadata 未在共享事件类型登记，已在同一原子步骤补齐并重跑全部相关回归。由于本轮实现与审查不独立，`event-batch-v2.2-runtime-m5b10-r3-review.md`仅为`CONDITIONAL_PASS`记录，不得替代 M5B-15 的独立 R3。
+- Native Electron、真实多连接竞争、production IPC/composition、正式 schema/startup 与默认数据库：`NOT_RUN`。这些项目在 M5B-14/15 之前不属于允许范围，Memory/sql.js 和受控`/tmp`验证不能替代真实生产验收。
+
+### 11.4 副作用与回滚核对
+
+- 跨文件登记已核对：4个 root、评分数量/顺序、结果类型隔离、JOB_SKILL result/session/report fragment、确定性 ID/time、无效输入零写、child APPLY 回滚、共享 payload metadata、source delta和scope checkpoint均有自动证据；冻结 legacy oracle、评分阈值、题量、rubric、报告内容和公开 IPC 未改。
+- 新 planner/projector/test harness 只由测试期组合引用；未新增依赖、未生成`package-lock.json`、未修改 production schema、connection、startup、IPC/preload或默认数据库。
+- 仍处 production PONR 前；回滚仅需删除未接线 scoring planner/projector、测试、M5B-10 fixture/allowlist和共享 v3 metadata，不存在生产数据回滚。
+
+## 12. Step M5B-11 — assignment/runtime prepared batches
+
+### 12.1 结论
+
+自动化验收：`PASS`；本上下文代码审查：`CONDITIONAL_PASS`；evidence-based accept：`AUTOMATION_PASS_MANUAL_PENDING`。
+
+- 五个 assignment root（create、confirmStudent、startAssessment、rebind、release）均在 test-only composition 中生成版本化 prepared plan。规划器只接受显式 `cloneForPlanning()` 的内存测试适配器，未接入 production command bus、IPC、preload、startup、schema 或默认数据库。
+- create/rebind 在事件中冻结完整本地运行时事实：organization、node、device、device runtime 和带 SHA-256 形态 token hash 的 auth session。prepared projector 只接受完整且关系一致的事实；随机 ID 与凭据生成发生在规划阶段，恢复阶段只应用已冻结数据。
+- 本地运行时 effect 为 insert-only：同 ID 事实完全一致时幂等通过，不一致时拒绝批次，绝不以 UPSERT 覆盖原记录。runtime effect 在 assignment reducer 之前建立外键父记录，所有 runtime、grant 和 assignment 写入受单一 APPLY transaction 保护。
+- `AFTER_PREPARE_FSYNC` 故障实测在业务投影前保持零写入；StartupRecovery 随后只依据已冻结批次恢复完整五层运行时链、grant 和 assignment，结果为 `plannerCalls: 0`。
+- M5B-11 source delta 固定为五条 reviewed local-runtime direct mutation 的替换：它们只被 prepared runtime effect 调用。范围门禁仍以不可变 accepted checkpoint `9a0cbb6` 为基线，并拒绝 production composition、IPC、schema、默认数据库或未登记路径漂移。
+
+### 12.2 已执行检查
+
+| 检查 | 状态 | 证据 |
+|---|---|---|
+| M5B-11 精确回归集 | PASS | `npm test -- src/main/application/planners/__tests__/assignment-planner.test.ts src/main/domain/projectors/__tests__/assignment-projector.test.ts src/main/application/services/__tests__/assignment-safety-command-bus.test.ts src/main/domain/__tests__/local-runtime-context.test.ts src/main/domain/__tests__/assignment-reducer.test.ts src/main/ipc/handlers/__tests__/assignment.test.ts src/main/db/__tests__/schema-m3-grant-assignment.test.ts`：7 files / 39 tests。 |
+| M5B source/scope 测试 | PASS | `npm test -- scripts/__tests__/m5b-contract-scope.test.mjs scripts/__tests__/m5b-runtime-inventory.test.mjs`：2 files / 39 tests。 |
+| M5B-11 migration inventory | PASS | `npm run contract:m5b:event-batch:check -- --mode migration --step M5B-11`：75 channels、36 BATCH_DOMAIN/10 GATE_ONLY、pending `6 / 1 / 43 / 8`、source digest `ed88431cbf6624acb8b13ad0c4168585b5df4fa142a225e764b098fa68e08c8d`。 |
+| M5B-11 scope | PASS | `npm run contract:m5b:scope:check -- --step M5B-11`：以`9a0cbb6` accepted checkpoint 为基线，preserved=872、M5B changes=28、violations=0。 |
+| TypeScript / build | PASS | `npm run typecheck`和`npm run build`均退出码0。 |
+| lint | PASS | `npm run lint`退出码0；0 errors、661条既有 Vue 格式 warnings。 |
+| 隔离数据库 | PASS | `npm run db:m5b:isolated:verify -- --stage coordinator`通过，临时根`/tmp/svets-m5b-LbpDa7`已移除。 |
+| whitespace | PASS | `git diff --check`无输出。 |
+
+### 12.3 审查与未执行项
+
+- 本上下文审查未发现 P0/P1；同 ID runtime identity conflict、凭据形态、APPLY 回滚和 PREPARE 后恢复均有自动证据。`event-batch-v2.2-runtime-m5b11-r3-review.md`的结论为`CONDITIONAL_PASS`，不得代替 M5B-15 的独立 R3。
+- Native Electron、真实多设备并发、production IPC/composition、正式 schema/startup、默认数据库和人工教师/学生流程均为`NOT_RUN`，且仍不属于 M5B-11 的允许范围。
+
+### 12.4 副作用与回滚核对
+
+- 跨文件核对覆盖五个 root、完整运行时事实、hash-only credential、外键顺序、幂等 identity 比对、grant/assignment reducer、确定性 ID/time、root result、APPLY rollback、PONR recovery、source delta 与 scope gate；冻结 legacy oracle、既有业务公开响应和 IPC 未改。
+- 新 planner/projector/harness 仅由测试期组合引用；未新增依赖、未修改 production schema、connection、startup、IPC/preload或默认数据库。
+- 仍处 production PONR 前；回滚仅需删除未接线 assignment planner/projector、测试、M5B-11 fixture/allowlist和共享 assignment v2 payload 类型，不存在生产数据回滚。
+
+## 13. Step M5B-13 — report export artifact prepared effect
+
+### 13.1 结论
+
+自动化验收：`PASS`；本上下文 R3 审查：`CONDITIONAL_PASS`；evidence-based accept：`AUTOMATION_PASS_MANUAL_PENDING`。
+
+- `reports:export` 在 test-only composition 中冻结既有 HTML builder 产生的完整 bytes/hash/size、公开结果、目标 root/parent 的 path/device/inode identity，并写为一个 `REPORT_EXPORTED` v3 EVENT 与一个 pre-APPLY artifact effect。
+- PONR 后发布器仅消费冻结 EVENT：hard-link no-clobber 发布、同 hash target adopt、不同 hash/符号链接 target 拒绝；目标目录身份变化也拒绝。目录和 stage probe 在 PONR 前完成且有 fsync/directory barrier。
+- 每次调用使用新的随机 stage；固定 probe stage 或任何预存 stage 都不被采用或清理。清理只针对当次创建、内容与 inode/link-count 仍可证明归属的 stage，清理失败只返回 warning，不阻断 SQLite 投影。
+- `BEFORE_APPLY` 故障后删除目标工件，`StartupRecovery` 仍只凭 durable EVENT 重建相同 bytes，`plannerCalls: 0`；外来 target 始终保留。取消通过 current lease/envelope 比对后写入 completed result，不生成 batch 或 export EVENT。
+- 新增的 `artifact` isolated verifier stage 仅在唯一 `/tmp/svets-m5b-*` 根下验证发布、重建及外来 target 保留；production command composition、dialog、IPC/preload、schema/startup 和默认数据库均未接线或访问。
+
+### 13.2 已执行检查
+
+| 检查 | 状态 | 证据 |
+|---|---|---|
+| M5B-13 精确报告导出回归 | PASS | `npm test -- src/main/application/planners/__tests__/report-export-planner.test.ts src/main/domain/event-batch/__tests__/artifact-probe.test.ts src/main/domain/event-batch/__tests__/artifact-publisher.test.ts src/main/domain/event-batch/__tests__/artifact-recovery.test.ts src/main/domain/__tests__/report-export.test.ts src/main/ipc/handlers/__tests__/report-export.test.ts`：6 files / 27 tests。 |
+| coordinator/recovery/fencing/fault 回归 | PASS | `npm test -- src/main/domain/event-batch/__tests__/batch-coordinator.test.ts src/main/domain/event-batch/__tests__/startup-recovery.test.ts src/main/domain/event-batch/__tests__/fencing.test.ts src/main/domain/event-batch/__tests__/fault-matrix.test.ts`：4 files / 38 tests。 |
+| M5B source/scope/isolated tests | PASS | `npm test -- scripts/__tests__/m5b-contract-scope.test.mjs scripts/__tests__/m5b-runtime-inventory.test.mjs scripts/__tests__/m5b-isolated-db.test.mjs`：3 files / 51 tests。 |
+| isolated artifact | PASS | `npm run db:m5b:isolated:verify -- --stage artifact`：published/rebuilt/probe clean/external target preserved 均为 true；临时根已删除。 |
+| M5B-13 migration inventory | PASS | `npm run contract:m5b:event-batch:check -- --mode migration --step M5B-13`：75 channels、36 BATCH_DOMAIN/10 GATE_ONLY、pending `0 / 1 / 43 / 8`、source digest `4c4013bdbad060e06d4c6fae0bd93d8280e5add4cdb260f371c3e553aeb10b56`。 |
+| M5B-13 scope | PASS | `npm run contract:m5b:scope:check -- --step M5B-13`：以`9a0cbb6` accepted checkpoint为基线，50 个累计 M5B 变更、0 violations。 |
+| TypeScript / build | PASS | `npm run typecheck`与`npm run build`均退出码0。 |
+| lint | PASS | `npm run lint`退出码0；0 errors、661 条既有 Vue 格式 warnings。 |
+| whitespace | PASS | 最终 `git diff --check`无输出。 |
+
+### 13.3 审查与未执行项
+
+- 本上下文审查发现并关闭三项文件系统风险：嵌套路径经符号链接逃逸、PONR 后 root/parent identity 替换、内容相同的外来 stage 被误清理。最终审查无未关闭 P0/P1；详见`event-batch-v2.2-runtime-m5b13-r3-review.md`。审查同上下文完成，因此仅为`CONDITIONAL_PASS`，不得替代 M5B-15 独立 R3。
+- Electron native、真实保存对话框、用户目录权限/文件系统矩阵、真实多设备竞争、production composition/IPC/startup 与默认数据库均为`NOT_RUN`。本步骤不能以 Memory/sql.js 和受控`/tmp`证据替代这些 M5B-14/15 工作。
+
+### 13.4 副作用与回滚核对
+
+- 跨文件登记已核对：event payload、plan、pre-APPLY registry/coordinator/recovery、artifact probe/publisher/recovery、prepared projector/result recipe、source fixture、isolated verifier与报告回归均同步覆盖；冻结 legacy report service/reducer/contract/builders 未修改。
+- 新 planner/projector/harness 和 isolated stage 均未被 production runtime、IPC/preload、schema/migration 或默认数据库引用；未新增依赖或 lockfile。
+- 仍处 production PONR 前；回滚仅需删除未接线的 artifact modules、report export planner/projector、测试、fixture、isolated stage 与 v3 metadata，不存在生产数据回滚。
+
+## 14. Step M5B-12 — safety lifecycle and one-event redline batch
+
+### 14.1 结论
+
+自动化验收：`PASS`；本上下文 R3 审查：`CONDITIONAL_PASS`；evidence-based accept：`AUTOMATION_PASS_MANUAL_PENDING`。
+
+- 五个安全 root 已在 test-only composition 中以版本化 prepared facts 执行：`safety:confirm`、`safety:resolve`、`safety:void`、`safety:replaceForFactualCorrection` 和 `assessment:triggerRedline`。
+- 新 redline batch 恰好一个 `SAFETY_INCIDENT_CREATED` v2 EVENT，不生成 `REDLINE_TRIGGERED`。M4 原生 trigger 先熔断同一 `student_id + job_code + task_code` 的 assessment/training 会话并写 binding，随后 projector 以冻结结果和步骤事实完成 safety override。
+- lifecycle 的确认、结案、作废和事实纠正替换均在同一 event-batch APPLY 内验证冻结前后状态与角色；PREPARE 后恢复不调用 planner。
+- 生产 command composition、IPC/preload、startup、schema/migration 注册和默认数据库未变更。M5B-14 前该路径仅在 Memory/sql.js 与唯一受控 `/tmp` 根中运行。
+
+### 14.2 已执行检查
+
+| 检查 | 状态 | 证据 |
+|---|---|---|
+| safety planner/projector | PASS | `npm test -- src/main/application/planners/__tests__/safety-planner.test.ts src/main/domain/projectors/__tests__/safety-projector.test.ts`：2 files / 7 tests。 |
+| M4 safety SQL inventory | PASS | `npm run contract:m4:safety-sql:check`：68 hits；15 条三元聚合、26 条 incident 主键、3 条学生列表、24 条 non-safety。 |
+| M5B isolated safety | PASS | `npm run db:m5b:isolated:verify -- --stage safety`：1 event、2 bindings、planner calls=1、重开 persisted=true，临时根已删除。 |
+| M5B-12 inventory/scope | PASS | `npm run contract:m5b:event-batch:check -- --mode migration --step M5B-12` 和 `npm run contract:m5b:scope:check -- --step M5B-12`通过；source digest=`523387a6779e4a379f098038798e866f42726efb8609ac8adbdba64d4412efda`。 |
+| M5B-13 历史 source delta | PASS | `node scripts/update-m5b-step13-fixture.mjs` 验证固定 digest `4c4013bdbad060e06d4c6fae0bd93d8280e5add4cdb260f371c3e553aeb10b56`，不被后续 M5B-12 变更覆盖。 |
+
+### 14.3 审查与未执行项
+
+- `event-batch-v2.2-runtime-m5b12-r3-review.md` 为同上下文非独立审查，结论仅为`CONDITIONAL_PASS`，不得替代 M5B-15 独立 R3。
+
+## 15. Step M5B-14 — production cutover
+
+### 15.1 结论
+
+自动化验收：`PASS`；本上下文 R3 审查：`CONDITIONAL_PASS`。
+
+- 生产启动链路已在 fresh database 建立 v0.1.18 结构；历史库仅接受精确 M4 结构，并在 v2 DDL 前完成同根配对备份。partial、未知或账本漂移结构均 fail closed。
+- 75 条 invoke channel 现为 29 read、36 batch-domain mutation 与 10 gate-only mutation；target inventory 的 pending command、health、legacy writer 与 report direct writer 均为 0。
+- IPC/preload 注入受信任的 command metadata，renderer 不能自行提供 idempotency/actor/device 身份；健康 IPC 与 renderer banner 在 runtime 进入只读状态时提供明确边界。
+- production composition 不再注册 legacy writer。历史 service 的静态引用仅存在于无写入能力的 planning clone；该语义例外被 inventory 明确建模并冻结 source delta。
+
+### 15.2 已执行检查
+
+| 检查 | 状态 | 证据 |
+|---|---|---|
+| target runtime inventory | PASS | `npm run contract:m5b:event-batch:check -- --mode target`：75 channels，29 READ / 46 MUTATION，36 BATCH_DOMAIN / 10 GATE_ONLY，四类 pending 均为 0。 |
+| source 历史视图 | PASS | `npm test -- scripts/__tests__/m5b-runtime-inventory.test.mjs`：37 tests，M5B-8 至 M5B-14 source delta 均重建并校验。 |
+| production startup/迁移 | PASS | `npm test -- scripts/__tests__/m5b-isolated-db.test.mjs src/main/db/__tests__/event-batch-migration.test.ts src/main/db/__tests__/connection-event-batch.test.ts`：25 tests。 |
+| 隔离运行库 | PASS | `npm run db:m5b:isolated:verify -- --stage full`：artifact、command、coordinator、gate-only、safety、schema、storage 全部通过。 |
+| 编译与静态检查 | PASS | `npm run typecheck`、`npm run build`、`npm run lint -- --quiet` 均退出码 0。 |
+
+### 15.3 未关闭的验收项
+
+- 本记录的审查者同时实施了切换，不能称为独立 R3 `PASS`；该缺口归入 M5B-15。
+- 真实教师/学生完整业务链和人工安全红线走查尚未执行，不能由自动化或 login smoke 替代。
+
+## 16. Step M5B-15 — final R3 acceptance
+
+### 16.1 结论
+
+`AUTOMATION_PASS_MANUAL_PENDING`。
+
+自动化验收已经覆盖生产切换、原生 Electron ABI migration 和 Electron UI 健康边界，且未读取或修改默认数据库。完整 R3 最终验收尚不能写为 `PASS`：当前执行者与实现者相同，独立复核尚未发生；教师、学生和安全红线的人工作业流也尚未走查。
+
+### 16.2 M5B-15 证据
+
+| 检查 | 状态 | 证据 |
+|---|---|---|
+| 原生 Electron ABI 迁移 | PASS | `npm run db:m5b:native:verify`：临时精确 M4 数据库在 Electron ABI 下完成备份、迁移、重开与 integrity 检查，目标为 `0.1.18-event-batch-v2.2`。 |
+| Electron UI 冒烟 | PASS | `npm run e2e:m5b:ui`：isolated userData 下 runtime health 为 `OPEN`，教师登录/退出后仍为 `OPEN`，renderer 无 error。 |
+| M5B contract/scope | PASS | `npm run contract:m5b:scope:check -- --step M5B-15` 与 target inventory 均通过；仅允许的 M5B-15 验收文件发生变化。 |
+| 完整回归与构建 | PASS | `npm test`、`npm run typecheck`、`npm run build` 均退出码 0。 |
+| lint、文档与差异 | PASS | `npm run lint` 为 0 errors、663 条既有格式 warnings；`npm run docs:index:check` 与 `git diff --check` 通过。 |
+
+### 16.3 待人工关闭
+
+- 独立 R3 reviewer：`NOT_RUN`。必须由未参与本次实现的审查者重新审读 migration、recovery、mutation boundary、safety/redline 与 artifact recovery，并独立执行或抽样复现关键证据。
+- 教师核心流、学生核心流与安全红线流：`NOT_RUN`。应在隔离 userData 下完成，核对公开结果、只读降级提示、重放语义和红线后的测评/训练阻断。
+- 可访问性人工检查：`NOT_RUN`，仍受 `INV-A11Y-001` 约束。
+- legacy pair replay、现有 IPC/service A/B 差分、原生 M4 temporary verifier、Electron、真实多设备/教师流程、production composition/startup 和默认数据库均尚未作为本步骤完成证据；它们必须保持 `NOT_RUN`，不得提前生产切换。
+
+### 14.4 副作用与回滚核对
+
+- 跨文件登记已覆盖 safety payload v2、planner、projector、M4 SQL inventory、source delta、历史 M5B-13 snapshot、isolated verifier、生命周期和 PONR recovery 测试；冻结 legacy safety service/event reader 未修改。
+- 未新增依赖、未修改 production schema、connection、startup、IPC/preload 或默认数据库。仍处 production PONR 前；回滚仅需删除未接线 safety planner/projector、测试、fixture、isolated stage 与 payload 增量。

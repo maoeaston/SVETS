@@ -1,5 +1,6 @@
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { existsSync, readFileSync } from 'node:fs'
+import { dirname, join, relative, resolve } from 'node:path'
+import ts from 'typescript'
 
 import {
   inventoryDigest as m5aInventoryDigest,
@@ -48,8 +49,86 @@ const FAMILY_COUNTS = Object.freeze({
   training: 6
 })
 
+// These files are invoked only through an in-memory planning clone whose
+// injected port records EventIntent candidates. They are not production
+// writers: the central IPC boundary no longer constructs or supplies a legacy
+// mutation port. Keeping this list exact makes new legacy runtime edges fail.
+const PREPARE_ONLY_LEGACY_ORACLE_FILES = new Set([
+  'src/main/application/services/ability-scoring-service.ts',
+  'src/main/application/services/assessment-service.ts',
+  'src/main/application/services/assignment-service.ts',
+  'src/main/application/services/job-skill-result-service.ts',
+  'src/main/application/services/job-skill-scoring-service.ts',
+  'src/main/application/services/observation-service.ts',
+  'src/main/application/services/operation-scoring-service.ts',
+  'src/main/application/services/training-service.ts',
+  'src/main/domain/report-export.ts',
+  'src/main/domain/report-service.ts'
+])
+
 function readJson(path) {
   return JSON.parse(readFileSync(path, 'utf8'))
+}
+
+function normalizeRepoPath(path) {
+  return path.replaceAll('\\', '/')
+}
+
+function isRuntimeImportClause(clause) {
+  if (!clause || clause.isTypeOnly) return false
+  if (!clause.namedBindings || !ts.isNamedImports(clause.namedBindings)) return true
+  return Boolean(clause.name) || clause.namedBindings.elements.some((element) => !element.isTypeOnly)
+}
+
+function resolveLocalTypeScriptSource(projectRoot, importer, specifier) {
+  if (!specifier.startsWith('.')) return null
+  const root = resolve(projectRoot)
+  const candidate = resolve(dirname(importer), specifier)
+  if (candidate !== root && !candidate.startsWith(`${root}/`)) {
+    throw new M5bInventoryError(`production import escapes project root: ${specifier}`)
+  }
+  for (const path of [
+    `${candidate}.ts`,
+    `${candidate}.tsx`,
+    join(candidate, 'index.ts'),
+    join(candidate, 'index.tsx')
+  ]) {
+    if (existsSync(path)) return path
+  }
+  return null
+}
+
+/**
+ * The M5A ledger scans every source file, including retained test-only legacy
+ * adapters. The M5B target gate instead follows runtime imports from main's
+ * composition root so that retained test seams cannot mask a production edge.
+ */
+export function scanM5bProductionReachability(projectRoot) {
+  const root = resolve(projectRoot)
+  const entrypoint = resolve(root, 'src/main/index.ts')
+  const pending = [entrypoint]
+  const visited = new Set()
+
+  while (pending.length > 0) {
+    const file = pending.pop()
+    if (!file || visited.has(file)) continue
+    visited.add(file)
+    const source = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true)
+    const addSpecifier = (specifier) => {
+      const dependency = resolveLocalTypeScriptSource(root, file, specifier)
+      if (dependency && !visited.has(dependency)) pending.push(dependency)
+    }
+    for (const statement of source.statements) {
+      if (ts.isImportDeclaration(statement) && isRuntimeImportClause(statement.importClause)) {
+        addSpecifier(statement.moduleSpecifier.text)
+      }
+      if (ts.isExportDeclaration(statement) && !statement.isTypeOnly && statement.moduleSpecifier) {
+        addSpecifier(statement.moduleSpecifier.text)
+      }
+    }
+  }
+
+  return new Set([...visited].map((file) => normalizeRepoPath(relative(root, file))))
 }
 
 function sorted(values) {
@@ -244,6 +323,11 @@ export function loadM5bInventoryDocuments(projectRoot) {
   const step7SourceDelta = readJson(resolve(projectRoot, 'scripts/fixtures/m5b-step7-source-delta-v1.json'))
   const step8SourceDelta = readJson(resolve(projectRoot, 'scripts/fixtures/m5b-step8-source-delta-v1.json'))
   const step9SourceDelta = readJson(resolve(projectRoot, 'scripts/fixtures/m5b-step9-source-delta-v1.json'))
+  const step10SourceDelta = readJson(resolve(projectRoot, 'scripts/fixtures/m5b-step10-source-delta-v1.json'))
+  const step11SourceDelta = readJson(resolve(projectRoot, 'scripts/fixtures/m5b-step11-source-delta-v1.json'))
+  const step13SourceDelta = readJson(resolve(projectRoot, 'scripts/fixtures/m5b-step13-source-delta-v1.json'))
+  const step12SourceDelta = readJson(resolve(projectRoot, 'scripts/fixtures/m5b-step12-source-delta-v1.json'))
+  const step14SourceDelta = readJson(resolve(projectRoot, 'scripts/fixtures/m5b-step14-source-delta-v1.json'))
   return {
     ...m5a,
     inventory,
@@ -255,7 +339,12 @@ export function loadM5bInventoryDocuments(projectRoot) {
     step6SourceDelta,
     step7SourceDelta,
     step8SourceDelta,
-    step9SourceDelta
+    step9SourceDelta,
+    step10SourceDelta,
+    step11SourceDelta,
+    step13SourceDelta,
+    step12SourceDelta,
+    step14SourceDelta
   }
 }
 
@@ -491,6 +580,159 @@ function validateStep9SourceDeltaFixture(step9SourceDelta, step8SourceDelta) {
   unique(step9SourceDelta.added_target.map((entry) => entry.fingerprint), 'M5B-9 added fingerprints')
 }
 
+function validateStep10SourceDeltaFixture(step10SourceDelta, step9SourceDelta) {
+  if (step10SourceDelta.schema_version !== M5B_STEP_DELTA_SCHEMA_VERSION) {
+    throw new M5bInventoryError(`invalid M5B-10 delta schema ${step10SourceDelta.schema_version}`)
+  }
+  assertEqual(step10SourceDelta.step, 'M5B-10', 'M5B-10 delta step')
+  assertEqual(step10SourceDelta.source_digest, step9SourceDelta.target_digest, 'M5B-10 delta source digest')
+  if (!/^[0-9a-f]{64}$/.test(step10SourceDelta.target_digest)) throw new M5bInventoryError('invalid M5B-10 target digest')
+  assertEqual(step10SourceDelta.removed_source.length, 0, 'M5B-10 removed source count')
+  assertEqual(step10SourceDelta.capability_removed_source.length, 0, 'M5B-10 removed capability count')
+  assertEqual(step10SourceDelta.capability_added_target.length, 0, 'M5B-10 added capability count')
+  assertEqual(step10SourceDelta.added_target.length, 0, 'M5B-10 direct mutation additions')
+  unique(step10SourceDelta.added_target.map((entry) => entry.fingerprint), 'M5B-10 added fingerprints')
+}
+
+function validateStep11SourceDeltaFixture(step11SourceDelta, step10SourceDelta) {
+  if (step11SourceDelta.schema_version !== M5B_STEP_DELTA_SCHEMA_VERSION) {
+    throw new M5bInventoryError(`invalid M5B-11 delta schema ${step11SourceDelta.schema_version}`)
+  }
+  assertEqual(step11SourceDelta.step, 'M5B-11', 'M5B-11 delta step')
+  assertEqual(step11SourceDelta.source_digest, step10SourceDelta.target_digest, 'M5B-11 delta source digest')
+  if (!/^[0-9a-f]{64}$/.test(step11SourceDelta.target_digest)) throw new M5bInventoryError('invalid M5B-11 target digest')
+  assertEqual(step11SourceDelta.removed_source.length, 5, 'M5B-11 removed source count')
+  assertEqual(step11SourceDelta.capability_removed_source.length, 0, 'M5B-11 removed capability count')
+  assertEqual(step11SourceDelta.capability_added_target.length, 0, 'M5B-11 added capability count')
+  assertEqual(step11SourceDelta.added_target.length, 5, 'M5B-11 direct mutation additions')
+  unique(step11SourceDelta.added_target.map((entry) => entry.fingerprint), 'M5B-11 added fingerprints')
+  assertExactSet(
+    [...new Set(step11SourceDelta.removed_source.map((entry) => entry.disposition))],
+    ['REFACTORED_TO_PREPARED_RUNTIME_EFFECT'],
+    'M5B-11 removed dispositions'
+  )
+  assertExactSet(
+    [...new Set(step11SourceDelta.added_target.map((entry) => entry.target_class))],
+    ['ASSIGNMENT_RUNTIME_PREPARED_EFFECT'],
+    'M5B-11 added target classes'
+  )
+  assertExactSet(
+    [...new Set(step11SourceDelta.added_target.map((entry) => entry.file))],
+    ['src/main/domain/local-runtime-context.ts'],
+    'M5B-11 added target files'
+  )
+}
+
+function validateStep13SourceDeltaFixture(step13SourceDelta, step11SourceDelta) {
+  if (step13SourceDelta.schema_version !== M5B_STEP_DELTA_SCHEMA_VERSION) {
+    throw new M5bInventoryError(`invalid M5B-13 delta schema ${step13SourceDelta.schema_version}`)
+  }
+  assertEqual(step13SourceDelta.step, 'M5B-13', 'M5B-13 delta step')
+  assertEqual(step13SourceDelta.source_digest, step11SourceDelta.target_digest, 'M5B-13 delta source digest')
+  if (!/^[0-9a-f]{64}$/.test(step13SourceDelta.target_digest)) throw new M5bInventoryError('invalid M5B-13 target digest')
+  assertEqual(step13SourceDelta.removed_source.length, 0, 'M5B-13 removed source count')
+  assertEqual(step13SourceDelta.capability_removed_source.length, 0, 'M5B-13 removed capability count')
+  assertEqual(step13SourceDelta.capability_added_target.length, 0, 'M5B-13 added capability count')
+  assertEqual(step13SourceDelta.added_target.length, 14, 'M5B-13 direct artifact additions')
+  unique(step13SourceDelta.added_target.map((entry) => entry.fingerprint), 'M5B-13 added fingerprints')
+  assertExactSet(
+    [...new Set(step13SourceDelta.added_target.map((entry) => entry.target_class))],
+    ['REPORT_EXPORT_ARTIFACT_PREPARE_EFFECT', 'REPORT_EXPORT_PREPARED_PROJECTOR'],
+    'M5B-13 added target classes'
+  )
+  assertExactSet(
+    [...new Set(step13SourceDelta.added_target.map((entry) => entry.file))],
+    [
+      'src/main/domain/event-batch/artifact-probe.ts',
+      'src/main/domain/event-batch/artifact-publisher.ts',
+      'src/main/domain/projectors/report-export-projector.ts'
+    ],
+    'M5B-13 added target files'
+  )
+}
+
+function validateStep12SourceDeltaFixture(step12SourceDelta, step13SourceDelta) {
+  if (step12SourceDelta.schema_version !== M5B_STEP_DELTA_SCHEMA_VERSION) {
+    throw new M5bInventoryError(`invalid M5B-12 delta schema ${step12SourceDelta.schema_version}`)
+  }
+  assertEqual(step12SourceDelta.step, 'M5B-12', 'M5B-12 delta step')
+  // M5B-13 was completed first so its report artifact boundary remains a fixed prior state.
+  assertEqual(step12SourceDelta.source_digest, step13SourceDelta.target_digest, 'M5B-12 delta source digest')
+  if (!/^[0-9a-f]{64}$/.test(step12SourceDelta.target_digest)) throw new M5bInventoryError('invalid M5B-12 target digest')
+  assertEqual(step12SourceDelta.removed_source.length, 0, 'M5B-12 removed source count')
+  assertEqual(step12SourceDelta.capability_removed_source.length, 0, 'M5B-12 removed capability count')
+  assertEqual(step12SourceDelta.capability_added_target.length, 0, 'M5B-12 added capability count')
+  assertEqual(step12SourceDelta.added_target.length, 8, 'M5B-12 direct safety projector additions')
+  unique(step12SourceDelta.added_target.map((entry) => entry.fingerprint), 'M5B-12 added fingerprints')
+  assertExactSet(
+    [...new Set(step12SourceDelta.added_target.map((entry) => entry.target_class))],
+    ['SAFETY_PREPARED_PROJECTOR'],
+    'M5B-12 added target classes'
+  )
+  assertExactSet(
+    [...new Set(step12SourceDelta.added_target.map((entry) => entry.file))],
+    ['src/main/domain/projectors/safety-projector.ts'],
+    'M5B-12 added target files'
+  )
+}
+
+function validateStep14SourceDeltaFixture(step14SourceDelta, step12SourceDelta) {
+  if (step14SourceDelta.schema_version !== M5B_STEP_DELTA_SCHEMA_VERSION) {
+    throw new M5bInventoryError(`invalid M5B-14 delta schema ${step14SourceDelta.schema_version}`)
+  }
+  assertEqual(step14SourceDelta.step, 'M5B-14', 'M5B-14 delta step')
+  assertEqual(step14SourceDelta.source_digest, step12SourceDelta.target_digest, 'M5B-14 delta source digest')
+  if (!/^[0-9a-f]{64}$/.test(step14SourceDelta.target_digest)) throw new M5bInventoryError('invalid M5B-14 target digest')
+  assertEqual(step14SourceDelta.removed_source.length, 3, 'M5B-14 removed direct count')
+  assertEqual(step14SourceDelta.added_target.length, 5, 'M5B-14 added direct count')
+  assertEqual(step14SourceDelta.capability_removed_source.length, 4, 'M5B-14 removed capability count')
+  assertEqual(step14SourceDelta.capability_added_target.length, 2, 'M5B-14 added capability count')
+  assertEqual(step14SourceDelta.channel_removed_source.length, 0, 'M5B-14 removed channel count')
+  assertEqual(step14SourceDelta.channel_added_target.length, 1, 'M5B-14 added channel count')
+  assertEqual(step14SourceDelta.delegating_root_removed_source.length, 1, 'M5B-14 removed delegating root count')
+  assertEqual(step14SourceDelta.delegating_root_added_target.length, 2, 'M5B-14 added delegating root count')
+  assertExactSet(
+    [...new Set(step14SourceDelta.removed_source.map((entry) => entry.disposition))],
+    ['RETIRED_LEGACY_STARTUP_RECOVERY'],
+    'M5B-14 removed direct dispositions'
+  )
+  assertExactSet(
+    [...new Set(step14SourceDelta.added_target.map((entry) => entry.target_class))],
+    ['EVENT_BATCH_STARTUP_RECOVERY', 'M5B_ARCHIVAL_BACKUP', 'PREPARE_ONLY_PLANNING_CLONE', 'TARGET_SCHEMA_CUTOVER'],
+    'M5B-14 added direct classes'
+  )
+  assertExactSet(
+    [...new Set(step14SourceDelta.capability_removed_source.map((entry) => entry.disposition))],
+    ['RETIRED_LEGACY_STARTUP_RECOVERY', 'RETIRED_REPORT_COORDINATOR_COMPOSITION'],
+    'M5B-14 removed capability dispositions'
+  )
+  assertExactSet(
+    [...new Set(step14SourceDelta.capability_added_target.map((entry) => entry.target_class))],
+    ['RETAINED_LEGACY_HANDLER_TEST_SEAM_IMPORT'],
+    'M5B-14 added capability classes'
+  )
+  assertExactSet(
+    step14SourceDelta.channel_added_target.map((entry) => entry.channel),
+    ['runtime:getHealth'],
+    'M5B-14 added channels'
+  )
+  assertExactSet(
+    [...new Set(step14SourceDelta.channel_added_target.map((entry) => entry.target_class))],
+    ['RUNTIME_HEALTH_READ'],
+    'M5B-14 added channel classes'
+  )
+  assertExactSet(
+    step14SourceDelta.delegating_root_removed_source.map((entry) => entry.path),
+    ['src/main/application/runtime/application-runtime.ts'],
+    'M5B-14 removed delegating roots'
+  )
+  assertExactSet(
+    step14SourceDelta.delegating_root_added_target.map((entry) => entry.path),
+    ['src/main/ipc/handlers/reports.ts', 'src/main/ipc/handlers/safety.ts'],
+    'M5B-14 added delegating roots'
+  )
+}
+
 export function validateM5bInventoryDocuments({
   inventory,
   implementationStart,
@@ -502,6 +744,11 @@ export function validateM5bInventoryDocuments({
   step7SourceDelta,
   step8SourceDelta,
   step9SourceDelta,
+  step10SourceDelta,
+  step11SourceDelta,
+  step13SourceDelta,
+  step12SourceDelta,
+  step14SourceDelta,
   active,
   mapping
 }) {
@@ -524,6 +771,11 @@ export function validateM5bInventoryDocuments({
   validateStep7SourceDeltaFixture(step7SourceDelta, step6SourceDelta)
   validateStep8SourceDeltaFixture(step8SourceDelta, step7SourceDelta)
   validateStep9SourceDeltaFixture(step9SourceDelta, step8SourceDelta)
+  validateStep10SourceDeltaFixture(step10SourceDelta, step9SourceDelta)
+  validateStep11SourceDeltaFixture(step11SourceDelta, step10SourceDelta)
+  validateStep13SourceDeltaFixture(step13SourceDelta, step11SourceDelta)
+  validateStep12SourceDeltaFixture(step12SourceDelta, step13SourceDelta)
+  validateStep14SourceDeltaFixture(step14SourceDelta, step12SourceDelta)
 
   const legacyEventIds = active.capability_callsites.filter((entry) => entry.kind === 'LEGACY_EVENT_PORT_CALL').map((entry) => entry.id)
   const reportCallIds = active.capability_callsites.filter((entry) => entry.kind === 'REPORT_COMMAND_CALL').map((entry) => entry.id)
@@ -904,9 +1156,248 @@ function validateStep9CheckoutDelta(scan, active, step2Fixture, step3Fixture, st
   }
 }
 
+function validateStep10CheckoutDelta(scan, active, step2Fixture, step3Fixture, step4Fixture, step5Fixture, step6Fixture, step7Fixture, step8Fixture, step9Fixture, step10Fixture) {
+  assertEqual(scan.digest, step10Fixture.target_digest, 'M5B-10 checkout digest')
+  for (const [key, actual] of Object.entries({
+    channels: scan.channels.length,
+    direct_callsites: scan.direct_callsites.length,
+    direct_files: scan.direct_files.length,
+    capability_callsites: scan.capability_callsites.length,
+    delegating_roots: scan.delegating_roots.length
+  })) {
+    assertEqual(actual, step10Fixture.expected_counts[key], `M5B-10 ${key}`)
+  }
+  assertExactSet(scan.channels.map((entry) => entry.fingerprint), active.channels.map((entry) => entry.fingerprint), 'M5B-10 channels')
+  const sourceCapabilities = new Set(active.capability_callsites.map((entry) => entry.fingerprint))
+  for (const fixture of [step2Fixture, step3Fixture, step4Fixture, step5Fixture, step6Fixture, step7Fixture, step8Fixture, step9Fixture]) {
+    for (const entry of fixture.capability_removed_source ?? []) sourceCapabilities.delete(entry.fingerprint)
+    for (const entry of fixture.capability_added_target ?? []) sourceCapabilities.add(entry.fingerprint)
+  }
+  assertExactSet([...sourceCapabilities], scan.capability_callsites.map((entry) => entry.fingerprint), 'M5B-10 capability callsites')
+  const source = new Set(active.direct_callsites.map((entry) => entry.fingerprint))
+  for (const fixture of [step2Fixture, step3Fixture, step4Fixture, step5Fixture, step6Fixture, step7Fixture, step8Fixture, step9Fixture]) {
+    for (const entry of fixture.removed_source) source.delete(entry.fingerprint)
+    for (const entry of fixture.added_target) source.add(entry.fingerprint)
+  }
+  const checkout = new Set(scan.direct_callsites.map((entry) => entry.fingerprint))
+  assertExactSet([...source].filter((fingerprint) => !checkout.has(fingerprint)), step10Fixture.removed_source.map((entry) => entry.fingerprint), 'M5B-10 removed direct callsites')
+  const added = scan.direct_callsites.filter((entry) => !source.has(entry.fingerprint))
+  assertExactSet(added.map((entry) => entry.fingerprint), step10Fixture.added_target.map((entry) => entry.fingerprint), 'M5B-10 added direct callsites')
+  const fixtureByFingerprint = new Map(step10Fixture.added_target.map((entry) => [entry.fingerprint, entry]))
+  for (const entry of added) {
+    const expected = fixtureByFingerprint.get(entry.fingerprint)
+    for (const key of ['file', 'symbol', 'line', 'kind', 'callee', 'occurrence']) {
+      assertEqual(entry[key], expected[key], `M5B-10 ${entry.fingerprint} ${key}`)
+    }
+  }
+}
+
+function validateStep11CheckoutDelta(scan, active, step2Fixture, step3Fixture, step4Fixture, step5Fixture, step6Fixture, step7Fixture, step8Fixture, step9Fixture, step10Fixture, step11Fixture) {
+  validateStep10CheckoutDelta(
+    scan, active, step2Fixture, step3Fixture, step4Fixture, step5Fixture, step6Fixture,
+    step7Fixture, step8Fixture, step9Fixture, step11Fixture
+  )
+  assertEqual(step11Fixture.source_digest, step10Fixture.target_digest, 'M5B-11 checkout source digest')
+}
+
+function directEntriesAfter(active, fixtures) {
+  const entries = new Map(active.direct_callsites.map((entry) => [entry.fingerprint, entry]))
+  for (const fixture of fixtures) {
+    for (const entry of fixture.removed_source) entries.delete(entry.fingerprint)
+    for (const entry of fixture.added_target) entries.set(entry.fingerprint, entry)
+  }
+  return entries
+}
+
+export function scanBeforeM5bDirectAdditions(scan, fixtures) {
+  const added = new Set(fixtures.flatMap((fixture) => fixture.added_target.map((entry) => entry.fingerprint)))
+  const directCallsites = scan.direct_callsites.filter((entry) => !added.has(entry.fingerprint))
+  const directFiles = [...new Set(directCallsites.map((entry) => entry.file))].sort()
+  const historical = { ...scan, direct_callsites: directCallsites, direct_files: directFiles }
+  return { ...historical, digest: m5aInventoryDigest(historical) }
+}
+
+function restoreEntries(entries, removedSource, addedTarget) {
+  const restored = new Map(entries.map((entry) => [entry.fingerprint, entry]))
+  for (const entry of addedTarget ?? []) restored.delete(entry.fingerprint)
+  for (const entry of removedSource ?? []) restored.set(entry.fingerprint, entry)
+  return [...restored.values()].sort((left, right) =>
+    left.file.localeCompare(right.file)
+    || left.line - right.line
+    || left.kind.localeCompare(right.kind)
+    || left.fingerprint.localeCompare(right.fingerprint)
+  )
+}
+
+function restoreDelegatingRoots(roots, removedSource, addedTarget) {
+  const restored = new Set(roots)
+  for (const entry of addedTarget ?? []) restored.delete(entry.path)
+  for (const entry of removedSource ?? []) restored.add(entry.path)
+  return [...restored].sort()
+}
+
+/** Reconstructs a reviewed source state by reversing later frozen source deltas. */
+export function scanBeforeM5bSourceDeltas(scan, fixtures) {
+  let historical = scan
+  for (const fixture of [...fixtures].reverse()) {
+    const directCallsites = restoreEntries(
+      historical.direct_callsites,
+      fixture.removed_source,
+      fixture.added_target
+    )
+    const capabilityCallsites = restoreEntries(
+      historical.capability_callsites,
+      fixture.capability_removed_source,
+      fixture.capability_added_target
+    )
+    const channels = restoreEntries(
+      historical.channels,
+      fixture.channel_removed_source,
+      fixture.channel_added_target
+    )
+    const delegatingRoots = restoreDelegatingRoots(
+      historical.delegating_roots,
+      fixture.delegating_root_removed_source,
+      fixture.delegating_root_added_target
+    )
+    historical = {
+      ...historical,
+      channels: channels.sort((left, right) =>
+        (left.channel ?? '').localeCompare(right.channel ?? '') || left.file.localeCompare(right.file)
+      ),
+      direct_callsites: directCallsites,
+      direct_files: [...new Set(directCallsites.map((entry) => entry.file))].sort(),
+      capability_callsites: capabilityCallsites,
+      delegating_roots: delegatingRoots
+    }
+  }
+  return { ...historical, digest: m5aInventoryDigest(historical) }
+}
+
+function validateStep13CheckoutDelta(scan, active, fixtures, step13Fixture, laterFixtures = []) {
+  const historical = scanBeforeM5bSourceDeltas(scan, laterFixtures)
+  assertEqual(historical.digest, step13Fixture.target_digest, 'M5B-13 checkout digest')
+  for (const [key, actual] of Object.entries({
+    channels: historical.channels.length,
+    direct_callsites: historical.direct_callsites.length,
+    direct_files: historical.direct_files.length,
+    capability_callsites: historical.capability_callsites.length,
+    delegating_roots: historical.delegating_roots.length
+  })) {
+    assertEqual(actual, step13Fixture.expected_counts[key], `M5B-13 ${key}`)
+  }
+  assertExactSet(historical.channels.map((entry) => entry.fingerprint), active.channels.map((entry) => entry.fingerprint), 'M5B-13 channels')
+  const source = directEntriesAfter(active, fixtures)
+  const checkout = new Map(historical.direct_callsites.map((entry) => [entry.fingerprint, entry]))
+  assertExactSet([...source.keys()].filter((fingerprint) => !checkout.has(fingerprint)), step13Fixture.removed_source.map((entry) => entry.fingerprint), 'M5B-13 removed direct callsites')
+  const added = historical.direct_callsites.filter((entry) => !source.has(entry.fingerprint))
+  assertExactSet(added.map((entry) => entry.fingerprint), step13Fixture.added_target.map((entry) => entry.fingerprint), 'M5B-13 added direct callsites')
+  const fixtureByFingerprint = new Map(step13Fixture.added_target.map((entry) => [entry.fingerprint, entry]))
+  for (const entry of added) {
+    const expected = fixtureByFingerprint.get(entry.fingerprint)
+    for (const key of ['file', 'symbol', 'line', 'kind', 'callee', 'occurrence']) {
+      assertEqual(entry[key], expected[key], `M5B-13 ${entry.fingerprint} ${key}`)
+    }
+  }
+}
+
+function validateStep12CheckoutDelta(scan, active, fixtures, step12Fixture, laterFixtures = []) {
+  const historical = scanBeforeM5bSourceDeltas(scan, laterFixtures)
+  assertEqual(historical.digest, step12Fixture.target_digest, 'M5B-12 checkout digest')
+  for (const [key, actual] of Object.entries({
+    channels: historical.channels.length,
+    direct_callsites: historical.direct_callsites.length,
+    direct_files: historical.direct_files.length,
+    capability_callsites: historical.capability_callsites.length,
+    delegating_roots: historical.delegating_roots.length
+  })) {
+    assertEqual(actual, step12Fixture.expected_counts[key], `M5B-12 ${key}`)
+  }
+  assertExactSet(historical.channels.map((entry) => entry.fingerprint), active.channels.map((entry) => entry.fingerprint), 'M5B-12 channels')
+  const source = directEntriesAfter(active, fixtures)
+  const checkout = new Map(historical.direct_callsites.map((entry) => [entry.fingerprint, entry]))
+  assertExactSet([...source.keys()].filter((fingerprint) => !checkout.has(fingerprint)), step12Fixture.removed_source.map((entry) => entry.fingerprint), 'M5B-12 removed direct callsites')
+  const added = historical.direct_callsites.filter((entry) => !source.has(entry.fingerprint))
+  assertExactSet(added.map((entry) => entry.fingerprint), step12Fixture.added_target.map((entry) => entry.fingerprint), 'M5B-12 added direct callsites')
+  const fixtureByFingerprint = new Map(step12Fixture.added_target.map((entry) => [entry.fingerprint, entry]))
+  for (const entry of added) {
+    const expected = fixtureByFingerprint.get(entry.fingerprint)
+    for (const key of ['file', 'symbol', 'line', 'kind', 'callee', 'occurrence']) {
+      assertEqual(entry[key], expected[key], `M5B-12 ${entry.fingerprint} ${key}`)
+    }
+  }
+}
+
+function capabilityEntriesAfter(active, fixtures) {
+  const entries = new Map(active.capability_callsites.map((entry) => [entry.fingerprint, entry]))
+  for (const fixture of fixtures) {
+    for (const entry of fixture.capability_removed_source ?? []) entries.delete(entry.fingerprint)
+    for (const entry of fixture.capability_added_target ?? []) entries.set(entry.fingerprint, entry)
+  }
+  return entries
+}
+
+function channelEntriesAfter(active, fixtures) {
+  const entries = new Map(active.channels.map((entry) => [entry.fingerprint, entry]))
+  for (const fixture of fixtures) {
+    for (const entry of fixture.channel_removed_source ?? []) entries.delete(entry.fingerprint)
+    for (const entry of fixture.channel_added_target ?? []) entries.set(entry.fingerprint, entry)
+  }
+  return entries
+}
+
+function validateStep14CheckoutDelta(scan, active, fixtures, step14Fixture) {
+  assertEqual(scan.digest, step14Fixture.target_digest, 'M5B-14 checkout digest')
+  for (const [key, actual] of Object.entries({
+    channels: scan.channels.length,
+    direct_callsites: scan.direct_callsites.length,
+    direct_files: scan.direct_files.length,
+    capability_callsites: scan.capability_callsites.length,
+    delegating_roots: scan.delegating_roots.length
+  })) {
+    assertEqual(actual, step14Fixture.expected_counts[key], `M5B-14 ${key}`)
+  }
+  const checks = [
+    ['direct callsites', directEntriesAfter(active, fixtures), scan.direct_callsites, step14Fixture.removed_source, step14Fixture.added_target],
+    ['capability callsites', capabilityEntriesAfter(active, fixtures), scan.capability_callsites, step14Fixture.capability_removed_source, step14Fixture.capability_added_target],
+    ['channels', channelEntriesAfter(active, fixtures), scan.channels, step14Fixture.channel_removed_source, step14Fixture.channel_added_target]
+  ]
+  for (const [label, source, checkoutEntries, removedSource, addedTarget] of checks) {
+    const checkout = new Map(checkoutEntries.map((entry) => [entry.fingerprint, entry]))
+    assertExactSet(
+      [...source.keys()].filter((fingerprint) => !checkout.has(fingerprint)),
+      removedSource.map((entry) => entry.fingerprint),
+      `M5B-14 removed ${label}`
+    )
+    assertExactSet(
+      checkoutEntries.filter((entry) => !source.has(entry.fingerprint)).map((entry) => entry.fingerprint),
+      addedTarget.map((entry) => entry.fingerprint),
+      `M5B-14 added ${label}`
+    )
+  }
+  assertExactSet(
+    scan.delegating_roots.filter((path) => !new Set(active.delegating_roots.map((entry) => entry.path)).has(path)),
+    step14Fixture.delegating_root_added_target.map((entry) => entry.path),
+    'M5B-14 added delegating roots'
+  )
+  assertExactSet(
+    active.delegating_roots.map((entry) => entry.path).filter((path) => !new Set(scan.delegating_roots).has(path)),
+    step14Fixture.delegating_root_removed_source.map((entry) => entry.path),
+    'M5B-14 removed delegating roots'
+  )
+}
+
 export function scanM5bCheckout(projectRoot) {
   const scan = scanM5aCheckout(projectRoot)
-  return { ...scan, digest: m5aInventoryDigest(scan) }
+  const productionFiles = scanM5bProductionReachability(projectRoot)
+  const productionCapabilities = scan.capability_callsites.filter((entry) => productionFiles.has(entry.file))
+  return {
+    ...scan,
+    production_reachable_files: [...productionFiles].sort(),
+    production_capability_callsites: productionCapabilities.filter((entry) => !PREPARE_ONLY_LEGACY_ORACLE_FILES.has(entry.file)),
+    production_prepare_oracle_callsites: productionCapabilities.filter((entry) => PREPARE_ONLY_LEGACY_ORACLE_FILES.has(entry.file)),
+    digest: m5aInventoryDigest(scan)
+  }
 }
 
 export function validateM5bBaseline(documents) {
@@ -925,6 +1416,7 @@ export function validateM5bBaseline(documents) {
 
 export function validateM5bMigration({ scan, step, target = false, ...documents }) {
   const inventory = validateM5bInventoryDocuments(documents)
+  let validatedDigest = scan.digest
   if (!inventory.step_order.includes(step)) throw new M5bInventoryError(`unknown migration step ${step}`)
   if (step === 'M5B-1' && scan.digest !== M5B_SOURCE_DIGEST) {
     throw new M5bInventoryError(`M5B-1 checkout digest drifted: expected ${M5B_SOURCE_DIGEST}, got ${scan.digest}`)
@@ -1007,6 +1499,81 @@ export function validateM5bMigration({ scan, step, target = false, ...documents 
       documents.step9SourceDelta
     )
   }
+  if (step === 'M5B-10') {
+    validateStep10CheckoutDelta(
+      scan,
+      documents.active,
+      documents.step2SourceDelta,
+      documents.step3SourceDelta,
+      documents.step4SourceDelta,
+      documents.step5SourceDelta,
+      documents.step6SourceDelta,
+      documents.step7SourceDelta,
+      documents.step8SourceDelta,
+      documents.step9SourceDelta,
+      documents.step10SourceDelta
+    )
+  }
+  if (step === 'M5B-11') {
+    validateStep11CheckoutDelta(
+      scan,
+      documents.active,
+      documents.step2SourceDelta,
+      documents.step3SourceDelta,
+      documents.step4SourceDelta,
+      documents.step5SourceDelta,
+      documents.step6SourceDelta,
+      documents.step7SourceDelta,
+      documents.step8SourceDelta,
+      documents.step9SourceDelta,
+      documents.step10SourceDelta,
+      documents.step11SourceDelta
+    )
+  }
+  if (step === 'M5B-13') {
+    validateStep13CheckoutDelta(
+      scan,
+      documents.active,
+      [
+        documents.step2SourceDelta, documents.step3SourceDelta, documents.step4SourceDelta,
+        documents.step5SourceDelta, documents.step6SourceDelta, documents.step7SourceDelta,
+        documents.step8SourceDelta, documents.step9SourceDelta, documents.step10SourceDelta,
+        documents.step11SourceDelta
+      ],
+      documents.step13SourceDelta,
+      [documents.step12SourceDelta, documents.step14SourceDelta]
+    )
+    validatedDigest = documents.step13SourceDelta.target_digest
+  }
+  if (step === 'M5B-12') {
+    validateStep12CheckoutDelta(
+      scan,
+      documents.active,
+      [
+        documents.step2SourceDelta, documents.step3SourceDelta, documents.step4SourceDelta,
+        documents.step5SourceDelta, documents.step6SourceDelta, documents.step7SourceDelta,
+        documents.step8SourceDelta, documents.step9SourceDelta, documents.step10SourceDelta,
+        documents.step11SourceDelta, documents.step13SourceDelta
+      ],
+      documents.step12SourceDelta,
+      [documents.step14SourceDelta]
+    )
+    validatedDigest = documents.step12SourceDelta.target_digest
+  }
+  if (step === 'M5B-14') {
+    validateStep14CheckoutDelta(
+      scan,
+      documents.active,
+      [
+        documents.step2SourceDelta, documents.step3SourceDelta, documents.step4SourceDelta,
+        documents.step5SourceDelta, documents.step6SourceDelta, documents.step7SourceDelta,
+        documents.step8SourceDelta, documents.step9SourceDelta, documents.step10SourceDelta,
+        documents.step11SourceDelta, documents.step13SourceDelta, documents.step12SourceDelta
+      ],
+      documents.step14SourceDelta
+    )
+    validatedDigest = documents.step14SourceDelta.target_digest
+  }
 
   const pending = inventory.expected_pending[step]
   if (target) {
@@ -1020,10 +1587,22 @@ export function validateM5bMigration({ scan, step, target = false, ...documents 
     if (pending.command_channels.length > 0 || pending.runtime_health_channel || pending.legacy_event_port_ids.length > 0 || pending.request_report_command_ids.length > 0) {
       throw new M5bInventoryError(`target pending is not zero at ${step}`)
     }
-    const legacyActual = scan.capability_callsites.filter((entry) => entry.kind === 'LEGACY_EVENT_PORT_CALL')
-    const reportActual = scan.capability_callsites.filter((entry) => entry.kind === 'REPORT_COMMAND_CALL')
+    const productionCapabilities = scan.production_capability_callsites ?? scan.capability_callsites
+    const legacyActual = productionCapabilities.filter((entry) => entry.kind === 'LEGACY_EVENT_PORT_CALL')
+    const reportActual = productionCapabilities.filter((entry) => entry.kind === 'REPORT_COMMAND_CALL')
     assertEqual(legacyActual.length, 0, 'target legacy event-port callsites')
     assertEqual(reportActual.length, 0, 'target request report command callsites')
+    const oracleCallsites = scan.production_prepare_oracle_callsites ?? []
+    const allowedOracleFingerprints = new Set(
+      documents.active.capability_callsites
+        .filter((entry) => PREPARE_ONLY_LEGACY_ORACLE_FILES.has(entry.file))
+        .map((entry) => entry.fingerprint)
+    )
+    for (const entry of oracleCallsites) {
+      if (!allowedOracleFingerprints.has(entry.fingerprint)) {
+        throw new M5bInventoryError(`unexpected legacy prepare oracle callsite ${entry.file}:${entry.line}`)
+      }
+    }
   }
 
   return {
@@ -1039,6 +1618,6 @@ export function validateM5bMigration({ scan, step, target = false, ...documents 
     health_pending: pending.runtime_health_channel ? 1 : 0,
     legacy_pending: pending.legacy_event_port_ids.length,
     report_pending: pending.request_report_command_ids.length,
-    digest: scan.digest
+    digest: validatedDigest
   }
 }

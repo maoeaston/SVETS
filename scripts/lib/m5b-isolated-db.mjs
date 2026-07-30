@@ -39,6 +39,9 @@ import {
   writeSegmentIndexAtomic
 } from '../../src/main/domain/event-batch/segment-index.ts'
 import { SegmentStore } from '../../src/main/domain/event-batch/segment-store.ts'
+import { probeArtifactTarget } from '../../src/main/domain/event-batch/artifact-probe.ts'
+import { publishPreparedArtifact } from '../../src/main/domain/event-batch/artifact-publisher.ts'
+import { recoverPreparedArtifact } from '../../src/main/domain/event-batch/artifact-recovery.ts'
 import { createCommandRequestHash } from '../../src/main/application/command/command-request-hash.ts'
 import { createCommandResultJson, parseCommandResultJson } from '../../src/main/application/command/command-result.ts'
 import { CommandRegistry } from '../../src/main/application/command/command-registry.ts'
@@ -61,6 +64,11 @@ import { PreparedFactRegistry } from '../../src/main/domain/event-batch/result-r
 import { RuntimeCorruptionState } from '../../src/main/domain/event-batch/runtime-corruption.ts'
 import { StartupRecovery } from '../../src/main/domain/event-batch/startup-recovery.ts'
 import { FairWriterMutex } from '../../src/main/domain/event-batch/writer-mutex.ts'
+import {
+  loadSafetyPlannerSnapshot,
+  SafetyPlanner
+} from '../../src/main/application/planners/safety-planner.ts'
+import { registerSafetyPreparedFacts } from '../../src/main/domain/projectors/safety-projector.ts'
 import {
   createM5bTempPaths,
   validateThenOpenM5bPaths
@@ -183,6 +191,20 @@ function assertSqliteFile(dbPath, { target }) {
   if (targetCount !== (target ? 4 : 0)) {
     throw new Error(`unexpected T11-T14 table count ${targetCount} for ${dbPath}`)
   }
+}
+
+/** The authoritative schema is now v2.2; cutover evidence must begin from exact M4. */
+function prepareExactM4Source(adapter) {
+  adapter.exec(`
+    DROP INDEX IF EXISTS ux_command_idempotency;
+    DROP INDEX IF EXISTS idx_applied_event_batch_segment;
+    DROP INDEX IF EXISTS idx_processed_event_batch;
+    DROP TABLE IF EXISTS processed_event;
+    DROP TABLE IF EXISTS applied_event_batch;
+    DROP TABLE IF EXISTS projector_cursor;
+    DROP TABLE IF EXISTS command_log;
+  `)
+  adapter.prepare('DELETE FROM schema_migration WHERE migration_id = ?').run(EVENT_BATCH_MIGRATION_ID)
 }
 
 function createPairedBackup(paths, database, legacyBytes) {
@@ -656,6 +678,174 @@ function isolatedCommand(store, clock, slot, workerId) {
   }
 }
 
+function isolatedSafetyCommand(store, clock, workerId) {
+  const commandId = '65000000-0000-4000-8000-000000000065'
+  const registered = store.registerOrLoad({
+    commandId,
+    idempotencyKey: '66000000-0000-4000-8000-000000000066',
+    clientInstanceId: '67000000-0000-4000-8000-000000000067',
+    commandType: 'assessment:triggerRedline',
+    actorId: 'isolated-safety-teacher',
+    deviceId: 'isolated-safety-device',
+    authSessionId: 'isolated-safety-auth-session',
+    requestHash: 'a'.repeat(64),
+    eventBatchId: '68000000-0000-4000-8000-000000000068',
+    createdAt: clock().toISOString(),
+    maxAttempts: 3
+  }).row
+  const row = store.acquireLease({
+    commandId: registered.commandId,
+    seenGeneration: registered.currentLeaseGeneration,
+    workerId,
+    now: clock().toISOString(),
+    allowFailed: true
+  })
+  if (!row) throw new Error('isolated safety command lease was not acquired')
+  return {
+    row,
+    envelope: buildCommandEnvelopeV2({
+      commandId: row.commandId,
+      commandType: row.commandType,
+      source: 'INTERNAL',
+      actor: {
+        kind: 'USER',
+        userId: row.actorId,
+        role: 'TEACHER',
+        authSessionId: row.authSessionId
+      },
+      target: {
+        session_id: 'isolated-safety-assessment',
+        student_id: 'isolated-safety-student',
+        job_code: 'SUPERMARKET_SHELVER',
+        task_code: 'SHELVE_TASK'
+      },
+      payload: {
+        reasonCode: 'BLADE_TOWARD_SELF',
+        contextPhase: 'ONLINE_ASSESSMENT'
+      },
+      requestHash: row.requestHash,
+      createdAt: row.createdAt,
+      clientInstanceId: row.clientInstanceId,
+      idempotencyKey: row.idempotencyKey,
+      eventBatchId: row.eventBatchId,
+      actorId: row.actorId,
+      deviceId: row.deviceId,
+      authSessionId: row.authSessionId,
+      leaseOwner: workerId,
+      leaseGeneration: row.currentLeaseGeneration
+    })
+  }
+}
+
+function seedSafetyPrimitives(database) {
+  const teacherId = 'isolated-safety-teacher'
+  const studentId = 'isolated-safety-student'
+  const assessmentId = 'isolated-safety-assessment'
+  const trainingId = 'isolated-safety-training'
+  const stepId = 'isolated-safety-step'
+  const jobCode = 'SUPERMARKET_SHELVER'
+  const taskCode = 'SHELVE_TASK'
+
+  database.prepare(
+    "INSERT INTO user_account (user_id, username, password_hash, role, display_name, status) VALUES (?, 'isolated_safety_teacher', 'isolated', 'TEACHER', 'Isolated Safety Teacher', 'ACTIVE')"
+  ).run(teacherId)
+  database.prepare(
+    "INSERT INTO student_profile (student_id, student_name, status) VALUES (?, 'Isolated Safety Student', 'ACTIVE')"
+  ).run(studentId)
+  database.prepare(
+    "INSERT INTO business_session (business_session_id, session_type, student_id, job_code, task_code, created_by) VALUES (?, 'ASSESSMENT', ?, ?, ?, ?)"
+  ).run(assessmentId, studentId, jobCode, taskCode, teacherId)
+  database.prepare(
+    `INSERT INTO assessment_session (
+       session_id, business_session_id, student_id, strategy_id, strategy_type, job_code, task_code,
+       strategy_version, status, delivery_phase, online_question_count, offline_question_count, created_by
+     ) VALUES (?, ?, ?, 'strategy_baseline_shelver_v1', 'BASELINE_ASSESSMENT', ?, ?, 1, 'INIT', 'PREPARED', 42, 8, ?)`
+  ).run(assessmentId, assessmentId, studentId, jobCode, taskCode, teacherId)
+  for (const phase of ['ASSIGNED', 'STUDENT_CONFIRMED']) {
+    database.prepare('UPDATE assessment_session SET delivery_phase = ? WHERE session_id = ?').run(phase, assessmentId)
+  }
+  database.prepare(
+    "UPDATE assessment_session SET status = 'ACTIVE', delivery_phase = 'ONLINE_IN_PROGRESS' WHERE session_id = ?"
+  ).run(assessmentId)
+
+  database.prepare(
+    "INSERT INTO business_session (business_session_id, session_type, student_id, job_code, task_code, created_by) VALUES (?, 'TRAINING', ?, ?, ?, ?)"
+  ).run(trainingId, studentId, jobCode, taskCode, teacherId)
+  database.prepare(
+    `INSERT INTO training_session (
+       training_session_id, business_session_id, student_id, job_code, task_code, strategy_id,
+       strategy_type, strategy_version, status, total_step_count, completed_step_count, created_by
+     ) VALUES (?, ?, ?, ?, ?, 'strategy_training_shelver_v1', 'TRAINING_PRACTICE', 1, 'ACTIVE', 1, 0, ?)`
+  ).run(trainingId, trainingId, studentId, jobCode, taskCode, teacherId)
+  database.prepare(
+    "INSERT INTO training_step_record (training_step_record_id, training_session_id, step_code, step_name, step_order, step_type, status, attempt_count) VALUES (?, ?, 'DO', 'Isolated safety step', 1, 'DO', 'IN_PROGRESS', 1)"
+  ).run(stepId, trainingId)
+  return { assessmentId, trainingId, stepId }
+}
+
+async function verifySafetyPrimitives(adapter, paths) {
+  const runtimeRoot = join(paths.dataRoot, 'safety-runtime')
+  mkdirSync(runtimeRoot, { recursive: false })
+  const targets = seedSafetyPrimitives(adapter)
+  const store = new DurableCommandStore(adapter)
+  const capability = new DurableFileCapability(runtimeRoot)
+  const registry = registerSafetyPreparedFacts().seal()
+  const workerId = 'isolated-safety-worker'
+  const clock = () => new Date('2026-07-30T12:00:00.000Z')
+  const accepted = isolatedSafetyCommand(store, clock, workerId)
+  let plannerCalls = 0
+  const result = await new EventBatchCoordinator({
+    database: adapter,
+    commandStore: store,
+    registry,
+    fileCapability: capability,
+    writerMutex: new FairWriterMutex(),
+    corruptionState: new RuntimeCorruptionState(),
+    workerId,
+    legacyAnchor: null,
+    now: clock
+  }).execute({
+    envelope: accepted.envelope,
+    readSnapshot: () => {
+      plannerCalls += 1
+      return loadSafetyPlannerSnapshot(adapter, accepted.envelope, {
+        timestamp: clock().toISOString(),
+        appVersion: '1.0.0-alpha.1'
+      })
+    },
+    planner: new SafetyPlanner()
+  })
+  const incidentId = result.publicResult.incidentId
+  if (typeof incidentId !== 'string' || result.batch?.events.length !== 1 || result.batch.events[0].record.event_type !== 'SAFETY_INCIDENT_CREATED') {
+    throw new Error('isolated safety command did not produce exactly one redline event')
+  }
+  const assessment = adapter.prepare('SELECT status, redline_incident_id FROM assessment_session WHERE session_id = ?').get(targets.assessmentId)
+  const training = adapter.prepare('SELECT status, redline_incident_id FROM training_session WHERE training_session_id = ?').get(targets.trainingId)
+  const step = adapter.prepare('SELECT status FROM training_step_record WHERE training_step_record_id = ?').get(targets.stepId)
+  const bindings = adapter.prepare('SELECT COUNT(*) AS count FROM safety_incident_binding WHERE incident_id = ?').get(incidentId)
+  const safetyResult = adapter.prepare(
+    `SELECT safety_overridden, level_result, redline_incident_id, is_current
+       FROM result_record WHERE source_aggregate_id = ? AND result_type = 'ABILITY_SCORE'`
+  ).get(targets.assessmentId)
+  if (
+    plannerCalls !== 1
+    || assessment?.status !== 'REDLINE_HALTED' || assessment?.redline_incident_id !== incidentId
+    || training?.status !== 'REDLINE_HALTED' || training?.redline_incident_id !== incidentId
+    || step?.status !== 'FAILED' || bindings?.count !== 2
+    || safetyResult?.safety_overridden !== 1 || safetyResult?.level_result !== 'LEVEL_FAIL_BY_SAFETY'
+    || safetyResult?.redline_incident_id !== incidentId || safetyResult?.is_current !== 1
+    || store.findByCommandId(accepted.row.commandId)?.status !== 'SUCCEEDED'
+  ) throw new Error('isolated safety redline projection is inconsistent')
+  return {
+    commandId: accepted.row.commandId,
+    incidentId,
+    eventCount: result.batch.events.length,
+    bindingCount: bindings.count,
+    plannerCalls,
+    persisted: false
+  }
+}
+
 function isolatedPlanner(command, slot, values, calls) {
   return {
     plan: ({ envelope }) => {
@@ -798,14 +988,78 @@ async function verifyCoordinatorPrimitives(adapter, paths) {
   }
 }
 
+function verifyArtifactPrimitives(paths) {
+  const artifactRoot = join(paths.dataRoot, 'artifact-runtime')
+  const targetPath = join(artifactRoot, 'isolated-report.html')
+  const artifactId = 'a5000000-0000-4000-8000-000000000005'
+  const bytes = Buffer.from('<html><body>isolated report artifact</body></html>\n', 'utf8')
+  mkdirSync(artifactRoot, { recursive: false })
+  const interaction = probeArtifactTarget({ artifactRoot, targetPath, artifactId })
+  const plan = Object.freeze({
+    schema_version: 'report-export-artifact-v1',
+    artifact_id: artifactId,
+    target_path: targetPath,
+    target_identity: interaction.targetIdentity,
+    artifact_bytes_base64: bytes.toString('base64'),
+    file_hash: sha256(bytes),
+    file_size_bytes: bytes.byteLength,
+    mime_type: 'text/html'
+  })
+  const published = publishPreparedArtifact(plan)
+  if (published.status !== 'PUBLISHED' || published.cleanupWarning !== null || !readFileSync(targetPath).equals(bytes)) {
+    throw new Error('isolated artifact publish is inconsistent')
+  }
+  rmSync(targetPath)
+  const rebuilt = recoverPreparedArtifact(plan)
+  if (rebuilt.status !== 'PUBLISHED' || rebuilt.cleanupWarning !== null || !readFileSync(targetPath).equals(bytes)) {
+    throw new Error('isolated artifact recovery did not rebuild frozen bytes')
+  }
+  rmSync(targetPath)
+  writeFileSync(targetPath, 'external artifact', { flag: 'wx' })
+  let conflict = false
+  try {
+    recoverPreparedArtifact(plan)
+  } catch {
+    conflict = true
+  }
+  if (!conflict || readFileSync(targetPath, 'utf8') !== 'external artifact') {
+    throw new Error('isolated artifact recovery overwrote an external target')
+  }
+  return Object.freeze({
+    probeClean: !existsSync(interaction.stagePath),
+    published: true,
+    rebuilt: true,
+    externalTargetPreserved: true
+  })
+}
+
 export async function runM5bIsolatedDatabaseVerification({
   projectRoot = process.cwd(),
   stage = 'schema',
   pathsFactory = createM5bTempPaths,
   migrate = applyEventBatchMigration
 } = {}) {
-  if (stage !== 'schema' && stage !== 'storage' && stage !== 'command' && stage !== 'gate-only' && stage !== 'coordinator') {
+  if (stage !== 'schema' && stage !== 'storage' && stage !== 'command' && stage !== 'gate-only' && stage !== 'coordinator' && stage !== 'artifact' && stage !== 'safety' && stage !== 'cutover' && stage !== 'full') {
     throw new M5bIsolatedDatabaseError(`[m5b-isolated-db] unsupported stage ${stage}`)
+  }
+  if (stage === 'cutover' || stage === 'full') {
+    const stages = ['schema', 'storage', 'command', 'gate-only', 'coordinator', 'artifact', 'safety']
+    const components = {}
+    for (const componentStage of stages) {
+      components[componentStage] = await runM5bIsolatedDatabaseVerification({
+        projectRoot,
+        stage: componentStage,
+        pathsFactory,
+        migrate
+      })
+    }
+    return Object.freeze({
+      ok: true,
+      stage,
+      schemaVersion: EVENT_BATCH_SCHEMA_VERSION,
+      components: Object.freeze(components),
+      cleaned: stages.every((componentStage) => components[componentStage].cleaned === true)
+    })
   }
 
   let paths = null
@@ -827,6 +1081,7 @@ export async function runM5bIsolatedDatabaseVerification({
       ))
       const legacyBytes = Buffer.from(golden.legacy.line, 'utf8')
       adapter.exec(schema)
+      prepareExactM4Source(adapter)
       writeDurably(paths.legacyLogPath, legacyBytes, 'wx')
       writeDurably(paths.dbPath, Buffer.from(database.export()), 'wx')
 
@@ -850,6 +1105,8 @@ export async function runM5bIsolatedDatabaseVerification({
       const command = stage === 'command' ? verifyCommandPrimitives(adapter) : null
       const gate = stage === 'gate-only' ? await verifyGateOnlyPrimitives(adapter) : null
       const coordinator = stage === 'coordinator' ? await verifyCoordinatorPrimitives(adapter, paths) : null
+      const artifact = stage === 'artifact' ? verifyArtifactPrimitives(paths) : null
+      const safety = stage === 'safety' ? await verifySafetyPrimitives(adapter, paths) : null
       writeDurably(paths.dbPath, Buffer.from(database.export()))
       validateThenOpenM5bPaths(paths, () => undefined)
       assertSqliteFile(paths.dbPath, { target: true })
@@ -887,9 +1144,24 @@ export async function runM5bIsolatedDatabaseVerification({
         }
         coordinator.persisted = true
       }
+      if (safety) {
+        const durableCommand = reopenedAdapter.prepare(
+          "SELECT status, result_json FROM command_log WHERE command_id = ? AND command_type = 'assessment:triggerRedline'"
+        ).get(safety.commandId)
+        const incident = reopenedAdapter.prepare(
+          'SELECT status FROM safety_incident WHERE incident_id = ?'
+        ).get(safety.incidentId)
+        const bindings = reopenedAdapter.prepare(
+          'SELECT COUNT(*) AS count FROM safety_incident_binding WHERE incident_id = ?'
+        ).get(safety.incidentId)
+        if (durableCommand?.status !== 'SUCCEEDED' || durableCommand?.result_json === null || incident?.status !== 'PENDING_DETAIL' || bindings?.count !== 2) {
+          throw new Error('isolated safety facts did not survive database reopen')
+        }
+        safety.persisted = true
+      }
       const restored = restoreAndVerifyBackup(paths, backup, legacyBytes)
       const manifest = JSON.parse(readFileSync(backup.manifestPath, 'utf8'))
-      const storage = stage === 'storage' || stage === 'command' || stage === 'gate-only' || stage === 'coordinator'
+      const storage = stage === 'storage' || stage === 'command' || stage === 'gate-only' || stage === 'coordinator' || stage === 'artifact' || stage === 'safety'
         ? verifyStoragePrimitives(paths, golden)
         : null
 
@@ -917,6 +1189,8 @@ export async function runM5bIsolatedDatabaseVerification({
         command,
         gate,
         coordinator,
+        artifact,
+        safety,
         cleaned: true
       }
       database.close()

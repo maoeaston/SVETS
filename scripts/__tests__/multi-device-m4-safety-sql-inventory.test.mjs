@@ -47,7 +47,7 @@ describe('M4 production safety-SQL inventory', () => {
     const projectRoot = process.cwd()
     const hits = scanProductionSafetySql(projectRoot)
     const realInventory = JSON.parse(readFileSync(join(projectRoot, 'doc/features/multi-device-m4-safety-sql-inventory-v1.json'), 'utf8'))
-    expect(hits).toHaveLength(57)
+    expect(hits).toHaveLength(68)
     expect(hits.every((source) => source.file.startsWith('src/main/'))).toBe(true)
     expect(hits).toContainEqual(expect.objectContaining({
       file: 'src/main/ipc/handlers/foundation.ts',
@@ -73,12 +73,13 @@ describe('M4 production safety-SQL inventory', () => {
     const preparedPlannerEntries = realInventory.entries.filter((entry) =>
       entry.file === 'src/main/application/planners/assessment-planner.ts'
       || entry.file === 'src/main/application/planners/training-planner.ts'
+      || entry.file === 'src/main/application/planners/safety-planner.ts'
     )
-    expect(preparedPlannerEntries).toHaveLength(5)
+    expect(preparedPlannerEntries).toHaveLength(8)
     expect(preparedPlannerEntries.reduce((counts, entry) => {
       counts[entry.classification] = (counts[entry.classification] ?? 0) + 1
       return counts
-    }, {})).toEqual({ AGGREGATE_MATCH_REKEY: 4, NON_SAFETY_QUERY: 1 })
+    }, {})).toEqual({ AGGREGATE_MATCH_REKEY: 6, NON_SAFETY_QUERY: 1, INCIDENT_PRIMARY_KEY_LOOKUP: 1 })
     const excludedFiles = new Set([
       'src/main/db/migrations.ts',
       'src/main/db/report-migration.ts',
@@ -87,14 +88,14 @@ describe('M4 production safety-SQL inventory', () => {
     ])
     expect(hits.some((source) => source.file.includes('__tests__') || excludedFiles.has(source.file))).toBe(false)
     expect(validateSafetySqlInventory({ hits, inventory: realInventory, mode: 'target' })).toMatchObject({
-      hit_count: 57,
+      hit_count: 68,
       pending_rekey: [],
       aggregate_missing_triple_key: [],
       classification_counts: {
-        AGGREGATE_MATCH_REKEY: 13,
-        INCIDENT_PRIMARY_KEY_LOOKUP: 20,
+        AGGREGATE_MATCH_REKEY: 15,
+        INCIDENT_PRIMARY_KEY_LOOKUP: 26,
         STUDENT_WIDE_LIST: 3,
-        NON_SAFETY_QUERY: 21
+        NON_SAFETY_QUERY: 24
       }
     })
   })

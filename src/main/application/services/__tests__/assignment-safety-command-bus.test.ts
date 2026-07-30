@@ -75,7 +75,6 @@ vi.mock('../../../domain/event-writer', () => ({
 }))
 
 import type { IpcMainInvokeEvent } from 'electron'
-import { writeEvent } from '../../../domain/event-writer'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
 import {
   createTestDb,
@@ -83,7 +82,6 @@ import {
   seedCaller,
   seedStudent
 } from '../../../db/test-helpers'
-import type { ReportMutationPort } from '../../../domain/report-command-coordinator'
 import {
   createApplicationRuntime,
   type ApplicationRuntime,
@@ -98,7 +96,6 @@ import {
   registerCentralIpcHandlers,
   type CentralIpcBoundary
 } from '../../../ipc/handler-registry'
-import { createSafetyReportAutomation } from '../safety-service'
 
 const ASSIGNMENT_MUTATIONS = [
   'assignment:create',
@@ -122,10 +119,6 @@ class InertScheduler implements RuntimeScheduler {
   clearInterval(): void {}
 }
 
-function recordingMutationPort(): ReportMutationPort {
-  return Object.freeze({ writeEvent, recoverPending() {} })
-}
-
 const databases: MemoryAdapter[] = []
 const runtimes: ApplicationRuntime[] = []
 const senderIds = new Set<number>()
@@ -143,7 +136,6 @@ async function createRuntime(): Promise<{
     dataRoot: `/tmp/svets-m5a9-assignment-safety-${uuidv4()}`,
     dependencies: {
       prepareDirectory: () => undefined,
-      createLegacyMutationPort: recordingMutationPort,
       scheduler: new InertScheduler()
     }
   })
@@ -175,7 +167,16 @@ function bindUser(
 function requireHandler(channel: string) {
   const handler = electronState.handlers.get(channel)
   if (!handler) throw new Error(`missing test IPC handler: ${channel}`)
-  return handler
+  return (event: unknown, rawInput?: unknown) => (handler as unknown as (
+    event: unknown,
+    input?: unknown,
+    transportMetadata?: unknown
+  ) => Promise<unknown>)(event, rawInput, {
+    schemaVersion: 1,
+    clientInstanceId: uuidv4(),
+    idempotencyKey: uuidv4(),
+    deviceId: null
+  })
 }
 
 function seedPreparedAssignmentSession(
@@ -227,6 +228,28 @@ function seedSafetyIncident(
   return incidentId
 }
 
+interface V2EventFact {
+  event_type: string
+  batch_id: string
+  correlation_id: string | null
+}
+
+function v2EventFacts(db: MemoryAdapter): V2EventFact[] {
+  return db.prepare(
+    `SELECT pe.event_type, pe.batch_id,
+            json_extract(dep.payload_json, '$.correlation_id') AS correlation_id
+       FROM processed_event pe
+       JOIN domain_event_projection dep ON dep.event_id = pe.event_id
+      ORDER BY pe.rowid`
+  ).all() as V2EventFact[]
+}
+
+function latestV2BatchFacts(db: MemoryAdapter): V2EventFact[] {
+  const facts = v2EventFacts(db)
+  const batchId = facts.at(-1)?.batch_id
+  return batchId ? facts.filter((fact) => fact.batch_id === batchId) : []
+}
+
 beforeEach(() => {
   electronState.handlers.clear()
   eventState.calls = []
@@ -243,7 +266,7 @@ afterEach(() => {
 
 describe('M5A-9 assignment and safety commands through CommandBus', () => {
   it('registers nine mutation owners, two query-only reads and one runtime coordinator', async () => {
-    const { runtime, boundary } = await createRuntime()
+    const { boundary } = await createRuntime()
     const assignment = ASSIGNMENT_MUTATIONS.map((channel) => boundary.registry.requireMutation(channel))
     const safety = SAFETY_MUTATIONS.map((channel) => boundary.registry.requireMutation(channel))
     expect(assignment).toHaveLength(5)
@@ -267,8 +290,6 @@ describe('M5A-9 assignment and safety commands through CommandBus', () => {
         transactionOwner: 'NONE_READ_ONLY'
       })
     }
-    expect(createSafetyReportAutomation(runtime.db, runtime.reportCoordinator).coordinator)
-      .toBe(runtime.reportCoordinator)
   })
 
   it('rejects a forged assignment target before writes, then creates runtime only after acceptance', async () => {
@@ -285,7 +306,7 @@ describe('M5A-9 assignment and safety commands through CommandBus', () => {
       businessSessionId,
       jobCode: 'FORGED_JOB'
     })).toMatchObject({ success: false })
-    expect(eventState.calls).toEqual([])
+    expect(v2EventFacts(db)).toEqual([])
     expect(db.prepare('SELECT COUNT(*) AS count FROM organization').get()).toEqual({ count: 0 })
 
     const created = await requireHandler('assignment:create')(event(senderId), {
@@ -296,10 +317,11 @@ describe('M5A-9 assignment and safety commands through CommandBus', () => {
     expect(created).toMatchObject({ success: true })
     expect(created.assignmentId).toBeTruthy()
     expect(db.prepare('SELECT COUNT(*) AS count FROM organization').get()).toEqual({ count: 1 })
-    expect(eventState.calls.map((call) => call.eventType)).toEqual(['ASSIGNMENT_CREATED'])
-    expect(eventState.calls[0].correlationId).toMatch(/\S+/)
+    const createdFacts = latestV2BatchFacts(db)
+    expect(createdFacts.map((fact) => fact.event_type)).toEqual(['ASSIGNMENT_CREATED'])
+    expect(createdFacts[0]?.correlation_id).toMatch(/^[0-9a-f-]{36}$/)
 
-    eventState.calls = []
+    const afterCreated = v2EventFacts(db)
     expect(await requireHandler('assignment:confirmStudent')(event(senderId), {
       callerUserId: teacherId,
       callerRole: 'TEACHER',
@@ -307,7 +329,7 @@ describe('M5A-9 assignment and safety commands through CommandBus', () => {
       confirmationMethod: 'TEACHER_ATTESTATION',
       jobCode: 'FORGED_JOB'
     })).toMatchObject({ success: false })
-    expect(eventState.calls).toEqual([])
+    expect(v2EventFacts(db)).toEqual(afterCreated)
     expect(await requireHandler('assignment:confirmStudent')(event(senderId), {
       callerUserId: teacherId,
       callerRole: 'TEACHER',
@@ -318,13 +340,13 @@ describe('M5A-9 assignment and safety commands through CommandBus', () => {
     const otherStudentId = seedStudent(db)
     const studentSender = 6904
     bindUser(db, runtime, studentSender, otherStudentId, 'STUDENT')
-    eventState.calls = []
+    const beforeForbiddenStart = v2EventFacts(db)
     expect(await requireHandler('assignment:startAssessment')(event(studentSender), {
       callerUserId: otherStudentId,
       callerRole: 'STUDENT',
       assignmentId: created.assignmentId
     })).toEqual({ success: false, errorCode: 'FORBIDDEN' })
-    expect(eventState.calls).toEqual([])
+    expect(v2EventFacts(db)).toEqual(beforeForbiddenStart)
 
     expect(await requireHandler('assignment:rebind')(event(senderId), {
       callerUserId: teacherId,
@@ -341,7 +363,7 @@ describe('M5A-9 assignment and safety commands through CommandBus', () => {
     })).toMatchObject({ success: true, assignmentId: created.assignmentId })
   })
 
-  it('enforces safety roles and authoritative triple, then inherits correlation into the report fallback', async () => {
+  it('enforces safety roles and authoritative triple, then records the confirmed safety batch', async () => {
     const { db, runtime } = await createRuntime()
     const teacherId = seedCaller(db, 'TEACHER')
     const adminId = seedCaller(db, 'ADMIN')
@@ -369,21 +391,19 @@ describe('M5A-9 assignment and safety commands through CommandBus', () => {
       callerRole: 'ADMIN',
       ...confirmation
     })).toEqual({ success: false, errorCode: 'FORBIDDEN' })
-    expect(eventState.calls).toEqual([])
+    expect(v2EventFacts(db)).toEqual([])
 
     expect(await requireHandler('safety:confirm')(event(teacherSender), {
       callerUserId: teacherId,
       callerRole: 'TEACHER',
       ...confirmation
     })).toEqual({ success: true, incidentId })
-    expect(eventState.calls.map((call) => call.eventType)).toEqual([
-      'SAFETY_INCIDENT_DETAIL_CONFIRMED',
-      'REPORT_GENERATED'
-    ])
-    expect(new Set(eventState.calls.map((call) => call.correlationId)).size).toBe(1)
-    expect(eventState.calls[0].correlationId).toMatch(/\S+/)
+    const confirmationFacts = latestV2BatchFacts(db)
+    expect(confirmationFacts.map((fact) => fact.event_type)).toEqual(['SAFETY_INCIDENT_DETAIL_CONFIRMED'])
+    expect(new Set(confirmationFacts.map((fact) => fact.batch_id)).size).toBe(1)
+    expect(confirmationFacts[0]?.correlation_id).toMatch(/^[0-9a-f-]{36}$/)
 
-    eventState.calls = []
+    const afterConfirmation = v2EventFacts(db)
     expect(await requireHandler('safety:resolve')(event(teacherSender), {
       callerUserId: teacherId,
       callerRole: 'TEACHER',
@@ -391,7 +411,7 @@ describe('M5A-9 assignment and safety commands through CommandBus', () => {
       resolutionNotes: '无权限',
       followUpRequired: false
     })).toEqual({ success: false, errorCode: 'FORBIDDEN' })
-    expect(eventState.calls).toEqual([])
+    expect(v2EventFacts(db)).toEqual(afterConfirmation)
 
     expect(await requireHandler('safety:resolve')(event(adminSender), {
       callerUserId: adminId,

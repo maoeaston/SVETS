@@ -102,7 +102,6 @@ import {
   type CentralIpcBoundary
 } from '../../../ipc/handler-registry'
 import { TASK_OPERATION_CODES } from '../../../../shared/types/operation-scoring'
-import { createJobSkillReportAutomation } from '../job-skill-report-service'
 import { finalizeJobSkillResultCore } from '../job-skill-result-service'
 import { acceptedScoringTestContext } from './scoring-test-support'
 
@@ -153,7 +152,6 @@ async function createRuntime(): Promise<{
     dataRoot: `/tmp/svets-m5a8-scoring-${uuidv4()}`,
     dependencies: {
       prepareDirectory: () => undefined,
-      createLegacyMutationPort: recordingMutationPort,
       scheduler: new InertScheduler()
     }
   })
@@ -191,7 +189,16 @@ function bindTeacher(
 function requireHandler(channel: string) {
   const handler = electronState.handlers.get(channel)
   if (!handler) throw new Error(`missing test IPC handler: ${channel}`)
-  return handler
+  return (event: unknown, rawInput?: unknown) => (handler as unknown as (
+    event: unknown,
+    input?: unknown,
+    transportMetadata?: unknown
+  ) => Promise<unknown>)(event, rawInput, {
+    schemaVersion: 1,
+    clientInstanceId: uuidv4(),
+    idempotencyKey: uuidv4(),
+    deviceId: null
+  })
 }
 
 function seedOfflinePendingSession(
@@ -225,6 +232,28 @@ function operationInput(teacherId: string, sessionId: string) {
   }
 }
 
+interface V2EventFact {
+  event_type: string
+  batch_id: string
+  correlation_id: string | null
+}
+
+function v2EventFacts(db: MemoryAdapter): V2EventFact[] {
+  return db.prepare(
+    `SELECT pe.event_type, pe.batch_id,
+            json_extract(dep.payload_json, '$.correlation_id') AS correlation_id
+       FROM processed_event pe
+       JOIN domain_event_projection dep ON dep.event_id = pe.event_id
+      ORDER BY pe.rowid`
+  ).all() as V2EventFact[]
+}
+
+function latestV2BatchFacts(db: MemoryAdapter): V2EventFact[] {
+  const facts = v2EventFacts(db)
+  const batchId = facts.at(-1)?.batch_id
+  return batchId ? facts.filter((fact) => fact.batch_id === batchId) : []
+}
+
 beforeEach(() => {
   electronState.handlers.clear()
   eventState.calls = []
@@ -241,7 +270,7 @@ afterEach(() => {
 
 describe('M5A-8 scoring and observation commands through CommandBus', () => {
   it('registers four mutations and five query-only reads with application ownership', async () => {
-    const { runtime, boundary } = await createRuntime()
+    const { boundary } = await createRuntime()
     const definitions = SCORING_MUTATIONS.map((channel) => boundary.registry.requireMutation(channel))
     expect(definitions).toHaveLength(4)
     expect(definitions.every((definition) =>
@@ -259,15 +288,13 @@ describe('M5A-8 scoring and observation commands through CommandBus', () => {
         transactionOwner: 'NONE_READ_ONLY'
       })
     }
-    expect(createJobSkillReportAutomation(runtime.db, runtime.reportCoordinator).coordinator)
-      .toBe(runtime.reportCoordinator)
   })
 
   it('rejects result automation from an accepted but unregistered parent command', async () => {
-    const { db, runtime } = await createRuntime()
+    const { db } = await createRuntime()
     const teacherId = seedCaller(db, 'TEACHER')
     expect(() => finalizeJobSkillResultCore(db, 'missing-session', teacherId, {
-      eventPort: runtime.legacyMutationPort,
+      eventPort: recordingMutationPort(),
       context: acceptedScoringTestContext({
         commandType: 'assessment:submitOfflineAbilityScores',
         callerUserId: teacherId,
@@ -290,18 +317,20 @@ describe('M5A-8 scoring and observation commands through CommandBus', () => {
       ...input,
       jobCode: 'FORGED_JOB'
     })).toMatchObject({ success: false })
-    expect(eventState.calls).toEqual([])
+    expect(v2EventFacts(db)).toEqual([])
     expect((db.prepare('SELECT COUNT(*) AS count FROM offline_score_record WHERE session_id = ?')
       .get(sessionId) as { count: number }).count).toBe(0)
 
     expect(await requireHandler('assessment:submitOperationScores')(event(senderId), input))
       .toMatchObject({ success: true, normalizedScore: 100 })
-    expect(eventState.calls.map((call) => call.eventType)).toEqual([
+    const facts = latestV2BatchFacts(db)
+    expect(facts.map((fact) => fact.event_type)).toEqual([
       ...Array.from({ length: 9 }, () => 'OFFLINE_SCORE_SUBMITTED'),
       'RESULT_CALCULATED'
     ])
-    expect(new Set(eventState.calls.map((call) => call.correlationId)).size).toBe(1)
-    expect(eventState.calls[0].correlationId).toMatch(/^[0-9a-f-]{36}$/)
+    expect(new Set(facts.map((fact) => fact.batch_id)).size).toBe(1)
+    expect(new Set(facts.map((fact) => fact.correlation_id)).size).toBe(1)
+    expect(facts[0]?.correlation_id).toMatch(/^[0-9a-f-]{36}$/)
   })
 
   it('keeps all five scoring and observation reads free of event writes', async () => {
@@ -319,6 +348,6 @@ describe('M5A-8 scoring and observation commands through CommandBus', () => {
         sessionId
       })).toMatchObject({ success: true })
     }
-    expect(eventState.calls).toEqual([])
+    expect(v2EventFacts(db)).toEqual([])
   })
 })

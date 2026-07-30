@@ -1,59 +1,59 @@
-import { ipcMain, type IpcMainInvokeEvent } from 'electron'
+import { dialog, ipcMain, type IpcMainInvokeEvent } from 'electron'
+import { dirname } from 'path'
 import { v4 as uuidv4 } from 'uuid'
-import { CommandBus } from '../application/command/command-bus'
 import {
   M5A_MUTATION_CHANNELS,
   createM5AMutationDefinitions
 } from '../application/command/m5a-command-definitions'
 import { CommandRegistry } from '../application/command/command-registry'
-import {
-  createTeacherAccount,
-  executeLoginCommand,
-  executeLogoutCommand,
-  setTeacherAccountStatus
-} from '../application/services/auth-service'
-import {
-  archiveStudent,
-  createStudent,
-  updateStudent
-} from '../application/services/student-service'
-import {
-  createVersion,
-  setActive,
-  updateStrategy
-} from '../application/services/strategy-service'
+import { DurableCommandCoordinatorError } from '../application/command/durable-command-coordinator'
+import { applyGateOnlyPostCommitBinding } from '../application/command/gate-only-command-apply'
+import { prepareReportExportInteraction, completeReportExportCancellation } from '../application/planners/report-export-planner'
 import {
   M5A_READ_CHANNELS,
   M5A_READ_DEFINITIONS,
   requireM5AReadPolicy
 } from '../application/query/m5a-read-definitions'
 import type { ApplicationRuntime } from '../application/runtime/application-runtime'
-import { createJobSkillReportAutomation } from '../application/services/job-skill-report-service'
-import { resolveBoundAuthSessionSnapshot } from '../utils/auth-session'
-import { registerAbilityScoringHandlers } from './handlers/ability-scoring'
-import { registerAssessmentHandlers } from './handlers/assessment'
-import { registerAssignmentHandlers } from './handlers/assignment'
-import { registerAuthHandlers } from './handlers/auth'
-import { registerFoundationHandlers } from './handlers/foundation'
-import { registerJobSkillScoringHandlers } from './handlers/job-skill-scoring'
-import { registerObservationHandlers } from './handlers/observation'
-import { registerOperationScoringHandlers } from './handlers/operation-scoring'
-import { registerReportsHandlers } from './handlers/reports'
-import { registerResultsHandlers } from './handlers/results'
-import { registerSafetyHandlers } from './handlers/safety'
-import { registerStrategyHandlers } from './handlers/strategy'
-import { registerStudentHandlers } from './handlers/student'
-import { registerTrainingHandlers } from './handlers/training'
+import { CommandPreflightError, type AnyMutationCommandDefinition } from '../application/command/command-types'
 import {
-  LegacyIpcHandlerCollector,
-  type CollectedIpcHandler
-} from './legacy-handler-collector'
+  getSession,
+  listMySessions,
+  listSessions
+} from '../application/query/assessment-query-service'
+import { getOfflineAbilityScores } from '../application/query/ability-scoring-query-service'
+import { getCurrentSessionQuery, listAccountsQuery } from '../application/query/auth-query-service'
+import {
+  getJobSkillOfflineScores,
+  getSessionScoringQuestions
+} from '../application/query/job-skill-scoring-query-service'
+import { getTeacherObservations } from '../application/query/observation-query-service'
+import { getOperationScores } from '../application/query/operation-scoring-query-service'
+import {
+  getReport,
+  listReportGenerationCandidates,
+  listReports
+} from '../application/query/reports-query-service'
+import { getSafetyIncident, listSafetyIncidents } from '../application/query/safety-query-service'
+import {
+  getStrategyQuery,
+  listStrategiesQuery,
+  listStrategyVersionsQuery
+} from '../application/query/strategy-query-service'
+import { getStudentQuery, listStudentsQuery } from '../application/query/student-query-service'
+import {
+  getTrainingSession,
+  listMyTrainingSessions,
+  listTrainingSessions
+} from '../application/query/training-query-service'
+import { resolveBoundAuthSessionSnapshot } from '../utils/auth-session'
+import { getException, getWorkspaceOverview, listExceptions } from './handlers/foundation'
+import { getCurrentResult, listCurrentResultsByStudent } from './handlers/results'
 
-type CentralListener = (event: IpcMainInvokeEvent, rawInput?: unknown) => Promise<unknown>
+type CentralListener = (event: IpcMainInvokeEvent, rawInput?: unknown, transportMetadata?: unknown) => Promise<unknown>
 
 export interface CentralIpcBoundary {
   readonly registry: CommandRegistry
-  readonly commandBus: CommandBus
   readonly channels: readonly string[]
   dispose(): void
 }
@@ -74,123 +74,83 @@ function isPlainRecord(value: unknown): value is Record<string, unknown> {
   return prototype === Object.prototype || prototype === null
 }
 
-function collectLegacyHandlers(runtime: ApplicationRuntime): LegacyIpcHandlerCollector {
-  const collector = new LegacyIpcHandlerCollector()
-  const getDb = runtime.getDb
-  registerAuthHandlers(collector, {
-    getDb,
-    bindingOwnerId: runtime.bindingOwnerId,
-    trackSender: (senderId, subscribeDestroyed) => runtime.trackSender(senderId, subscribeDestroyed)
-  })
-  registerStudentHandlers(collector, getDb)
-  registerStrategyHandlers(collector, getDb)
-  registerAssessmentHandlers(collector, {
-    getDb,
-    eventPort: runtime.legacyMutationPort
-  })
-  registerTrainingHandlers(collector, {
-    getDb,
-    eventPort: runtime.legacyMutationPort
-  })
-  registerOperationScoringHandlers(collector, {
-    getDb,
-    eventPort: runtime.legacyMutationPort
-  })
-  registerAbilityScoringHandlers(collector, {
-    getDb,
-    eventPort: runtime.legacyMutationPort
-  })
-  const jobSkillReportAutomation = createJobSkillReportAutomation(runtime.db, runtime.reportCoordinator)
-  registerJobSkillScoringHandlers(collector, {
-    getDb,
-    eventPort: runtime.legacyMutationPort,
-    automation: jobSkillReportAutomation
-  })
-  registerObservationHandlers(collector, {
-    getDb,
-    eventPort: runtime.legacyMutationPort,
-    automation: jobSkillReportAutomation
-  })
-  registerAssignmentHandlers(collector, {
-    getDb,
-    eventPort: runtime.legacyMutationPort
-  })
-  registerSafetyHandlers(collector, {
-    getDb,
-    coordinator: runtime.reportCoordinator,
-    eventPort: runtime.legacyMutationPort
-  })
-  registerFoundationHandlers(collector, getDb)
-  registerResultsHandlers(collector, getDb)
-  registerReportsHandlers(collector, { getDb, coordinator: runtime.reportCoordinator })
-  return collector
+type ReadHandler = (event: IpcMainInvokeEvent, rawInput?: unknown) => unknown | Promise<unknown>
+
+function collectReadHandlers(runtime: ApplicationRuntime): ReadonlyMap<string, ReadHandler> {
+  const db = runtime.db
+  return new Map<string, ReadHandler>([
+    ['assessment:getJobSkillOfflineScores', (_event, params) => getJobSkillOfflineScores(db, params as never)],
+    ['assessment:getOfflineAbilityScores', (_event, params) => getOfflineAbilityScores(db, params as never)],
+    ['assessment:getOperationScores', (_event, params) => getOperationScores(db, params as never)],
+    ['assessment:getSession', (_event, params) => getSession(db, params as never)],
+    ['assessment:getSessionScoringQuestions', (_event, params) => getSessionScoringQuestions(db, params as never)],
+    ['assessment:getTeacherObservations', (_event, params) => getTeacherObservations(db, params as never)],
+    ['assessment:listMySessions', (_event, params) => listMySessions(db, params as never)],
+    ['assessment:listSessions', (_event, params) => listSessions(db, params as never)],
+    ['auth:getCurrentSession', (event) => getCurrentSessionQuery(db, event.sender.id)],
+    ['auth:listAccounts', (_event, params) => listAccountsQuery(db, params as never)],
+    ['foundation:getException', (_event, params) => getException(db, params as never)],
+    ['foundation:getOverview', (_event, params) => getWorkspaceOverview(db, params as never)],
+    ['foundation:listExceptions', (_event, params) => listExceptions(db, params as never)],
+    ['reports:get', (_event, params) => getReport(db, params as never)],
+    ['reports:list', (_event, params) => listReports(db, params as never)],
+    ['reports:listGenerationCandidates', (_event, params) => listReportGenerationCandidates(db, params as never)],
+    ['results:getCurrent', (_event, params) => getCurrentResult(db, params as never)],
+    ['results:listCurrentByStudent', (_event, params) => listCurrentResultsByStudent(db, params as never)],
+    ['safety:get', (_event, params) => getSafetyIncident(db, params as never)],
+    ['safety:list', (_event, params) => listSafetyIncidents(db, params as never)],
+    ['strategy:get', (_event, params) => getStrategyQuery(db, params as never)],
+    ['strategy:list', (_event, params) => listStrategiesQuery(db, params as never)],
+    ['strategy:listVersions', (_event, params) => listStrategyVersionsQuery(db, params as never)],
+    ['student:get', (_event, params) => getStudentQuery(db, params as never)],
+    ['student:list', (_event, params) => listStudentsQuery(db, params as never)],
+    ['training:getSession', (_event, params) => getTrainingSession(db, params as never)],
+    ['training:listMySessions', (_event, params) => listMyTrainingSessions(db, params as never)],
+    ['training:listSessions', (_event, params) => listTrainingSessions(db, params as never)]
+  ])
 }
 
 function readFailure(errorCode: string): Readonly<{ success: false; errorCode: string }> {
   return Object.freeze({ success: false, errorCode })
 }
 
-function accountApplicationHandlers(runtime: ApplicationRuntime): ReadonlyMap<string, CollectedIpcHandler> {
-  const handlers = new Map<string, CollectedIpcHandler>([
-    ['auth:login', (event, rawInput) => executeLoginCommand(
-      runtime.db,
-      rawInput as Parameters<typeof executeLoginCommand>[1],
-      {
-        senderId: event.sender.id,
-        bindingOwnerId: runtime.bindingOwnerId,
-        trackSender: (senderId, subscribeDestroyed) => runtime.trackSender(senderId, subscribeDestroyed),
-        subscribeDestroyed: (release) => event.sender.once('destroyed', release)
-      }
-    )],
-    ['auth:logout', (event) => executeLogoutCommand(runtime.db, event.sender.id)],
-    ['auth:createTeacherAccount', (_event, rawInput) => createTeacherAccount(
-      runtime.db,
-      rawInput as Parameters<typeof createTeacherAccount>[1]
-    )],
-    ['auth:setTeacherAccountStatus', (_event, rawInput) => setTeacherAccountStatus(
-      runtime.db,
-      rawInput as Parameters<typeof setTeacherAccountStatus>[1]
-    )],
-    ['student:create', (_event, rawInput) => createStudent(
-      runtime.db,
-      rawInput as Parameters<typeof createStudent>[1]
-    )],
-    ['student:update', (_event, rawInput) => updateStudent(
-      runtime.db,
-      rawInput as Parameters<typeof updateStudent>[1]
-    )],
-    ['student:archive', (_event, rawInput) => archiveStudent(
-      runtime.db,
-      rawInput as Parameters<typeof archiveStudent>[1]
-    )],
-    ['strategy:createVersion', (_event, rawInput) => createVersion(
-      runtime.db,
-      rawInput as Parameters<typeof createVersion>[1]
-    )],
-    ['strategy:update', (_event, rawInput) => updateStrategy(
-      runtime.db,
-      rawInput as Parameters<typeof updateStrategy>[1]
-    )],
-    ['strategy:setActive', (_event, rawInput) => setActive(
-      runtime.db,
-      rawInput as Parameters<typeof setActive>[1]
-    )]
-  ])
-  if (handlers.size !== 10) throw new Error(`expected 10 M5A-5 application handlers, received ${handlers.size}`)
-  return handlers
+function publicPreflightFailure(
+  definition: AnyMutationCommandDefinition,
+  error: unknown
+): Readonly<{ success: false; errorCode: string }> | null {
+  let reason: keyof typeof definition.metadata.preflightErrorMap | null = null
+  let detail: string | undefined
+  if (error instanceof CommandPreflightError) {
+    reason = error.reason
+    detail = error.safeDetail
+  } else if (error instanceof DurableCommandCoordinatorError) {
+    reason = error.code === 'UNKNOWN_COMMAND'
+      ? 'UNKNOWN_COMMAND'
+      : error.code === 'INVALID_TRANSPORT'
+        ? 'SOURCE_NOT_ALLOWED'
+        : error.code === 'INVALID_PAYLOAD'
+          ? 'INVALID_PAYLOAD'
+          : error.code === 'INVALID_ACTOR'
+            ? 'INVALID_ACTOR'
+            : null
+  }
+  if (!reason) return null
+  const detailCode = detail === undefined
+    ? undefined
+    : definition.metadata.preflightErrorDetailMap?.[reason]?.[detail]
+  return readFailure(detailCode ?? definition.metadata.preflightErrorMap[reason])
 }
 
 export function registerCentralIpcHandlers(runtime: ApplicationRuntime): CentralIpcBoundary {
-  const expectedChannels = [...M5A_READ_CHANNELS, ...M5A_MUTATION_CHANNELS].sort()
-  if (expectedChannels.length !== 74) {
-    throw new Error(`expected 74 central IPC channels, received ${expectedChannels.length}`)
+  const expectedChannels = [...M5A_READ_CHANNELS, ...M5A_MUTATION_CHANNELS, 'runtime:getHealth'].sort()
+  if (expectedChannels.length !== 75) {
+    throw new Error(`expected 75 central IPC channels, received ${expectedChannels.length}`)
   }
   exactSet(M5A_READ_CHANNELS, M5A_READ_CHANNELS, 'M5A READ channels')
-  exactSet(M5A_MUTATION_CHANNELS, M5A_MUTATION_CHANNELS, 'M5A MUTATION channels')
+  exactSet(M5A_MUTATION_CHANNELS, M5A_MUTATION_CHANNELS, 'M5B MUTATION channels')
 
-  const handlers = collectLegacyHandlers(runtime)
-  exactSet(handlers.listChannels(), expectedChannels, 'collected IPC handlers')
-  const applicationHandlers = accountApplicationHandlers(runtime)
+  const readHandlers = collectReadHandlers(runtime)
+  exactSet([...readHandlers.keys()], M5A_READ_CHANNELS, 'M5B read handlers')
 
   const activeEvents = new Map<string, IpcMainInvokeEvent>()
   const registry = new CommandRegistry()
@@ -202,17 +162,53 @@ export function registerCentralIpcHandlers(runtime: ApplicationRuntime): Central
       if (!event) throw new Error(`unknown IPC transport: ${transportId}`)
       return event
     },
-    handlerForChannel(channel) {
-      return applicationHandlers.get(channel) ?? handlers.require(channel)
+    handlerForChannel() {
+      return (() => { throw new Error('M5B durable executor owns production mutations') }) as never
     }
   })
   for (const definition of mutationDefinitions) registry.registerMutation(definition)
+  registry.registerRead({
+    commandType: 'runtime:getHealth',
+    metadata: {
+      mode: 'READ',
+      executionMode: 'ASYNC',
+      allowedSources: ['IPC'],
+      actorPolicy: { kind: 'BOOTSTRAP' },
+      targetResolver: {
+        owner: 'runtime:health',
+        kind: 'STATIC_CONTEXT',
+        locatorFields: [],
+        authoritativeFields: ['in-memory runtime state'],
+        canonicalTargetFields: ['runtime_scope'],
+        clientHintFields: [],
+        notFoundMapping: 'SYSTEM_ERROR',
+        mismatchMapping: 'SYSTEM_ERROR',
+        testReferences: ['src/main/ipc/__tests__/handler-registry.test.ts']
+      },
+      payloadContract: 'm5b.runtime.health.v1',
+      sideEffects: [],
+      phase: 'QUERY_ONLY',
+      transactionOwner: 'NONE_READ_ONLY',
+      retryPolicy: 'REPLAY_SAFE',
+      concurrencyPolicy: { kind: 'NONE_READ_ONLY' },
+      publicErrorCodes: ['SYSTEM_ERROR'],
+      preflightErrorMap: {
+        UNKNOWN_COMMAND: 'SYSTEM_ERROR',
+        BOUNDARY_NOT_READY: 'SYSTEM_ERROR',
+        SOURCE_NOT_ALLOWED: 'SYSTEM_ERROR',
+        INVALID_PAYLOAD: 'SYSTEM_ERROR',
+        INVALID_ACTOR: 'SYSTEM_ERROR',
+        TARGET_NOT_FOUND: 'SYSTEM_ERROR',
+        TARGET_MISMATCH: 'SYSTEM_ERROR',
+        ACTIVE_KEY_CONFLICT: 'SYSTEM_ERROR',
+        INTERNAL_PREFLIGHT_FAILURE: 'SYSTEM_ERROR'
+      },
+      testReferences: ['src/main/ipc/__tests__/handler-registry.test.ts']
+    }
+  })
   registry.seal(expectedChannels)
 
-  const commandBus = new CommandBus({
-    registry,
-    readinessGate: () => runtime.isBoundaryReady()
-  })
+  const mutationExecutor = runtime.createMutationExecutor(registry)
 
   async function invokeRead(
     channel: string,
@@ -221,7 +217,8 @@ export function registerCentralIpcHandlers(runtime: ApplicationRuntime): Central
   ): Promise<unknown> {
     const policy = requireM5AReadPolicy(channel)
     if (!runtime.isBoundaryReady()) return readFailure(policy.failureCode)
-    const handler = handlers.require(channel)
+    const handler = readHandlers.get(channel)
+    if (!handler) throw new Error(`missing M5B read handler: ${channel}`)
     if (policy.actors === 'OPTIONAL_SESSION') return handler(event)
     if (!isPlainRecord(rawInput)) return readFailure(policy.failureCode)
 
@@ -243,17 +240,65 @@ export function registerCentralIpcHandlers(runtime: ApplicationRuntime): Central
   async function invokeMutation(
     channel: string,
     event: IpcMainInvokeEvent,
-    rawInput: unknown
+    rawInput: unknown,
+    transportMetadata: unknown
   ): Promise<unknown> {
+    if (!runtime.isWritable()) {
+      return registry.requireMutation(channel).mapUnexpectedExecutionError(
+        new Error('runtime is not writable'),
+        { commandType: channel } as never
+      )
+    }
     const transportId = uuidv4()
     activeEvents.set(transportId, event)
     try {
-      const outcome = await commandBus.dispatch({
+      const accepted = await mutationExecutor.accept({
         commandType: channel,
         rawInput,
-        transport: { source: 'IPC', transportId }
+        transport: { source: 'IPC', transportId },
+        transportMetadata
       })
-      return outcome.status === 'REJECTED' ? outcome.publicError : outcome.result
+      if (accepted.status === 'REPLAYED') return accepted.publicResult
+      let reportExportInteraction
+      if (channel === 'reports:export') {
+        const response = await dialog.showSaveDialog({
+          title: '导出报告',
+          defaultPath: 'task-report.html',
+          filters: [{ name: 'HTML', extensions: ['html'] }]
+        })
+        if (response.canceled || !response.filePath) {
+          return completeReportExportCancellation({
+            commandStore: runtime.commandStore,
+            envelope: accepted.envelope,
+            completedAt: new Date().toISOString()
+          }).publicResult
+        }
+        reportExportInteraction = prepareReportExportInteraction(accepted.envelope, {
+          artifactRoot: dirname(response.filePath),
+          targetPath: response.filePath
+        })
+      }
+      const completed = await mutationExecutor.execute({
+        accepted,
+        senderId: event.sender.id,
+        reportExportInteraction
+      })
+      applyGateOnlyPostCommitBinding({
+        commandType: channel,
+        publicResult: completed.publicResult,
+        actor: accepted.envelope.actor,
+        senderId: event.sender.id,
+        bindingOwnerId: runtime.bindingOwnerId
+      })
+      return completed.publicResult
+    } catch (error) {
+      const definition = registry.requireMutation(channel)
+      const preflightFailure = publicPreflightFailure(definition, error)
+      if (preflightFailure) return preflightFailure
+      return definition.mapUnexpectedExecutionError(
+        error,
+        { commandType: channel } as never
+      )
     } finally {
       activeEvents.delete(transportId)
     }
@@ -264,7 +309,7 @@ export function registerCentralIpcHandlers(runtime: ApplicationRuntime): Central
       return (event, rawInput) => invokeRead(channel, event, rawInput)
     }
     if (M5A_MUTATION_CHANNELS.includes(channel)) {
-      return (event, rawInput) => invokeMutation(channel, event, rawInput)
+      return (event, rawInput, transportMetadata) => invokeMutation(channel, event, rawInput, transportMetadata)
     }
     throw new Error(`central listener requested for unknown channel: ${channel}`)
   }
@@ -278,7 +323,6 @@ export function registerCentralIpcHandlers(runtime: ApplicationRuntime): Central
   const dispose = (): void => {
     if (disposed) return
     disposed = true
-    commandBus.close()
     activeEvents.clear()
     for (const channel of [...installed].reverse()) ipcMain.removeHandler(channel)
     installed.length = 0
@@ -359,13 +403,13 @@ export function registerCentralIpcHandlers(runtime: ApplicationRuntime): Central
     install('training:retryStep', () => ipcMain.handle('training:retryStep', listener('training:retryStep')))
     install('training:skipStep', () => ipcMain.handle('training:skipStep', listener('training:skipStep')))
     install('training:startStep', () => ipcMain.handle('training:startStep', listener('training:startStep')))
+    install('runtime:getHealth', () => ipcMain.handle('runtime:getHealth', () => runtime.health()))
     exactSet(installed, expectedChannels, 'installed central IPC handlers')
-    commandBus.open()
     runtime.registerBoundaryDisposer(dispose)
   } catch (error) {
     dispose()
     throw error
   }
 
-  return Object.freeze({ registry, commandBus, channels: Object.freeze([...installed]), dispose })
+  return Object.freeze({ registry, channels: Object.freeze([...installed]), dispose })
 }

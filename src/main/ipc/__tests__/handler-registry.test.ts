@@ -3,13 +3,13 @@ import { v4 as uuidv4 } from 'uuid'
 import { readFileSync } from 'fs'
 
 const electronState = vi.hoisted(() => ({
-  handlers: new Map<string, (event: unknown, rawInput?: unknown) => Promise<unknown>>(),
+  handlers: new Map<string, (event: unknown, rawInput?: unknown, transportMetadata?: unknown) => Promise<unknown>>(),
   failOnChannel: null as string | null
 }))
 
 vi.mock('electron', () => ({
   ipcMain: {
-    handle(channel: string, handler: (event: unknown, rawInput?: unknown) => Promise<unknown>) {
+    handle(channel: string, handler: (event: unknown, rawInput?: unknown, transportMetadata?: unknown) => Promise<unknown>) {
       if (electronState.failOnChannel === channel) throw new Error(`injected registration failure: ${channel}`)
       if (electronState.handlers.has(channel)) throw new Error(`duplicate IPC handler: ${channel}`)
       electronState.handlers.set(channel, handler)
@@ -27,12 +27,13 @@ vi.mock('electron', () => ({
 import type { IpcMainInvokeEvent } from 'electron'
 import type { MemoryAdapter } from '../../db/memory-adapter'
 import { createTestDb, seedCaller, seedStudent } from '../../db/test-helpers'
+import { applyEventBatchMigration } from '../../db/event-batch-migration'
 import {
   createApplicationRuntime,
+  startApplicationRuntime,
   type ApplicationRuntime,
   type RuntimeScheduler
 } from '../../application/runtime/application-runtime'
-import type { ReportMutationPort } from '../../domain/report-command-coordinator'
 import {
   clearAuthSessionBinding,
   issuePasswordAuthSession,
@@ -48,13 +49,6 @@ class InertScheduler implements RuntimeScheduler {
   clearInterval(): void {}
 }
 
-const inertReportPort = (): ReportMutationPort => Object.freeze({
-  writeEvent() {
-    throw new Error('inert report port')
-  },
-  recoverPending() {}
-})
-
 const databases: MemoryAdapter[] = []
 const runtimes: ApplicationRuntime[] = []
 const senderIds = new Set<number>()
@@ -67,12 +61,36 @@ async function createRuntime(): Promise<{ db: MemoryAdapter; runtime: Applicatio
     dataRoot: `/tmp/svets-m5a-handler-registry-${uuidv4()}`,
     dependencies: {
       prepareDirectory: () => undefined,
-      createLegacyMutationPort: inertReportPort,
       scheduler: new InertScheduler()
     }
   })
   runtimes.push(runtime)
   return { db, runtime }
+}
+
+async function createM5bRuntime(): Promise<{ db: MemoryAdapter; runtime: ApplicationRuntime }> {
+  const db = await createTestDb()
+  databases.push(db)
+  applyEventBatchMigration(db, { createVerifiedBackupBeforeDdl: () => undefined })
+  const runtime = await startApplicationRuntime({
+    runtime: {
+      db,
+      dataRoot: `/tmp/svets-m5b-handler-registry-${uuidv4()}`,
+      dependencies: { scheduler: new InertScheduler() }
+    },
+    registerBoundary: registerCentralIpcHandlers
+  })
+  runtimes.push(runtime)
+  return { db, runtime }
+}
+
+function mutationMetadata() {
+  return {
+    schemaVersion: 1 as const,
+    clientInstanceId: uuidv4(),
+    idempotencyKey: uuidv4(),
+    deviceId: null
+  }
 }
 
 function event(senderId: number): IpcMainInvokeEvent {
@@ -122,18 +140,17 @@ afterEach(() => {
   electronState.failOnChannel = null
 })
 
-describe('M5A central IPC registry', () => {
-  it('installs the exact 74/28/46 set through one sealed registry', async () => {
+describe('M5B central IPC registry', () => {
+  it('installs the exact 75/29/46 set through one sealed registry', async () => {
     const { runtime } = await createRuntime()
     const boundary = registerCentralIpcHandlers(runtime)
 
-    expect(boundary.channels).toHaveLength(74)
-    expect(new Set(boundary.channels).size).toBe(74)
-    expect(electronState.handlers.size).toBe(74)
-    expect(boundary.registry.list().filter((item) => item.metadata.mode === 'READ')).toHaveLength(28)
+    expect(boundary.channels).toHaveLength(75)
+    expect(new Set(boundary.channels).size).toBe(75)
+    expect(electronState.handlers.size).toBe(75)
+    expect(boundary.registry.list().filter((item) => item.metadata.mode === 'READ')).toHaveLength(29)
     expect(boundary.registry.list().filter((item) => item.metadata.mode === 'MUTATION')).toHaveLength(46)
     expect(boundary.registry.isSealed()).toBe(true)
-    expect(boundary.commandBus.isReady()).toBe(true)
 
     const mutationDefinitions = boundary.registry.list().filter((item) => item.metadata.mode === 'MUTATION')
     expect(new Set(mutationDefinitions.map((item) => item.metadata.preflightErrorMap.ACTIVE_KEY_CONFLICT)))
@@ -187,7 +204,6 @@ describe('M5A central IPC registry', () => {
 
     runtime.dispose()
     expect(electronState.handlers.size).toBe(0)
-    expect(boundary.commandBus.isReady()).toBe(false)
   })
 
   it('keeps mutation closed before runtime ready and performs no business write', async () => {
@@ -243,7 +259,7 @@ describe('M5A central IPC registry', () => {
       .toBe('2000-01-01 00:00:00')
   })
 
-  it('rejects caller mismatch and missing target before heartbeat', async () => {
+  it('keeps malformed direct mutation transport out of the durable executor', async () => {
     const { db, runtime } = await createRuntime()
     registerCentralIpcHandlers(runtime)
     runtime.markBoundaryReady()
@@ -259,7 +275,7 @@ describe('M5A central IPC registry', () => {
       studentId: 'missing-student',
       patch: { studentName: 'x' }
     })
-    expect(mismatch).toEqual({ success: false, errorCode: 'FORBIDDEN' })
+    expect(mismatch).toEqual({ success: false, errorCode: 'SYSTEM_ERROR' })
 
     const missing = await requireHandler('student:update')(event(senderId), {
       callerUserId: adminId,
@@ -267,14 +283,35 @@ describe('M5A central IPC registry', () => {
       studentId: 'missing-student',
       patch: { studentName: 'x' }
     })
-    expect(missing).toEqual({ success: false, errorCode: 'NOT_FOUND' })
+    expect(missing).toEqual({ success: false, errorCode: 'SYSTEM_ERROR' })
     expect((db.prepare(
       'SELECT last_activity_at FROM auth_session WHERE user_id = ?'
     ).get(adminId) as { last_activity_at: string }).last_activity_at)
       .toBe('2000-01-01 00:00:00')
   })
 
-  it('heartbeats only after acceptance and invokes the existing business function', async () => {
+  it('opens the migrated runtime and durably applies a gate-only mutation through IPC', async () => {
+    const { db, runtime } = await createM5bRuntime()
+    const senderId = 4104
+    const adminId = bindUser(db, runtime, senderId, 'ADMIN')
+
+    expect(runtime.health()).toMatchObject({ state: 'OPEN', legacyRecordCount: 0 })
+    const result = await requireHandler('student:create')(event(senderId), {
+      callerUserId: adminId,
+      callerRole: 'ADMIN',
+      username: 'durable-student',
+      password: 'durable-password',
+      studentName: 'Durable Student'
+    }, mutationMetadata())
+
+    expect(result).toMatchObject({ success: true })
+    expect((db.prepare("SELECT COUNT(*) AS count FROM command_log WHERE command_type = 'student:create' AND status = 'SUCCEEDED'").get() as { count: number }).count)
+      .toBe(1)
+    expect((db.prepare("SELECT COUNT(*) AS count FROM student_profile WHERE student_name = 'Durable Student'").get() as { count: number }).count)
+      .toBe(1)
+  })
+
+  it('returns a stable system failure when direct test transport omits preload metadata', async () => {
     const { db, runtime } = await createRuntime()
     registerCentralIpcHandlers(runtime)
     runtime.markBoundaryReady()
@@ -292,13 +329,13 @@ describe('M5A central IPC registry', () => {
       status: 'DISABLED'
     })
 
-    expect(result).toMatchObject({ success: true, revokedSessionCount: 0 })
+    expect(result).toEqual({ success: false, errorCode: 'SYSTEM_ERROR' })
     expect((db.prepare('SELECT status FROM user_account WHERE user_id = ?').get(teacherId) as { status: string }).status)
-      .toBe('DISABLED')
+      .toBe('ACTIVE')
     expect((db.prepare(
       'SELECT last_activity_at FROM auth_session WHERE user_id = ?'
     ).get(adminId) as { last_activity_at: string }).last_activity_at)
-      .not.toBe('2000-01-01 00:00:00')
+      .toBe('2000-01-01 00:00:00')
   })
 
   it('rolls back every installed handler if central registration fails', async () => {

@@ -230,7 +230,8 @@ describe('M5A command boundary inventory', () => {
       shell: false
     })
     expect(targetCli.status).toBe(1)
-    expect(targetCli.stderr).toContain('active direct callsites fingerprints mismatch')
+    expect(targetCli.stderr).toContain('active IPC channel names mismatch')
+    expect(targetCli.stderr).toContain('runtime:getHealth')
 
     const baselineCli = spawnSync(process.execPath, ['scripts/check-m5a-command-boundary.mjs', '--mode', 'baseline'], {
       cwd: projectRoot,

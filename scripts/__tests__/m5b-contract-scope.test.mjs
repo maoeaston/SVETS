@@ -71,6 +71,19 @@ function withFixture(run) {
   }
 }
 
+function writeAcceptedCheckpoint(root, sourceCommit, checkpointCommit) {
+  const nameStatus = git(root, ['diff', '--name-status', '-z', `${sourceCommit}..${checkpointCommit}`], 'buffer')
+  write(root, 'scripts/fixtures/m5b-accepted-checkpoint-v1.json', `${JSON.stringify({
+    schema_version: 'm5b-accepted-checkpoint-v1',
+    source_start_commit: sourceCommit,
+    checkpoint_parent: sourceCommit,
+    checkpoint_commit: checkpointCommit,
+    checkpoint_tree: git(root, ['rev-parse', `${checkpointCommit}^{tree}`]).trim(),
+    source_to_checkpoint_name_status_sha256: createHash('sha256').update(nameStatus).digest('hex'),
+    source_to_checkpoint_path_count: nameStatus.toString('utf8').split('\0').filter(Boolean).length / 2
+  }, null, 2)}\n`)
+}
+
 describe('M5B implementation-start scope gate', () => {
   it('distinguishes preserved, allowed M5B changes and unrelated drift', () => {
     const baseline = [{ path: 'safe.txt', source_kind: 'TRACKED', file_type: 'FILE', size: 1, sha256: 'a' }]
@@ -116,6 +129,19 @@ describe('M5B implementation-start scope gate', () => {
     git(root, ['add', 'package.json'])
     git(root, ['commit', '-qm', 'unexpected implementation commit'])
     expect(() => verifyM5bContractScope({ projectRoot: root, step: 'M5B-1' })).toThrow(/committed|HEAD/)
+  }))
+
+  it('uses an immutable accepted checkpoint without rewriting the implementation start', () => withFixture((root) => {
+    const sourceCommit = git(root, ['rev-parse', 'HEAD']).trim()
+    write(root, 'scripts/check-m5b-event-batch.mjs', 'export const checkpoint = true\n')
+    git(root, ['add', 'scripts/check-m5b-event-batch.mjs'])
+    git(root, ['commit', '-qm', 'accepted checkpoint'])
+    const checkpointCommit = git(root, ['rev-parse', 'HEAD']).trim()
+    writeAcceptedCheckpoint(root, sourceCommit, checkpointCommit)
+
+    expect(() => verifyM5bContractScope({ projectRoot: root, step: 'M5B-10' })).not.toThrow()
+    write(root, 'safe.txt', 'drift\n')
+    expect(() => verifyM5bContractScope({ projectRoot: root, step: 'M5B-10' })).toThrow(/BASELINE_DRIFT/)
   }))
 
   it('allows only the exact M5B R3 review records introduced by each step', () => withFixture((root) => {
@@ -170,6 +196,22 @@ describe('M5B implementation-start scope gate', () => {
     expect(() => verifyM5bContractScope({ projectRoot: root, step: 'M5B-9' })).not.toThrow()
     expect(allowedM5bPathsForStep('M5B-9')).toContain('src/main/application/planners/assessment-planner.ts')
     expect(allowedM5bPathsForStep('M5B-9')).toContain('doc/features/event-batch-v2.2-runtime-m5b9-r3-review.md')
-    expect(() => verifyM5bContractScope({ projectRoot: root, step: 'M5B-10' })).toThrow(/not implemented/)
+    expect(() => verifyM5bContractScope({ projectRoot: root, step: 'M5B-10' })).not.toThrow()
+    expect(allowedM5bPathsForStep('M5B-10')).toContain('src/main/application/planners/scoring-planner.ts')
+    expect(allowedM5bPathsForStep('M5B-10')).toContain('doc/features/event-batch-v2.2-runtime-m5b10-r3-review.md')
+    expect(() => verifyM5bContractScope({ projectRoot: root, step: 'M5B-11' })).not.toThrow()
+    expect(allowedM5bPathsForStep('M5B-11')).toContain('src/main/application/planners/assignment-planner.ts')
+    expect(allowedM5bPathsForStep('M5B-11')).toContain('src/main/domain/projectors/assignment-projector.ts')
+    expect(() => verifyM5bContractScope({ projectRoot: root, step: 'M5B-13' })).not.toThrow()
+    expect(allowedM5bPathsForStep('M5B-13')).toContain('src/main/application/planners/report-export-planner.ts')
+    expect(allowedM5bPathsForStep('M5B-13')).toContain('src/main/domain/event-batch/artifact-publisher.ts')
+    expect(() => verifyM5bContractScope({ projectRoot: root, step: 'M5B-12' })).not.toThrow()
+    expect(allowedM5bPathsForStep('M5B-12')).toContain('src/main/application/planners/safety-planner.ts')
+    expect(allowedM5bPathsForStep('M5B-12')).toContain('src/main/domain/projectors/safety-projector.ts')
+    expect(() => verifyM5bContractScope({ projectRoot: root, step: 'M5B-14' })).not.toThrow()
+    expect(allowedM5bPathsForStep('M5B-14')).toContain('src/main/application/runtime/m5b-domain-executor.ts')
+    expect(allowedM5bPathsForStep('M5B-14')).toContain('src/main/ipc/handler-registry.ts')
+    expect(() => verifyM5bContractScope({ projectRoot: root, step: 'M5B-15' })).not.toThrow()
+    expect(allowedM5bPathsForStep('M5B-15')).toContain('scripts/verify-m5b-native-electron.mjs')
   }))
 })

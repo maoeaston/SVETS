@@ -1,5 +1,5 @@
 import type { DBAdapter } from '../../db/interface'
-import { seedAssessmentErrorCodes } from '../../ipc/handlers/assessment'
+import { seedAssessmentErrorCodes } from '../services/assessment-service'
 import { seedAuthErrorCodes } from '../services/auth-service'
 import { seedStrategyErrorCodes } from '../services/strategy-service'
 import { seedStudentErrorCodes } from '../services/student-service'

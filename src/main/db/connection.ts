@@ -1,5 +1,4 @@
 import Database from 'better-sqlite3'
-import { createHash } from 'crypto'
 import { dirname, join } from 'path'
 import { app } from 'electron'
 import { existsSync, readFileSync } from 'fs'
@@ -11,17 +10,19 @@ import {
   createInternalMutationCapability,
   prepareInternalDirectory
 } from '../application/runtime/internal-mutation-capability'
-import { writeEvent } from '../domain/event-writer'
 import { preReconcileLegacyActionLog, StartupRecoveryRequiredError } from '../domain/legacy-upgrade-recovery'
-import { reconcileActionLog, writeRecoverySnapshot } from '../domain/recovery'
 import {
   assertCurrentDatabaseSchema,
-  M4_SCHEMA_VERSION,
   isFreshDatabase
 } from './migrations'
 import { createVerifiedMigrationBackup } from './migration-backup'
 import { orchestrateDatabaseStartupUpgrade } from './migration-startup'
 import { normalizeStartupUpgradeError } from '../startup-error'
+import {
+  applyEventBatchMigration,
+  assertExactEventBatchStructure,
+  EVENT_BATCH_MIGRATION_ID
+} from './event-batch-migration'
 
 let db: Database.Database | null = null
 
@@ -29,7 +30,7 @@ type StartupUpgradeDatabase = Pick<Database.Database, 'pragma' | 'exec'>
 
 export type ConnectionStartupUpgradeDependencies = {
   preReconcileF7?: () => void
-  createVerifiedBackup?: (stage: 'F7' | 'M4', migrationId: string) => void
+  createVerifiedBackup?: (stage: 'F7' | 'M4' | 'M5B', migrationId: string) => void
 }
 
 export function getDatabase(): Database.Database {
@@ -73,23 +74,55 @@ export function initDatabase(): void {
       actionLogPath
     })
 
-    database.transaction(() => database.exec(schema))()
-    assertCurrentDatabaseSchema(adapter)
+    const eventBatch = runConnectionEventBatchCutover({
+      adapter,
+      fresh,
+      loadTargetSchema: () => database.transaction(() => database.exec(schema))(),
+      reconcileHistorical: () => preReconcileLegacyActionLog(adapter, {
+        logPath: actionLogPath,
+        archiveDir: join(dirname(actionLogPath), 'recovery-archive')
+      }),
+      createVerifiedBackup: () => createM5bVerifiedBackup({ database, dataDir, actionLogPath })
+    })
     seedDevUsers(database)
     db = database
-    const recovery = recoverActionLog(database, dbPath, actionLogPath)
 
     if (fresh) console.log('[DB] Initialized fresh schema')
     if (migrated.length > 0) console.log(`[DB] Applied migrations: ${migrated.join(', ')}`)
-    console.log(
-      `[DB] Recovery: replayed=${recovery.replayedEventCount}, skipped=${recovery.skippedEventCount}, truncatedTail=${recovery.truncatedTail}`
-    )
+    if (eventBatch.applied) console.log(`[DB] Applied migration: ${EVENT_BATCH_MIGRATION_ID}`)
     console.log(`[DB] Ready: ${dbPath}`)
   } catch (error) {
     database.close()
     db = null
     throw error
   }
+}
+
+export function runConnectionEventBatchCutover(options: {
+  adapter: DBAdapter
+  fresh: boolean
+  loadTargetSchema: () => void
+  reconcileHistorical: () => void
+  createVerifiedBackup: () => void
+}): { source: string; applied: boolean } {
+  if (options.fresh) {
+    options.loadTargetSchema()
+    assertCurrentDatabaseSchema(options.adapter)
+    const migration = applyEventBatchMigration(options.adapter)
+    assertExactEventBatchStructure(options.adapter)
+    return migration
+  }
+
+  // Historical data must be reconciled and backed up before the full v2
+  // schema is allowed to create any event-batch object.
+  assertCurrentDatabaseSchema(options.adapter)
+  options.reconcileHistorical()
+  const migration = applyEventBatchMigration(options.adapter, {
+    createVerifiedBackupBeforeDdl: options.createVerifiedBackup
+  })
+  options.loadTargetSchema()
+  assertExactEventBatchStructure(options.adapter)
+  return migration
 }
 
 /**
@@ -141,48 +174,33 @@ export function runConnectionStartupUpgrade(options: {
   }
 }
 
-function recoverActionLog(database: Database.Database, dbPath: string, actionLogPath: string): {
-  replayedEventCount: number
-  skippedEventCount: number
-  truncatedTail: boolean
-} {
-  const recovery = reconcileActionLog(database as unknown as DBAdapter, {
-    logPath: actionLogPath,
-    archiveDir: join(dirname(actionLogPath), 'recovery-archive')
+function createM5bVerifiedBackup(options: {
+  database: Database.Database
+  dataDir: string
+  actionLogPath: string
+}): void {
+  const backup = createVerifiedMigrationBackup({
+    source: {
+      checkpointFull: () => options.database.pragma('wal_checkpoint(FULL)'),
+      vacuumInto: (path) => options.database.exec(`VACUUM INTO '${path.replace(/'/g, "''")}'`),
+      verifyBackup: (path) => {
+        const backupDatabase = new Database(path, { readonly: true })
+        try {
+          const integrity = backupDatabase.prepare('PRAGMA integrity_check').all() as Array<Record<string, string>>
+          if (integrity.map((row) => Object.values(row)[0]).join(',') !== 'ok') {
+            throw new Error('backup database integrity_check failed')
+          }
+        } finally {
+          backupDatabase.close()
+        }
+      }
+    },
+    dataDir: options.dataDir,
+    actionLogPath: options.actionLogPath,
+    stage: 'M5B',
+    migrationId: EVENT_BATCH_MIGRATION_ID
   })
-
-  // 快照记录的是恢复前已落盘 SQLite 文件的校验值。随后用同一事务写入恢复审计和
-  // snapshot_meta，避免审计事件已经可见而快照元数据缺失。
-  database.pragma('wal_checkpoint(PASSIVE)')
-  const sqliteFileHash = createHash('sha256').update(readFileSync(dbPath)).digest('hex')
-
-  database.transaction(() => {
-    const recoveryEvent = writeEvent({
-      aggregateType: 'SYSTEM',
-      aggregateId: `startup-recovery:${Date.now()}`,
-      eventType: recovery.truncatedTail ? 'RECOVERY_LOG_TRUNCATED' : 'RECOVERY_REPLAYED',
-      payload: {
-        replayed_event_count: recovery.replayedEventCount,
-        skipped_event_count: recovery.skippedEventCount,
-        truncated_tail: recovery.truncatedTail,
-        archived_tail_path: recovery.archivedTailPath
-      },
-      actorId: 'SYSTEM',
-      actorRole: 'SYSTEM',
-      database: database as unknown as DBAdapter,
-      actionLogPath
-    })
-    writeRecoverySnapshot(database as unknown as DBAdapter, {
-      lastAppliedEvent: recoveryEvent,
-      sqliteFileHash,
-      actionLogPath,
-      archivedLogPath: recovery.archivedTailPath,
-      schemaVersion: M4_SCHEMA_VERSION,
-      appVersion: app.getVersion()
-    })
-  })()
-
-  return recovery
+  console.log(`[DB] Paired M5B backup before ${EVENT_BATCH_MIGRATION_ID}: ${backup.backupDir}`)
 }
 
 function hasNonEmptyActionLog(actionLogPath: string): boolean {

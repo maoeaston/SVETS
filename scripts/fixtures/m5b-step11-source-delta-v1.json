@@ -1,0 +1,144 @@
+{
+  "schema_version": "m5b-step-source-delta-v1",
+  "step": "M5B-11",
+  "source_digest": "6d9e30b2adbb67e176a03e1ca23c33dbf72a743b8fe5b6bb8b4f6fa02e62f2ba",
+  "target_digest": "ed88431cbf6624acb8b13ad0c4168585b5df4fa142a225e764b098fa68e08c8d",
+  "expected_counts": {
+    "channels": 74,
+    "direct_callsites": 262,
+    "direct_files": 38,
+    "capability_callsites": 73,
+    "delegating_roots": 13
+  },
+  "removed_source": [
+    {
+      "file": "src/main/domain/local-runtime-context.ts",
+      "symbol": "createLocalRuntime",
+      "line": 118,
+      "kind": "DB_RUN",
+      "callee": "db.prepare('INSERT INTO organization (organization_id, name) VALUES (?, ?)').run",
+      "detail": "",
+      "fingerprint": "9c564f420306d97d273c0eef9252af43e07b8cf2b4fa5a3310b4c9ac3ba3c87c",
+      "occurrence": 1,
+      "id": "ACTIVE-DIRECT-134",
+      "legacy_id": "LEGACY-DIRECT-134",
+      "disposition": "REFACTORED_TO_PREPARED_RUNTIME_EFFECT"
+    },
+    {
+      "file": "src/main/domain/local-runtime-context.ts",
+      "symbol": "createLocalRuntime",
+      "line": 122,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO node (node_id, organization_id, node_name, node_type) VALUES (?, ?, ?, 'ELECTRON_KIOSK')` ).run",
+      "detail": "",
+      "fingerprint": "75848e2c5cc5c0f73751f1715264622b7a1800eff01d923ac3d1ebb8026b47f9",
+      "occurrence": 1,
+      "id": "ACTIVE-DIRECT-135",
+      "legacy_id": "LEGACY-DIRECT-135",
+      "disposition": "REFACTORED_TO_PREPARED_RUNTIME_EFFECT"
+    },
+    {
+      "file": "src/main/domain/local-runtime-context.ts",
+      "symbol": "createLocalRuntime",
+      "line": 126,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO device (device_id, node_id, device_name, device_role, trust_state, capabilities_json) VALUES (?, ?, ?, 'HYBRID', 'TRUSTED', ?)` ).run",
+      "detail": "",
+      "fingerprint": "7fdb2d80157c697871cb0252d4d15a6b12813ff3f84bfa6cb2b59248e740316e",
+      "occurrence": 1,
+      "id": "ACTIVE-DIRECT-136",
+      "legacy_id": "LEGACY-DIRECT-136",
+      "disposition": "REFACTORED_TO_PREPARED_RUNTIME_EFFECT"
+    },
+    {
+      "file": "src/main/domain/local-runtime-context.ts",
+      "symbol": "createLocalRuntime",
+      "line": 131,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO device_runtime_session (device_runtime_session_id, device_id) VALUES (?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "dcffe240e8d24685c06a403743622581683e15a112dafcba1bd0aa60f867e731",
+      "occurrence": 1,
+      "id": "ACTIVE-DIRECT-137",
+      "legacy_id": "LEGACY-DIRECT-137",
+      "disposition": "REFACTORED_TO_PREPARED_RUNTIME_EFFECT"
+    },
+    {
+      "file": "src/main/domain/local-runtime-context.ts",
+      "symbol": "createDeviceKeyAuthSession",
+      "line": 172,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO auth_session (auth_session_id, user_id, device_runtime_session_id, auth_method, capabilities_json, token_hash, refresh_token_hash, expires_at, status) VALUES (?, ?, ?, 'DEVICE_KEY', ?, ?, ?, datetime('now', '+8 hours'), 'ACTIVE')` ).run",
+      "detail": "",
+      "fingerprint": "f9f73de3f684248c5957e9f23a98c5df8f00557c39499bcb7985639f42ec4d5c",
+      "occurrence": 1,
+      "id": "ACTIVE-DIRECT-138",
+      "legacy_id": "LEGACY-DIRECT-138",
+      "disposition": "REFACTORED_TO_PREPARED_RUNTIME_EFFECT"
+    }
+  ],
+  "added_target": [
+    {
+      "file": "src/main/domain/local-runtime-context.ts",
+      "symbol": "applyLocalRuntimeContextPlan",
+      "line": 474,
+      "kind": "DB_RUN",
+      "callee": "db.prepare('INSERT INTO organization (organization_id, name, type, status) VALUES (?, ?, ?, ?)').run",
+      "detail": "",
+      "fingerprint": "833b9f0f064d8367d08b9d12b8a357a67dc2def649d444ae77124ba66e12441f",
+      "occurrence": 1,
+      "target_class": "ASSIGNMENT_RUNTIME_PREPARED_EFFECT",
+      "planned_step": "M5B-11"
+    },
+    {
+      "file": "src/main/domain/local-runtime-context.ts",
+      "symbol": "applyLocalRuntimeContextPlan",
+      "line": 485,
+      "kind": "DB_RUN",
+      "callee": "db.prepare('INSERT INTO node (node_id, organization_id, node_name, node_type, status) VALUES (?, ?, ?, ?, ?)').run",
+      "detail": "",
+      "fingerprint": "c86a2537047380af685a54582d9076d830397719ddc668e4332970a73df89082",
+      "occurrence": 1,
+      "target_class": "ASSIGNMENT_RUNTIME_PREPARED_EFFECT",
+      "planned_step": "M5B-11"
+    },
+    {
+      "file": "src/main/domain/local-runtime-context.ts",
+      "symbol": "applyLocalRuntimeContextPlan",
+      "line": 498,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO device (device_id, node_id, device_name, device_role, credential_hash, trust_state, is_kiosk_enabled, allows_self_login, capabilities_json, last_heartbeat_at, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "825750b2edb191a7a7fd8d50a81e9ae1f9187295d0676d4306e0a183f96659dc",
+      "occurrence": 1,
+      "target_class": "ASSIGNMENT_RUNTIME_PREPARED_EFFECT",
+      "planned_step": "M5B-11"
+    },
+    {
+      "file": "src/main/domain/local-runtime-context.ts",
+      "symbol": "applyLocalRuntimeContextPlan",
+      "line": 533,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO device_runtime_session (device_runtime_session_id, device_id, started_at, last_heartbeat_at, client_version, status) VALUES (?, ?, ?, ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "a9996a62b3649c6360aeef1607384e08fb7a9fa797400e4a5a14c808374ef761",
+      "occurrence": 1,
+      "target_class": "ASSIGNMENT_RUNTIME_PREPARED_EFFECT",
+      "planned_step": "M5B-11"
+    },
+    {
+      "file": "src/main/domain/local-runtime-context.ts",
+      "symbol": "applyLocalRuntimeContextPlan",
+      "line": 551,
+      "kind": "DB_RUN",
+      "callee": "db.prepare( `INSERT INTO auth_session (auth_session_id, user_id, device_runtime_session_id, auth_method, capabilities_json, token_hash, refresh_token_hash, issued_at, expires_at, last_activity_at, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "d45c8ddf3c4b5fa7e8ebb5b515344092b435684ba7ac3403aa89871f1b13b253",
+      "occurrence": 1,
+      "target_class": "ASSIGNMENT_RUNTIME_PREPARED_EFFECT",
+      "planned_step": "M5B-11"
+    }
+  ],
+  "capability_removed_source": [],
+  "capability_added_target": []
+}

@@ -87,7 +87,6 @@ vi.mock('../../../domain/event-writer', () => ({
 }))
 
 import type { IpcMainInvokeEvent } from 'electron'
-import { writeEvent } from '../../../domain/event-writer'
 import type { MemoryAdapter } from '../../../db/memory-adapter'
 import {
   createTestDb,
@@ -95,7 +94,6 @@ import {
   seedCaller,
   seedStudent
 } from '../../../db/test-helpers'
-import type { ReportMutationPort } from '../../../domain/report-command-coordinator'
 import {
   createApplicationRuntime,
   type ApplicationRuntime,
@@ -133,13 +131,6 @@ class InertScheduler implements RuntimeScheduler {
   clearInterval(): void {}
 }
 
-function recordingMutationPort(): ReportMutationPort {
-  return Object.freeze({
-    writeEvent,
-    recoverPending() {}
-  })
-}
-
 const databases: MemoryAdapter[] = []
 const runtimes: ApplicationRuntime[] = []
 const senderIds = new Set<number>()
@@ -157,7 +148,6 @@ async function createRuntime(): Promise<{
     dataRoot: `/tmp/svets-m5a6-training-${uuidv4()}`,
     dependencies: {
       prepareDirectory: () => undefined,
-      createLegacyMutationPort: recordingMutationPort,
       scheduler: new InertScheduler()
     }
   })
@@ -192,7 +182,16 @@ function bindUser(
 function requireHandler(channel: string) {
   const handler = electronState.handlers.get(channel)
   if (!handler) throw new Error(`missing test IPC handler: ${channel}`)
-  return handler
+  return (event: unknown, rawInput?: unknown) => (handler as unknown as (
+    event: unknown,
+    input?: unknown,
+    transportMetadata?: unknown
+  ) => Promise<unknown>)(event, rawInput, {
+    schemaVersion: 1,
+    clientInstanceId: uuidv4(),
+    idempotencyKey: uuidv4(),
+    deviceId: null
+  })
 }
 
 async function createTraining(
@@ -222,6 +221,28 @@ function stepId(db: MemoryAdapter, trainingSessionId: string, order: number): st
        FROM training_step_record
       WHERE training_session_id = ? AND step_order = ?`
   ).get(trainingSessionId, order) as { training_step_record_id: string }).training_step_record_id
+}
+
+interface V2EventFact {
+  event_type: string
+  batch_id: string
+  correlation_id: string | null
+}
+
+function v2EventFacts(db: MemoryAdapter): V2EventFact[] {
+  return db.prepare(
+    `SELECT pe.event_type, pe.batch_id,
+            json_extract(dep.payload_json, '$.correlation_id') AS correlation_id
+       FROM processed_event pe
+       JOIN domain_event_projection dep ON dep.event_id = pe.event_id
+      ORDER BY pe.rowid`
+  ).all() as V2EventFact[]
+}
+
+function latestV2BatchFacts(db: MemoryAdapter): V2EventFact[] {
+  const facts = v2EventFacts(db)
+  const batchId = facts.at(-1)?.batch_id
+  return batchId ? facts.filter((fact) => fact.batch_id === batchId) : []
 }
 
 beforeEach(() => {
@@ -287,24 +308,25 @@ describe('M5A-6 training commands through CommandBus', () => {
     expect(await invokeStep('training:failStep', 3)).toMatchObject({ success: true, newStatus: 'FAILED' })
     expect(await invokeStep('training:retryStep', 3)).toMatchObject({ success: true, newStatus: 'IN_PROGRESS' })
     expect(await invokeStep('training:skipStep', 3)).toMatchObject({ success: true, newStatus: 'SKIPPED' })
-    expect(eventState.calls.every((call) => typeof call.correlationId === 'string' && call.correlationId.length > 0))
+    expect(v2EventFacts(db).every((fact) => typeof fact.correlation_id === 'string' && fact.correlation_id.length > 0))
       .toBe(true)
 
-    eventState.calls = []
     expect(await invokeStep('training:skipStep', 4)).toMatchObject({
       success: true,
       newStatus: 'SKIPPED',
       sessionCompleted: true
     })
-    expect(eventState.calls.map((call) => call.eventType)).toEqual([
+    const finalFacts = latestV2BatchFacts(db)
+    expect(finalFacts.map((fact) => fact.event_type)).toEqual([
       'TRAINING_STEP_SKIPPED',
       'TRAINING_COMPLETED'
     ])
-    expect(new Set(eventState.calls.map((call) => call.correlationId)).size).toBe(1)
+    expect(new Set(finalFacts.map((fact) => fact.batch_id)).size).toBe(1)
+    expect(new Set(finalFacts.map((fact) => fact.correlation_id)).size).toBe(1)
     expect((db.prepare('SELECT status FROM training_session WHERE training_session_id = ?')
       .get(trainingSessionId) as { status: string }).status).toBe('COMPLETED')
 
-    eventState.calls = []
+    const beforeReads = v2EventFacts(db)
     expect(await requireHandler('training:listSessions')(event(teacherSender), {
       callerUserId: teacherId,
       callerRole: 'TEACHER'
@@ -318,18 +340,15 @@ describe('M5A-6 training commands through CommandBus', () => {
       callerRole: 'STUDENT',
       trainingSessionId
     })).toMatchObject({ success: true, session: { trainingSessionId } })
-    expect(eventState.calls).toEqual([])
+    expect(v2EventFacts(db)).toEqual(beforeReads)
   })
 
-  it('rolls back SQLite projection when the injected event port fails after its insert', async () => {
+  it('persists a newly created training session through a confirmed v2 batch', async () => {
     const { db, runtime } = await createRuntime()
     const teacherId = seedCaller(db, 'TEACHER')
     const studentId = seedStudent(db)
     const senderId = 6303
     bindUser(db, runtime, senderId, teacherId, 'TEACHER')
-    eventState.failAfterProjectionFor = 'TRAINING_STARTED'
-    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
-
     expect(await requireHandler('training:createSession')(event(senderId), {
       callerUserId: teacherId,
       callerRole: 'TEACHER',
@@ -337,16 +356,16 @@ describe('M5A-6 training commands through CommandBus', () => {
       strategyId: 'strategy_training_shelver_v1',
       strategyVersion: 1,
       moduleType: 'FINE_MOTOR',
-      taskCode: 'ROLLBACK_TASK'
-    })).toEqual({ success: false, errorCode: 'TRAINING_SYSTEM_ERROR' })
+      taskCode: 'V2_BATCH_TASK'
+    })).toMatchObject({ success: true })
     expect((db.prepare("SELECT COUNT(*) AS count FROM domain_event_projection WHERE event_type = 'TRAINING_STARTED'")
-      .get() as { count: number }).count).toBe(0)
-    expect((db.prepare("SELECT COUNT(*) AS count FROM training_session WHERE task_code = 'ROLLBACK_TASK'")
-      .get() as { count: number }).count).toBe(0)
-    expect(eventState.calls).toHaveLength(1)
-    expect(eventState.calls[0].correlationId).toMatch(/^[0-9a-f-]{36}$/)
-    expect(consoleError).toHaveBeenCalledOnce()
-    consoleError.mockRestore()
+      .get() as { count: number }).count).toBe(1)
+    const facts = latestV2BatchFacts(db)
+    expect(facts.map((fact) => fact.event_type)).toEqual(['TRAINING_STARTED'])
+    expect(db.prepare('SELECT batch_status FROM applied_event_batch WHERE batch_id = ?')
+      .get(facts[0]?.batch_id)).toEqual({ batch_status: 'CONFIRMED' })
+    expect((db.prepare("SELECT COUNT(*) AS count FROM training_session WHERE task_code = 'V2_BATCH_TASK'")
+      .get() as { count: number }).count).toBe(1)
   })
 
   it('runs training halt only from the accepted redline parent and preserves the M4 key', async () => {

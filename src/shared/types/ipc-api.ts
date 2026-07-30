@@ -161,6 +161,16 @@ import type {
 } from './report'
 
 export interface IpcApi {
+  runtime: {
+    getHealth: () => Promise<{
+      schemaVersion: 'runtime-health-v1'
+      state: 'STARTING' | 'OPEN' | 'CORRUPTION_READ_ONLY' | 'CLOSED'
+      blockingCode: string | null
+      evidenceDigest: string | null
+      detectedAt: string | null
+      legacyRecordCount: number | null
+    }>
+  }
   auth: {
     login: (params: LoginParams) => Promise<LoginResult>
     getCurrentSession: () => Promise<CurrentSessionResult>

@@ -1,8 +1,7 @@
 import type { DBAdapter } from '../../db/interface'
 import { getDatabase } from '../../db/connection'
 import { SqliteAdapter } from '../../db/sqlite-adapter'
-import type { ReportMutationPort } from '../../domain/report-command-coordinator'
-import type { ApplicationRuntime } from '../../application/runtime/application-runtime'
+import type { ReportCommandCoordinator, ReportMutationPort } from '../../domain/report-command-coordinator'
 import type { AcceptedCommandContext } from '../../application/command/command-types'
 import {
   confirmSafetyIncident,
@@ -45,7 +44,7 @@ export {
 } from '../../application/query/safety-query-service'
 
 export interface SafetyHandlerRegistrationOptions {
-  readonly coordinator: ApplicationRuntime['reportCoordinator']
+  readonly coordinator: ReportCommandCoordinator
   readonly eventPort: Pick<ReportMutationPort, 'writeEvent'>
   readonly getDb?: () => DBAdapter
 }

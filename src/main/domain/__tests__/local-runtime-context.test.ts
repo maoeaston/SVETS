@@ -1,5 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { ensureLocalRuntimeContext } from '../local-runtime-context'
+import {
+  applyLocalRuntimeContextPlan,
+  ensureLocalRuntimeContext,
+  planLocalRuntimeContext
+} from '../local-runtime-context'
 import { acceptedAssignmentTestContext } from '../../application/services/__tests__/assignment-test-support'
 import type { UserCommandRole } from '../../application/command/command-types'
 import {
@@ -212,5 +216,44 @@ describe('ensureLocalRuntimeContext', () => {
     )).toThrow(/accepted assignment/)
     expect(countRows('organization')).toBe(0)
     expect(countRows('auth_session')).toBe(0)
+  })
+
+  it('将新本地运行时生成确定性、无明文凭据的计划后再应用', () => {
+    const teacherId = seedCaller(db, 'TEACHER')
+    const plan = planLocalRuntimeContext(db, teacherId, acceptedContext(teacherId), {
+      timestamp: '2026-07-30T11:00:00.000Z',
+      expiresAt: '2026-07-30T19:00:00.000Z',
+      generateId: (kind) => `m5b11-${kind}`
+    })
+
+    expect(countRows('organization')).toBe(0)
+    expect(plan.context.deviceRuntimeSessionId).toBe('m5b11-device-runtime-session')
+    expect(plan.auth_session.token_hash).toMatch(/^[a-f0-9]{64}$/)
+    expect(plan.auth_session.refresh_token_hash).toMatch(/^[a-f0-9]{64}$/)
+    expect(plan.auth_session.token_hash).not.toContain('m5b11-token-seed')
+
+    const applied = applyLocalRuntimeContextPlan(db, plan)
+    expect(applied).toEqual(plan.context)
+    expect(countRows('organization')).toBe(1)
+    expect(countRows('auth_session')).toBe(1)
+  })
+
+  it('同一运行时 ID 的不同身份事实被拒绝且不会覆盖既有记录', () => {
+    const teacherId = seedCaller(db, 'TEACHER')
+    const plan = planLocalRuntimeContext(db, teacherId, acceptedContext(teacherId), {
+      timestamp: '2026-07-30T11:00:00.000Z',
+      expiresAt: '2026-07-30T19:00:00.000Z',
+      generateId: (kind) => `m5b11-conflict-${kind}`
+    })
+    db.prepare('INSERT INTO organization (organization_id, name) VALUES (?, ?)').run(
+      plan.organization.organization_id,
+      'different organization'
+    )
+
+    expect(() => applyLocalRuntimeContextPlan(db, plan)).toThrow(/identity conflict/)
+    expect(db.prepare('SELECT name FROM organization WHERE organization_id = ?').get(
+      plan.organization.organization_id
+    )).toEqual({ name: 'different organization' })
+    expect(countRows('node')).toBe(0)
   })
 })

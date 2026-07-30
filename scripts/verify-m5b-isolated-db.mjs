@@ -24,6 +24,19 @@ try {
   const { stage } = parseArgs(process.argv.slice(2))
   const result = await runM5bIsolatedDatabaseVerification({ stage })
   console.log(`[m5b-isolated-db] PASS stage=${result.stage} schema=${result.schemaVersion}`)
+  if (result.components) {
+    const stages = Object.keys(result.components).sort()
+    console.log(`[m5b-isolated-db] cutover_components=${stages.join(',')}`)
+    for (const componentStage of stages) {
+      const component = result.components[componentStage]
+      console.log(
+        `[m5b-isolated-db] ${componentStage}=PASS `
+        + `tables=${component.targetTableCount}, indexes=${component.namedIndexCount}, cleaned=${component.cleaned}`
+      )
+    }
+    console.log('[m5b-isolated-db] temporary_roots=7 (each removed after PASS)')
+    process.exitCode = result.cleaned ? 0 : 1
+  } else {
   console.log(`[m5b-isolated-db] T11-T14=${result.targetTableCount}, named_indexes=${result.namedIndexCount}`)
   console.log(`[m5b-isolated-db] query_plan=${result.queryPlanIndexes.join(',')}`)
   console.log(`[m5b-isolated-db] backup_db_sha256=${result.backup.databaseHash}`)
@@ -46,7 +59,16 @@ try {
     console.log(`[m5b-isolated-db] recovery_planner_calls=${result.coordinator.recoveryPlannerCalls}, attempts=${result.coordinator.recoveredAttemptCount}`)
     console.log(`[m5b-isolated-db] coordinator_relative_sources=${result.coordinator.relativeSources}, persisted=${result.coordinator.persisted}`)
   }
+  if (result.artifact) {
+    console.log(`[m5b-isolated-db] artifact_published=${result.artifact.published}, rebuilt=${result.artifact.rebuilt}`)
+    console.log(`[m5b-isolated-db] artifact_probe_clean=${result.artifact.probeClean}, external_target_preserved=${result.artifact.externalTargetPreserved}`)
+  }
+  if (result.safety) {
+    console.log(`[m5b-isolated-db] safety_incident=${result.safety.incidentId}, events=${result.safety.eventCount}, bindings=${result.safety.bindingCount}`)
+    console.log(`[m5b-isolated-db] safety_planner_calls=${result.safety.plannerCalls}, persisted=${result.safety.persisted}`)
+  }
   console.log(`[m5b-isolated-db] temporary_root=${result.paths.runRoot} (removed after PASS)`)
+  }
 } catch (error) {
   if (error instanceof M5bIsolatedDatabaseError && isolatedEvidenceExists(error)) {
     console.error(`[m5b-isolated-db] evidence preserved at ${error.paths.runRoot}`)

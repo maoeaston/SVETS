@@ -592,6 +592,47 @@ export interface ReportEventBatchMetadataV2 {
   correlation_id: string
 }
 
+/** M5B-13 keeps the recoverable HTML bytes alongside the report export facts. */
+export interface ReportExportArtifactDirectoryIdentityV1Payload {
+  path: string
+  device: string
+  inode: string
+}
+
+export interface ReportExportArtifactTargetIdentityV1Payload {
+  artifact_root: ReportExportArtifactDirectoryIdentityV1Payload
+  target_parent: ReportExportArtifactDirectoryIdentityV1Payload
+}
+
+export interface ReportExportArtifactV1Payload {
+  schema_version: 'report-export-artifact-v1'
+  artifact_id: string
+  target_identity: ReportExportArtifactTargetIdentityV1Payload
+  artifact_bytes_base64: string
+  file_hash: string
+  file_size_bytes: number
+  mime_type: 'text/html'
+}
+
+export type ReportExportedPreparedV3Payload = ReportExportedV2Payload & {
+  event_payload_version: 3
+  batch_context: EventBatchContextV1Payload
+  actor_role: 'TEACHER'
+  app_version: string
+  correlation_id: string
+  artifact: ReportExportArtifactV1Payload
+  root_result: {
+    success: true
+    reportId: string
+    status: 'EXPORTED' | 'LOCKED'
+    exportPath: string
+    fileAssetId: string
+    fileHash: string
+    fileSizeBytes: number
+    canceled: false
+  }
+}
+
 /** M5B prepared training EVENT metadata; legacy training payloads remain schema-v1. */
 export interface TrainingEventBatchMetadataV2 {
   event_payload_version: 2
@@ -663,6 +704,108 @@ export interface AssessmentEventBatchMetadataV2 {
   app_version: string
   correlation_id: string
 }
+
+/** M5B prepared scoring EVENT metadata; legacy scoring payloads remain schema-v1. */
+export interface ScoringEventBatchMetadataV3 {
+  event_payload_version: 3
+  batch_context: EventBatchContextV1Payload
+  actor_role: 'TEACHER' | 'ADMIN'
+  app_version: string
+  correlation_id: string
+  /** Exactly one event in a scoring root batch carries the public command result. */
+  root_result?: Record<string, unknown>
+}
+
+export type OfflineScoreSubmittedBatchV3Payload = OfflineScoreSubmittedPayload & ScoringEventBatchMetadataV3
+export type TeacherObservationRecordedBatchV3Payload = TeacherObservationRecordedPayload & ScoringEventBatchMetadataV3
+export type ResultCalculatedBatchV3Payload = ResultCalculatedPayload & ScoringEventBatchMetadataV3
+export type SessionCompletedBatchV3Payload = SessionCompletedPayload & ScoringEventBatchMetadataV3
+
+/** M5B prepared assignment EVENT metadata; legacy assignment payloads remain schema-v1. */
+export interface AssignmentEventBatchMetadataV2 {
+  event_payload_version: 2
+  batch_context: EventBatchContextV1Payload
+  actor_role: 'TEACHER' | 'STUDENT' | 'ADMIN'
+  app_version: string
+  correlation_id: string
+  /** Exactly one assignment EVENT in a root batch carries the public command result. */
+  root_result?: Record<string, unknown>
+}
+
+/**
+ * Complete runtime topology and DEVICE_KEY credential hashes needed to replay
+ * an assignment grant without consulting request-time runtime state.
+ */
+export interface AssignmentRuntimeContextV2Payload {
+  schema_version: 'local-runtime-context-plan-v2'
+  context: {
+    organization_id: string
+    node_id: string
+    device_id: string
+    device_runtime_session_id: string
+    teacher_auth_session_id: string
+  }
+  organization: {
+    organization_id: string
+    name: string
+    type: 'SCHOOL' | 'CENTER' | 'DISTRICT'
+    status: 'ACTIVE'
+  }
+  node: {
+    node_id: string
+    organization_id: string
+    node_name: string
+    node_type: 'ELECTRON_KIOSK' | 'STANDALONE_SERVER' | 'CLOUD'
+    status: 'ACTIVE'
+  }
+  device: {
+    device_id: string
+    node_id: string
+    device_name: string
+    device_role: 'STUDENT_WORKSTATION' | 'TEACHER_TABLET' | 'ADMIN_TERMINAL' | 'HYBRID'
+    credential_hash: string | null
+    trust_state: 'PENDING' | 'TRUSTED' | 'REVOKED'
+    is_kiosk_enabled: boolean
+    allows_self_login: boolean
+    capabilities: string[] | null
+    last_heartbeat_at: string | null
+    status: 'ACTIVE'
+  }
+  runtime: {
+    device_runtime_session_id: string
+    device_id: string
+    started_at: string
+    last_heartbeat_at: string
+    client_version: string | null
+    status: 'ACTIVE'
+  }
+  auth_session: {
+    auth_session_id: string
+    user_id: string
+    device_runtime_session_id: string
+    auth_method: 'DEVICE_KEY'
+    capabilities: string[]
+    token_hash: string
+    refresh_token_hash: string | null
+    issued_at: string
+    expires_at: string
+    last_activity_at: string
+    status: 'ACTIVE'
+  }
+}
+
+export type AssignmentCreatedBatchV2Payload = AssignmentCreatedPayload
+  & AssignmentEventBatchMetadataV2
+  & { runtime_context_v2: AssignmentRuntimeContextV2Payload }
+export type AssignmentStudentConfirmedBatchV2Payload = AssignmentStudentConfirmedPayload
+  & AssignmentEventBatchMetadataV2
+export type AssignmentAssessmentStartedBatchV2Payload = AssignmentAssessmentStartedPayload
+  & AssignmentEventBatchMetadataV2
+export type GrantReboundBatchV2Payload = GrantReboundPayload
+  & AssignmentEventBatchMetadataV2
+  & { runtime_context_v2: AssignmentRuntimeContextV2Payload }
+export type AssignmentReleasedBatchV2Payload = AssignmentReleasedPayload
+  & AssignmentEventBatchMetadataV2
 
 /**
  * M5B prepared SESSION_STARTED 的完整 session-question 投影事实。
@@ -780,6 +923,70 @@ export interface SafetyIncidentCreatedPayload {
   reported_by: string
   brief_description?: string | null
 }
+
+/** M5B-12 prepared safety EVENT metadata. Legacy safety payloads remain schema-v1. */
+export interface SafetyEventBatchMetadataV2 {
+  event_payload_version: 2
+  batch_context: EventBatchContextV1Payload
+  actor_role: 'TEACHER' | 'ADMIN'
+  app_version: string
+  correlation_id: string
+  /** Exactly one EVENT in a prepared safety root carries the public command result. */
+  root_result?: Record<string, unknown>
+}
+
+export interface SafetyPreparedAssessmentResultV2 {
+  session_id: string
+  result_id: string
+  replaces_current_result_ids: string[]
+  student_id: string
+  strategy_id: string
+  strategy_type: 'BASELINE_ASSESSMENT' | 'MOCK_EXAM' | 'JOB_SKILL_ASSESSMENT'
+  job_code: string
+  raw_score: number
+  max_score: number
+  normalized_score: number
+  completion_ratio: number | null
+  breakdown: Record<string, unknown>
+}
+
+export interface SafetyPreparedBindingV2 {
+  aggregate_id: string
+  pre_status: 'INIT' | 'ACTIVE' | 'EMOTION_INTERRUPTED' | 'SUSPENDED_REVIEW_REQUIRED' | 'OFFLINE_PENDING'
+}
+
+/**
+ * A redline is intentionally represented by one safety EVENT. The M4 native
+ * trigger remains the only authority that changes session status to
+ * REDLINE_HALTED; the frozen facts below let the projector verify that effect
+ * and deterministically project its dependent results and training steps.
+ */
+export interface SafetyRedlineProjectionV2 {
+  assessment_bindings: SafetyPreparedBindingV2[]
+  training_bindings: SafetyPreparedBindingV2[]
+  assessment_results: SafetyPreparedAssessmentResultV2[]
+  training_in_progress_step_ids: string[]
+}
+
+export type SafetyIncidentCreatedBatchV2Payload = SafetyIncidentCreatedPayload
+  & SafetyEventBatchMetadataV2
+  & {
+    description: string | null
+    projection_kind: 'LIFECYCLE' | 'REDLINE'
+    redline_projection: SafetyRedlineProjectionV2 | null
+  }
+
+export type SafetyIncidentDetailConfirmedBatchV2Payload = SafetyIncidentDetailConfirmedPayload
+  & SafetyEventBatchMetadataV2
+
+export type SafetyIncidentResolvedBatchV2Payload = SafetyIncidentResolvedPayload
+  & SafetyEventBatchMetadataV2
+
+export type SafetyIncidentVoidedBatchV2Payload = SafetyIncidentVoidedPayload
+  & SafetyEventBatchMetadataV2
+
+export type SafetyIncidentReplacedForFactualCorrectionBatchV2Payload = SafetyIncidentReplacedPayload
+  & SafetyEventBatchMetadataV2
 
 export interface SafetyIncidentDetailConfirmedPayload {
   incident_id: string

@@ -2,7 +2,7 @@ import { dialog } from 'electron'
 import { getDatabase } from '../../db/connection'
 import type { DBAdapter } from '../../db/interface'
 import type { AcceptedCommandContext } from '../../application/command/command-types'
-import type { ApplicationRuntime } from '../../application/runtime/application-runtime'
+import type { ReportCommandCoordinator } from '../../domain/report-command-coordinator'
 import {
   createReportsApplicationService,
   type ReportSaveDialogRequest,
@@ -51,7 +51,7 @@ export {
 } from '../../application/query/reports-query-service'
 
 export interface ReportsHandlerRegistrationOptions extends ReportsApplicationDependencies {
-  readonly coordinator: ApplicationRuntime['reportCoordinator']
+  readonly coordinator: ReportCommandCoordinator
   readonly getDb?: () => DBAdapter
   readonly applicationService?: ReportsApplicationService
 }

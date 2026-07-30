@@ -74,7 +74,8 @@ manual_acceptance:
   - multi_device_assignment_flow
 
 notes:
-  - AGENTS.md declares PRD v1.0.9 and schema v0.1.17-multi-device-m4-safety-rekey as the current engineering baseline; M4 Step 2A and M5A Step 2B are ACCEPTED after independent Review and evidence-based Accept. Step 2C is eligible for final-boundary rebaselining and independent review but is not implemented by this status change.
+  - 当前工程 Schema 基线为 v0.1.18-event-batch-v2.2：M5B-14 已接通 production runtime、启动迁移、IPC/preload 与 renderer runtime health 边界。M4 Step 2A 与 M5A Step 2B 已 ACCEPTED；M5B-15 自动化验收完成，但独立 R3 复核与人工业务走查仍是待完成项，见 doc/features/event-batch-v2.2-runtime-m5b15-r3-review.md。
+  - [!] AGENTS.md 的工程基线行仍写 v0.1.17-multi-device-m4-safety-rekey；该行反映 M5B-14 前状态。当前权威基线以本文件与 src/main/db/schema.sql 的 v0.1.18 声明为准，后续维护应同步 AGENTS.md 的历史摘要。
   - MVP_PRD_v1.0.9-authoritative.md declares src/main/db/schema.sql as the database DDL source of truth.
   - MVP_PRD_v1.0.9-authoritative.md declares src/shared/types/json-schemas.ts and src/shared/types/event-payloads.ts as runtime JSON and event type sources; the Markdown specs remain readable historical references.
   - No CI workflow directory was found in this checkout during installation.

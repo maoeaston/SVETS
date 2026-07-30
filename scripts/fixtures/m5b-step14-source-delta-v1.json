@@ -1,0 +1,227 @@
+{
+  "schema_version": "m5b-step-source-delta-v1",
+  "step": "M5B-14",
+  "source_digest": "523387a6779e4a379f098038798e866f42726efb8609ac8adbdba64d4412efda",
+  "target_digest": "a46d83c4e32df557939f51ffe6278e869887a7dce405a2fcc147fc73a9617c81",
+  "expected_counts": {
+    "channels": 75,
+    "direct_callsites": 286,
+    "direct_files": 43,
+    "capability_callsites": 71,
+    "delegating_roots": 14
+  },
+  "removed_source": [
+    {
+      "file": "src/main/db/connection.ts",
+      "symbol": "initDatabase",
+      "line": 76,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "eb706b88d9f35777bd6be73c322c9a9c1c02b284d55794a74308775c2733aa9f",
+      "occurrence": 1,
+      "id": "ACTIVE-DIRECT-004",
+      "legacy_id": "LEGACY-DIRECT-004",
+      "disposition": "RETIRED_LEGACY_STARTUP_RECOVERY"
+    },
+    {
+      "file": "src/main/db/connection.ts",
+      "symbol": "recoverActionLog",
+      "line": 156,
+      "kind": "DB_PRAGMA",
+      "callee": "database.pragma",
+      "detail": "",
+      "fingerprint": "79b6beca70188f23c68a5e1d906a1277a0c0151428790aa5afca213eef761735",
+      "occurrence": 1,
+      "id": "ACTIVE-DIRECT-007",
+      "legacy_id": "LEGACY-DIRECT-007",
+      "disposition": "RETIRED_LEGACY_STARTUP_RECOVERY"
+    },
+    {
+      "file": "src/main/db/connection.ts",
+      "symbol": "recoverActionLog",
+      "line": 160,
+      "kind": "EVENT_WRITE",
+      "callee": "writeEvent",
+      "detail": "",
+      "fingerprint": "d12fd90da1c399f376e87a128f745982a7362346525cd4b5d87c448176a12033",
+      "occurrence": 1,
+      "id": "ACTIVE-DIRECT-008",
+      "legacy_id": "LEGACY-DIRECT-008",
+      "disposition": "RETIRED_LEGACY_STARTUP_RECOVERY"
+    }
+  ],
+  "added_target": [
+    {
+      "file": "src/main/application/runtime/application-runtime.ts",
+      "symbol": "ApplicationRuntimeImpl.recoverStartup",
+      "line": 278,
+      "kind": "DB_RUN",
+      "callee": "this.startupRecovery.run",
+      "detail": "",
+      "fingerprint": "ec082acc806f495129c4804fb22fa6e436f754680bf3c382f38d8652fc8b0880",
+      "occurrence": 1,
+      "target_class": "EVENT_BATCH_STARTUP_RECOVERY",
+      "planned_step": "M5B-14"
+    },
+    {
+      "file": "src/main/db/connection.ts",
+      "symbol": "loadTargetSchema",
+      "line": 80,
+      "kind": "DB_EXEC",
+      "callee": "database.exec",
+      "detail": "",
+      "fingerprint": "3fc850efbc228fa1f58bbe1473b22f0ee1f9c78e61900d68fe1887e4f166d182",
+      "occurrence": 1,
+      "target_class": "TARGET_SCHEMA_CUTOVER",
+      "planned_step": "M5B-14"
+    },
+    {
+      "file": "src/main/db/connection.ts",
+      "symbol": "checkpointFull",
+      "line": 184,
+      "kind": "DB_PRAGMA",
+      "callee": "options.database.pragma",
+      "detail": "",
+      "fingerprint": "217de946a8d8c46192835b20eabcd7fbf17dfca9499a8804afcc7fae5014769b",
+      "occurrence": 1,
+      "target_class": "M5B_ARCHIVAL_BACKUP",
+      "planned_step": "M5B-14"
+    },
+    {
+      "file": "src/main/db/connection.ts",
+      "symbol": "vacuumInto",
+      "line": 185,
+      "kind": "DB_EXEC",
+      "callee": "options.database.exec",
+      "detail": "",
+      "fingerprint": "27f4ca5ffd24c58fcfa246aa4a43491617605ad7572441cc434f8b336b98a18e",
+      "occurrence": 1,
+      "target_class": "M5B_ARCHIVAL_BACKUP",
+      "planned_step": "M5B-14"
+    },
+    {
+      "file": "src/main/db/sqlite-adapter.ts",
+      "symbol": "SqliteAdapter.cloneForPlanning",
+      "line": 45,
+      "kind": "DB_PRAGMA",
+      "callee": "clone.pragma",
+      "detail": "",
+      "fingerprint": "ba03ca27515a21b7cf96a9ca5fb1664f36e13578a2473159ceef6ddd2db93f7b",
+      "occurrence": 1,
+      "target_class": "PREPARE_ONLY_PLANNING_CLONE",
+      "planned_step": "M5B-14"
+    }
+  ],
+  "capability_removed_source": [
+    {
+      "file": "src/main/application/runtime/application-runtime.ts",
+      "symbol": "<module>",
+      "line": 6,
+      "kind": "REPORT_COORDINATOR_IMPORT",
+      "callee": "ReportCommandCoordinator",
+      "detail": "../../domain/report-command-coordinator",
+      "fingerprint": "ad1b42c0f79745aa3910ae7d35665374c6037234d4d6b431992c3a9905755011",
+      "occurrence": 1,
+      "id": "ACTIVE-CAP-041",
+      "legacy_id": null,
+      "disposition": "RETIRED_REPORT_COORDINATOR_COMPOSITION"
+    },
+    {
+      "file": "src/main/application/runtime/application-runtime.ts",
+      "symbol": "createApplicationRuntime",
+      "line": 255,
+      "kind": "REPORT_COORDINATOR_CONSTRUCTION",
+      "callee": "ReportCommandCoordinator",
+      "detail": "",
+      "fingerprint": "52565cacef3cb14d9384b12a3367adcd0819632e87b9f233fba6b3ddbb1ae7f9",
+      "occurrence": 1,
+      "id": "ACTIVE-CAP-021",
+      "legacy_id": "LEGACY-CAP-021",
+      "disposition": "RETIRED_REPORT_COORDINATOR_COMPOSITION"
+    },
+    {
+      "file": "src/main/db/connection.ts",
+      "symbol": "initDatabase",
+      "line": 80,
+      "kind": "LEGACY_RECOVERY_CALL",
+      "callee": "recoverActionLog",
+      "detail": "",
+      "fingerprint": "3fc6014c5c3b1088200b368c6f9e67972067f0225e62630dbb69796c93f7d6e9",
+      "occurrence": 1,
+      "id": "ACTIVE-CAP-001",
+      "legacy_id": "LEGACY-CAP-001",
+      "disposition": "RETIRED_LEGACY_STARTUP_RECOVERY"
+    },
+    {
+      "file": "src/main/db/connection.ts",
+      "symbol": "recoverActionLog",
+      "line": 149,
+      "kind": "LEGACY_RECOVERY_CALL",
+      "callee": "reconcileActionLog",
+      "detail": "",
+      "fingerprint": "56d4f8c9a8b59df89b9dbc275edd2c6d802f293fc0088a2c79baee616abaeee1",
+      "occurrence": 1,
+      "id": "ACTIVE-CAP-002",
+      "legacy_id": "LEGACY-CAP-002",
+      "disposition": "RETIRED_LEGACY_STARTUP_RECOVERY"
+    }
+  ],
+  "capability_added_target": [
+    {
+      "file": "src/main/ipc/handlers/reports.ts",
+      "symbol": "<module>",
+      "line": 5,
+      "kind": "REPORT_COORDINATOR_IMPORT",
+      "callee": "ReportCommandCoordinator",
+      "detail": "../../domain/report-command-coordinator",
+      "fingerprint": "16d5a905d2b1a81c5f2731a896240a21fb9c09cd5ca0ae74784fa86f6ab04945",
+      "occurrence": 1,
+      "target_class": "RETAINED_LEGACY_HANDLER_TEST_SEAM_IMPORT",
+      "planned_step": "M5B-14"
+    },
+    {
+      "file": "src/main/ipc/handlers/safety.ts",
+      "symbol": "<module>",
+      "line": 4,
+      "kind": "REPORT_COORDINATOR_IMPORT",
+      "callee": "ReportCommandCoordinator",
+      "detail": "../../domain/report-command-coordinator",
+      "fingerprint": "d30739c260d1756ad31e47e0eb3fcc5d3e2c34b9b1eaecc75f46b9a234c3dede",
+      "occurrence": 1,
+      "target_class": "RETAINED_LEGACY_HANDLER_TEST_SEAM_IMPORT",
+      "planned_step": "M5B-14"
+    }
+  ],
+  "channel_removed_source": [],
+  "channel_added_target": [
+    {
+      "channel": "runtime:getHealth",
+      "file": "src/main/ipc/handler-registry.ts",
+      "symbol": "registerCentralIpcHandlers",
+      "line": 406,
+      "dynamic": false,
+      "fingerprint": "451218c0ab9eb29e1640f14528e873f9f0371e8d6f979c2485695522529bd4de",
+      "target_class": "RUNTIME_HEALTH_READ",
+      "planned_step": "M5B-14"
+    }
+  ],
+  "delegating_root_removed_source": [
+    {
+      "path": "src/main/application/runtime/application-runtime.ts",
+      "disposition": "RETIRED_LEGACY_RUNTIME_COMPOSITION_ROOT"
+    }
+  ],
+  "delegating_root_added_target": [
+    {
+      "path": "src/main/ipc/handlers/reports.ts",
+      "target_class": "RETAINED_LEGACY_HANDLER_TEST_SEAM_ROOT",
+      "planned_step": "M5B-14"
+    },
+    {
+      "path": "src/main/ipc/handlers/safety.ts",
+      "target_class": "RETAINED_LEGACY_HANDLER_TEST_SEAM_ROOT",
+      "planned_step": "M5B-14"
+    }
+  ]
+}

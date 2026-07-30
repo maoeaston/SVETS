@@ -7,6 +7,7 @@ import {
   M5B_EXPECTED,
   M5B_SOURCE_DIGEST,
   loadM5bInventoryDocuments,
+  scanBeforeM5bSourceDeltas,
   scanM5bCheckout,
   validateM5bBaseline,
   validateM5bInventoryDocuments,
@@ -14,6 +15,11 @@ import {
 } from '../lib/m5b-runtime-inventory.mjs'
 import { verifyM5bStep8SourceDelta } from '../update-m5b-step8-fixture.mjs'
 import { verifyM5bStep9SourceDelta } from '../update-m5b-step9-fixture.mjs'
+import { verifyM5bStep10SourceDelta } from '../update-m5b-step10-fixture.mjs'
+import { verifyM5bStep11SourceDelta } from '../update-m5b-step11-fixture.mjs'
+import { verifyM5bStep12SourceDelta } from '../update-m5b-step12-fixture.mjs'
+import { verifyM5bStep13SourceDelta } from '../update-m5b-step13-fixture.mjs'
+import { verifyM5bStep14SourceDelta } from '../update-m5b-step14-fixture.mjs'
 
 const projectRoot = process.cwd()
 
@@ -130,6 +136,34 @@ function reviewedStep7Scan(documents) {
   }
 }
 
+function reviewedStep10Scan(documents) {
+  const checkout = scanBeforeM5bSourceDeltas(scanM5bCheckout(projectRoot), [documents.step14SourceDelta])
+  const m5b11Additions = new Set(documents.step11SourceDelta.added_target.map((entry) => entry.fingerprint))
+  const m5b13Additions = new Set(documents.step13SourceDelta.added_target.map((entry) => entry.fingerprint))
+  const m5b12Additions = new Set(documents.step12SourceDelta.added_target.map((entry) => entry.fingerprint))
+  return {
+    ...checkout,
+    direct_callsites: [
+      ...checkout.direct_callsites.filter((entry) => !m5b11Additions.has(entry.fingerprint) && !m5b13Additions.has(entry.fingerprint) && !m5b12Additions.has(entry.fingerprint)),
+      ...documents.step11SourceDelta.removed_source
+    ],
+    direct_files: Array.from({ length: documents.step10SourceDelta.expected_counts.direct_files }, (_, index) => `step10-file-${index}`),
+    digest: documents.step10SourceDelta.target_digest
+  }
+}
+
+function reviewedStep11Scan(documents) {
+  const checkout = scanBeforeM5bSourceDeltas(scanM5bCheckout(projectRoot), [documents.step14SourceDelta])
+  const m5b13Additions = new Set(documents.step13SourceDelta.added_target.map((entry) => entry.fingerprint))
+  const m5b12Additions = new Set(documents.step12SourceDelta.added_target.map((entry) => entry.fingerprint))
+  return {
+    ...checkout,
+    direct_callsites: checkout.direct_callsites.filter((entry) => !m5b13Additions.has(entry.fingerprint) && !m5b12Additions.has(entry.fingerprint)),
+    direct_files: Array.from({ length: documents.step11SourceDelta.expected_counts.direct_files }, (_, index) => `step11-file-${index}`),
+    digest: documents.step11SourceDelta.target_digest
+  }
+}
+
 describe('M5B event batch runtime inventory', () => {
   it('freezes the M5A source and the exact 75/29/46, 36/10 target', () => {
     const documents = loadM5bInventoryDocuments(projectRoot)
@@ -153,6 +187,16 @@ describe('M5B event batch runtime inventory', () => {
       m5a_registered_exceptions: 76
     })
     expect(documents.inventory.target.new_read_channels).toEqual(['runtime:getHealth'])
+  })
+
+  it('uses the main-process composition root for target writer reachability', () => {
+    const scan = scanM5bCheckout(projectRoot)
+    expect(scan.production_reachable_files).toContain('src/main/index.ts')
+    expect(scan.production_reachable_files).toContain('src/main/ipc/handler-registry.ts')
+    expect(scan.production_capability_callsites.filter((entry) =>
+      entry.kind === 'LEGACY_EVENT_PORT_CALL' || entry.kind === 'REPORT_COMMAND_CALL'
+    )).toEqual([])
+    expect(scan.production_prepare_oracle_callsites.length).toBeGreaterThan(0)
   })
 
   it('classifies all 46 command rows and binds unique differential evidence', () => {
@@ -297,7 +341,7 @@ describe('M5B event batch runtime inventory', () => {
 
   it('pins the exact reviewed M5B-8 training prepared-projector source delta', () => {
     const documents = loadM5bInventoryDocuments(projectRoot)
-    const result = validateM5bMigration({ scan: scanM5bCheckout(projectRoot), ...documents, step: 'M5B-8' })
+    const result = validateM5bMigration({ scan: reviewedStep10Scan(documents), ...documents, step: 'M5B-8' })
     expect(result.digest).toBe(documents.step8SourceDelta.target_digest)
     expect(documents.step8SourceDelta.removed_source).toEqual([])
     expect(documents.step8SourceDelta.added_target).toHaveLength(9)
@@ -309,12 +353,69 @@ describe('M5B event batch runtime inventory', () => {
 
   it('pins the exact reviewed M5B-9 assessment prepared-projector source delta', () => {
     const documents = loadM5bInventoryDocuments(projectRoot)
-    const result = validateM5bMigration({ scan: scanM5bCheckout(projectRoot), ...documents, step: 'M5B-9' })
+    const result = validateM5bMigration({ scan: reviewedStep10Scan(documents), ...documents, step: 'M5B-9' })
     expect(result.digest).toBe(documents.step9SourceDelta.target_digest)
     expect(documents.step9SourceDelta.removed_source).toEqual([])
     expect(documents.step9SourceDelta.added_target).toEqual([])
     expect(documents.step9SourceDelta.capability_removed_source).toEqual([])
     expect(documents.step9SourceDelta.capability_added_target).toEqual([])
+  })
+
+  it('pins the exact reviewed M5B-10 test-only scoring prepared-fact source delta', () => {
+    const documents = loadM5bInventoryDocuments(projectRoot)
+    const result = validateM5bMigration({ scan: reviewedStep10Scan(documents), ...documents, step: 'M5B-10' })
+    expect(result.digest).toBe(documents.step10SourceDelta.target_digest)
+    expect(documents.step10SourceDelta.removed_source).toEqual([])
+    expect(documents.step10SourceDelta.added_target).toEqual([])
+    expect(documents.step10SourceDelta.capability_removed_source).toEqual([])
+    expect(documents.step10SourceDelta.capability_added_target).toEqual([])
+  })
+
+  it('pins the exact reviewed M5B-11 assignment runtime prepared-effect source delta', () => {
+    const documents = loadM5bInventoryDocuments(projectRoot)
+    const result = validateM5bMigration({ scan: reviewedStep11Scan(documents), ...documents, step: 'M5B-11' })
+    expect(result.digest).toBe(documents.step11SourceDelta.target_digest)
+    expect(documents.step11SourceDelta.removed_source).toHaveLength(5)
+    expect(documents.step11SourceDelta.added_target).toHaveLength(5)
+    expect(new Set(documents.step11SourceDelta.removed_source.map((entry) => entry.disposition)))
+      .toEqual(new Set(['REFACTORED_TO_PREPARED_RUNTIME_EFFECT']))
+    expect(new Set(documents.step11SourceDelta.added_target.map((entry) => entry.target_class)))
+      .toEqual(new Set(['ASSIGNMENT_RUNTIME_PREPARED_EFFECT']))
+  })
+
+  it('pins the exact reviewed M5B-13 artifact prepared-effect source delta', () => {
+    const documents = loadM5bInventoryDocuments(projectRoot)
+    const result = validateM5bMigration({ scan: scanM5bCheckout(projectRoot), ...documents, step: 'M5B-13' })
+    expect(result.digest).toBe(documents.step13SourceDelta.target_digest)
+    expect(documents.step13SourceDelta.removed_source).toEqual([])
+    expect(documents.step13SourceDelta.added_target).toHaveLength(14)
+    expect(new Set(documents.step13SourceDelta.added_target.map((entry) => entry.target_class))).toEqual(new Set([
+      'REPORT_EXPORT_ARTIFACT_PREPARE_EFFECT',
+      'REPORT_EXPORT_PREPARED_PROJECTOR'
+    ]))
+  })
+
+  it('pins the exact reviewed M5B-12 safety prepared-projector source delta', () => {
+    const documents = loadM5bInventoryDocuments(projectRoot)
+    const result = validateM5bMigration({ scan: scanM5bCheckout(projectRoot), ...documents, step: 'M5B-12' })
+    expect(result.digest).toBe(documents.step12SourceDelta.target_digest)
+    expect(documents.step12SourceDelta.removed_source).toEqual([])
+    expect(documents.step12SourceDelta.added_target).toHaveLength(8)
+    expect(new Set(documents.step12SourceDelta.added_target.map((entry) => entry.target_class)))
+      .toEqual(new Set(['SAFETY_PREPARED_PROJECTOR']))
+  })
+
+  it('pins the exact reviewed M5B-14 production cutover source delta', () => {
+    const documents = loadM5bInventoryDocuments(projectRoot)
+    const result = validateM5bMigration({ scan: scanM5bCheckout(projectRoot), ...documents, step: 'M5B-14' })
+    expect(result.digest).toBe(documents.step14SourceDelta.target_digest)
+    expect(documents.step14SourceDelta.removed_source).toHaveLength(3)
+    expect(documents.step14SourceDelta.added_target).toHaveLength(5)
+    expect(documents.step14SourceDelta.capability_removed_source).toHaveLength(4)
+    expect(documents.step14SourceDelta.capability_added_target).toHaveLength(2)
+    expect(documents.step14SourceDelta.channel_added_target.map((entry) => entry.channel))
+      .toEqual(['runtime:getHealth'])
+    expect(documents.step14SourceDelta.delegating_root_added_target).toHaveLength(2)
   })
 
   it('rejects duplicate/missing command, active and mapping rows', () => {
@@ -386,13 +487,30 @@ describe('M5B event batch runtime inventory', () => {
     const step8 = clonedDocuments()
     step8.step8SourceDelta.added_target[0].target_class = 'UNCLASSIFIED'
     expect(() => validateM5bInventoryDocuments(step8)).toThrow(/training projector additions/)
+
+    const step13 = clonedDocuments()
+    step13.step13SourceDelta.added_target[0].target_class = 'UNCLASSIFIED'
+    expect(() => validateM5bInventoryDocuments(step13)).toThrow(/M5B-13 added target classes/)
+
+    const step12 = clonedDocuments()
+    step12.step12SourceDelta.added_target[0].target_class = 'UNCLASSIFIED'
+    expect(() => validateM5bInventoryDocuments(step12)).toThrow(/M5B-12 added target classes/)
   })
 
-  it('keeps target mode failing closed while health and legacy retirement are pending', () => {
+  it('closes target mode only after health and legacy retirement are complete', () => {
     const documents = loadM5bInventoryDocuments(projectRoot)
     const scan = scanM5bCheckout(projectRoot)
-    expect(() => validateM5bMigration({ scan, ...documents, step: 'M5B-15', target: true }))
-      .toThrow(/target checkout channels|target pending/)
+    expect(validateM5bMigration({ scan, ...documents, step: 'M5B-15', target: true })).toMatchObject({
+      command_pending: 0,
+      health_pending: 0,
+      legacy_pending: 0,
+      report_pending: 0
+    })
+
+    const pending = clonedDocuments()
+    pending.inventory.expected_pending['M5B-15'].runtime_health_channel = true
+    expect(() => validateM5bMigration({ scan, ...pending, step: 'M5B-15', target: true }))
+      .toThrow(/reintroduced runtime health pending state/)
   })
 
   it('refuses to regenerate the frozen implementation-start fixtures', () => {
@@ -491,17 +609,52 @@ describe('M5B event batch runtime inventory', () => {
     expect(createHash('sha256').update(readFileSync(path)).digest('hex')).toBe(before)
   })
 
-  it('verifies the frozen M5B-8 source delta without rewriting it', () => {
+  it('keeps the frozen M5B-8 source delta immutable after M5B-11', () => {
     const path = 'scripts/fixtures/m5b-step8-source-delta-v1.json'
     const before = createHash('sha256').update(readFileSync(path)).digest('hex')
-    expect(verifyM5bStep8SourceDelta().status).toBe('verified')
+    expect(() => verifyM5bStep8SourceDelta()).toThrow(/checkout does not match the reviewed M5B-8 source delta/)
     expect(createHash('sha256').update(readFileSync(path)).digest('hex')).toBe(before)
   })
 
-  it('verifies the frozen M5B-9 source delta without rewriting it', () => {
+  it('keeps the frozen M5B-9 source delta immutable after M5B-11', () => {
     const path = 'scripts/fixtures/m5b-step9-source-delta-v1.json'
     const before = createHash('sha256').update(readFileSync(path)).digest('hex')
-    expect(verifyM5bStep9SourceDelta().status).toBe('verified')
+    expect(() => verifyM5bStep9SourceDelta()).toThrow(/checkout does not match the reviewed M5B-9 source delta/)
+    expect(createHash('sha256').update(readFileSync(path)).digest('hex')).toBe(before)
+  })
+
+  it('keeps the frozen M5B-10 source delta immutable after M5B-11', () => {
+    const path = 'scripts/fixtures/m5b-step10-source-delta-v1.json'
+    const before = createHash('sha256').update(readFileSync(path)).digest('hex')
+    expect(() => verifyM5bStep10SourceDelta()).toThrow(/checkout does not match the reviewed M5B-10 source delta/)
+    expect(createHash('sha256').update(readFileSync(path)).digest('hex')).toBe(before)
+  })
+
+  it('keeps the frozen M5B-11 source delta immutable after M5B-13', () => {
+    const path = 'scripts/fixtures/m5b-step11-source-delta-v1.json'
+    const before = createHash('sha256').update(readFileSync(path)).digest('hex')
+    expect(() => verifyM5bStep11SourceDelta()).toThrow(/checkout does not match the reviewed M5B-11 source delta/)
+    expect(createHash('sha256').update(readFileSync(path)).digest('hex')).toBe(before)
+  })
+
+  it('verifies the frozen M5B-13 source delta without rewriting it', () => {
+    const path = 'scripts/fixtures/m5b-step13-source-delta-v1.json'
+    const before = createHash('sha256').update(readFileSync(path)).digest('hex')
+    expect(verifyM5bStep13SourceDelta().status).toBe('verified')
+    expect(createHash('sha256').update(readFileSync(path)).digest('hex')).toBe(before)
+  })
+
+  it('verifies the frozen M5B-12 source delta without rewriting it', () => {
+    const path = 'scripts/fixtures/m5b-step12-source-delta-v1.json'
+    const before = createHash('sha256').update(readFileSync(path)).digest('hex')
+    expect(verifyM5bStep12SourceDelta().status).toBe('verified')
+    expect(createHash('sha256').update(readFileSync(path)).digest('hex')).toBe(before)
+  })
+
+  it('verifies the frozen M5B-14 source delta without rewriting it', () => {
+    const path = 'scripts/fixtures/m5b-step14-source-delta-v1.json'
+    const before = createHash('sha256').update(readFileSync(path)).digest('hex')
+    expect(verifyM5bStep14SourceDelta().status).toBe('verified')
     expect(createHash('sha256').update(readFileSync(path)).digest('hex')).toBe(before)
   })
 })

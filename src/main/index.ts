@@ -83,7 +83,7 @@ function createWindow(): void {
   }
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   electronApp.setAppUserModelId('com.xuancan.career-guide')
 
   app.on('browser-window-created', (_, window) => {
@@ -92,7 +92,7 @@ app.whenReady().then(() => {
 
   initDatabase()
   const dataRoot = join(app.getPath('userData'), 'data')
-  applicationRuntime = startApplicationRuntime({
+  applicationRuntime = await startApplicationRuntime({
     runtime: {
       db: new SqliteAdapter(getDatabase()),
       dataRoot

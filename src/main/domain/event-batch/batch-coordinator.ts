@@ -437,6 +437,7 @@ export class EventBatchCoordinator {
         const plannedSource = inMemoryPreparedSource(prepared, events, segmentRelativePath(prepared.segment_id))
         this.registry.validatePrepared(command, plannedSource)
         this.registry.assertOperationalEffectView(plan.operationalEffects, plannedSource)
+        this.registry.assertPreApplyEffectView(plan.preApplyEffects ?? [], plannedSource)
         this.database.immediateTransaction(() => {
           const current = this.commandStore.assertLease({
             commandId: command.commandId,
@@ -464,6 +465,14 @@ export class EventBatchCoordinator {
           .find((source) => source.prepared.batch_id === command.eventBatchId)
         if (!durableSource) throw new EventBatchCoordinatorError('PREPARED_SOURCE_MISSING', 'fsynced prepared batch could not be reloaded')
         this.registry.validatePrepared(command, durableSource)
+        for (const event of durableSource.events) {
+          this.registry.ensurePreApplyEffects(this.registry.projectorContext({
+            database: this.database,
+            command,
+            batch: durableSource,
+            event
+          }))
+        }
         this.fault?.hit('BEFORE_APPLY', { commandId: command.commandId, batchId: command.eventBatchId })
         applyPreparedBatch({
           database: this.database,

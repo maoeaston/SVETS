@@ -826,6 +826,174 @@
         "src/main/application/planners/__tests__/training-planner.test.ts"
       ],
       "status": "REKEYED"
+    },
+    {
+      "id": "M4-SQL-058",
+      "file": "src/main/application/planners/safety-planner.ts",
+      "symbol": "readIncident",
+      "sql_fingerprint": "92f6fb42746bb04bb0a3682354b6a626eeb074928fedc343484c913173b5a88d",
+      "classification": "INCIDENT_PRIMARY_KEY_LOOKUP",
+      "current_predicate": "incident_id unique lookup for prepared lifecycle facts",
+      "target_predicate": "unchanged; unique incident_id resolves the persisted M4 aggregate triple",
+      "allowed_reason": "The prepared lifecycle planner freezes one incident by its unique ID, then explicitly verifies the accepted student, job, and task target against that row.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/application/planners/__tests__/safety-planner.test.ts",
+        "src/main/domain/projectors/__tests__/safety-projector.test.ts"
+      ],
+      "status": "BASELINE_CLASSIFIED"
+    },
+    {
+      "id": "M4-SQL-059",
+      "file": "src/main/application/planners/safety-planner.ts",
+      "symbol": "readRedlineSnapshot",
+      "sql_fingerprint": "8a675d3e9fa9ed0606d62cd500a3740980e16becaeabba0f3609d830799e2e1b",
+      "classification": "AGGREGATE_MATCH_REKEY",
+      "current_predicate": "student_id + job_code + task_code (prepared redline binding)",
+      "target_predicate": "student_id + job_code + task_code (M4 required)",
+      "allowed_reason": "The prepared redline planner freezes every open assessment session only within the complete persisted safety aggregate.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/application/planners/__tests__/safety-planner.test.ts",
+        "src/main/domain/projectors/__tests__/safety-projector.test.ts"
+      ],
+      "status": "REKEYED"
+    },
+    {
+      "id": "M4-SQL-060",
+      "file": "src/main/application/planners/safety-planner.ts",
+      "symbol": "readRedlineSnapshot",
+      "sql_fingerprint": "64e2a35be5649b2346e866bd8430c73cb4b66294dba108a5e4f8be667fbf32c4",
+      "classification": "AGGREGATE_MATCH_REKEY",
+      "current_predicate": "student_id + job_code + task_code (prepared redline binding)",
+      "target_predicate": "student_id + job_code + task_code (M4 required)",
+      "allowed_reason": "The prepared redline planner freezes every open training session only within the complete persisted safety aggregate.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/application/planners/__tests__/safety-planner.test.ts",
+        "src/main/domain/projectors/__tests__/safety-projector.test.ts"
+      ],
+      "status": "REKEYED"
+    },
+    {
+      "id": "M4-SQL-061",
+      "file": "src/main/domain/projectors/safety-projector.ts",
+      "symbol": "assertIncident",
+      "sql_fingerprint": "1f5c5503b8b768206a7988255a3dc1143f079bed541ebf274f5844e9549996ca",
+      "classification": "INCIDENT_PRIMARY_KEY_LOOKUP",
+      "current_predicate": "incident_id unique lookup for prepared projector assertion",
+      "target_predicate": "unchanged; unique incident_id resolves the persisted M4 aggregate triple",
+      "allowed_reason": "The projector asserts one already prepared incident by its immutable primary identifier before applying or confirming a lifecycle transition.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/domain/projectors/__tests__/safety-projector.test.ts"
+      ],
+      "status": "BASELINE_CLASSIFIED"
+    },
+    {
+      "id": "M4-SQL-062",
+      "file": "src/main/domain/projectors/safety-projector.ts",
+      "symbol": "projectRedlineResults",
+      "sql_fingerprint": "9b00866e3cb3003b4ca50565bd6aff361d8325ccf3953699f04a2973349cd36d",
+      "classification": "NON_SAFETY_QUERY",
+      "current_predicate": "prepared result insert by frozen source aggregate identifier",
+      "target_predicate": "unchanged; no incident/session aggregate lookup or safety enforcement predicate",
+      "allowed_reason": "The frozen redline result is inserted after native M4 session halting and is keyed by the prepared source session rather than searched by a partial safety aggregate.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/domain/projectors/__tests__/safety-projector.test.ts"
+      ],
+      "status": "BASELINE_CLASSIFIED"
+    },
+    {
+      "id": "M4-SQL-063",
+      "file": "src/main/domain/projectors/safety-projector.ts",
+      "symbol": "projectRedlineTrainingSteps",
+      "sql_fingerprint": "9e5403b17353eeb4d0664126fb40fe92c43f4b9c00fd815a565194751059d738",
+      "classification": "NON_SAFETY_QUERY",
+      "current_predicate": "prepared training_step_record primary-key update",
+      "target_predicate": "unchanged; no incident/session aggregate lookup or safety enforcement predicate",
+      "allowed_reason": "The projector changes only frozen in-progress step identifiers after the native M4 trigger has halted their parent training sessions.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/domain/projectors/__tests__/safety-projector.test.ts"
+      ],
+      "status": "BASELINE_CLASSIFIED"
+    },
+    {
+      "id": "M4-SQL-064",
+      "file": "src/main/domain/projectors/safety-projector.ts",
+      "symbol": "projectCreated",
+      "sql_fingerprint": "ba664a4d19ce9b2964870ecc655dbcd72e277dc025ff63122c63394868e9bc90",
+      "classification": "INCIDENT_PRIMARY_KEY_LOOKUP",
+      "current_predicate": "incident_id unique idempotency lookup",
+      "target_predicate": "unchanged; unique incident_id resolves one prepared fact",
+      "allowed_reason": "The projector rejects replay conflicts by looking up the prepared incident primary key only.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/domain/projectors/__tests__/safety-projector.test.ts"
+      ],
+      "status": "BASELINE_CLASSIFIED"
+    },
+    {
+      "id": "M4-SQL-065",
+      "file": "src/main/domain/projectors/safety-projector.ts",
+      "symbol": "projectCreated",
+      "sql_fingerprint": "b6098a8d6b30d334b40e6e09419d7cafc8741f52359bbf19b8e310f5f6ec0014",
+      "classification": "NON_SAFETY_QUERY",
+      "current_predicate": "prepared incident insert with frozen aggregate values",
+      "target_predicate": "unchanged; no aggregate search predicate is used",
+      "allowed_reason": "The event payload already freezes the student, job, and task facts, and the database M4 trigger owns all open-session binding and halting.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/domain/projectors/__tests__/safety-projector.test.ts"
+      ],
+      "status": "BASELINE_CLASSIFIED"
+    },
+    {
+      "id": "M4-SQL-066",
+      "file": "src/main/domain/projectors/safety-projector.ts",
+      "symbol": "projectConfirmed",
+      "sql_fingerprint": "bce9fd69f9b488ee70397a53473e3bd280bc5609c3c0081da1fea9b22a8e95ed",
+      "classification": "INCIDENT_PRIMARY_KEY_LOOKUP",
+      "current_predicate": "incident_id unique lifecycle update",
+      "target_predicate": "unchanged; unique incident_id resolves one prepared lifecycle fact",
+      "allowed_reason": "The confirmation transition is guarded by the frozen incident ID and expected prior status.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/domain/projectors/__tests__/safety-projector.test.ts"
+      ],
+      "status": "BASELINE_CLASSIFIED"
+    },
+    {
+      "id": "M4-SQL-067",
+      "file": "src/main/domain/projectors/safety-projector.ts",
+      "symbol": "projectResolved",
+      "sql_fingerprint": "546d12c27d87ad34bcddce5480722d6d68201b83cb4c789e5b82d0976c1db77e",
+      "classification": "INCIDENT_PRIMARY_KEY_LOOKUP",
+      "current_predicate": "incident_id unique lifecycle update",
+      "target_predicate": "unchanged; unique incident_id resolves one prepared lifecycle fact",
+      "allowed_reason": "The resolution transition is guarded by the frozen incident ID and expected confirmed status.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/domain/projectors/__tests__/safety-projector.test.ts"
+      ],
+      "status": "BASELINE_CLASSIFIED"
+    },
+    {
+      "id": "M4-SQL-068",
+      "file": "src/main/domain/projectors/safety-projector.ts",
+      "symbol": "projectVoided",
+      "sql_fingerprint": "5159df5c505e944d0c06cce400e7a2226b13f5a5e70a33ffa33bc7d4e8081c72",
+      "classification": "INCIDENT_PRIMARY_KEY_LOOKUP",
+      "current_predicate": "incident_id unique lifecycle update",
+      "target_predicate": "unchanged; unique incident_id resolves one prepared lifecycle fact",
+      "allowed_reason": "The void transition is guarded by the frozen incident ID and expected prior lifecycle status, including factual-correction replacement links.",
+      "test_evidence": [
+        "scripts/__tests__/multi-device-m4-safety-sql-inventory.test.mjs",
+        "src/main/domain/projectors/__tests__/safety-projector.test.ts"
+      ],
+      "status": "BASELINE_CLASSIFIED"
     }
   ]
 }

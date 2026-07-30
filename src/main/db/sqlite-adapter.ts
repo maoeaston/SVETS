@@ -34,4 +34,17 @@ export class SqliteAdapter implements DBAdapter {
   exec(sql: string): void {
     this.db.exec(sql)
   }
+
+  /**
+   * Planning must derive facts without mutating the live connection.  SQLite's
+   * serialize/deserialize pair gives prepared planners an isolated snapshot
+   * while preserving the exact schema and current transaction-visible state.
+   */
+  async cloneForPlanning(): Promise<SqliteAdapter & { close(): void }> {
+    const clone = new Database(this.db.serialize())
+    clone.pragma('foreign_keys = ON')
+    const adapter = new SqliteAdapter(clone) as SqliteAdapter & { close(): void }
+    adapter.close = () => clone.close()
+    return adapter
+  }
 }

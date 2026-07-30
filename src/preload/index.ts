@@ -1,6 +1,36 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
+const mutationChannels = new Set([
+  'auth:createTeacherAccount', 'auth:login', 'auth:logout', 'auth:setTeacherAccountStatus',
+  'student:create', 'student:update', 'student:archive',
+  'strategy:createVersion', 'strategy:update', 'strategy:setActive',
+  'assessment:createSession', 'assessment:submitAnswer', 'assessment:startSession',
+  'assessment:emotionInterrupt', 'assessment:emotionResume', 'assessment:pauseSitting',
+  'assessment:startNextSitting', 'assessment:recordEmotionCollapse', 'assessment:abortSession',
+  'assessment:triggerRedline', 'assessment:calculateResult', 'assessment:submitOfflineAbilityScores',
+  'assessment:submitOperationScores', 'assessment:submitJobSkillOfflineScores', 'assessment:recordTeacherObservation',
+  'safety:confirm', 'safety:resolve', 'safety:void', 'safety:replaceForFactualCorrection',
+  'assignment:create', 'assignment:confirmStudent', 'assignment:startAssessment', 'assignment:rebind', 'assignment:release',
+  'training:createSession', 'training:startStep', 'training:completeStep', 'training:skipStep', 'training:failStep', 'training:retryStep',
+  'reports:confirmTaskClosure', 'reports:replaceTaskClosure', 'reports:generate', 'reports:confirmPlacementReview', 'reports:lock', 'reports:export'
+])
+
+const clientInstanceId = crypto.randomUUID()
+const rawInvoke = ipcRenderer.invoke.bind(ipcRenderer)
+
+// Renderer-facing signatures remain unchanged; metadata is attached only at
+// the privileged boundary and is never supplied by business callers.
+ipcRenderer.invoke = ((channel: string, ...args: unknown[]) => {
+  if (!mutationChannels.has(channel)) return rawInvoke(channel, ...args)
+  return rawInvoke(channel, ...args, {
+    schemaVersion: 1,
+    clientInstanceId,
+    idempotencyKey: crypto.randomUUID(),
+    deviceId: null
+  })
+}) as typeof ipcRenderer.invoke
+
 /**
  * 安全桥：只暴露明确白名单的 IPC 通道给渲染进程。
  * 渲染进程不得直接访问文件系统或 SQLite。
@@ -117,6 +147,9 @@ const api = {
       ipcRenderer.invoke('reports:confirmPlacementReview', params),
     lock: (params: unknown) => ipcRenderer.invoke('reports:lock', params),
     export: (params: unknown) => ipcRenderer.invoke('reports:export', params)
+  },
+  runtime: {
+    getHealth: () => ipcRenderer.invoke('runtime:getHealth')
   }
 }
 
