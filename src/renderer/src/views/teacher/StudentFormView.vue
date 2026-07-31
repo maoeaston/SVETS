@@ -200,7 +200,8 @@ import { useAuthStore } from '../../stores/auth'
 import type {
   StudentGender,
   CreateStudentParams,
-  UpdateStudentParams
+  UpdateStudentParams,
+  SensoryProfileJson
 } from '@shared/types/student'
 
 type Sensitivity = '' | 'LOW' | 'MEDIUM' | 'HIGH'
@@ -241,7 +242,7 @@ function parseAvoidTags(input: string): string[] {
 }
 
 function buildSensoryPayload():
-  | Record<string, unknown>
+  | SensoryProfileJson
   | null {
   const { noise, light, tactile, crowd, avoidTagsInput, notes } = form.sp
   const avoidTags = parseAvoidTags(avoidTagsInput)
@@ -255,7 +256,7 @@ function buildSensoryPayload():
     tactile_sensitivity: tactile || null,
     crowd_density_sensitivity: crowd || null,
     avoid_tags: avoidTags,
-    notes: notes || undefined
+    ...(notes ? { notes } : {})
   }
 }
 
@@ -324,9 +325,9 @@ async function submit(): Promise<void> {
   // 构造普通对象（reactive proxy 经 IPC 序列化会失败 / 丢字段）
   const base = {
     studentName: form.studentName,
-    gender: form.gender || undefined,
-    birthDate: form.birthDate || undefined,
-    guardianContact: form.guardianContact || undefined,
+    ...(form.gender ? { gender: form.gender } : {}),
+    ...(form.birthDate ? { birthDate: form.birthDate } : {}),
+    ...(form.guardianContact ? { guardianContact: form.guardianContact } : {}),
     sensoryProfile: sensoryPayload
   }
 

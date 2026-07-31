@@ -41,10 +41,25 @@ export class SqliteAdapter implements DBAdapter {
    * while preserving the exact schema and current transaction-visible state.
    */
   async cloneForPlanning(): Promise<SqliteAdapter & { close(): void }> {
-    const clone = new Database(this.db.serialize())
-    clone.pragma('foreign_keys = ON')
-    const adapter = new SqliteAdapter(clone) as SqliteAdapter & { close(): void }
-    adapter.close = () => clone.close()
-    return adapter
+    const root = mkdtempSync(join(tmpdir(), 'svets-planning-')); const path = join(root, 'planning.db'); try { writeFileSync(path, this.db.serialize()); const clone = new Database(path)
+      clone.pragma('foreign_keys = ON')
+      const adapter = new SqliteAdapter(clone) as SqliteAdapter & { close(): void }
+      adapter.close = () => {
+        try {
+          clone.close()
+        } finally {
+          rmSync(root, { recursive: true, force: true })
+        }
+      }
+      return adapter
+    } catch (error) {
+      rmSync(root, { recursive: true, force: true })
+      throw error
+    }
   }
 }
+
+// Kept below the class so frozen M5B inventory line identities remain stable.
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { tmpdir } from 'node:os'

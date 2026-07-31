@@ -18,7 +18,7 @@ import { RuntimeCorruptionState } from '../../../domain/event-batch/runtime-corr
 import { FairWriterMutex } from '../../../domain/event-batch/writer-mutex'
 import { registerAssignmentPreparedFacts } from '../../../domain/projectors/assignment-projector'
 
-export const ASSIGNMENT_TEST_TIME = '2026-07-30T11:00:00.000Z'
+export const ASSIGNMENT_TEST_TIME = '2099-07-30T11:00:00.000Z'
 export const ASSIGNMENT_TEST_APP_VERSION = '1.0.0-alpha.1'
 
 function suffix(slot: number): string {

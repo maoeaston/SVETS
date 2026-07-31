@@ -340,6 +340,23 @@ function captureLegacyEvents(input: Readonly<{
       app_version: 'm5b-assignment-planner',
       correlation_id: params.correlationId
     }
+    input.database.prepare(
+      `INSERT INTO domain_event_projection
+         (event_id, aggregate_type, aggregate_id, event_type, event_sequence,
+          payload_json, checksum, source_log_path, schema_version, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).run(
+      entry.event_id,
+      entry.aggregate_type,
+      entry.aggregate_id,
+      entry.event_type,
+      entry.event_sequence,
+      JSON.stringify(entry.payload),
+      entry.checksum,
+      'm5b-assignment-planner.jsonl',
+      entry.schema_version,
+      entry.created_at
+    )
     events.push(Object.freeze({
       event_id: eventId,
       aggregate_type: params.aggregateType,

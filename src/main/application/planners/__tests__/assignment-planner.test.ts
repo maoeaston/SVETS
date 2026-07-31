@@ -114,7 +114,7 @@ function recoverAssignment(harness: AssignmentBatchHarness) {
     workerId: 'assignment-recovery-worker',
     legacyAnchor: null,
     writerMutex: new FairWriterMutex(),
-    now: () => new Date('2026-07-30T11:00:31.000Z')
+    now: () => new Date('2099-07-30T11:00:31.000Z')
   })
 }
 

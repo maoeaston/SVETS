@@ -5,12 +5,13 @@ import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { loadInventoryDocuments as loadM5aInventoryDocuments } from './lib/m5a-command-boundary-inventory.mjs'
-import { scanM5bCheckout } from './lib/m5b-runtime-inventory.mjs'
+import { scanBeforeM5bSourceDeltas, scanM5bCheckout } from './lib/m5b-runtime-inventory.mjs'
 
 const projectRoot = fileURLToPath(new URL('..', import.meta.url))
 const priorSteps = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 12]
 const priorDeltaPaths = priorSteps.map((step) => resolve(projectRoot, `scripts/fixtures/m5b-step${step}-source-delta-v1.json`))
 const deltaPath = resolve(projectRoot, 'scripts/fixtures/m5b-step14-source-delta-v1.json')
+const repairDeltaPath = resolve(projectRoot, 'scripts/fixtures/m5b-step15-source-delta-v1.json')
 
 function exactJson(left, right) {
   return JSON.stringify(left) === JSON.stringify(right)
@@ -69,7 +70,10 @@ export function verifyM5bStep14SourceDelta() {
   const sourceCapabilities = [...entriesAfter(active.capability_callsites, deltas, 'capability_removed_source', 'capability_added_target').values()]
   const sourceChannels = [...entriesAfter(active.channels, deltas, 'channel_removed_source', 'channel_added_target').values()]
   const sourceRoots = active.delegating_roots.map((entry) => entry.path)
-  const scan = scanM5bCheckout(projectRoot)
+  const scan = scanBeforeM5bSourceDeltas(
+    scanM5bCheckout(projectRoot),
+    [JSON.parse(readFileSync(repairDeltaPath, 'utf8'))]
+  )
   const direct = diff(sourceDirect, scan.direct_callsites)
   const capabilities = diff(sourceCapabilities, scan.capability_callsites)
   const channels = diff(sourceChannels, scan.channels)

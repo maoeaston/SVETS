@@ -277,7 +277,7 @@ async function handleSubmit(): Promise<void> {
     const scoreItems = TASK_OPERATION_CODES.map((code) => ({
       taskOperationCode: code as TaskOperationCode,
       score: (scores[code] ?? 0) as 0 | 1 | 2,
-      observationNote: notes[code] || undefined
+      ...(notes[code] ? { observationNote: notes[code] } : {})
     }))
 
     const res = await window.api.assessment.submitOperationScores({

@@ -13,6 +13,7 @@ const priorDeltaPaths = priorSteps.map((step) => resolve(projectRoot, `scripts/f
 const deltaPath = resolve(projectRoot, 'scripts/fixtures/m5b-step13-source-delta-v1.json')
 const laterDeltaPath = resolve(projectRoot, 'scripts/fixtures/m5b-step12-source-delta-v1.json')
 const cutoverDeltaPath = resolve(projectRoot, 'scripts/fixtures/m5b-step14-source-delta-v1.json')
+const repairDeltaPath = resolve(projectRoot, 'scripts/fixtures/m5b-step15-source-delta-v1.json')
 
 function exactJson(left, right) {
   return JSON.stringify(left) === JSON.stringify(right)
@@ -51,7 +52,8 @@ export function verifyM5bStep13SourceDelta() {
     scanM5bCheckout(projectRoot),
     [
       JSON.parse(readFileSync(laterDeltaPath, 'utf8')),
-      JSON.parse(readFileSync(cutoverDeltaPath, 'utf8'))
+      JSON.parse(readFileSync(cutoverDeltaPath, 'utf8')),
+      JSON.parse(readFileSync(repairDeltaPath, 'utf8'))
     ]
   )
   const checkout = new Map(scan.direct_callsites.map((entry) => [entry.fingerprint, entry]))

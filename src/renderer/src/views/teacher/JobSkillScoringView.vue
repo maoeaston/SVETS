@@ -141,12 +141,14 @@ async function handleSubmit(): Promise<void> {
       callerUserId: auth.userId, callerRole: auth.role, sessionId,
       scores: offlineQuestions.value.map((question) => {
         const score = (scores[question.questionId] ?? 0) as 0 | 1 | 2
+        const selectedAnchor = question.scoreAnchors?.[String(score) as '0' | '1' | '2']
+        const observationNote = notes[question.questionId]
         return {
           questionId: question.questionId,
           score,
           anchorVersion: question.anchorVersion,
-          selectedAnchor: question.scoreAnchors?.[String(score) as '0' | '1' | '2'],
-          observationNote: notes[question.questionId] || undefined
+          ...(selectedAnchor ? { selectedAnchor } : {}),
+          ...(observationNote ? { observationNote } : {})
         }
       })
     })

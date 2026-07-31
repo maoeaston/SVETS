@@ -526,7 +526,7 @@ export function inspectLegacyLogBytes(inputBytes: Uint8Array): LegacyLogInspecti
       throw new LegacyLogError('LEGACY_SEQUENCE_CONFLICT', `line ${lineNumber} duplicates event_id ${event.event_id}`, lineNumber)
     }
     eventIds.add(event.event_id)
-    const aggregateKey = `${event.aggregate_type}\u0000${event.aggregate_id}`
+    const aggregateKey = event.aggregate_id
     const expected = nextSequence.get(aggregateKey) ?? 1
     if (event.event_sequence !== expected) {
       throw new LegacyLogError(

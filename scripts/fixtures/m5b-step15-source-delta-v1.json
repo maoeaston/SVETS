@@ -1,0 +1,70 @@
+{
+  "schema_version": "m5b-step-source-delta-v1",
+  "step": "M5B-15",
+  "source_digest": "a46d83c4e32df557939f51ffe6278e869887a7dce405a2fcc147fc73a9617c81",
+  "target_digest": "f2d856a98b25209f839f17ed785ade033bc0505318fb7d3f34884280bbb36d24",
+  "expected_counts": {
+    "channels": 75,
+    "direct_callsites": 290,
+    "direct_files": 44,
+    "capability_callsites": 71,
+    "delegating_roots": 14
+  },
+  "removed_source": [],
+  "added_target": [
+    {
+      "file": "src/main/application/planners/assignment-planner.ts",
+      "symbol": "writeEvent",
+      "line": 343,
+      "kind": "DB_RUN",
+      "callee": "input.database.prepare( `INSERT INTO domain_event_projection (event_id, aggregate_type, aggregate_id, event_type, event_sequence, payload_json, checksum, source_log_path, schema_version, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)` ).run",
+      "detail": "",
+      "fingerprint": "a0d8bd63ef581f2a2a886c9ebb575d5439545d9f29195020f5f4aecd71c04057",
+      "occurrence": 1,
+      "target_class": "ASSIGNMENT_PLANNING_PROJECTION_SEED",
+      "planned_step": "M5B-15"
+    },
+    {
+      "file": "src/main/db/sqlite-adapter.ts",
+      "symbol": "SqliteAdapter.cloneForPlanning",
+      "line": 44,
+      "kind": "FILE_WRITEFILESYNC",
+      "callee": "writeFileSync",
+      "detail": "",
+      "fingerprint": "7e4561f8cf8cc49498d3fd02bf06771e6c2082058bf6dc195d169938adb1ea4d",
+      "occurrence": 1,
+      "target_class": "PREPARE_ONLY_PLANNING_CLONE",
+      "planned_step": "M5B-15"
+    },
+    {
+      "file": "src/main/db/sqlite-adapter.ts",
+      "symbol": "SqliteAdapter.cloneForPlanning",
+      "line": 51,
+      "kind": "FILE_RMSYNC",
+      "callee": "rmSync",
+      "detail": "",
+      "fingerprint": "5cac0b7bbea495693ead86f5e0fb2008b6360d83fc25692e84cd1c72a83a1c8e",
+      "occurrence": 1,
+      "target_class": "PREPARE_ONLY_PLANNING_CLONE",
+      "planned_step": "M5B-15"
+    },
+    {
+      "file": "src/main/db/sqlite-adapter.ts",
+      "symbol": "SqliteAdapter.cloneForPlanning",
+      "line": 56,
+      "kind": "FILE_RMSYNC",
+      "callee": "rmSync",
+      "detail": "",
+      "fingerprint": "fb27f97d8746c4c517c4ed4710b1b859a0ca9f6ed9341d80a2965f8dc3113459",
+      "occurrence": 2,
+      "target_class": "PREPARE_ONLY_PLANNING_CLONE",
+      "planned_step": "M5B-15"
+    }
+  ],
+  "capability_removed_source": [],
+  "capability_added_target": [],
+  "channel_removed_source": [],
+  "channel_added_target": [],
+  "delegating_root_removed_source": [],
+  "delegating_root_added_target": []
+}

@@ -337,7 +337,13 @@ const STEP15_ALLOWED = Object.freeze([
   'package.json',
   'scripts/e2e/m5b-ui-smoke.mjs',
   'scripts/e2e/m5b-native-electron.ts',
-  'scripts/verify-m5b-native-electron.mjs'
+  'scripts/verify-m5b-native-electron.mjs',
+  'scripts/fixtures/m5b-step15-source-delta-v1.json',
+  'scripts/update-m5b-step15-fixture.mjs',
+  'scripts/__tests__/m5b-runtime-inventory.test.mjs',
+  'src/renderer/src/views/teacher/JobSkillScoringView.vue',
+  'src/renderer/src/views/teacher/OperationScoringView.vue',
+  'src/renderer/src/views/teacher/StudentFormView.vue'
 ])
 
 const NEVER_ALLOWED = Object.freeze([

@@ -380,7 +380,7 @@ export function buildSegmentIndex(options: {
           throw new SegmentIndexError('SEGMENT_BYTES_INVALID', `duplicate event ID ${event.event_id}`, source.segmentId)
         }
         eventIds.add(event.event_id)
-        const aggregateKey = `${event.aggregate_type}\u0000${event.aggregate_id}`
+        const aggregateKey = event.aggregate_id
         const previousSequence = lastSequenceByAggregate.get(aggregateKey)
         if (previousSequence !== undefined && event.event_sequence !== previousSequence + 1) {
           throw new SegmentIndexError('SEGMENT_BYTES_INVALID', `aggregate sequence conflict for ${event.aggregate_type}:${event.aggregate_id}`, source.segmentId)

@@ -80,7 +80,10 @@ function assertEventIdentityAndSequence(prepared: BatchPreparedRecord, events: r
     }
     if (eventIds.has(event.event_id)) throw new EventBatchHashError(`duplicate event_id ${event.event_id}`)
     eventIds.add(event.event_id)
-    const aggregateKey = `${event.aggregate_type}\u0000${event.aggregate_id}`
+    // The event contract sequences a business aggregate by aggregate_id. A
+    // session can legitimately emit assignment events under BUSINESS_SESSION
+    // and assessment events under ASSESSMENT_SESSION while sharing that ID.
+    const aggregateKey = event.aggregate_id
     const previous = lastSequenceByAggregate.get(aggregateKey)
     if (previous !== undefined && event.event_sequence !== previous + 1) {
       throw new EventBatchHashError(`event_sequence is not contiguous for ${event.aggregate_type}:${event.aggregate_id}`)

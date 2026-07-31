@@ -243,6 +243,34 @@ function assessmentTarget(owner: string, enforceStudentOwner = false): TargetRes
   }
 }
 
+/**
+ * Answer commands identify both the assessment session and the question being
+ * answered.  The planner consumes the question id from the canonical target;
+ * keep the membership check in the planner/service so invalid question ids
+ * retain the public QUESTION_NOT_IN_SESSION result instead of becoming a
+ * target-resolution error.
+ */
+function assessmentAnswerTarget(owner: string): TargetResolutionSpec {
+  const base = assessmentTarget(owner, true)
+  return {
+    ...base,
+    locatorFields: [...base.locatorFields, 'questionId'],
+    canonicalTargetFields: [...base.canonicalTargetFields, 'question_id'],
+    clientHintFields: [...base.clientHintFields, 'questionId'],
+    stripPayloadFields: [...base.stripPayloadFields, 'questionId'],
+    executionFieldMap: {
+      ...base.executionFieldMap,
+      question_id: 'questionId'
+    },
+    resolve(db, input, actor) {
+      return {
+        ...base.resolve(db, input, actor),
+        question_id: requireString(input, 'questionId')
+      }
+    }
+  }
+}
+
 function createSessionTarget(
   owner: string,
   expectedStrategyTypes?: string | readonly string[]
@@ -1068,7 +1096,7 @@ const MUTATION_SPECS: readonly MutationChannelSpec[] = [
   mutation('assessment:recordTeacherObservation', TEACHER_ADMIN, 'ASSESSMENT_SCORING', assessmentTarget('assessment:recordTeacherObservation'), [required.string('sessionId', 'TARGET_NOT_FOUND'), required.string('questionId', 'TARGET_NOT_FOUND')], { sideEffects: JOB_SKILL_AUTOMATION_SIDE_EFFECTS, testReferences: M5A8_TEST_REFERENCES, transactionOwner: 'observation-service.recordTeacherObservation' }),
   mutation('assessment:startNextSitting', TEACHER, 'ASSESSMENT_SCORING', assessmentTarget('assessment:startNextSitting'), [required.string('sessionId', 'TARGET_NOT_FOUND')], { sideEffects: ASSESSMENT_EVENT_SIDE_EFFECTS, testReferences: M5A7_TEST_REFERENCES, transactionOwner: 'assessment-service.startNextSitting' }),
   mutation('assessment:startSession', STUDENT, 'ASSESSMENT_SCORING', assessmentTarget('assessment:startSession', true), [required.string('sessionId', 'TARGET_NOT_FOUND')], { sideEffects: ASSESSMENT_EVENT_SIDE_EFFECTS, testReferences: M5A7_TEST_REFERENCES, transactionOwner: 'assessment-service.startSession' }),
-  mutation('assessment:submitAnswer', STUDENT, 'ASSESSMENT_SCORING', assessmentTarget('assessment:submitAnswer', true), [required.string('sessionId', 'TARGET_NOT_FOUND'), required.string('questionId'), required.object('answerPayload')], { sideEffects: ASSESSMENT_EVENT_SIDE_EFFECTS, testReferences: M5A7_TEST_REFERENCES, transactionOwner: 'assessment-service.submitAnswer' }),
+  mutation('assessment:submitAnswer', STUDENT, 'ASSESSMENT_SCORING', assessmentAnswerTarget('assessment:submitAnswer'), [required.string('sessionId', 'TARGET_NOT_FOUND'), required.string('questionId'), required.object('answerPayload')], { sideEffects: ASSESSMENT_EVENT_SIDE_EFFECTS, testReferences: M5A7_TEST_REFERENCES, transactionOwner: 'assessment-service.submitAnswer' }),
   mutation('assessment:submitJobSkillOfflineScores', TEACHER_ADMIN, 'ASSESSMENT_SCORING', assessmentTarget('assessment:submitJobSkillOfflineScores'), [required.string('sessionId', 'TARGET_NOT_FOUND'), required.array('scores')], { sideEffects: JOB_SKILL_AUTOMATION_SIDE_EFFECTS, testReferences: M5A8_TEST_REFERENCES, transactionOwner: 'job-skill-scoring-service.submitJobSkillOfflineScores' }),
   mutation('assessment:submitOfflineAbilityScores', TEACHER_ADMIN, 'ASSESSMENT_SCORING', assessmentTarget('assessment:submitOfflineAbilityScores'), [required.string('sessionId', 'TARGET_NOT_FOUND'), required.array('scores')], { sideEffects: SCORING_EVENT_SIDE_EFFECTS, testReferences: M5A8_TEST_REFERENCES, transactionOwner: 'ability-scoring-service.submitOfflineAbilityScores' }),
   mutation('assessment:submitOperationScores', TEACHER_ADMIN, 'ASSESSMENT_SCORING', assessmentTarget('assessment:submitOperationScores'), [required.string('sessionId', 'TARGET_NOT_FOUND'), required.array('scores')], { sideEffects: SCORING_RESULT_SIDE_EFFECTS, testReferences: M5A8_TEST_REFERENCES, transactionOwner: 'operation-scoring-service.submitOperationScores' }),

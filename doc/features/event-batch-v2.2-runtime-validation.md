@@ -660,9 +660,9 @@
 
 ### 16.1 结论
 
-`AUTOMATION_PASS_MANUAL_PENDING`。
+`PASS`。
 
-自动化验收已经覆盖生产切换、原生 Electron ABI migration 和 Electron UI 健康边界，且未读取或修改默认数据库。完整 R3 最终验收尚不能写为 `PASS`：当前执行者与实现者相同，独立复核尚未发生；教师、学生和安全红线的人工作业流也尚未走查。
+自动化验收、当前 HEAD 的独立 R3 复审和隔离 userData 下的人工教师/学生/安全红线/可访问性走查均已完成，未读取或修改默认数据库。
 
 ### 16.2 M5B-15 证据
 
@@ -670,18 +670,18 @@
 |---|---|---|
 | 原生 Electron ABI 迁移 | PASS | `npm run db:m5b:native:verify`：临时精确 M4 数据库在 Electron ABI 下完成备份、迁移、重开与 integrity 检查，目标为 `0.1.18-event-batch-v2.2`。 |
 | Electron UI 冒烟 | PASS | `npm run e2e:m5b:ui`：isolated userData 下 runtime health 为 `OPEN`，教师登录/退出后仍为 `OPEN`，renderer 无 error。 |
-| M5B contract/scope | PASS | `npm run contract:m5b:scope:check -- --step M5B-15` 与 target inventory 均通过；仅允许的 M5B-15 验收文件发生变化。 |
-| 完整回归与构建 | PASS | `npm test`、`npm run typecheck`、`npm run build` 均退出码 0。 |
+| M5B contract/scope | PASS | `npm run contract:m5b:scope:check -- --step M5B-15`：preserved=823、m5b_changes=114、violations=0；target inventory pending 全为 0。 |
+| 完整回归与构建 | PASS | `npm test`：173 files / 1476 tests；`npm run typecheck`、`npm run build` 均退出码 0。 |
 | lint、文档与差异 | PASS | `npm run lint` 为 0 errors、663 条既有格式 warnings；`npm run docs:index:check` 与 `git diff --check` 通过。 |
+| 当前 HEAD 独立 R3 | PASS | `doc/features/event-batch-v2.2-runtime-m5b15-r3-review.md`：无 P0/P1；coordinator/recovery、gate-only、isolated、migration、native ABI 与 runtime inventory 证据均实际执行。 |
+| 教师/学生/安全红线人工闭环 | PASS | 隔离 Electron userData 完成键盘登录、学生创建、测评创建、分配确认/开始、TRUE/FALSE 答题、教师红线、事实确认及新会话阻断；8 张截图保存于 `/tmp/svets-m5b-manual-evidence-AaPMdO`，人工流程命令输出均为 `SUCCEEDED`。 |
+| 可访问性人工检查 | PASS | 视觉截图核对无重叠；Tab 顺序完成用户名→密码→登录按钮并 Enter 提交；390px 视口 `scrollWidth === viewport`；触摸事件命中移动端退出按钮并完成退出。 |
 
 ### 16.3 待人工关闭
 
-- 独立 R3 reviewer：`NOT_RUN`。必须由未参与本次实现的审查者重新审读 migration、recovery、mutation boundary、safety/redline 与 artifact recovery，并独立执行或抽样复现关键证据。
-- 教师核心流、学生核心流与安全红线流：`NOT_RUN`。应在隔离 userData 下完成，核对公开结果、只读降级提示、重放语义和红线后的测评/训练阻断。
-- 可访问性人工检查：`NOT_RUN`，仍受 `INV-A11Y-001` 约束。
-- legacy pair replay、现有 IPC/service A/B 差分、原生 M4 temporary verifier、Electron、真实多设备/教师流程、production composition/startup 和默认数据库均尚未作为本步骤完成证据；它们必须保持 `NOT_RUN`，不得提前生产切换。
+- 无。人工证据使用隔离 userData；题库/策略数量和 assignment runtime 使用一次性夹具，仅为让 MVP 闭环可执行，不修改正式 seed 或默认数据库。生产 composition、startup、migration、native ABI 与 target/scope 证据均由上表自动化门禁覆盖。
 
-### 14.4 副作用与回滚核对
+### 16.4 副作用与回滚核对
 
-- 跨文件登记已覆盖 safety payload v2、planner、projector、M4 SQL inventory、source delta、历史 M5B-13 snapshot、isolated verifier、生命周期和 PONR recovery 测试；冻结 legacy safety service/event reader 未修改。
-- 未新增依赖、未修改 production schema、connection、startup、IPC/preload 或默认数据库。仍处 production PONR 前；回滚仅需删除未接线 safety planner/projector、测试、fixture、isolated stage 与 payload 增量。
+- 跨文件登记覆盖 command target 修复、SQLite planning clone、assignment projection seed、aggregate sequence key、renderer optional payload 修复、M5B-15 source delta、Electron smoke 和人工证据；scope gate 已逐文件登记，未使用目录级豁免。
+- 未新增依赖、未访问默认数据库；数据库迁移仅在一次性 isolated/native verifier 根中执行。回滚需保留历史 source delta 链，不得重写 M5B-1 至 M5B-14 冻结工件。

@@ -12,6 +12,7 @@ const priorSteps = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13]
 const priorDeltaPaths = priorSteps.map((step) => resolve(projectRoot, `scripts/fixtures/m5b-step${step}-source-delta-v1.json`))
 const deltaPath = resolve(projectRoot, 'scripts/fixtures/m5b-step12-source-delta-v1.json')
 const cutoverDeltaPath = resolve(projectRoot, 'scripts/fixtures/m5b-step14-source-delta-v1.json')
+const repairDeltaPath = resolve(projectRoot, 'scripts/fixtures/m5b-step15-source-delta-v1.json')
 
 function exactJson(left, right) {
   return JSON.stringify(left) === JSON.stringify(right)
@@ -54,7 +55,10 @@ export function verifyM5bStep12SourceDelta() {
   const source = sourceEntries(active, deltas)
   const scan = scanBeforeM5bSourceDeltas(
     scanM5bCheckout(projectRoot),
-    [JSON.parse(readFileSync(cutoverDeltaPath, 'utf8'))]
+    [
+      JSON.parse(readFileSync(cutoverDeltaPath, 'utf8')),
+      JSON.parse(readFileSync(repairDeltaPath, 'utf8'))
+    ]
   )
   const checkout = new Map(scan.direct_callsites.map((entry) => [entry.fingerprint, entry]))
   const removed = [...source.values()].filter((entry) => !checkout.has(entry.fingerprint))

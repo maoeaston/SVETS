@@ -20,6 +20,7 @@ import { verifyM5bStep11SourceDelta } from '../update-m5b-step11-fixture.mjs'
 import { verifyM5bStep12SourceDelta } from '../update-m5b-step12-fixture.mjs'
 import { verifyM5bStep13SourceDelta } from '../update-m5b-step13-fixture.mjs'
 import { verifyM5bStep14SourceDelta } from '../update-m5b-step14-fixture.mjs'
+import { verifyM5bStep15SourceDelta } from '../update-m5b-step15-fixture.mjs'
 
 const projectRoot = process.cwd()
 
@@ -137,7 +138,7 @@ function reviewedStep7Scan(documents) {
 }
 
 function reviewedStep10Scan(documents) {
-  const checkout = scanBeforeM5bSourceDeltas(scanM5bCheckout(projectRoot), [documents.step14SourceDelta])
+  const checkout = scanBeforeM5bSourceDeltas(scanM5bCheckout(projectRoot), [documents.step15SourceDelta, documents.step14SourceDelta])
   const m5b11Additions = new Set(documents.step11SourceDelta.added_target.map((entry) => entry.fingerprint))
   const m5b13Additions = new Set(documents.step13SourceDelta.added_target.map((entry) => entry.fingerprint))
   const m5b12Additions = new Set(documents.step12SourceDelta.added_target.map((entry) => entry.fingerprint))
@@ -153,7 +154,7 @@ function reviewedStep10Scan(documents) {
 }
 
 function reviewedStep11Scan(documents) {
-  const checkout = scanBeforeM5bSourceDeltas(scanM5bCheckout(projectRoot), [documents.step14SourceDelta])
+  const checkout = scanBeforeM5bSourceDeltas(scanM5bCheckout(projectRoot), [documents.step15SourceDelta, documents.step14SourceDelta])
   const m5b13Additions = new Set(documents.step13SourceDelta.added_target.map((entry) => entry.fingerprint))
   const m5b12Additions = new Set(documents.step12SourceDelta.added_target.map((entry) => entry.fingerprint))
   return {
@@ -416,6 +417,20 @@ describe('M5B event batch runtime inventory', () => {
     expect(documents.step14SourceDelta.channel_added_target.map((entry) => entry.channel))
       .toEqual(['runtime:getHealth'])
     expect(documents.step14SourceDelta.delegating_root_added_target).toHaveLength(2)
+  })
+
+  it('pins the exact reviewed M5B-15 runtime repair source delta', () => {
+    const documents = loadM5bInventoryDocuments(projectRoot)
+    const result = validateM5bMigration({ scan: scanM5bCheckout(projectRoot), ...documents, step: 'M5B-15' })
+    expect(result.digest).toBe(documents.step15SourceDelta.target_digest)
+    expect(documents.step15SourceDelta.removed_source).toEqual([])
+    expect(documents.step15SourceDelta.added_target).toHaveLength(4)
+    expect(new Set(documents.step15SourceDelta.added_target.map((entry) => entry.target_class))).toEqual(new Set([
+      'ASSIGNMENT_PLANNING_PROJECTION_SEED',
+      'PREPARE_ONLY_PLANNING_CLONE'
+    ]))
+    expect(documents.step15SourceDelta.capability_added_target).toEqual([])
+    expect(verifyM5bStep15SourceDelta().status).toBe('verified')
   })
 
   it('rejects duplicate/missing command, active and mapping rows', () => {
