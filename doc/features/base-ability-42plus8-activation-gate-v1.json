@@ -12,7 +12,7 @@
     "import_sql_sha256": "sha256:db905216cd6735bdf90c44036cf675747dc859a97d894f110d1d959211fe649f",
     "content_pack_path": "scripts/config/database-content-pack.json",
     "draft_authority_path": "doc/features/base-ability-42plus8-authority-v1.json",
-    "draft_authority_sha256": "sha256:52c27a71596f7c32e1aab287af40c9c88268ed807bbfdee187a683b4f40d0201"
+    "draft_authority_sha256": "sha256:1ebd14451caffcf71a73c409831d068723d7436823f75ebc45910059e313875f"
   },
   "summary": {
     "source_question_total": 96,
@@ -123,7 +123,7 @@
       "gate_id": "draft_authority_42plus8",
       "status": "PASSED",
       "details": {
-        "authority_hash": "sha256:52c27a71596f7c32e1aab287af40c9c88268ed807bbfdee187a683b4f40d0201",
+        "authority_hash": "sha256:1ebd14451caffcf71a73c409831d068723d7436823f75ebc45910059e313875f",
         "selected_total": 50,
         "selected_online_total": 42,
         "selected_offline_total": 8,

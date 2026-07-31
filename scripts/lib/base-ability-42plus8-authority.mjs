@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import {
+  assertWorkbookMatchesSql,
   loadBaseAbilityCandidates,
   fileSha256,
   MODULE_TYPES
@@ -495,6 +496,7 @@ export function validateBaseAbilityAuthority(document) {
 export async function buildBaseAbilityAuthority(projectRoot) {
   const input = readInput(projectRoot)
   assertInput(input, projectRoot)
+  await assertWorkbookMatchesSql(projectRoot)
   const candidateRows = await loadBaseAbilityCandidates(projectRoot)
   const sourceBinding = input.source_bindings
   const selectedById = new Map(input.selected_question_contracts.map((selection) => [selection.question_id, selection]))
@@ -519,7 +521,7 @@ export async function buildBaseAbilityAuthority(projectRoot) {
     source_files: {
       workbook: fileReference(projectRoot, SOURCE_PATH),
       import_sql: fileReference(projectRoot, IMPORT_SQL_PATH),
-      derivation: 'import_sql 是 seed-base-ability-v02.mjs 读取同名 xlsx 的确定性派生产物；本权威按 import_sql 复算候选并绑定两文件 sha256。字节级 workbook↔SQL 单元格比对由提权后的 assertWorkbookMatchesSql 独立工具提供，不进入沙箱强制路径。'
+      derivation: 'import_sql 是 seed-base-ability-v02.mjs 读取同名 xlsx 的确定性派生产物；本权威构建会先逐字段核验 workbook↔SQL，再按 import_sql 复算候选并绑定两文件 sha256。'
     },
     structured_input: fileReference(projectRoot, INPUT_PATH),
     selection: {

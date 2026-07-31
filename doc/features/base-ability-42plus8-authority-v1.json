@@ -18,7 +18,7 @@
       "path": "doc/features/question-bank-import-base-ability-v02.sql",
       "sha256": "sha256:db905216cd6735bdf90c44036cf675747dc859a97d894f110d1d959211fe649f"
     },
-    "derivation": "import_sql 是 seed-base-ability-v02.mjs 读取同名 xlsx 的确定性派生产物；本权威按 import_sql 复算候选并绑定两文件 sha256。字节级 workbook↔SQL 单元格比对由提权后的 assertWorkbookMatchesSql 独立工具提供，不进入沙箱强制路径。"
+    "derivation": "import_sql 是 seed-base-ability-v02.mjs 读取同名 xlsx 的确定性派生产物；本权威构建会先逐字段核验 workbook↔SQL，再按 import_sql 复算候选并绑定两文件 sha256。"
   },
   "structured_input": {
     "path": "doc/features/base-ability-42plus8-contract-input-v1.json",
@@ -8624,5 +8624,5 @@
       "renderer_requirement_hash": "sha256:bced16771196f9eeeda0c2c945c0dc546e06f6cb082053cae71d224c2600e0bb"
     }
   ],
-  "authority_hash": "sha256:52c27a71596f7c32e1aab287af40c9c88268ed807bbfdee187a683b4f40d0201"
+  "authority_hash": "sha256:1ebd14451caffcf71a73c409831d068723d7436823f75ebc45910059e313875f"
 }

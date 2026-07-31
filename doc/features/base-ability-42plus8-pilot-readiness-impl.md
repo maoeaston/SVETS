@@ -10,15 +10,16 @@
 
 - PRD：`doc/features/base-ability-42plus8-pilot-readiness-prd.md`，状态 `REVIEWED`，风险 `R3`。
 - 权威产品合同：`doc/specs/MVP_PRD_v1.0.9-authoritative.md`。
-- 权威 Schema：`src/main/db/schema.sql`，基线 `schema v0.1.16-report-framework`。
+- 权威 Schema：`src/main/db/schema.sql`，当前基线 `schema v0.1.18-event-batch-v2.2`；其 M5B v2.2 durable command ledger 和 event-batch apply cursors 是 production write/recovery boundary。
 - 权威运行时合同：`src/shared/types/json-schemas.ts`、`src/shared/types/event-payloads.ts`、`src/shared/types/ipc-api.ts`。
-- 当前基线：`8fa2a4f`，分支 `feat/multi-device-m2-prd`；计划以该提交后的干净工作树为修订起点，不覆盖用户已有改动。实现开始时必须重新记录实际 base commit，不能沿用本计划修订时的 hash 猜测实现基线。
+- 当前工程基线：`5f050d6`，分支 `feat/multi-device-m2-prd`；M5B-15 为 `PASS`，M4 Step 2A、M5A Step 2B 和 M5B Step 2C 均为已验收前置。本计划以当前工作树为修订起点，不覆盖用户已有改动；每个后续实现 Step 开始时仍必须记录届时实际 base commit，不能把本行 hash 当作未来实现基线。
+- 历史修订基线：`8fa2a4f` 是本计划首次形成时的 M4-M5B checkpoint，只能用于追溯当时的设计语境，不是当前 Schema、运行时或 Step 3 的前置依据。
 - 影响域：`UI_UX`、`DOMAIN_LOGIC`、`DATABASE_MIGRATION`、`EVENT_PROJECTION`、`IPC_API`、`AUTH_PERMISSION`、`SAFETY_FSM`、`RESULT_REPORT`、`ASSET_CONTENT`、`DEPLOYMENT_OPERATIONS`。
 - 明确不做：正式标准化量表解释、就业安置或 `placement_advice`；自动将 Pilot ACTIVE 升格正式发布；真实学生数据进入技术演练；覆盖历史题目、策略、session、结果或报告；新增 ORM、前端持久化库、CSV 解析库或 Markdown 报告渲染库；超出两个既定 CHECK 枚举的 Schema 扩展。
 
 ## 3. 适用不变量
 
-- `INV-EVT-001`、当前 legacy `INV-EVT-002`、`INV-EVT-003`：状态由事件推进，写入顺序固定，新事件完成 payload、持久化、reducer、回放和测试全链登记；Step 2 切换基线时必须按本计划版本化旧 `INV-EVT-002` 并改用新的 v2.2 稳定 ID，不得继续引用旧逐行语义。
+- `INV-EVT-001`、`INV-EVT-003`、`INV-EVT-004`、`INV-EVT-005`、`INV-EVT-006`：状态由事件推进；新增事件完成 payload、持久化、reducer/projector、回放和测试全链登记；生产 mutation 必须走 durable command 与 v2 batch/gate 边界，恢复只能使用冻结 batch 事件事实。`INV-EVT-002` 仅保留 legacy JSONL writer 的历史适用范围，不得作为当前生产写入、恢复或 Step 3 设计依据。
 - `INV-SAFE-001`、`INV-SAFE-002`、`INV-SAFE-003`、`INV-SAFE-004`：授权失效不能绕过既有安全熔断；安全状态迁移必须走批准路径。
 - `INV-AUTH-001`、`INV-AUTH-002`：TEACHER/ADMIN 边界和业务 session、device grant、assignment 三方一致性不可削弱。
 - `INV-RES-001`、`INV-RES-002`：`ABILITY_SCORE` 与其他结果独立，安全语义优先于普通分数。
@@ -30,7 +31,7 @@
 
 ### 当前状态
 
-96 条 `BASE_ABILITY` 候选均为 `DRAFT`、`NO_SCORE`，尚无完整 v1.2 题目合同、素材/教具绑定或可用于 Pilot 的 50 题固定清单。当前组卷器仍按旧 `question_ratio` 工作；基础能力读取条件、`SOFTWARE_TASK` renderer、作答事件、统一评分快照和授权失效处置均不完整。已有线下评分入口只能覆盖局部流程。
+Step 1 已验收为 `PASS`：96 条 `BASE_ABILITY` 候选均保持 `DRAFT`、`NO_SCORE`，`base-ability-42plus8-authority-v1.json` 已冻结 50 题（42 online + 8 offline）和 46 题 deferred 清单。素材/教具、renderer、作答事件、统一评分快照和授权失效处置仍未就绪，相关 gate 继续失败关闭；后续实现不得把这份 DRAFT 合同或既有评分入口误写为 Pilot 就绪。
 
 ### 目标状态
 
@@ -48,10 +49,13 @@
 ### 依赖图
 
 ```text
-Step 1 候选清单/题目合同
-  -> Step 2A [独立 R3] M4 Safety Re-key（三元安全聚合）
-  -> Step 2B [独立 R3] M5A Command Bus Boundary（统一命令/写入口）
-  -> Step 2C [独立 R3] 权威 v2.2 batch/hash-chain/command-fencing、全 writer 迁移与重基线
+Step 1 候选清单/题目合同 [PASS]
+  -> Step 2A [ACCEPTED，M4] Safety Re-key（三元安全聚合）
+  -> Step 2B [ACCEPTED，M5A] Command Bus Boundary（统一命令/写入口）
+  -> Step 2C [PASS，M5B-15] v2.2 batch/hash-chain/command-fencing、全 writer 迁移与重基线
+  -> P1-01 当前计划重基线 [PASS]
+  -> P1-02 workbook<->SQL 日常强制门禁 [PASS]
+  -> 新的独立 R3 计划复审 [下一原子任务]
   -> Step 3 v1.2 策略、组卷合同、renderer 需求与 SESSION_STARTED v2 快照链
   -> Step 4 response/scoring 事件链（只读取冻结快照）
   -> Step 5 共享路径守卫、真实 renderer registry、线下评分和三视口运行证据
@@ -62,7 +66,7 @@ Step 1 候选清单/题目合同
   -> Step 10 生产固定根装配、独立批准和受控激活
 ```
 
-当前生产评分命令已经要求一次事务内的多事件全有或全无，不能先迁移成逐行独立 COMMIT 再把 v2.2 推迟到 Step 6。为避免同一批 handler 和 writer 重接两次，Step 2 固定拆为三个独立 R3：Step 2A 先把安全聚合从二元键统一为最终三元键；Step 2B 再建立统一 Command Bus / mutation boundary；Step 2C 最后严格落地权威架构 `doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md` §10、§11、§12、§18 的 `BATCH_PREPARED -> EVENT* -> BATCH_COMMITTED`、hash chain、`command_log` fencing 和 `startupRecovery`，一次迁移最终的 writer/mutation 边界。三个阶段分别完成 `/vibe-accept`，Step 2C 后更新基线并重新审查本计划；任一结论不是 `PASS` 时 Step 3-10 均不得开始。Step 3 不以 Step 5 尚未实现的 renderer 作为自身“可运行”完成条件：它冻结每道题所需的 renderer key，并让缺失实现稳定失败关闭；Step 5 才登记真实 registry、放行合成 session 并完成 viewport 验收。Step 6 必须先交付可注入测试根的通用授权底座，Step 9 才能执行授权失效演练；Step 10 只装配不可覆盖的生产根、独立批准链和激活入口，不再补做 Step 6 的生命周期基础能力。
+Step 2 的三个独立 R3 已按顺序交付：Step 2A 将安全聚合从二元键统一为三元键，Step 2B 建立统一 Command Bus / mutation boundary，Step 2C 落地权威架构 `doc/specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md` §10、§11、§12、§18 的 `BATCH_PREPARED -> EVENT* -> BATCH_COMMITTED`、hash chain、`command_log` fencing 和 `startupRecovery`，并以 M5B-15 `PASS` 成为当前基线。Step 3-10 必须消费该既有 production v2 runtime，不得重复迁移为 legacy 逐行写入或另建旁路。Step 3 仍不以 Step 5 尚未实现的 renderer 作为自身“可运行”完成条件：它冻结每道题所需的 renderer key，并让缺失实现稳定失败关闭；Step 5 才登记真实 registry、放行合成 session 并完成 viewport 验收。Step 6 必须先交付可注入测试根的通用授权底座，Step 9 才能执行授权失效演练；Step 10 只装配不可覆盖的生产根、独立批准链和激活入口，不再补做 Step 6 的生命周期基础能力。
 
 ### 跨文件副作用登记表
 
@@ -70,10 +74,10 @@ Step 1 候选清单/题目合同
 |---|---|
 | 新 `EventType` | `event-payloads.ts`、validator、event writer、reducer、recovery、JSONL/projection、幂等/冲突测试 |
 | 事件版本 | `ActionLogEntry.schema_version` 只表示 envelope；业务 payload 使用独立 `payload_version`，不得复用同一版本号原地增加必填字段 |
-| Step 2A M4 安全三元键（独立 R3） | 产品覆盖说明、v2.2 架构 §13、10 个 trigger/guard、2 个开放会话唯一索引、3 个查询索引、全部安全查询/报告 JOIN、v0.1.16→v0.1.17 migration 与跨 job 正负测试；不得和 Command Bus/batch 合并 |
-| Step 2B M5A Command Bus（独立 R3） | 统一 command envelope、application service、IPC/CLI/background mutation inventory 与最终写边界；保持 IPC 响应和业务成功语义，不提前实现 batch 日志协议 |
-| Step 2C v2.2 事件基础设施（独立 R3） | 权威 `BATCH_PREPARED/EVENT/BATCH_COMMITTED`、hash chain、segment/index、`command_log` fencing、batch projector/startupRecovery、旧 `ActionLogEntry` 兼容迁移、data-root 单写者锁、durability barrier、最终 writer call site 与整批故障/并发测试；不得自定义 group/sidecar 协议 |
-| 事件不变量重基线 | `project-invariants.md` 版本化保留旧 `INV-EVT-002` 的历史适用范围，新增 v2.2 当前不变量并同步 `INV-EVT-001/003` 实际证据；静态门禁不得继续把旧逐行 writer 声明为当前合同 |
+| 已验收 Step 2A M4 安全三元键 | 已完成的产品覆盖、v2.2 架构 §13、trigger/guard、索引、全部安全查询/报告 JOIN、v0.1.16→v0.1.17 历史迁移与跨 job 正负测试；后续工作必须保持三元键，不得和新的业务需求重新合并迁移 |
+| 已验收 Step 2B M5A Command Bus | 已建立的统一 command envelope、application service、IPC/CLI/background mutation inventory 与最终写边界；后续保持 IPC 响应和业务成功语义，不得回接分散 writer |
+| 已验收 Step 2C v2.2 事件基础设施 | 当前权威 `BATCH_PREPARED/EVENT/BATCH_COMMITTED`、hash chain、segment/index、`command_log` fencing、batch projector/startupRecovery、legacy `ActionLogEntry` 兼容、data-root 单写者锁、durability barrier、最终 writer call site 与整批故障/并发测试；不得自定义 group/sidecar 协议或回退至逐行 writer |
+| 当前事件不变量 | `project-invariants.md` 已版本化保留旧 `INV-EVT-002` 的历史适用范围，并以 `INV-EVT-004/005/006` 约束命令确定性、冻结 batch 恢复和 production v2 mutation boundary；静态门禁不得把旧逐行 writer 声明为当前合同 |
 | 全局 mutation 门禁 | IPC channel 唯一分类 registry、preload/shared API 对账、后台/启动写入与 CLI mutation registry、所有 DB/文件写入口统一 gate、关闭门禁时零副作用测试；与 Step 2 batch runtime 同一 data-root context，不另设旁路 |
 | `SESSION_STARTED` v2/v3 快照 | envelope 保持 schema v1；payload v2 冻结逐题/策略/资产/renderer，payload v3 追加授权快照；创建 handler、validator、reducer 不回查题库、冷启动混合重放、后续评分只读冻结快照 |
 | 两个 reason 枚举 | `schema.sql`、migration、shared type、domain contract、assignment/session handler、旧库前滚/回滚测试 |
@@ -96,14 +100,14 @@ Step 1 候选清单/题目合同
 - Step 2-9 的构建、测试、门禁生成和技术演练不得把任何非测试数据库中的 BASE_ABILITY 题从 `DRAFT` 改为 `ACTIVE`；Step 9 的合成 `ACTIVE` fixture 只能存在于命令行显式指定的临时库。
 - 任一“完成状态”只能由该 Step 的精确命令、产物 hash、数据库断言和 `/vibe-accept` 证据共同证明。命令未执行记 `NOT_RUN`，外部原件或环境缺失记 `BLOCKED`，不得写成已完成。
 - 进入下一 Step 前必须核对真实 diff、跨文件副作用登记和 `git diff --check`。发现范围扩大到 PRD 未批准的 Schema、状态机、权限模型或正式解释时立即停止，重新进行 R3 审查。
-- Step 2A、2B、2C 是三个跨功能独立 R3，不得直接借本 PRD 的两个 reason CHECK 授权其 Schema 或写入协议扩展。每个阶段都必须另行完成 `/vibe-feature -> /vibe-impl -> /vibe-review -> implementation -> /vibe-accept`，并且只在前一阶段 `PASS` 后启动；Step 2C 更新 `baseline.yaml` 后重新执行本计划的 `/vibe-review impl`。三个外部功能验收与本计划重审未全部取得 `PASS` 时 Step 2 完成状态为 `BLOCKED`，不得进入 Step 3，也不得把三阶段合并，或用自定义 `EVENT_GROUP`、逐行单事件重试、复合业务 payload、sidecar intent 代替。
+- Step 2A、2B、2C 是已完成的三个跨功能独立 R3：其 `/vibe-feature -> /vibe-impl -> /vibe-review -> implementation -> /vibe-accept` 记录不得被本 PRD 的两个 reason CHECK 覆盖或重写。当前 `baseline.yaml` 已指向 Step 2C/M5B-15 基线；后续仅能在该边界上扩展，不能把三阶段重新合并，或用自定义 `EVENT_GROUP`、逐行单事件重试、复合业务 payload、sidecar intent 代替。P1-01 与 P1-02 均已关闭；Step 3 仍被新的独立 `/vibe-review impl` 阻断。
 - 所有 Electron E2E、技术演练或其他同时拥有 DB 与 userData 的组合自动验证必须显式传入 `--temp-root / --db / --user-data-dir / --evidence-dir`；命令缺参、DB 与 userData 不配对、路径解析到默认 userData、仓库目录、符号链接或硬链接别名时必须在打开数据库前失败。纯 `db:sync/db:verify` helper 是明确例外，只接收 `--db` 且不得启动 Electron、推导 userData 或写 action log；它只能在共享 path guard 已验证或紧接着将由四路径组合入口验证的显式临时 DB 上运行。任何“默认库不变”都必须比较默认数据文件族的存在状态与逐文件 hash，而不是只比较主 `.db` 文件。
 
 ### Step 1：冻结 42+8 候选清单与 v1.2 题目合同
 
 **目的与理由：** 把 96 条候选变成可审计的 50 题 DRAFT 运行输入，先解决来源、题型、模块、合同 hash 和观察项混入问题。
 
-**前置状态：** `contract:base-ability:gate:check` 仍可证明候选来源未漂移；无任何真实题目激活。
+**前置状态：** `contract:base-ability:authority:check` 会先逐字段核验 workbook↔SQL，`contract:base-ability:gate:check` 复用同一 authority 检查；二者均可证明候选来源未漂移；无任何真实题目激活。
 
 **完成状态：** 生成版本化清单，线上 6 模块各 7 题、线下 8 题、观察项为 0；每题有结构化 `presentation/interaction/expected_evidence/support_policy/termination_policy`、答案或 rubric、来源 hash、内容/评分/renderer 需求 hash 和选择理由；未选 46 题有来源与未选原因；提交审核不改变 DB 状态；`/vibe-accept step 1` 为 `PASS`。
 
@@ -113,7 +117,7 @@ Step 1 候选清单/题目合同
 - `doc/features/base-ability-42plus8-authority-v1.json`、`doc/features/base-ability-42plus8-authority-v1.schema.json`：定义覆盖 96 题的机器权威、入选 50 题、未选 46 题及版本/hash 绑定；不得自报激活权限。
 - `scripts/build-base-ability-42plus8-authority.mjs`、`scripts/lib/base-ability-42plus8-authority.mjs`：从唯一 xlsx、派生 SQL 和逐题结构化输入确定性生成/检查权威，不写运行库。
 - `scripts/build-base-ability-42plus8-gate.mjs`、`scripts/lib/base-ability-42plus8-gate.mjs`：输出阶段化门禁、阻断码、hash 和题集统计。
-- `scripts/__tests__/base-ability-42plus8-authority.test.mjs`、`scripts/__tests__/base-ability-42plus8-gate.test.mjs`：覆盖缺题、重复题、模块配额、观察项、未选原因和 hash 漂移。
+- `scripts/__tests__/base-ability-42plus8-authority.test.mjs`、`scripts/__tests__/base-ability-42plus8-gate.test.mjs`：覆盖缺题、重复题、模块配额、观察项、未选原因、hash 漂移，以及 workbook 或 SQL 字段漂移时 authority check 的失败关闭。
 - `package.json`：新增 `contract:base-ability:authority:build/check`，保持 gate build/check 不具有运行库写权限。
 
 **数据、事务与失败恢复：** 只生成 DRAFT/审核产物，不写默认运行库；任一 hash 或来源不一致整体失败关闭。
@@ -128,13 +132,13 @@ Step 1 候选清单/题目合同
 
 **建议 commit message：** `feat(base-ability): freeze 42plus8 draft authority`
 
-### Step 2A–2C：先稳定安全身份和命令边界，再交付权威 v2.2 batch 运行时（三个独立 R3）
+### 已验收前置：Step 2A–2C 稳定安全身份、命令边界与权威 v2.2 batch 运行时（三个独立 R3）
 
-**目的与理由：** 当前安全聚合仍为二元键，写命令仍分散在 handler，`writeEvent()` 的 JSONL/SQLite 双写又会在 append 后 DB 失败时留下未投影事实并可能复用 sequence。若先接 batch，M4/M5A 会让 handler 和 writer 二次迁移；若三者合并，则安全 Schema、命令边界和崩溃恢复同时变化。Step 2A 先交付最终三元安全身份，Step 2B 再统一命令/写入口，Step 2C 最后一次性关闭原子性、durability、recovery、fencing、锁序和全局 mutation 门禁，再扩展 42+8 事件。
+**历史目的与当前约束：** 此前安全聚合为二元键、写命令分散在 handler，legacy `writeEvent()` 的 JSONL/SQLite 双写会在 append 后 DB 失败时留下未投影事实并可能复用 sequence。为避免二次迁移，Step 2A、2B、2C 已依次完成三元安全身份、统一命令/写入口和 v2.2 的原子性、durability、recovery、fencing、锁序及全局 mutation gate。后续 42+8 事件只能扩展该既有边界。
 
-**前置状态：** Step 1 的 `/vibe-accept step 1` 为 `PASS`。Step 2A 使用 `doc/features/multi-device-m4-safety-rekey-prd.md`，其独立 review/impl review 通过后才实施；Step 2B 只能在 Step 2A `/vibe-accept` 为 `PASS` 后建立统一 Command Bus；Step 2C 只能在 Step 2B `/vibe-accept` 为 `PASS` 后，将 `doc/features/event-batch-v2.2-runtime-prd.md` 按最终 mutation boundary 重基线并重新独立审查。进入 Step 2C 时，当前 `ActionLogEntry` v1、F7 envelope-v2、完整 LF/EOF、截断尾部、recovery snapshot、全部最终 writer 调用点以及所有 IPC/CLI/后台 mutation 入口必须形成版本化只读 inventory 与 fixture。默认运行库只读记录存在状态/hash，不作为迁移或故障注入目标。
+**已完成前置状态：** Step 1 的 `/vibe-accept step 1` 为 `PASS`；Step 2A（M4 Safety Re-key）和 Step 2B（M5A Command Bus）均为 `ACCEPTED`；Step 2C 已随 M5B-15 取得 `PASS`。其交付过程已对 legacy `ActionLogEntry`、F7 envelope-v2、LF/EOF、recovery snapshot、最终 writer 调用点以及 IPC/CLI/后台 mutation inventory 建立兼容与恢复边界。默认运行库仅可只读记录存在状态/hash，不作为迁移或故障注入目标。P1-01 与 P1-02 均已关闭；当前进入 Step 3 前，仍须完成新的独立 `/vibe-review impl`；不得重做 Step 2。
 
-**完成状态：**
+**当前已接受运行时合同：**
 
 - 独立功能严格实现权威架构 §10、§11、§12、§18 的 `BATCH_PREPARED -> EVENT* -> BATCH_COMMITTED`、全局 `batch_sequence`、canonical hash chain、segment/index、单写者、command/request fencing、PREPARE/APPLY/CONFIRM 和四阶段 `startupRecovery`；batch record version、领域 event envelope version 与业务 `payload_version` 三层各自独立，不改写 F7 envelope-v2 或历史 payload 语义。
 - 每个生产写命令都有稳定 `command_id/idempotency_key/request_hash`，在一个 batch 中携带该命令全部有序事件。现存 `operation-scoring` 的 9 条 `OFFLINE_SCORE_SUBMITTED + RESULT_CALCULATED`、BASE_ABILITY 多项线下评分、JOB_SKILL 多项评分及 `RESULT_CALCULATED + SESSION_COMPLETED`、首次坐次与首题激活、安全 incident + redline 以及所有单事件命令全部迁移；成功语义不变，任一 EVENT/PREPARE/APPLY/CONFIRM 故障都不得暴露部分业务投影或生成第二个 batch。
@@ -143,27 +147,25 @@ Step 1 候选清单/题目合同
 - `startupRecovery` 在任何业务 IPC、后台 mutation 或 lazy seed 注册/执行前完成：不完整 PREPARE 尾部、PREPARED 未 APPLIED、APPLIED 未 CONFIRMED、command_log/projector cursor 和 hash-chain/segment-index 分别按权威状态机处理。恢复期间只有持有 composition-root 内部 capability 的 recovery/migration 可写；任一 hash、identity、sequence、request 或 projection 冲突保持 gate 关闭并失败关闭。
 - 全局 mutation gate 覆盖所有 DB/文件副作用。每个 shared/preload IPC channel 在中央 registry 中恰好分类一次；所有 CLI、后台任务、启动 seed、报告导出和本地配置 mutation 也进入同一 data-root runtime。gate 关闭时登录/登出、账号/学生/策略、session/assignment/safety/scoring、报告导出、down 和未来 activation 均在副作用前拒绝，纯读取仍可用；read handler 不得 lazy write。
 - 全局锁序固定为 `authorization state lock（未来 Pilot 路径适用） -> event-log single-writer lock -> BEGIN IMMEDIATE`。普通 batch、startupRecovery、down 和 activation 不得反向获取；同一 data root 不能构造第二套 coordinator/gate，低层 append/project API 只接受不可伪造 ownership token。
-- Step 2A、2B、2C 各自完成 `/vibe-feature`、`/vibe-impl`、独立 `/vibe-review`、实现和 `/vibe-accept`，结论均为 `PASS`；Step 2C 将最终 Schema/运行时/数据合同、实际文件路径、`project-invariants.md` 和 `baseline.yaml` 同步成为新基线并更新文档索引。本 42+8 计划随后重新记录 base commit、替换所有占位模块路径/命令，重跑 Step 1 验收并执行独立 `/vibe-review impl`；两者均为 `PASS` 后，Step 2 才算完成并允许 Step 3 开始。
+- Step 2A、2B、2C 已各自完成独立 `/vibe-feature`、`/vibe-impl`、`/vibe-review`、实现和 `/vibe-accept`：M4/Step 2A 与 M5A/Step 2B 为 `ACCEPTED`，M5B/Step 2C 以 M5B-15 为 `PASS`。Step 2C 已将最终 Schema/运行时/数据合同、`project-invariants.md` 与 `baseline.yaml` 同步为当前基线。BASE_ABILITY Step 1、P1-01 与 P1-02 随后均已重验/关闭为 `PASS`；本计划仍须取得新的独立 `/vibe-review impl` `PASS`，才允许 Step 3 开始。
 
 **不得改变：** 该独立 R3 不得借 42+8 PRD 擅自实现授权 reason、题目激活或 Pilot 业务；不得新增 `EVENT_GROUP` 或权威三类 batch record 之外的永久日志协议；不得把 SQLite 改成事实来源、在 PREPARE durability barrier 前 APPLY、以 sidecar intent 补造未落盘 EVENT、吞掉 PREPARE 后错误、重写/删除历史合法记录、把完整 legacy EOF 当损坏尾部，或让不同 data root 共用锁/gate。不得以“最终能重放”为由放宽现有整批零投影失败测试。
 
-**独立 R3 必须登记的文件职责：**
+**已验收独立 R3 的文件职责（后续扩展必须遵守）：**
 
-- `doc/features/event-batch-v2.2-runtime-prd.md`、`doc/features/event-batch-v2.2-runtime-impl.md`：定义独立范围、Schema migration、旧日志切换、分阶段 rollout/rollback 和验收证据；不得把本段文字当成替代 Mini-PRD。
-- `src/main/db/schema.sql`、`src/main/db/migrations.ts` 及专用 migration：实现权威 `applied_event_batch`、`processed_event`、`projector_cursor`、`command_log` 等合同和约束；所有新 Schema 必须由该独立 R3 批准，不计入 42+8 的两个 reason CHECK diff。
-- `src/shared/types/event-payloads.ts`、批次 record/shared contract：保持 legacy `ActionLogEntry` v1/F7-v2 reader，新增且只新增权威 `BATCH_PREPARED/EVENT/BATCH_COMMITTED` 合同；batch/event/payload version 分层校验。
-- `src/main/domain/event-batch-coordinator.ts`、`event-log-durability.ts`、`event-log-lock.ts`、`event-runtime-context.ts`：实现唯一 data-root runtime、canonical fd/identity、完整写循环、file/parent durability、hash chain、segment/index、command fencing、PREPARE/APPLY/CONFIRM 和 ownership token；本仓库本地模块一律静态 import。
-- `src/main/domain/startup-recovery.ts`、`src/main/domain/legacy-upgrade-recovery.ts`、`src/main/db/connection.ts`：实现业务 IPC 前的旧日志兼容、迁移切换、四阶段 batch recovery、cursor/command 恢复、corruption gate 和恢复审计；完整 legacy EOF 保留并重新建立 durability barrier。
-- `src/main/ipc/handler-registry.ts`、`src/main/ipc/index.ts`、`src/main/ipc/handlers/{auth,student,strategy,assessment,training,operation-scoring,ability-scoring,job-skill-scoring,job-skill-result,job-skill-report,observation,assignment,safety,foundation,results,reports}.ts`：提供 `registerReadHandler/registerMutationHandler` 并完成 channel 唯一分类；handler 不得直接 `ipcMain.handle` 或导入低层 writer。登录/登出、账号/学生/策略变更和 report export 都按 mutation 分类。
-- `src/main/domain/mutation-registry.ts`、`src/main/cli`、background/startup services：登记非 IPC mutation，移动 auth/student/strategy lazy seed，确保 gate 和锁序覆盖 down、恢复、报告文件及未来 Pilot 入口。
-- `src/main/domain/event-writer.ts`、`report-command-coordinator.ts`、`report-service.ts` 及上述 writer handlers：删除生产 direct `writeEvent()`/外层事务拼接；改为构造一个 batch command 和有序 events，由 batch coordinator 在一个 APPLY transaction 中调用已登记 reducer/projector。业务前置条件在 PREPARE 前检查，并在 APPLY 锁内复核。
-- `doc/specs/project-invariants.md`：不得用旧 ID 静默改义。给旧 `INV-EVT-002` 增加明确的 legacy baseline 适用范围/被替代版本说明，新增稳定 v2.2 不变量 ID，登记 PREPARE durability -> 整批 APPLY -> CONFIRM、batch 原子性、fencing/recovery 和新实际证据；同步替换 `INV-EVT-001/003` 中已私有化 writer/recovery 的过时证据路径。
-- `doc/specs/xc-career-guide-event-payload-schema-v1.0.0.md`、`doc/specs/baseline.yaml`、`doc/index.md`：同步权威 record/兼容边界、不变量引用与新实际基线；自动清单只由 docs index 命令更新。
-- `scripts/check-project-invariants.mjs`、`scripts/__tests__/project-invariants-event-baseline.test.mjs`：在 v2.2 切换后静态断言当前事件不变量引用 batch coordinator/startupRecovery 和三阶段协议，不再把生产 `writeEvent()`、逐行双写或 caller-owned reducer 声明为当前基线；历史说明仍保留。
-- `src/main/domain/__tests__/{event-log-durability,event-batch-coordinator,startup-recovery,event-lock-order}.test.ts`、`src/main/ipc/handlers/__tests__/{event-write-callsite,mutation-gate-registry,operation-scoring,assessment-ability-scoring,job-skill-scoring,assessment-redline,assessment-start-session}.test.ts`：覆盖所有 record/stage/迁移/并发/callsite 和整批业务断言。
-- `package.json`：新增该独立功能评审后确定的 `contract:event-batch:v2.2:check` 精确入口；不得进入 postinstall，也不得使用默认运行库。
+- `doc/features/event-batch-v2.2-runtime-prd.md`、`doc/features/event-batch-v2.2-runtime-impl.md` 和 M5B-15 验收记录：保留独立范围、Schema migration、旧日志切换、分阶段 rollout/rollback 与实际验收证据；本段不是其替代 Mini-PRD。
+- `src/main/db/schema.sql`、`src/main/db/event-batch-migration.ts`：已建立 `applied_event_batch`、`processed_event`、`projector_cursor`、`command_log` 等当前合同和约束；任何新 Schema 仍须独立 R3 批准，不能混入 42+8 的两个 reason CHECK diff。
+- `src/shared/types/event-payloads.ts` 及 `src/main/domain/event-batch/record-types.ts`：保留 legacy `ActionLogEntry` / F7 兼容读取和权威 `BATCH_PREPARED/EVENT/BATCH_COMMITTED` 合同，batch/event/payload version 分层校验。
+- `src/main/domain/event-batch/{batch-coordinator,segment-store,writer-mutex,file-capability,artifact-publisher,segment-index}.ts`：构成唯一 data-root runtime、file identity、完整写循环、durability、hash chain、segment/index、command fencing、PREPARE/APPLY/CONFIRM 和 capability 边界；本仓库本地模块保持静态 import。
+- `src/main/domain/event-batch/{startup-recovery,artifact-recovery,legacy-reader,runtime-corruption}.ts`、`src/main/application/runtime/{application-runtime,m5b-domain-executor}.ts`：在业务 mutation 前建立旧日志兼容、batch recovery、command/cursor 恢复与 corruption gate；完整 legacy EOF 保留并重新建立 durability barrier。
+- `src/main/ipc/handler-registry.ts`、`src/main/application/runtime/application-runtime.ts` 与 `src/main/application/runtime/m5b-domain-executor.ts`：维持 IPC 读写分类、production mutation 统一经 durable command 与 v2 batch/gate executor；登录/登出、账号/学生/策略变更和报告导出不得绕过该边界。
+- `src/main/domain/event-writer.ts` 仅保留 legacy/planning 兼容角色；production direct `writeEvent()` 和外层事务拼接已由 v2 batch command、已登记 reducer/projector 和 APPLY transaction 取代。业务前置条件在 PREPARE 前检查，并在 APPLY 锁内复核。
+- `doc/specs/project-invariants.md` 已为 `INV-EVT-002` 标明 legacy baseline 适用范围，并以 `INV-EVT-004/005/006` 记录 PREPARE durability、整批 APPLY/CONFIRM、batch 原子性、fencing/recovery 与实际证据；`INV-EVT-001/003` 的当前证据不得回退到私有 writer/recovery 路径。
+- `doc/specs/xc-career-guide-event-payload-schema-v1.0.0.md`、`doc/specs/baseline.yaml`、`doc/index.md` 已记录当前 record/兼容边界、不变量引用与基线；自动清单只由 docs index 命令更新。
+- `scripts/check-m5b-event-batch.mjs`、`scripts/__tests__/m5b-runtime-inventory.test.mjs`、`src/main/domain/event-batch/__tests__/{batch-coordinator,startup-recovery,fault-matrix,fencing,legacy-reader}.test.ts`：覆盖当前 record/stage、迁移/兼容、并发/callsite 与整批业务断言。
+- `package.json` 中的 `contract:m5b:event-batch:check` 是已验收 runtime 的精确合同入口；不得进入 postinstall，也不得使用默认运行库。
 
-**权威提交与恢复协议：**
+**当前权威提交与恢复协议：**
 
 ```text
 resolve canonical data-root runtime -> acquire event-log single-writer lock
@@ -184,7 +186,7 @@ startupRecovery                  -> same lock -> verify durability/hash/identity
                                  -> only after cursors/command_log align may gate reopen
 ```
 
-**精确验证命令：**
+**历史验收命令（当前 P1-01 不重跑；后续影响 v2 runtime 时必须按届时范围重新执行）：**
 
 ```bash
 npm test -- src/main/domain/__tests__/event-log-durability.test.ts src/main/domain/__tests__/event-batch-coordinator.test.ts src/main/domain/__tests__/startup-recovery.test.ts src/main/domain/__tests__/event-lock-order.test.ts src/main/ipc/handlers/__tests__/event-write-callsite.test.ts src/main/ipc/handlers/__tests__/mutation-gate-registry.test.ts src/main/ipc/handlers/__tests__/operation-scoring.test.ts src/main/ipc/handlers/__tests__/assessment-ability-scoring.test.ts src/main/ipc/handlers/__tests__/job-skill-scoring.test.ts src/main/ipc/handlers/__tests__/assessment-redline.test.ts src/main/ipc/handlers/__tests__/assessment-start-session.test.ts
@@ -207,7 +209,7 @@ git diff --check
 
 **回滚方式：** 第一条非测试 `BATCH_PREPARED` 写入前，可按独立迁移计划回退应用和新增空 Schema，同时保留所有 legacy reader/gate 修复；一旦任一目标数据源写入 v2.2 batch，只能前滚或回滚到仍完整支持 legacy + v2.2、hash chain、command fencing 和 startupRecovery 的兼容版本，不得展开、重写或删除历史记录。备份只作经批准灾难恢复，不是普通 rollback。
 
-**停止条件：** Step 2A/2B/2C 任一独立 R3 结论不是 `PASS`；三阶段被合并或越级；需要偏离权威三类 record/hash/三阶段协议；无法保持现存整批失败合同；旧 LF/EOF/投影无法无损迁移；跨进程锁、durability 或 file identity 无法证明；gate 仍有 IPC/CLI/background 绕过；需要触碰默认库才能验证；或本计划在新基线上尚未重审时，Step 2 保持 `BLOCKED`。
+**当前变更停止条件：** 不得重做或合并 Step 2A/2B/2C，不得偏离权威三类 record/hash/恢复协议、放宽现存整批失败合同、回退 legacy LF/EOF/投影兼容、绕过锁或 gate，或为验证而触碰默认库。任何需要改变 v2 runtime、Schema、IPC/CLI mutation 边界或恢复语义的后续工作必须停止本计划，另行进入独立 R3，而不是把 Step 2 写回 `BLOCKED`。
 
 **建议 commit message：** 由独立 R3 实施计划定义；42+8 分支不得把该基础设施伪装成本功能的小改动。
 
@@ -215,7 +217,7 @@ git diff --check
 
 **目的与理由：** 消除旧固定题型比例与 v1.2 模块配额冲突，并让创建事件本身携带可独立重放的题目/策略事实，避免 recovery 重新读取可能变化的 `question_bank`。本步骤只冻结 renderer 需求和稳定阻断，不宣称真实 renderer 已可用。
 
-**前置状态：** Step 2A、2B、2C 的独立 `/vibe-accept` 均为 `PASS`，Step 1 重验和本计划重基线复审也为 `PASS`；Step 1 冻结清单恰好包含 42 道 ONLINE + 8 道 OFFLINE、每个模块 ONLINE 7 道且观察项为 0；50 道入选题和 46 道未选题在所有非测试数据源中仍为 `DRAFT`；`activation_authority_granted = false`。
+**前置状态：** Step 2A（M4）与 Step 2B（M5A）均为 `ACCEPTED`，Step 2C/M5B-15 为 `PASS`；Step 1 重验与 P1-01 已为 `PASS`，P1-02 已关闭且新的独立计划复审为 `PASS`；Step 1 冻结清单恰好包含 42 道 ONLINE + 8 道 OFFLINE、每个模块 ONLINE 7 道且观察项为 0；50 道入选题和 46 道未选题在所有非测试数据源中仍为 `DRAFT`；`activation_authority_granted = false`。
 
 **完成状态：** 新 `question-policy-v1.2` 策略可在不读取 `question_ratio` 的情况下按 seed 稳定生成相同 42+8；`SESSION_STARTED` payload v2 冻结完整 strategy snapshot、paper seed/集合 hash，以及逐题 ID/version/order/phase/domain/module/type/usage、`content_json`、`scoring_rule_json`、合同 hash、资产 ID/hash 和 renderer requirement key/hash。该事件继续使用 `ActionLogEntry.schema_version = 1`，业务版本只由 payload 内必填 `payload_version = 2` 判定，不占用当前专属于 F7 report 事件的 envelope schema v2。payload-v2 reducer 只使用事件 payload 建立 `assessment_session_question`，不得回查 `question_bank`；payload-v1 历史事件保留原回放分支。冷启动删除业务投影后，仅凭 action log + 基线静态外键数据即可恢复完全相同的 session/question 投影；后续评分读取 payload-v2 创建事件中的冻结合同。缺 renderer 时稳定返回 `QUESTION_RENDERER_UNAVAILABLE` 并保持分阶段门禁 `BLOCKED_RENDERER_IMPLEMENTATION`，不阻断本步骤工程验收；`/vibe-accept step 3` 为 `PASS`。
 
@@ -320,7 +322,7 @@ git diff --check
 
 **目的与理由：** 在技术演练之前，将产品批准、学校授权和逐学生同意收口为同一套可验证、有限期、可撤销/轮换、可持久化水位的授权决策服务；所有真实 session 写边界共用它，并能在失效后事件化终止或永久隔离。Step 10 只装配生产固定根和激活入口，不再实现本步骤的通用合同或生命周期。
 
-**前置状态：** Step 5 的 `/vibe-accept step 5` 为 `PASS`；Step 2 的独立 v2.2 R3 验收和本计划重基线复审仍可核对为 `PASS`；当前已知默认运行库的 migration/Schema/账号/题库漂移已由单独、获授权的运维任务核实，并有 `npm run db:verify` 退出码 0 的证据，否则本 Step 为 `BLOCKED`；所有非测试数据库和 JSONL 均尚未写入两个新 reason 或两个授权事件；迁移前数据库文件族和 event-log/index 的存在状态/hash 已记录。自动测试只使用显式临时库，不得为满足此前置条件自动修复默认库。
+**前置状态：** Step 5 的 `/vibe-accept step 5` 为 `PASS`；Step 2A（M4）与 Step 2B（M5A）已 `ACCEPTED`、Step 2C/M5B-15 为 `PASS`，P1-01 已关闭，且 P1-02 和新的独立计划复审均可核对为 `PASS`；当前已知默认运行库的 migration/Schema/账号/题库漂移已由单独、获授权的运维任务核实，并有 `npm run db:verify` 退出码 0 的证据，否则本 Step 为 `BLOCKED`；所有非测试数据库和 JSONL 均尚未写入两个新 reason 或两个授权事件；迁移前数据库文件族和 event-log/index 的存在状态/hash 已记录。自动测试只使用显式临时库，不得为满足此前置条件自动修复默认库。
 
 **完成状态：**
 
@@ -654,7 +656,7 @@ npm run pilot:base-ability:activate -- --data-root /absolute/path/to/pilot/data 
 | 检查 | 必须执行的入口 | 通过证据 |
 |---|---|---|
 | 类型、Lint、全量测试、构建 | `npm run typecheck`、`npm run lint`、`npm test`、`npm run build` | 四条命令分别退出码 0；不得用定向测试代替 `npm test` |
-| Step 2A–2C 前置链 | 三个独立 R3 的定向/全量测试、`/vibe-accept` 记录 + 本计划重基线复审 | M4 三元安全身份、M5A 最终 Command Bus、M5B PREPARE/APPLY/CONFIRM、durability、hash chain、command fencing、segment/index、legacy LF/EOF、全 writer 整批迁移、mutation registry、startupRecovery 和版本化不变量均为 `PASS`；否则 Step 3-10 `BLOCKED` |
+| Step 2A–2C 前置链 | M4/Step 2A、M5A/Step 2B 的独立验收记录（`ACCEPTED`），M5B-15（`PASS`）与本计划新的独立复审 | 三元安全身份、最终 Command Bus、M5B PREPARE/APPLY/CONFIRM、durability、hash chain、command fencing、segment/index、legacy LF/EOF、全 writer 整批迁移、mutation registry、startupRecovery 和版本化不变量持续有效；P1-01/P1-02 已关闭，新的独立复审未通过时 Step 3-10 `BLOCKED` |
 | Step 3-10 batch 集成 | 42+8 session/响应/评分/授权/激活 batch、gate、lock-order、recovery 定向测试 + 全量测试 | 单/多 EVENT batch 各阶段故障、启动整体恢复/CONFIRM、普通写/down/activation 无锁反转 |
 | Schema/迁移 | 全量 migration tests；对显式临时库执行 `db:sync` + `db:verify` | 前滚、允许/拒绝 down、结构/trigger/FK/行/hash 证据；默认库不在自动命令目标中 |
 | 题库、人工审核、资产、门禁 | authority check、两轨 packet/results check、asset validate、gate check | 当前原件/manifest/gate 可确定复算且 check 不写文件；缺人工原件为 `BLOCKED` |
@@ -729,11 +731,11 @@ git diff --check
 
 ## 8. 残余风险与后续项
 
-- [!] Step 2A M4、Step 2B Command Bus 和 Step 2C 权威 v2.2 batch runtime 当前均尚未实现，是 Step 3-10 的硬阻断；三者必须按顺序独立交付并更新基线，本计划不能用自身 PRD 权限代做其 Schema、命令边界或日志协议迁移。
+- [!] Step 2A M4、Step 2B Command Bus 和 Step 2C 权威 v2.2 batch runtime 均已验收并构成当前生产边界；P1-01 与 P1-02 已关闭。P1-02 已将 `assertWorkbookMatchesSql()` 接入 `authority:check` 的必经构建路径，gate 复用同一检查；复制件的 workbook 或 SQL `materials` 字段漂移在刷新 hash 绑定后仍会由正常 authority check 失败关闭。Step 3-10 的硬阻断仅为新的独立 R3 计划复审。后续不得用本计划或两个 reason CHECK 改写既有 Schema、命令边界或日志协议。
 - [!] PRD 已明确的现状冲突必须在实现中关闭：旧 `question_ratio`、基础能力查询过滤、硬编码评分、`ANSWER_SUBMITTED` 独占、两个 reason CHECK 缺口。每项关闭都要对应代码和测试证据。
 - [!] 当前默认运行库存在已知漂移；必须作为单独、获授权的运维任务修复并取得 `db:verify` 证据，计划实现和临时库测试不得自动修复或覆盖它。
 - [!] `doc/features/mvp-pilot-freeze-plan.md` 的 R0-G02 仍写着禁用 BASE_ABILITY，与当前权威 PRD 的受控 Pilot 路径不一致；不阻断本计划修订，但在进入 R0 冻结前必须单独修订并复审。
-- 题目最终选择、资产数量、线下教具和 renderer 组合在 Step 1 前仍可能变化；一旦清单冻结，后续不得无记录扩张。
+- Step 1 已冻结题目选择；后续如需调整题目、资产数量、线下教具或 renderer 组合，必须生成新的权威版本、保留选择理由并重新走相应门禁，不能无记录扩张。
 - 产品负责人固定公开根和非敏感 KAT 经安装版审查后进入静态配置；所有私钥必须离线保管，真实批准/授权原件通过只读包导入。本计划不生成、提交或存储生产私钥。
 - 操作系统级替换已审查安装包属于部署完整性风险，不由本地批准 JSON 解决，需纳入发布验收。
 - 真实课堂试测、专业签字、学校授权、逐学生同意和正式解释仍是外部依赖，工程测试不能替代这些验收。
@@ -746,4 +748,4 @@ git diff --check
 /vibe-review impl doc/features/base-ability-42plus8-pilot-readiness-impl.md
 ```
 
-审查输入应同时包含本 PRD、适用不变量、R3 风险、修订基线 `8fa2a4f`、本计划的实际 diff 和引用的代码范围；实施真正开始时还必须换成届时实际 base commit。出现未关闭 P0、跨文件登记遗漏、不可恢复中间状态、默认库保护缺口或把 R3 降级为机械任务时，计划状态为 `BLOCKED`，不得进入编码。
+审查输入应同时包含本 PRD、适用不变量、R3 风险、当前工程基线（本次修订时为 `5f050d6` / `v0.1.18-event-batch-v2.2`）、本计划的实际 diff 和引用的代码范围；实施真正开始时还必须换成届时实际 base commit。出现未关闭 P0、跨文件登记遗漏、不可恢复中间状态、默认库保护缺口或把 R3 降级为机械任务时，计划状态为 `BLOCKED`，不得进入编码。

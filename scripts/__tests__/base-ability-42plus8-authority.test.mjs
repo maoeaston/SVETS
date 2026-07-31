@@ -1,17 +1,147 @@
-import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
-import { join, resolve } from 'node:path'
+import { execFileSync } from 'node:child_process'
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { dirname, join, relative, resolve } from 'node:path'
 import {
   buildBaseAbilityAuthority,
   hashRecord,
   serializeBaseAbilityAuthority,
-  validateBaseAbilityAuthority
+  validateBaseAbilityAuthority,
+  writeOrCheckBaseAbilityAuthority
 } from '../lib/base-ability-42plus8-authority.mjs'
+import { fileSha256 } from '../lib/base-ability-42plus8-source.mjs'
+import { describe, expect, it } from 'vitest'
 
 const projectRoot = process.cwd()
+const WORKBOOK_PATH = 'doc/reference/通用基础能力正式测评候选题库_v0.2-软件优先版.xlsx'
+const IMPORT_SQL_PATH = 'doc/features/question-bank-import-base-ability-v02.sql'
+const INPUT_PATH = 'doc/features/base-ability-42plus8-contract-input-v1.json'
 
 function readJson(relativePath) {
   return JSON.parse(readFileSync(resolve(projectRoot, relativePath), 'utf8'))
+}
+
+function copyFixtureFile(root, relativePath) {
+  const destination = resolve(root, relativePath)
+  mkdirSync(dirname(destination), { recursive: true })
+  cpSync(resolve(projectRoot, relativePath), destination)
+}
+
+function createSourceFixture() {
+  const root = mkdtempSync(join(tmpdir(), 'svets-base-ability-source-'))
+  for (const relativePath of [WORKBOOK_PATH, IMPORT_SQL_PATH, INPUT_PATH]) {
+    copyFixtureFile(root, relativePath)
+  }
+  return root
+}
+
+function replaceOnce(value, expected, replacement, label) {
+  const index = value.indexOf(expected)
+  if (index < 0 || value.indexOf(expected, index + expected.length) >= 0) {
+    throw new Error(`fixture ${label} must contain exactly one expected field value`)
+  }
+  return `${value.slice(0, index)}${replacement}${value.slice(index + expected.length)}`
+}
+
+function crc32(buffer) {
+  let crc = 0xffffffff
+  for (const byte of buffer) {
+    crc ^= byte
+    for (let bit = 0; bit < 8; bit += 1) {
+      crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1))
+    }
+  }
+  return (crc ^ 0xffffffff) >>> 0
+}
+
+function writeStoredZip(path, entries) {
+  const localChunks = []
+  const centralChunks = []
+  let offset = 0
+  for (const [name, content] of entries) {
+    const nameBytes = Buffer.from(name)
+    const body = Buffer.isBuffer(content) ? content : Buffer.from(content)
+    const checksum = crc32(body)
+    const local = Buffer.alloc(30)
+    local.writeUInt32LE(0x04034b50, 0)
+    local.writeUInt16LE(20, 4)
+    local.writeUInt32LE(checksum, 14)
+    local.writeUInt32LE(body.length, 18)
+    local.writeUInt32LE(body.length, 22)
+    local.writeUInt16LE(nameBytes.length, 26)
+    localChunks.push(local, nameBytes, body)
+
+    const central = Buffer.alloc(46)
+    central.writeUInt32LE(0x02014b50, 0)
+    central.writeUInt16LE(20, 4)
+    central.writeUInt16LE(20, 6)
+    central.writeUInt32LE(checksum, 16)
+    central.writeUInt32LE(body.length, 20)
+    central.writeUInt32LE(body.length, 24)
+    central.writeUInt16LE(nameBytes.length, 28)
+    central.writeUInt32LE(offset, 42)
+    centralChunks.push(central, nameBytes)
+    offset += local.length + nameBytes.length + body.length
+  }
+  const centralSize = centralChunks.reduce((size, chunk) => size + chunk.length, 0)
+  const end = Buffer.alloc(22)
+  end.writeUInt32LE(0x06054b50, 0)
+  end.writeUInt16LE(entries.length, 8)
+  end.writeUInt16LE(entries.length, 10)
+  end.writeUInt32LE(centralSize, 12)
+  end.writeUInt32LE(offset, 16)
+  writeFileSync(path, Buffer.concat([...localChunks, ...centralChunks, end]))
+}
+
+function archiveEntries(root, directory = root) {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(directory, entry.name)
+    if (entry.isDirectory()) return archiveEntries(root, path)
+    return [[relative(root, path).replaceAll('\\', '/'), readFileSync(path)]]
+  })
+}
+
+function updateSourceBindings(root) {
+  const inputPath = resolve(root, INPUT_PATH)
+  const input = JSON.parse(readFileSync(inputPath, 'utf8'))
+  input.source_bindings.source_sha256 = fileSha256(root, WORKBOOK_PATH)
+  input.source_bindings.import_sql_sha256 = fileSha256(root, IMPORT_SQL_PATH)
+  writeFileSync(inputPath, `${JSON.stringify(input, null, 2)}\n`)
+}
+
+function mutateWorkbookField(root) {
+  const workbookPath = resolve(root, WORKBOOK_PATH)
+  const contentRoot = mkdtempSync(join(tmpdir(), 'svets-base-ability-workbook-'))
+  try {
+    execFileSync('unzip', ['-q', workbookPath, '-d', contentRoot])
+    const sheetPath = join(contentRoot, 'xl/worksheets/sheet2.xml')
+    writeFileSync(
+      sheetPath,
+      replaceOnce(
+        readFileSync(sheetPath, 'utf8'),
+        '标准操作盒：15毫米圆片10枚、防滑垫、目标杯。',
+        '标准操作盒：15毫米圆片10枚、防滑垫、目标杯（字段漂移）。',
+        'workbook materials'
+      )
+    )
+    writeStoredZip(workbookPath, archiveEntries(contentRoot))
+  } finally {
+    rmSync(contentRoot, { recursive: true, force: true })
+  }
+}
+
+function mutateSqlField(root) {
+  const sqlPath = resolve(root, IMPORT_SQL_PATH)
+  const sql = readFileSync(sqlPath, 'utf8')
+  writeFileSync(
+    sqlPath,
+    replaceOnce(
+      sql,
+      '标准操作盒：15毫米圆片10枚、防滑垫、目标杯。',
+      '标准操作盒：15毫米圆片10枚、防滑垫、目标杯（字段漂移）。',
+      'SQL materials'
+    )
+  )
 }
 
 function validateSchema(value, schema, rootSchema = schema, path = '$') {
@@ -177,5 +307,20 @@ describe('base ability 42+8 draft authority', () => {
         seen.add(selection.question_id)
       }
     }).toThrow(/duplicate/)
+  })
+
+  it.each([
+    ['workbook', mutateWorkbookField],
+    ['SQL', mutateSqlField]
+  ])('runs the normal authority check fail-closed when %s materials drift', async (_source, mutate) => {
+    const fixtureRoot = createSourceFixture()
+    try {
+      mutate(fixtureRoot)
+      updateSourceBindings(fixtureRoot)
+      await expect(writeOrCheckBaseAbilityAuthority(fixtureRoot, { check: true }))
+        .rejects.toThrow(/GA-FM-001\.materials mismatches derived SQL/)
+    } finally {
+      rmSync(fixtureRoot, { recursive: true, force: true })
+    }
   })
 })

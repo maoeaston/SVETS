@@ -308,6 +308,9 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | 文件 | 标题 |
 |---|---|
 | [features/base-ability-42plus8-evaluation-memo.md](features/base-ability-42plus8-evaluation-memo.md) | 基础能力测评 42+8 方案评估备忘录 |
+| [features/base-ability-42plus8-impl-r3-revalidation-review-2.md](features/base-ability-42plus8-impl-r3-revalidation-review-2.md) | BASE_ABILITY 42+8 实施计划 R3 复审记录（第二轮：P1 修复后独立复核） |
+| [features/base-ability-42plus8-impl-r3-revalidation-review.md](features/base-ability-42plus8-impl-r3-revalidation-review.md) | BASE_ABILITY 42+8 实施计划 R3 重审记录 |
+| [features/base-ability-42plus8-step1-revalidation-acceptance.md](features/base-ability-42plus8-step1-revalidation-acceptance.md) | BASE_ABILITY 42+8 Step 1 重验记录 |
 | [features/base-ability-42plus8-vibe-review.md](features/base-ability-42plus8-vibe-review.md) | BASE_ABILITY 42+8 正式 `/vibe-review` 记录 |
 | [features/base-ability-current-contracts.md](features/base-ability-current-contracts.md) | 基础能力题库与 42+8 当前合同入口 |
 | [features/event-batch-v2.2-runtime-impl-review.md](features/event-batch-v2.2-runtime-impl-review.md) | M5B Event Batch Runtime — 独立 R3 实施计划审查 |
