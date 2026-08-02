@@ -75,6 +75,7 @@ import {
 import type { MemoryAdapter } from '../../../db/memory-adapter'
 import type { StrategyInput } from '../../../../shared/types/strategy'
 import type { CreateSessionParams } from '../../../../shared/types/assessment'
+import type { QuestionPolicyBaseAbility } from '../../../../shared/types/json-schemas'
 
 let db: MemoryAdapter
 let callerId: string
@@ -83,6 +84,26 @@ let strategyId: string
 
 const taskCode = 'SHELVE_TASK'
 const strategyVersion = 1
+
+const BASE_ABILITY_V12_POLICY: QuestionPolicyBaseAbility = {
+  schema_version: 'question-policy-v1.2',
+  module_scope: 'CROSS_MODULE',
+  eligible_bank_domains: ['BASE_ABILITY'],
+  online_quota_by_module: {
+    FINE_MOTOR: 7,
+    COGNITION: 7,
+    RULE_EXECUTION: 7,
+    EMOTION_REGULATION: 7,
+    BASIC_SOCIAL: 7,
+    SAFETY_OPERATION: 7
+  },
+  offline_total: 8,
+  eligible_item_usage: ['SCORED_ITEM'],
+  allowed_question_types: ['TRUE_FALSE', 'SINGLE_CHOICE', 'DRAG', 'OFFLINE_OPERATION'],
+  unsupported_interaction_policy: 'BLOCK',
+  sensory_filter_mode: 'SOFT',
+  fallback_strategy: 'BLOCK'
+}
 
 /** 直接 INSERT 一条 strategy_config（绕过 handler），供 createSession 前置读取。 */
 function seedStrategyRow(over: Partial<StrategyInput> = {}): void {
@@ -296,6 +317,38 @@ describe('assessment:createSession 正常路径', () => {
 
     const result = createSession(db, baseParams())
     expect(result.success).toBe(true)
+  })
+})
+
+describe('assessment:createSession BASE_ABILITY v1.2 renderer gate', () => {
+  it('renderer 全部 PENDING 时拒绝创建，且不写 SESSION_STARTED 或任何会话投影', () => {
+    db.exec('DELETE FROM strategy_config')
+    seedStrategyRow({
+      questionPolicy: BASE_ABILITY_V12_POLICY
+    })
+
+    const result = createSession(db, baseParams())
+
+    expect(result).toEqual({ success: false, errorCode: 'BLOCKED_RENDERER_IMPLEMENTATION' })
+
+    const projectionCounts = db.prepare(
+      `SELECT
+         (SELECT COUNT(*) FROM domain_event_projection WHERE event_type = 'SESSION_STARTED') AS session_started,
+         (SELECT COUNT(*) FROM business_session) AS business_sessions,
+         (SELECT COUNT(*) FROM assessment_session) AS assessment_sessions,
+         (SELECT COUNT(*) FROM assessment_session_question) AS session_questions`
+    ).get() as {
+      session_started: number
+      business_sessions: number
+      assessment_sessions: number
+      session_questions: number
+    }
+    expect(projectionCounts).toEqual({
+      session_started: 0,
+      business_sessions: 0,
+      assessment_sessions: 0,
+      session_questions: 0
+    })
   })
 })
 

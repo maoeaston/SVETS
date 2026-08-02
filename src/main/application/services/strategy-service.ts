@@ -29,7 +29,7 @@ import type {
   UpdateStrategyResult,
   SetStrategyActiveParams,
   SetStrategyActiveResult,
-  QuestionPolicyJson,
+  StrategyQuestionPolicy,
   ScoringPolicyJson
 } from '../../../shared/types/strategy'
 
@@ -143,7 +143,7 @@ function mapSummary(row: StrategyRow): StrategySummary {
   }
 }
 
-function mapDetail(row: StrategyRow, questionPolicy: QuestionPolicyJson, scoringPolicy: ScoringPolicyJson): StrategyDetail {
+function mapDetail(row: StrategyRow, questionPolicy: StrategyQuestionPolicy, scoringPolicy: ScoringPolicyJson): StrategyDetail {
   return {
     ...mapSummary(row),
     questionPolicy,
@@ -231,10 +231,10 @@ export function getStrategy(
     return { success: false, errorCode: 'NOT_FOUND' }
   }
 
-  let questionPolicy: QuestionPolicyJson
+  let questionPolicy: StrategyQuestionPolicy
   let scoringPolicy: ScoringPolicyJson
   try {
-    questionPolicy = JSON.parse(row.question_policy_json) as QuestionPolicyJson
+    questionPolicy = JSON.parse(row.question_policy_json) as StrategyQuestionPolicy
     scoringPolicy = JSON.parse(row.scoring_policy_json) as ScoringPolicyJson
   } catch (err) {
     logStrategyEvent(db, 'STRATEGY_CONFIG_SYSTEM_ERROR', 'ERROR', row.strategy_id, row.version, caller.row.user_id, {
@@ -664,12 +664,12 @@ export function updateStrategy(db: DBAdapter, params: UpdateStrategyParams): Upd
   // question 一致性重新校验（合并值组 ctx）
   const touchesQuestion = whitelistedKeys.some((k) => QUESTION_REVALIDATE_KEYS.has(k))
   if (touchesQuestion) {
-    let mergedQuestionPolicy: QuestionPolicyJson
+    let mergedQuestionPolicy: StrategyQuestionPolicy
     if (patchKeys.includes('questionPolicy')) {
-      mergedQuestionPolicy = patch.questionPolicy as QuestionPolicyJson
+      mergedQuestionPolicy = patch.questionPolicy as StrategyQuestionPolicy
     } else {
       try {
-        mergedQuestionPolicy = JSON.parse(target.question_policy_json) as QuestionPolicyJson
+        mergedQuestionPolicy = JSON.parse(target.question_policy_json) as StrategyQuestionPolicy
       } catch (err) {
         logStrategyEvent(db, 'STRATEGY_CONFIG_SYSTEM_ERROR', 'ERROR', target.strategy_id, target.version, caller.row.user_id, {
           operation: 'update',

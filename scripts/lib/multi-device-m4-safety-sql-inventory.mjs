@@ -15,6 +15,8 @@ const EXCLUDED_FILES = new Set([
   'src/main/db/migrations.ts',
   'src/main/db/report-migration.ts',
   'src/main/db/safety-rekey-migration.ts',
+  'src/main/db/preview-contract-migration.ts',
+  'src/main/domain/projectors/preview-safety-projector.ts',
   'src/main/db/test-helpers.ts'
 ])
 const SQL_START = /^\s*(?:SELECT|INSERT\s+INTO|UPDATE|DELETE\s+FROM)\b/i

@@ -1,7 +1,7 @@
 {
-  "version": "2026.07.22.1",
-  "schemaVersion": "0.1.17-multi-device-m4-safety-rekey",
-  "migrationId": "2026-07-27_mvp_schema_v0_1_17_multi_device_m4_safety_rekey",
+  "version": "2026.08.01.2",
+  "schemaVersion": "0.1.19-job-skill-preview-contract-v1",
+  "migrationId": "2026-08-01_job_skill_preview_contract_v1",
   "requiredMigrationLedger": [
     {
       "migrationId": "2026-07-14_mvp_schema_v0_1_13_multi_device_m1_identity",
@@ -34,6 +34,14 @@
     {
       "migrationId": "2026-07-27_mvp_schema_v0_1_17_multi_device_m4_safety_rekey",
       "schemaVersion": "0.1.17-multi-device-m4-safety-rekey"
+    },
+    {
+      "migrationId": "2026-07-29_mvp_schema_v0_1_18_event_batch_v2_2",
+      "schemaVersion": "0.1.18-event-batch-v2.2"
+    },
+    {
+      "migrationId": "2026-08-01_job_skill_preview_contract_v1",
+      "schemaVersion": "0.1.19-job-skill-preview-contract-v1"
     }
   ],
   "questionContracts": [

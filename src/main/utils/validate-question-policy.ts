@@ -42,6 +42,14 @@ export function validateQuestionPolicy(
   input: unknown,
   ctx: QuestionPolicyCtx
 ): QuestionPolicyValidationResult {
+  // v1.2 判别：question-policy-v1.2（QuestionPolicyBaseAbility）走结构化校验；
+  // 旧 QuestionPolicyJson（question_ratio）走下方兼容分支，调用点行为不变。
+  if (
+    typeof input === 'object' && input !== null && !Array.isArray(input) &&
+    (input as Record<string, unknown>).schema_version === 'question-policy-v1.2'
+  ) {
+    return validateQuestionPolicyBaseAbility(input, ctx)
+  }
   if (typeof input !== 'object' || input === null || Array.isArray(input)) {
     return { ok: false, reason: 'question_policy must be an object' }
   }
@@ -150,5 +158,108 @@ export function validateQuestionPolicy(
     }
   }
 
+  return { ok: true }
+}
+
+/** v1.2 允许的题型（含 SOFTWARE_TASK，旧 QUESTION_TYPES 不含）。 */
+const QUESTION_TYPES_V12 = [
+  'TRUE_FALSE',
+  'SINGLE_CHOICE',
+  'DRAG',
+  'SOFTWARE_TASK',
+  'OFFLINE_OPERATION'
+] as const
+
+/**
+ * 校验 question-policy-v1.2（QuestionPolicyBaseAbility）。
+ * v1.2 不使用 question_ratio；组卷按 online_quota_by_module 每模块固定配额。
+ * 与 strategy_config.online/offline_question_count 做跨字段一致性校验。
+ */
+function validateQuestionPolicyBaseAbility(
+  input: unknown,
+  ctx: QuestionPolicyCtx
+): QuestionPolicyValidationResult {
+  if (typeof input !== 'object' || input === null || Array.isArray(input)) {
+    return { ok: false, reason: 'question_policy (v1.2) must be an object' }
+  }
+  const obj = input as Record<string, unknown>
+
+  if (obj.schema_version !== 'question-policy-v1.2') {
+    return { ok: false, reason: 'schema_version must be "question-policy-v1.2"' }
+  }
+  if (obj.module_scope !== 'CROSS_MODULE') {
+    return { ok: false, reason: 'module_scope must be "CROSS_MODULE" for v1.2' }
+  }
+
+  // eligible_bank_domains 必须恰好 ['BASE_ABILITY']（PRD §7.6.1 规则 1）
+  const ebd = obj.eligible_bank_domains
+  if (!Array.isArray(ebd) || ebd.length !== 1 || ebd[0] !== 'BASE_ABILITY') {
+    return { ok: false, reason: 'eligible_bank_domains must be ["BASE_ABILITY"]' }
+  }
+  // eligible_item_usage 必须恰好 ['SCORED_ITEM']（观察项不进入 42+8）
+  const eiu = obj.eligible_item_usage
+  if (!Array.isArray(eiu) || eiu.length !== 1 || eiu[0] !== 'SCORED_ITEM') {
+    return { ok: false, reason: 'eligible_item_usage must be ["SCORED_ITEM"]' }
+  }
+
+  // online_quota_by_module：每个值为非负整数，key 必须是合法 AbilityTag
+  const qbm = obj.online_quota_by_module
+  if (typeof qbm !== 'object' || qbm === null || Array.isArray(qbm)) {
+    return { ok: false, reason: 'online_quota_by_module must be an object' }
+  }
+  let onlineSum = 0
+  for (const [k, v] of Object.entries(qbm as Record<string, unknown>)) {
+    if (!(ABILITY_TAGS as readonly string[]).includes(k)) {
+      return { ok: false, reason: `online_quota_by_module has unknown ability tag: ${k}` }
+    }
+    if (!isNonNegInt(v)) {
+      return { ok: false, reason: `online_quota_by_module.${k} must be a non-negative integer` }
+    }
+    onlineSum += v as number
+  }
+  if (onlineSum !== ctx.onlineQuestionCount) {
+    return {
+      ok: false,
+      reason: `online_quota_by_module sum (${onlineSum}) must equal online_question_count (${ctx.onlineQuestionCount})`
+    }
+  }
+
+  // offline_total：非负整数，等于表列 offline_question_count
+  if (!isNonNegInt(obj.offline_total)) {
+    return { ok: false, reason: 'offline_total must be a non-negative integer' }
+  }
+  if (obj.offline_total !== ctx.offlineQuestionCount) {
+    return {
+      ok: false,
+      reason: `offline_total (${obj.offline_total}) must equal offline_question_count (${ctx.offlineQuestionCount})`
+    }
+  }
+
+  // allowed_question_types：非空，每项合法（v1.2 含 SOFTWARE_TASK）
+  const aqt = obj.allowed_question_types
+  if (!Array.isArray(aqt) || aqt.length === 0) {
+    return { ok: false, reason: 'allowed_question_types must be a non-empty array' }
+  }
+  for (const t of aqt) {
+    if (typeof t !== 'string' || !(QUESTION_TYPES_V12 as readonly string[]).includes(t)) {
+      return { ok: false, reason: `allowed_question_types has invalid type: ${JSON.stringify(t)}` }
+    }
+  }
+
+  if (obj.unsupported_interaction_policy !== 'BLOCK') {
+    return { ok: false, reason: 'unsupported_interaction_policy must be "BLOCK"' }
+  }
+  if (!(SENSORY_FILTER_MODES as readonly string[]).includes(obj.sensory_filter_mode as string)) {
+    return {
+      ok: false,
+      reason: `sensory_filter_mode must be one of ${SENSORY_FILTER_MODES.join(' / ')}`
+    }
+  }
+  if (!(FALLBACK_STRATEGIES as readonly string[]).includes(obj.fallback_strategy as string)) {
+    return {
+      ok: false,
+      reason: `fallback_strategy must be one of ${FALLBACK_STRATEGIES.join(' / ')}`
+    }
+  }
   return { ok: true }
 }

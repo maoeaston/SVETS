@@ -25,6 +25,7 @@ import {
   segmentRelativePath
 } from './segment-store'
 import type { PreparedFactRegistry } from './result-registry'
+import { PREVIEW_CONTRACT_VERSION } from '../../../shared/types/preview-contract'
 
 export interface VerifiedEventSource {
   readonly record: EventRecord
@@ -253,6 +254,11 @@ function sittingNumber(payload: Readonly<Record<string, CanonicalJsonValue>>): n
   return value as number
 }
 
+function isPreviewEvent(event: VerifiedEventSource): boolean {
+  return event.record.payload.contract_version === PREVIEW_CONTRACT_VERSION
+    && event.record.payload.allowed_shell_kind === 'PREVIEW_SHELL'
+}
+
 function assertExistingEventRows(
   database: DBAdapter,
   source: PreparedBatchSource,
@@ -261,9 +267,18 @@ function assertExistingEventRows(
   const processed = objectRow(database.prepare(
     'SELECT * FROM processed_event WHERE event_id = ?'
   ).get(event.record.event_id), 'processed_event')
-  const projection = objectRow(database.prepare(
+  const formalProjection = objectRow(database.prepare(
     'SELECT * FROM domain_event_projection WHERE event_id = ?'
   ).get(event.record.event_id), 'domain_event_projection')
+  const previewProjection = isPreviewEvent(event)
+    ? objectRow(database.prepare(
+      'SELECT * FROM preview_event_projection WHERE event_id = ?'
+    ).get(event.record.event_id), 'preview_event_projection')
+    : null
+  if (isPreviewEvent(event) && formalProjection !== null) {
+    throw new ProjectionSourceError('PROJECTION_CONFLICT', `preview EVENT ${event.record.event_id} leaked into formal projection`)
+  }
+  const projection = isPreviewEvent(event) ? previewProjection : formalProjection
   if ((processed === null) !== (projection === null)) {
     throw new ProjectionSourceError('PROJECTION_CONFLICT', `EVENT ${event.record.event_id} exists in only one projection table`)
   }
@@ -276,21 +291,37 @@ function assertExistingEventRows(
     aggregate_id: event.record.aggregate_id
   }, `processed_event ${event.record.event_id}`)
   exactStoredTimestamp(processed.processed_at, `processed_event ${event.record.event_id}.processed_at`)
-  exactRowFields(projection, {
-    event_id: event.record.event_id,
-    aggregate_type: event.record.aggregate_type,
-    aggregate_id: event.record.aggregate_id,
-    event_type: event.record.event_type,
-    event_sequence: event.record.event_sequence,
-    payload_json: canonicalJson(event.record.payload),
-    checksum: event.record.checksum,
-    source_log_path: source.relativePath,
-    source_log_line_no: event.lineNumber,
-    source_log_byte_offset: event.byteOffset,
-    schema_version: schemaVersion(event),
-    sitting_no: sittingNumber(event.record.payload),
-    created_at: event.record.timestamp
-  }, `domain_event_projection ${event.record.event_id}`)
+  if (isPreviewEvent(event)) {
+    exactRowFields(projection, {
+      event_id: event.record.event_id,
+      contract_registry_id: PREVIEW_CONTRACT_VERSION,
+      aggregate_type: event.record.aggregate_type,
+      aggregate_id: event.record.aggregate_id,
+      event_type: event.record.event_type,
+      event_sequence: event.record.event_sequence,
+      payload_json: canonicalJson(event.record.payload),
+      checksum: event.record.checksum,
+      source_batch_id: source.prepared.batch_id,
+      source_batch_hash: source.prepared.batch_hash,
+      created_at: event.record.timestamp
+    }, `preview_event_projection ${event.record.event_id}`)
+  } else {
+    exactRowFields(projection, {
+      event_id: event.record.event_id,
+      aggregate_type: event.record.aggregate_type,
+      aggregate_id: event.record.aggregate_id,
+      event_type: event.record.event_type,
+      event_sequence: event.record.event_sequence,
+      payload_json: canonicalJson(event.record.payload),
+      checksum: event.record.checksum,
+      source_log_path: source.relativePath,
+      source_log_line_no: event.lineNumber,
+      source_log_byte_offset: event.byteOffset,
+      schema_version: schemaVersion(event),
+      sitting_no: sittingNumber(event.record.payload),
+      created_at: event.record.timestamp
+    }, `domain_event_projection ${event.record.event_id}`)
+  }
   return true
 }
 
@@ -354,28 +385,30 @@ export function writeProjectionSourceInCurrentTransaction(options: {
     event.aggregate_id,
     options.processedAt
   )
-  options.database.prepare(
-    `INSERT INTO domain_event_projection (
-       event_id, aggregate_type, aggregate_id, event_type, event_sequence,
-       payload_json, checksum, source_log_path, source_log_line_no,
-       source_log_byte_offset, schema_version, sitting_no, created_at,
-       applied_to_snapshot, applied_at
-     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)`
-  ).run(
-    event.event_id,
-    event.aggregate_type,
-    event.aggregate_id,
-    event.event_type,
-    event.event_sequence,
-    canonicalJson(event.payload),
-    event.checksum,
-    options.source.relativePath,
-    options.event.lineNumber,
-    options.event.byteOffset,
-    schemaVersion(options.event),
-    sittingNumber(event.payload),
-    event.timestamp
-  )
+  if (!isPreviewEvent(options.event)) {
+    options.database.prepare(
+      `INSERT INTO domain_event_projection (
+         event_id, aggregate_type, aggregate_id, event_type, event_sequence,
+         payload_json, checksum, source_log_path, source_log_line_no,
+         source_log_byte_offset, schema_version, sitting_no, created_at,
+         applied_to_snapshot, applied_at
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)`
+    ).run(
+      event.event_id,
+      event.aggregate_type,
+      event.aggregate_id,
+      event.event_type,
+      event.event_sequence,
+      canonicalJson(event.payload),
+      event.checksum,
+      options.source.relativePath,
+      options.event.lineNumber,
+      options.event.byteOffset,
+      schemaVersion(options.event),
+      sittingNumber(event.payload),
+      event.timestamp
+    )
+  }
   return 'INSERTED'
 }
 

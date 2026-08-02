@@ -1,5 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+import { PREVIEW_MUTATION_CHANNELS } from '../main/ipc/preview-channel-definitions'
+import { FEEDBACK_MUTATION_CHANNELS } from '../main/ipc/feedback-channel-definitions'
 
 const mutationChannels = new Set([
   'auth:createTeacherAccount', 'auth:login', 'auth:logout', 'auth:setTeacherAccountStatus',
@@ -13,7 +15,9 @@ const mutationChannels = new Set([
   'safety:confirm', 'safety:resolve', 'safety:void', 'safety:replaceForFactualCorrection',
   'assignment:create', 'assignment:confirmStudent', 'assignment:startAssessment', 'assignment:rebind', 'assignment:release',
   'training:createSession', 'training:startStep', 'training:completeStep', 'training:skipStep', 'training:failStep', 'training:retryStep',
-  'reports:confirmTaskClosure', 'reports:replaceTaskClosure', 'reports:generate', 'reports:confirmPlacementReview', 'reports:lock', 'reports:export'
+  'reports:confirmTaskClosure', 'reports:replaceTaskClosure', 'reports:generate', 'reports:confirmPlacementReview', 'reports:lock', 'reports:export',
+  ...PREVIEW_MUTATION_CHANNELS,
+  ...FEEDBACK_MUTATION_CHANNELS
 ])
 
 const clientInstanceId = crypto.randomUUID()
@@ -37,6 +41,17 @@ ipcRenderer.invoke = ((channel: string, ...args: unknown[]) => {
  * 每新增一个功能通道，必须在此处显式声明。
  */
 const api = {
+  activation: {
+    getStatus: () => ipcRenderer.invoke('activation:getStatus'),
+    configureServer: (params: { serverUrl: string }) =>
+      ipcRenderer.invoke('activation:configureServer', params),
+    activate: (params: { licenseKey: string }) =>
+      ipcRenderer.invoke('activation:activate', params),
+    validate: () => ipcRenderer.invoke('activation:validate')
+  },
+  questionBank: {
+    list: (params: unknown) => ipcRenderer.invoke('questionBank:list', params)
+  },
   auth: {
     login: (params: { username: string; password: string }) =>
       ipcRenderer.invoke('auth:login', params),
@@ -147,6 +162,27 @@ const api = {
       ipcRenderer.invoke('reports:confirmPlacementReview', params),
     lock: (params: unknown) => ipcRenderer.invoke('reports:lock', params),
     export: (params: unknown) => ipcRenderer.invoke('reports:export', params)
+  },
+  preview: {
+    enrollPrincipal: (params: unknown) => ipcRenderer.invoke('preview:enrollPrincipal', params),
+    rotatePrincipal: (params: unknown) => ipcRenderer.invoke('preview:rotatePrincipal', params),
+    releasePack: (params: unknown) => ipcRenderer.invoke('preview:releasePack', params),
+    revokePack: (params: unknown) => ipcRenderer.invoke('preview:revokePack', params),
+    listSources: (params: unknown) => ipcRenderer.invoke('preview:listSources', params),
+    getRelease: (params: unknown) => ipcRenderer.invoke('preview:getRelease', params),
+    getSession: (params: unknown) => ipcRenderer.invoke('preview:getSession', params),
+    listSessionQuestions: (params: unknown) => ipcRenderer.invoke('preview:listSessionQuestions', params)
+  },
+  feedback: {
+    list: (params: unknown) => ipcRenderer.invoke('feedback:list', params),
+    get: (params: unknown) => ipcRenderer.invoke('feedback:get', params),
+    saveDraft: (params: unknown) => ipcRenderer.invoke('feedback:saveDraft', params),
+    submit: (params: unknown) => ipcRenderer.invoke('feedback:submit', params),
+    reconcile: (params: unknown) => ipcRenderer.invoke('feedback:reconcile', params),
+    delete: (params: unknown) => ipcRenderer.invoke('feedback:delete', params),
+    purge: (params: unknown) => ipcRenderer.invoke('feedback:purge', params),
+    repair: (params: unknown) => ipcRenderer.invoke('feedback:repair', params),
+    export: (params: unknown) => ipcRenderer.invoke('feedback:export', params)
   },
   runtime: {
     getHealth: () => ipcRenderer.invoke('runtime:getHealth')

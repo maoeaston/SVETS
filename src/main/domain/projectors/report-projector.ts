@@ -7,6 +7,7 @@ import {
 } from '../event-batch/result-registry'
 import { parseF7EventPayload } from '../report-contract'
 import { applyReportEvent, markReportEventApplied } from '../report-reducer'
+import { assertFormalAssessmentSession } from '../preview/preview-session-guard'
 import { REPORT_RESULT_RECIPE_VERSIONS } from '../../application/planners/report-planner'
 
 export const REPORT_PROJECTOR_NAME = 'm5b-report-projector-v1'
@@ -164,6 +165,23 @@ function assertStatuses(
 
 function projectReport(context: PreparedProjectorContext): void {
   const entry = preparedActionLogEntry(context.event)
+  const source = entry.event_type === 'REPORT_GENERATED'
+    ? {
+        source_aggregate_type: entry.payload.source_aggregate_type,
+        source_aggregate_id: entry.payload.source_aggregate_id
+      }
+    : context.database.prepare(
+        'SELECT source_aggregate_type, source_aggregate_id FROM task_report WHERE report_id = ?'
+      ).get(entry.aggregate_id) as {
+        source_aggregate_type: string | null
+        source_aggregate_id: string | null
+      } | undefined
+  if (
+    source?.source_aggregate_type === 'ASSESSMENT_SESSION'
+    && typeof source.source_aggregate_id === 'string'
+  ) {
+    assertFormalAssessmentSession(context.database, source.source_aggregate_id, 'formal report projection')
+  }
   applyReportEvent(context.database, entry)
   markReportEventApplied(context.database, entry)
 }

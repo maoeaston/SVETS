@@ -35,7 +35,7 @@ function textAt(value: unknown): string | null {
 
 function parseScoreAnchors(content: JsonObject, scoring: JsonObject): ScoreAnchors | null {
   const rubric = objectAt(content.rubric)
-  const candidates = [rubric.anchors, scoring.anchors, scoring.score_anchors]
+  const candidates = [rubric.anchors, scoring.anchors, scoring.score_anchors, scoring.score_labels]
   for (const candidate of candidates) {
     const record = objectAt(candidate)
     const zero = textAt(record['0'])
@@ -48,7 +48,7 @@ function parseScoreAnchors(content: JsonObject, scoring: JsonObject): ScoreAncho
   if (scoringCriteria.length > 0) {
     const build = (score: 0 | 1 | 2): string => scoringCriteria
       .map((raw) => objectAt(raw))
-      .map((criterion) => textAt(criterion[`description_${score}`]))
+      .map((criterion) => textAt(criterion[`description_${score}`]) ?? textAt(criterion[`score_${score}`]))
       .filter((description): description is string => Boolean(description))
       .join('；')
     const anchors = { '0': build(0), '1': build(1), '2': build(2) }

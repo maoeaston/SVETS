@@ -194,6 +194,107 @@ function validateMetadata(payload: Readonly<Record<string, CanonicalJsonValue>>,
   }
 }
 
+function ensurePreparedAssessmentBusinessSession(
+  context: PreparedProjectorContext,
+  payload: Readonly<Record<string, CanonicalJsonValue>>
+): void {
+  const businessSessionId = text(payload.business_session_id, 'business_session_id')
+  const studentId = text(payload.student_id, 'student_id')
+  const jobCode = text(payload.job_code, 'job_code')
+  const taskCode = text(payload.task_code, 'task_code')
+  const existing = context.database.prepare(
+    `SELECT session_type, student_id, job_code, task_code
+       FROM business_session WHERE business_session_id = ?`
+  ).get(businessSessionId) as {
+    session_type: string
+    student_id: string
+    job_code: string
+    task_code: string
+  } | undefined
+  if (existing) {
+    if (
+      existing.session_type !== 'ASSESSMENT'
+      || existing.student_id !== studentId
+      || existing.job_code !== jobCode
+      || existing.task_code !== taskCode
+    ) throw new Error(`business_session ${businessSessionId} conflicts with prepared assessment facts`)
+    return
+  }
+  context.database.prepare(
+    `INSERT INTO business_session
+       (business_session_id, session_type, student_id, job_code, task_code, created_by)
+     VALUES (?, 'ASSESSMENT', ?, ?, ?, ?)`
+  ).run(businessSessionId, studentId, jobCode, taskCode, context.event.record.actor_id)
+}
+
+export function projectPreparedAssessmentSessionStarted(context: PreparedProjectorContext): void {
+  const event = context.event.record
+  const payload = event.payload
+  const sessionId = text(payload.session_id, 'session_id')
+  const existing = context.database.prepare(
+    'SELECT session_id FROM assessment_session WHERE session_id = ?'
+  ).get(sessionId)
+  if (existing) return
+  if (text(payload.created_by, 'created_by') !== event.actor_id) {
+    throw new Error('SESSION_STARTED created_by conflicts with event actor')
+  }
+
+  const questions = readAssessmentSessionQuestionSnapshots(payload)
+  ensurePreparedAssessmentBusinessSession(context, payload)
+  context.database.prepare(
+    `INSERT INTO assessment_session
+       (session_id, business_session_id, student_id, strategy_id, strategy_type, job_code, task_code,
+        strategy_version, status, delivery_phase, online_question_count, offline_question_count,
+        observation_template_id, created_by, started_at,
+        created_event_id, last_applied_event_id, last_status_event_id, event_sequence_version)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'INIT', ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)`
+  ).run(
+    sessionId,
+    text(payload.business_session_id, 'business_session_id'),
+    text(payload.student_id, 'student_id'),
+    text(payload.strategy_id, 'strategy_id'),
+    text(payload.strategy_type, 'strategy_type'),
+    text(payload.job_code, 'job_code'),
+    text(payload.task_code, 'task_code'),
+    integer(payload.strategy_version, 'strategy_version', 1),
+    payload.initial_delivery_phase === undefined
+      ? 'PREPARED'
+      : text(payload.initial_delivery_phase, 'initial_delivery_phase'),
+    integer(payload.online_question_count, 'online_question_count', 0),
+    integer(payload.offline_question_count, 'offline_question_count', 0),
+    payload.observation_template_id === undefined || payload.observation_template_id === null
+      ? null
+      : text(payload.observation_template_id, 'observation_template_id'),
+    event.actor_id,
+    event.event_id,
+    event.event_id,
+    event.event_id,
+    event.event_sequence
+  )
+
+  const insertQuestion = context.database.prepare(
+    `INSERT INTO assessment_session_question
+       (session_question_id, session_id, question_id, question_order, question_phase,
+        bank_domain, module_type, question_type, item_usage, job_module_code, generated_event_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  )
+  for (const question of questions) {
+    insertQuestion.run(
+      question.sessionQuestionId,
+      sessionId,
+      question.questionId,
+      question.questionOrder,
+      question.questionPhase,
+      question.bankDomain,
+      question.moduleType,
+      question.questionType,
+      question.itemUsage,
+      question.jobModuleCode,
+      event.event_id
+    )
+  }
+}
+
 function project(context: PreparedProjectorContext): void {
   applyAssessmentEvent(context.database, context.event.record as unknown as ActionLogEntry)
 }

@@ -29,9 +29,10 @@ const dbPath = args.dbPath ?? resolveDefaultDbPath({
 
 try {
   const result = verifyDatabase(dbPath)
-  console.log(`[db:verify] PASS ${result.dbPath}`)
-  console.log(`[db:verify] schema=${result.schemaVersion} pack=${result.packVersion}`)
-  console.log(`[db:verify] hash=${result.packHash}`)
+  console.log(`[db:verify] PASS content_pack ${result.dbPath}`)
+  console.log(`[db:verify] content_schema=${result.schemaVersion} pack=${result.packVersion}`)
+  console.log(`[db:verify] content_pack_hash=${result.packHash}`)
+  console.log('[db:verify] m5b_parity=NOT_RUN (use npm run contract:preview:parity -- --db <explicit-path>)')
 } catch (error) {
   console.error(`[db:verify] ${error.message}`)
   process.exitCode = 1

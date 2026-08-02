@@ -52,9 +52,16 @@ export interface PreparedPreApplyEffectV1 {
   assertPrepared(context: PreparedProjectorContext): void
 }
 
+export interface PreparedEventOwnershipDescriptorV1 {
+  readonly aggregateType: '*' | string
+  readonly contractVersion: string | null
+  readonly allowedShellKind: 'FORMAL_SHELL' | 'PREVIEW_SHELL'
+}
+
 export interface PreparedEventRegistrationV1 {
   readonly eventType: string
   readonly eventPayloadVersion: number
+  readonly ownership?: PreparedEventOwnershipDescriptorV1
   readonly projectorName: string
   validatePayload(payload: Readonly<Record<string, CanonicalJsonValue>>): void
   project(context: PreparedProjectorContext): void
@@ -108,8 +115,12 @@ function positiveInteger(value: number, field: string): number {
   return value
 }
 
-function eventKey(eventType: string, payloadVersion: number): string {
-  return `${eventType}\u0000${payloadVersion}`
+function eventKey(
+  eventType: string,
+  payloadVersion: number,
+  ownership: PreparedEventOwnershipDescriptorV1
+): string {
+  return `${eventType}\u0000${payloadVersion}\u0000${ownership.aggregateType}\u0000${ownership.contractVersion ?? ''}\u0000${ownership.allowedShellKind}`
 }
 
 function resultKey(commandType: string, recipeVersion: string): string {
@@ -157,6 +168,17 @@ export class PreparedFactRegistry {
     if (this.sealed) throw new PreparedFactRegistryError('REGISTRY_SEALED', 'registry is sealed')
     const eventType = text(registration.eventType, 'eventType', true)
     const eventPayloadVersion = positiveInteger(registration.eventPayloadVersion, 'eventPayloadVersion')
+    const ownership = registration.ownership ?? {
+      aggregateType: '*',
+      contractVersion: null,
+      allowedShellKind: 'FORMAL_SHELL'
+    } satisfies PreparedEventOwnershipDescriptorV1
+    if (
+      typeof ownership.aggregateType !== 'string'
+      || (ownership.aggregateType !== '*' && !ownership.aggregateType.trim())
+      || (ownership.contractVersion !== null && !ownership.contractVersion.trim())
+      || (ownership.allowedShellKind !== 'FORMAL_SHELL' && ownership.allowedShellKind !== 'PREVIEW_SHELL')
+    ) throw new PreparedFactRegistryError('PAYLOAD_INVALID', 'event ownership descriptor is invalid')
     text(registration.projectorName, 'projectorName')
     if (
       typeof registration.validatePayload !== 'function'
@@ -198,9 +220,9 @@ export class PreparedFactRegistry {
       }
       preApplyEffectKeys.add(key)
     }
-    const key = eventKey(eventType, eventPayloadVersion)
-    if (this.events.has(key)) {
-      throw new PreparedFactRegistryError('DUPLICATE_REGISTRATION', `duplicate EVENT registration ${key}`)
+    const key = eventKey(eventType, eventPayloadVersion, ownership)
+    if ([...this.events.values()].some((entry) => entry.eventType === eventType && entry.eventPayloadVersion === eventPayloadVersion)) {
+      throw new PreparedFactRegistryError('DUPLICATE_REGISTRATION', `duplicate EVENT registration ${eventType}@${eventPayloadVersion}`)
     }
     const operationalEffects = Object.freeze(registration.operationalEffects.map((effect) => Object.freeze({
       effectType: effect.effectType,
@@ -217,6 +239,7 @@ export class PreparedFactRegistry {
     this.events.set(key, Object.freeze({
       eventType,
       eventPayloadVersion,
+      ownership: Object.freeze({ ...ownership }),
       projectorName: registration.projectorName,
       validatePayload: registration.validatePayload,
       project: registration.project,
@@ -264,11 +287,26 @@ export class PreparedFactRegistry {
 
   eventRegistration(event: VerifiedEventSource): PreparedEventRegistrationV1 {
     const metadata = validateEventPayloadMetadata(event.record.payload, `EVENT ${event.record.event_id}.payload`)
-    const registration = this.events.get(eventKey(event.record.event_type, metadata.eventPayloadVersion))
+    const payloadContract = event.record.payload.contract_version
+    const payloadShell = event.record.payload.allowed_shell_kind
+    const contractVersion = payloadContract === undefined ? null : typeof payloadContract === 'string' ? payloadContract : '__INVALID__'
+    const allowedShellKind = payloadContract === undefined
+      ? 'FORMAL_SHELL'
+      : payloadShell === 'PREVIEW_SHELL'
+        ? 'PREVIEW_SHELL'
+        : 'FORMAL_SHELL'
+    const registration = [...this.events.values()].find((entry) => {
+      const ownership = entry.ownership!
+      return entry.eventType === event.record.event_type
+        && entry.eventPayloadVersion === metadata.eventPayloadVersion
+        && (ownership.aggregateType === '*' || ownership.aggregateType === event.record.aggregate_type)
+        && ownership.contractVersion === contractVersion
+        && ownership.allowedShellKind === allowedShellKind
+    })
     if (!registration) {
       throw new PreparedFactRegistryError(
         'UNKNOWN_EVENT_VERSION',
-        `unknown ${event.record.event_type}@${metadata.eventPayloadVersion}`
+        `unknown ${event.record.event_type}@${metadata.eventPayloadVersion}/${event.record.aggregate_type}/${contractVersion ?? 'FORMAL'}/${allowedShellKind}`
       )
     }
     try {

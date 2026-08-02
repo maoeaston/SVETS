@@ -32,6 +32,9 @@ export const contentPack = JSON.parse(
 )
 
 const schemaPath = join(projectRoot, 'src', 'main', 'db', 'schema.sql')
+const jobSkillDemoCandidate = JSON.parse(
+  readFileSync(join(projectRoot, 'doc', 'features', 'job-skill-shelver-pilot-revision-candidates-v3.json'), 'utf8')
+).strategy_candidate
 const managedAssetRoles = [
   'QUESTION_MEDIA',
   'UI_ASSET',
@@ -181,10 +184,72 @@ function seededStrategyRows(dbPath) {
     )), '[]')
     FROM (
       SELECT * FROM strategy_config
-      WHERE strategy_id IN (${ids}) AND version = 1
-      ORDER BY strategy_id
+      WHERE strategy_id IN (${ids})
+        AND (
+          version = 1
+          OR (strategy_id = 'strategy_job_skill_shelver_v1' AND version = 3)
+        )
+      ORDER BY strategy_id, version
     );`
   )
+}
+
+function sqliteLiteral(value) {
+  if (value === null || value === undefined) return 'NULL'
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) throw new Error('demo strategy contains a non-finite number')
+    return String(value)
+  }
+  if (typeof value === 'boolean') return value ? '1' : '0'
+  return `'${String(value).replaceAll("'", "''")}'`
+}
+
+export function buildJobSkillDemoActivationSql() {
+  const candidate = jobSkillDemoCandidate
+  const ids = candidate.question_policy.fixed_scored_question_ids
+  if (!Array.isArray(ids) || ids.length !== 24 || new Set(ids).size !== 24) {
+    throw new Error('demo strategy must contain exactly 24 unique question ids')
+  }
+  const values = [
+    candidate.strategy_id,
+    candidate.strategy_type,
+    candidate.job_code,
+    candidate.strategy_name,
+    candidate.online_question_count,
+    candidate.offline_question_count,
+    candidate.max_score,
+    candidate.competent_threshold,
+    candidate.conditional_threshold,
+    candidate.module_veto_threshold,
+    3,
+    JSON.stringify(candidate.question_policy),
+    JSON.stringify(candidate.scoring_policy),
+    candidate.supports_redline_halt,
+    candidate.allows_emotion_interrupt,
+    candidate.requires_offline_scoring,
+    candidate.strategy_version,
+    0
+  ].map(sqliteLiteral).join(', ')
+  const questionIds = ids.map(sqliteLiteral).join(', ')
+  return [
+    'BEGIN IMMEDIATE;',
+    `INSERT OR IGNORE INTO strategy_config (
+       strategy_id, strategy_type, job_code, strategy_name,
+       online_question_count, offline_question_count, max_score,
+       competent_threshold, conditional_threshold, module_veto_threshold,
+       emotion_collapse_threshold, question_policy_json, scoring_policy_json,
+       supports_redline_halt, allows_emotion_interrupt, requires_offline_scoring,
+       version, is_active
+     ) VALUES (${values});`,
+    `UPDATE strategy_config
+        SET is_active = CASE WHEN version = ${sqliteLiteral(candidate.strategy_version)} THEN 1 ELSE 0 END,
+            updated_at = datetime('now')
+      WHERE strategy_id = ${sqliteLiteral(candidate.strategy_id)};`,
+    `UPDATE question_bank
+        SET status = 'ACTIVE', updated_at = datetime('now')
+      WHERE status = 'DRAFT' AND question_id IN (${questionIds});`,
+    'COMMIT;'
+  ].join('\n')
 }
 
 function questionImportEventRows(dbPath) {
@@ -224,6 +289,13 @@ function digest(value) {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex')
 }
 
+export function migrationLedgerDigest(entries = contentPack.requiredMigrationLedger) {
+  const canonical = entries
+    .map(({ migrationId, schemaVersion }) => ({ migrationId, schemaVersion }))
+    .sort((left, right) => left.migrationId.localeCompare(right.migrationId))
+  return createHash('sha256').update(JSON.stringify(canonical)).digest('hex')
+}
+
 function digestFile(path) {
   return `sha256:${createHash('sha256').update(readFileSync(path)).digest('hex')}`
 }
@@ -261,7 +333,7 @@ function verifyJobSkillRuntimeContract() {
   return { authority, deliveryLock, gate }
 }
 
-function buildReferenceSnapshot() {
+function buildReferenceSnapshot({ jobSkillDemoReady = false } = {}) {
   const tempDir = mkdtempSync(join(tmpdir(), 'xc-db-reference-'))
   const dbPath = join(tempDir, 'reference.db')
   try {
@@ -276,7 +348,9 @@ function buildReferenceSnapshot() {
     if (runtimeContract.gate.authority.may_activate !== true && activeJobSkillCount !== 0) {
       throw new Error('激活门禁关闭时 JOB_SPECIFIC seed 必须全部保持 DRAFT')
     }
+    if (jobSkillDemoReady) runSql(dbPath, buildJobSkillDemoActivationSql())
     return {
+      profile: jobSkillDemoReady ? 'SCHOOL_DEMO_READY' : 'CONTENT_PACK_SOURCE',
       questionHash: digest(questionRows(dbPath)),
       assetHash: digest(activeManagedAssetRows(dbPath)),
       strategyHash: digest(seededStrategyRows(dbPath)),
@@ -403,6 +477,7 @@ export function verifyDatabase(dbPath, options = {}) {
       packVersion: contentPack.version,
       packHash: null,
       schemaVersion: contentPack.schemaVersion,
+      requiredLedgerDigest: migrationLedgerDigest(),
       counts: {},
       approvedAssetCount: 0,
       issues
@@ -429,19 +504,30 @@ export function verifyDatabase(dbPath, options = {}) {
   }
 
   verifyAccounts(dbPath, issues)
-  const reference = options.reference ?? buildReferenceSnapshot()
+  const sourceReference = options.reference ?? buildReferenceSnapshot()
+  const references = options.reference
+    ? [sourceReference]
+    : [sourceReference, buildReferenceSnapshot({ jobSkillDemoReady: true })]
   const actualSchemaObjects = new Set(explicitSchemaObjectNames(dbPath))
-  for (const objectName of reference.explicitSchemaObjects) {
+  for (const objectName of sourceReference.explicitSchemaObjects) {
     if (!actualSchemaObjects.has(objectName)) issues.push(`缺少 schema 对象 ${objectName}`)
   }
   const actualQuestionHash = digest(questionRows(dbPath))
   const actualAssetHash = digest(activeManagedAssetRows(dbPath))
   const actualStrategyHash = digest(seededStrategyRows(dbPath))
   const actualQuestionImportEventHash = digest(questionImportEventRows(dbPath))
-  if (actualQuestionHash !== reference.questionHash) issues.push('题库语义哈希与内容包不一致')
-  if (actualAssetHash !== reference.assetHash) issues.push('ACTIVE 视觉资产投影与 Manifest 不一致')
-  if (actualStrategyHash !== reference.strategyHash) issues.push('内置策略配置与 schema 合同不一致')
-  if (actualQuestionImportEventHash !== reference.questionImportEventHash) {
+  const matchedReference = references.find((reference) =>
+    actualQuestionHash === reference.questionHash
+    && actualStrategyHash === reference.strategyHash)
+  if (!matchedReference) {
+    const questionMatches = references.some((reference) => actualQuestionHash === reference.questionHash)
+    const strategyMatches = references.some((reference) => actualStrategyHash === reference.strategyHash)
+    if (!questionMatches) issues.push('题库语义哈希与内容包不一致')
+    if (!strategyMatches) issues.push('内置策略配置与 schema 合同不一致')
+    if (questionMatches && strategyMatches) issues.push('题库与策略的演示激活状态不一致')
+  }
+  if (actualAssetHash !== sourceReference.assetHash) issues.push('ACTIVE 视觉资产投影与 Manifest 不一致')
+  if (actualQuestionImportEventHash !== sourceReference.questionImportEventHash) {
     issues.push('题库导入事件投影与内容包不一致')
   }
 
@@ -449,12 +535,12 @@ export function verifyDatabase(dbPath, options = {}) {
     version: contentPack.version,
     schemaVersion: contentPack.schemaVersion,
     requiredMigrationLedger: contentPack.requiredMigrationLedger,
-    questionHash: reference.questionHash,
-    assetHash: reference.assetHash,
-    strategyHash: reference.strategyHash,
-    questionImportEventHash: reference.questionImportEventHash,
-    runtimeContractHash: reference.runtimeContractHash,
-    explicitSchemaObjectHash: digest(reference.explicitSchemaObjects)
+    questionHash: sourceReference.questionHash,
+    assetHash: sourceReference.assetHash,
+    strategyHash: sourceReference.strategyHash,
+    questionImportEventHash: sourceReference.questionImportEventHash,
+    runtimeContractHash: sourceReference.runtimeContractHash,
+    explicitSchemaObjectHash: digest(sourceReference.explicitSchemaObjects)
   })
   const result = {
     ok: issues.length === 0,
@@ -462,8 +548,10 @@ export function verifyDatabase(dbPath, options = {}) {
     packVersion: contentPack.version,
     packHash,
     schemaVersion: contentPack.schemaVersion,
+    requiredLedgerDigest: migrationLedgerDigest(),
+    contentProfile: matchedReference?.profile ?? 'UNKNOWN',
     counts,
-    approvedAssetCount: reference.approvedAssetCount,
+    approvedAssetCount: sourceReference.approvedAssetCount,
     issues
   }
   if (!result.ok && options.throwOnError !== false) {

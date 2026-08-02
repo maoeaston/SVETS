@@ -5,6 +5,26 @@ import {
   M5A_MUTATION_CHANNELS,
   createM5AMutationDefinitions
 } from '../application/command/m5a-command-definitions'
+import {
+  PREVIEW_PRINCIPAL_COMMAND_TYPES,
+  createPreviewPrincipalCommandDefinitions
+} from '../application/command/preview-principal-command-definitions'
+import {
+  PREVIEW_RELEASE_COMMAND_TYPES,
+  createPreviewReleaseCommandDefinitions
+} from '../application/command/preview-release-command-definitions'
+import {
+  PREVIEW_FEEDBACK_COMMAND_TYPES,
+  createPreviewFeedbackCommandDefinitions
+} from '../application/command/preview-feedback-command-definitions'
+import {
+  PREVIEW_SESSION_COMMAND_TYPES,
+  createPreviewSessionCommandDefinitions
+} from '../application/command/preview-session-command-definitions'
+import {
+  PREVIEW_SAFETY_COMMAND_TYPES,
+  createPreviewSafetyCommandDefinitions
+} from '../application/command/preview-safety-command-definitions'
 import { CommandRegistry } from '../application/command/command-registry'
 import { DurableCommandCoordinatorError } from '../application/command/durable-command-coordinator'
 import { applyGateOnlyPostCommitBinding } from '../application/command/gate-only-command-apply'
@@ -14,6 +34,15 @@ import {
   M5A_READ_DEFINITIONS,
   requireM5AReadPolicy
 } from '../application/query/m5a-read-definitions'
+import {
+  PREVIEW_READ_CHANNELS as PREVIEW_QUERY_READ_CHANNELS,
+  PREVIEW_READ_DEFINITIONS,
+  requirePreviewReadPolicy
+} from '../application/query/preview-read-definitions'
+import {
+  FEEDBACK_READ_DEFINITIONS,
+  requireFeedbackReadPolicy
+} from '../application/query/feedback-read-definitions'
 import type { ApplicationRuntime } from '../application/runtime/application-runtime'
 import { CommandPreflightError, type AnyMutationCommandDefinition } from '../application/command/command-types'
 import {
@@ -47,10 +76,29 @@ import {
   listTrainingSessions
 } from '../application/query/training-query-service'
 import { resolveBoundAuthSessionSnapshot } from '../utils/auth-session'
+import { resolveTrustedCallerSnapshot } from '../utils/auth-session'
+import { assertPreviewProjectionStatus } from '../domain/projectors/preview-event-projection'
+import { resolveAuthorizedPreviewInstallationIds } from '../application/query/preview-read-scope'
+import { collectPreviewReadHandlers } from './handlers/preview'
+import { assertFeedbackQueryDoesNotExposeBody, collectFeedbackReadHandlers } from './handlers/feedback'
+import {
+  PREVIEW_CHANNELS,
+  PREVIEW_MUTATION_CHANNELS,
+  PREVIEW_READ_CHANNELS as PREVIEW_IPC_READ_CHANNELS
+} from './preview-channel-definitions'
+import {
+  FEEDBACK_CHANNELS,
+  FEEDBACK_MUTATION_CHANNELS,
+  FEEDBACK_READ_CHANNELS
+} from './feedback-channel-definitions'
 import { getException, getWorkspaceOverview, listExceptions } from './handlers/foundation'
 import { getCurrentResult, listCurrentResultsByStudent } from './handlers/results'
 
 type CentralListener = (event: IpcMainInvokeEvent, rawInput?: unknown, transportMetadata?: unknown) => Promise<unknown>
+
+export interface BusinessAccessGate {
+  assertBusinessAccess(): Promise<void>
+}
 
 export interface CentralIpcBoundary {
   readonly registry: CommandRegistry
@@ -114,6 +162,16 @@ function readFailure(errorCode: string): Readonly<{ success: false; errorCode: s
   return Object.freeze({ success: false, errorCode })
 }
 
+export function resolveTrustedStudentProfileId(db: ApplicationRuntime['db'], userId: string): string | null {
+  const row = db.prepare(
+    `SELECT student_id
+       FROM student_profile
+      WHERE user_id = ? AND status = 'ACTIVE'
+      LIMIT 1`
+  ).get(userId) as { student_id?: string } | undefined
+  return row?.student_id ?? null
+}
+
 function publicPreflightFailure(
   definition: AnyMutationCommandDefinition,
   error: unknown
@@ -141,16 +199,27 @@ function publicPreflightFailure(
   return readFailure(detailCode ?? definition.metadata.preflightErrorMap[reason])
 }
 
-export function registerCentralIpcHandlers(runtime: ApplicationRuntime): CentralIpcBoundary {
-  const expectedChannels = [...M5A_READ_CHANNELS, ...M5A_MUTATION_CHANNELS, 'runtime:getHealth'].sort()
-  if (expectedChannels.length !== 75) {
-    throw new Error(`expected 75 central IPC channels, received ${expectedChannels.length}`)
+export function registerCentralIpcHandlers(
+  runtime: ApplicationRuntime,
+  businessAccessGate: BusinessAccessGate
+): CentralIpcBoundary {
+  const expectedChannels = [...M5A_READ_CHANNELS, ...M5A_MUTATION_CHANNELS, ...PREVIEW_CHANNELS, ...FEEDBACK_CHANNELS, 'runtime:getHealth'].sort()
+  if (expectedChannels.length !== 92) {
+    throw new Error(`expected 92 central IPC channels, received ${expectedChannels.length}`)
   }
   exactSet(M5A_READ_CHANNELS, M5A_READ_CHANNELS, 'M5A READ channels')
   exactSet(M5A_MUTATION_CHANNELS, M5A_MUTATION_CHANNELS, 'M5B MUTATION channels')
+  exactSet(PREVIEW_MUTATION_CHANNELS, [...PREVIEW_PRINCIPAL_COMMAND_TYPES, ...PREVIEW_RELEASE_COMMAND_TYPES], 'preview mutation source set')
+  exactSet(PREVIEW_IPC_READ_CHANNELS, PREVIEW_QUERY_READ_CHANNELS, 'preview read source set')
+  exactSet(FEEDBACK_MUTATION_CHANNELS, PREVIEW_FEEDBACK_COMMAND_TYPES, 'feedback mutation source set')
+  exactSet(FEEDBACK_READ_CHANNELS, ['feedback:list', 'feedback:get'], 'feedback read source set')
 
   const readHandlers = collectReadHandlers(runtime)
   exactSet([...readHandlers.keys()], M5A_READ_CHANNELS, 'M5B read handlers')
+  const previewReadHandlers = collectPreviewReadHandlers(runtime)
+  exactSet([...previewReadHandlers.keys()], PREVIEW_IPC_READ_CHANNELS, 'preview read handlers')
+  const feedbackReadHandlers = collectFeedbackReadHandlers(runtime)
+  exactSet([...feedbackReadHandlers.keys()], FEEDBACK_READ_CHANNELS, 'feedback read handlers')
 
   const activeEvents = new Map<string, IpcMainInvokeEvent>()
   const registry = new CommandRegistry()
@@ -167,6 +236,37 @@ export function registerCentralIpcHandlers(runtime: ApplicationRuntime): Central
     }
   })
   for (const definition of mutationDefinitions) registry.registerMutation(definition)
+  const previewPrincipalDefinitions = createPreviewPrincipalCommandDefinitions({
+    db: runtime.db,
+    eventForTransport(transportId) {
+      const event = activeEvents.get(transportId)
+      if (!event) throw new Error(`unknown IPC transport: ${transportId}`)
+      return event
+    }
+  })
+  for (const definition of previewPrincipalDefinitions) registry.registerMutation(definition)
+  const previewReleaseDefinitions = createPreviewReleaseCommandDefinitions({
+    db: runtime.db,
+    eventForTransport(transportId) {
+      const event = activeEvents.get(transportId)
+      if (!event) throw new Error(`unknown IPC transport: ${transportId}`)
+      return event
+    }
+  })
+  for (const definition of previewReleaseDefinitions) registry.registerMutation(definition)
+  const previewFeedbackDefinitions = createPreviewFeedbackCommandDefinitions({
+    db: runtime.db,
+    eventForTransport(transportId) {
+      const event = activeEvents.get(transportId)
+      if (!event) throw new Error(`unknown IPC transport: ${transportId}`)
+      return event
+    }
+  })
+  for (const definition of previewFeedbackDefinitions) registry.registerMutation(definition)
+  for (const definition of createPreviewSessionCommandDefinitions()) registry.registerMutation(definition)
+  for (const definition of createPreviewSafetyCommandDefinitions()) registry.registerMutation(definition)
+  for (const definition of PREVIEW_READ_DEFINITIONS) registry.registerRead(definition)
+  for (const definition of FEEDBACK_READ_DEFINITIONS) registry.registerRead(definition)
   registry.registerRead({
     commandType: 'runtime:getHealth',
     metadata: {
@@ -206,7 +306,11 @@ export function registerCentralIpcHandlers(runtime: ApplicationRuntime): Central
       testReferences: ['src/main/ipc/__tests__/handler-registry.test.ts']
     }
   })
-  registry.seal(expectedChannels)
+  registry.seal([
+    ...expectedChannels,
+    ...PREVIEW_SESSION_COMMAND_TYPES,
+    ...PREVIEW_SAFETY_COMMAND_TYPES
+  ])
 
   const mutationExecutor = runtime.createMutationExecutor(registry)
 
@@ -235,6 +339,54 @@ export function registerCentralIpcHandlers(runtime: ApplicationRuntime): Central
       callerUserId: session.userId,
       callerRole: session.role
     })
+  }
+
+  async function invokePreviewOrFeedbackRead(
+    channel: string,
+    event: IpcMainInvokeEvent,
+    rawInput: unknown
+  ): Promise<unknown> {
+    const isPreview = PREVIEW_IPC_READ_CHANNELS.includes(channel as never)
+    const policy = isPreview ? requirePreviewReadPolicy(channel) : requireFeedbackReadPolicy(channel)
+    const handlers = isPreview ? previewReadHandlers : feedbackReadHandlers
+    if (!runtime.isBoundaryReady()) return readFailure('PREVIEW_CONTRACT_MIGRATION_REQUIRED')
+    try {
+      assertPreviewProjectionStatus(runtime.db)
+    } catch (error) {
+      return readFailure(error instanceof Error && 'code' in error ? String((error as { code: unknown }).code) : policy.failureCode)
+    }
+    if (!isPlainRecord(rawInput)) return readFailure(policy.failureCode)
+    const caller = resolveTrustedCallerSnapshot(runtime.db, event.sender.id)
+    if (!caller.success || !policy.actors.includes(caller.role)) return readFailure('FORBIDDEN')
+    if (!caller.organizationId) return readFailure('PREVIEW_SCOPE_INVALID')
+    if (rawInput.callerUserId !== undefined && rawInput.callerUserId !== caller.userId) return readFailure('FORBIDDEN')
+    if (rawInput.callerRole !== undefined && rawInput.callerRole !== caller.role) return readFailure('FORBIDDEN')
+    if (rawInput.organizationId !== undefined && rawInput.organizationId !== caller.organizationId) return readFailure('FORBIDDEN')
+    const trustedInput: Record<string, unknown> = {
+      ...rawInput,
+      organizationId: caller.organizationId,
+      callerUserId: caller.userId,
+      callerRole: caller.role,
+      authorizedInstallationIds: resolveAuthorizedPreviewInstallationIds(runtime.db, {
+        userId: caller.userId,
+        organizationId: caller.organizationId,
+        role: caller.role
+      })
+    }
+    if (isPreview && (channel === 'preview:getSession' || channel === 'preview:listSessionQuestions') && caller.role === 'STUDENT') {
+      const studentProfileId = resolveTrustedStudentProfileId(runtime.db, caller.userId)
+      if (!studentProfileId) return readFailure('PREVIEW_SCOPE_INVALID')
+      trustedInput.studentId = studentProfileId
+      trustedInput.deviceId = caller.deviceId
+    }
+    try {
+      const result = await handlers.get(channel)?.(event, trustedInput)
+      if (result === null || result === undefined) return readFailure(policy.failureCode)
+      if (channel === 'feedback:list' || channel === 'feedback:get') assertFeedbackQueryDoesNotExposeBody(result)
+      return result
+    } catch (error) {
+      return readFailure(error instanceof Error && 'code' in error ? String((error as { code: unknown }).code) : policy.failureCode)
+    }
   }
 
   async function invokeMutation(
@@ -310,13 +462,20 @@ export function registerCentralIpcHandlers(runtime: ApplicationRuntime): Central
   }
 
   function listener(channel: string): CentralListener {
-    if (M5A_READ_CHANNELS.includes(channel)) {
-      return (event, rawInput) => invokeRead(channel, event, rawInput)
+    let downstream: CentralListener
+    if (PREVIEW_IPC_READ_CHANNELS.includes(channel as never) || FEEDBACK_READ_CHANNELS.includes(channel as never)) {
+      downstream = (event, rawInput) => invokePreviewOrFeedbackRead(channel, event, rawInput)
+    } else if (M5A_READ_CHANNELS.includes(channel)) {
+      downstream = (event, rawInput) => invokeRead(channel, event, rawInput)
+    } else if (M5A_MUTATION_CHANNELS.includes(channel) || PREVIEW_PRINCIPAL_COMMAND_TYPES.includes(channel as never) || PREVIEW_RELEASE_COMMAND_TYPES.includes(channel as never) || PREVIEW_FEEDBACK_COMMAND_TYPES.includes(channel as never)) {
+      downstream = (event, rawInput, transportMetadata) => invokeMutation(channel, event, rawInput, transportMetadata)
+    } else {
+      throw new Error(`central listener requested for unknown channel: ${channel}`)
     }
-    if (M5A_MUTATION_CHANNELS.includes(channel)) {
-      return (event, rawInput, transportMetadata) => invokeMutation(channel, event, rawInput, transportMetadata)
+    return async (event, rawInput, transportMetadata) => {
+      await businessAccessGate.assertBusinessAccess()
+      return downstream(event, rawInput, transportMetadata)
     }
-    throw new Error(`central listener requested for unknown channel: ${channel}`)
   }
 
   const installed: string[] = []
@@ -382,6 +541,23 @@ export function registerCentralIpcHandlers(runtime: ApplicationRuntime): Central
     install('reports:replaceTaskClosure', () => ipcMain.handle('reports:replaceTaskClosure', listener('reports:replaceTaskClosure')))
     install('results:getCurrent', () => ipcMain.handle('results:getCurrent', listener('results:getCurrent')))
     install('results:listCurrentByStudent', () => ipcMain.handle('results:listCurrentByStudent', listener('results:listCurrentByStudent')))
+    install('preview:getRelease', () => ipcMain.handle('preview:getRelease', listener('preview:getRelease')))
+    install('preview:getSession', () => ipcMain.handle('preview:getSession', listener('preview:getSession')))
+    install('preview:listSessionQuestions', () => ipcMain.handle('preview:listSessionQuestions', listener('preview:listSessionQuestions')))
+    install('preview:listSources', () => ipcMain.handle('preview:listSources', listener('preview:listSources')))
+    install('preview:enrollPrincipal', () => ipcMain.handle('preview:enrollPrincipal', listener('preview:enrollPrincipal')))
+    install('preview:rotatePrincipal', () => ipcMain.handle('preview:rotatePrincipal', listener('preview:rotatePrincipal')))
+    install('preview:releasePack', () => ipcMain.handle('preview:releasePack', listener('preview:releasePack')))
+    install('preview:revokePack', () => ipcMain.handle('preview:revokePack', listener('preview:revokePack')))
+    install('feedback:saveDraft', () => ipcMain.handle('feedback:saveDraft', listener('feedback:saveDraft')))
+    install('feedback:submit', () => ipcMain.handle('feedback:submit', listener('feedback:submit')))
+    install('feedback:reconcile', () => ipcMain.handle('feedback:reconcile', listener('feedback:reconcile')))
+    install('feedback:delete', () => ipcMain.handle('feedback:delete', listener('feedback:delete')))
+    install('feedback:purge', () => ipcMain.handle('feedback:purge', listener('feedback:purge')))
+    install('feedback:repair', () => ipcMain.handle('feedback:repair', listener('feedback:repair')))
+    install('feedback:export', () => ipcMain.handle('feedback:export', listener('feedback:export')))
+    install('feedback:get', () => ipcMain.handle('feedback:get', listener('feedback:get')))
+    install('feedback:list', () => ipcMain.handle('feedback:list', listener('feedback:list')))
     install('safety:confirm', () => ipcMain.handle('safety:confirm', listener('safety:confirm')))
     install('safety:get', () => ipcMain.handle('safety:get', listener('safety:get')))
     install('safety:list', () => ipcMain.handle('safety:list', listener('safety:list')))

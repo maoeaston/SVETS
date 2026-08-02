@@ -2,9 +2,16 @@
 // questionPolicy / scoringPolicy 复用 json-schemas.ts 的 JSON 字段类型，不重复定义。
 // 对应 schema strategy_config 表 + AGENTS.md「单一策略配置源」原则。
 
-import type { QuestionPolicyJson, ScoringPolicyJson } from './json-schemas'
+import type {
+  QuestionPolicyBaseAbility,
+  QuestionPolicyJson,
+  ScoringPolicyJson
+} from './json-schemas'
 
 export type { QuestionPolicyJson, ScoringPolicyJson }
+
+/** strategy_config 当前可由策略管理 API 写入的题目策略版本。 */
+export type StrategyQuestionPolicy = QuestionPolicyJson | QuestionPolicyBaseAbility
 
 // 对应 schema strategy_config.strategy_type CHECK 枚举
 export type StrategyType = 'BASELINE_ASSESSMENT' | 'MOCK_EXAM' | 'TRAINING_PRACTICE' | 'JOB_SKILL_ASSESSMENT'
@@ -67,7 +74,7 @@ export interface StrategyListSuccess {
 
 // --- get / listVersions ---
 export interface StrategyDetail extends StrategySummary {
-  questionPolicy: QuestionPolicyJson
+  questionPolicy: StrategyQuestionPolicy
   scoringPolicy: ScoringPolicyJson
   supportsRedlineHalt: boolean
   allowsEmotionInterrupt: boolean
@@ -100,7 +107,7 @@ export interface StrategyInput {
   conditionalThreshold: number
   moduleVetoThreshold: number
   emotionCollapseThreshold: number
-  questionPolicy: QuestionPolicyJson
+  questionPolicy: StrategyQuestionPolicy
   scoringPolicy: ScoringPolicyJson
   supportsRedlineHalt: boolean
   allowsEmotionInterrupt: boolean
@@ -130,7 +137,7 @@ export interface UpdateStrategyParams {
     conditionalThreshold?: number
     moduleVetoThreshold?: number
     emotionCollapseThreshold?: number
-    questionPolicy?: QuestionPolicyJson
+    questionPolicy?: StrategyQuestionPolicy
     scoringPolicy?: ScoringPolicyJson
     supportsRedlineHalt?: boolean
     allowsEmotionInterrupt?: boolean

@@ -66,6 +66,233 @@ const PREPARE_ONLY_LEGACY_ORACLE_FILES = new Set([
   'src/main/domain/report-service.ts'
 ])
 
+// PREVIEW_CONTRACT_V1 has its own closed IPC and projection inventory. The
+// formal M5B ledger remains a historical boundary and must not absorb those
+// additive preview callsites when the two contracts share the checkout.
+const PREVIEW_CONTRACT_SOURCE_FILES = new Set([
+  'src/main/db/preview-contract-migration.ts',
+  'src/main/domain/authority/bootstrap-trust-chain.ts',
+  'src/main/domain/authority/principal-binding-service.ts',
+  'src/main/domain/feedback-vault/feedback-reconcile-service.ts',
+  'src/main/domain/projectors/principal-binding-projector.ts',
+  'src/main/domain/projectors/preview-event-projection.ts',
+  'src/main/domain/projectors/preview-feedback-projector.ts',
+  'src/main/domain/projectors/preview-release-projector.ts',
+  'src/main/domain/projectors/preview-safety-projector.ts',
+  'src/main/domain/projectors/preview-session-projector.ts'
+])
+
+// This prepare-only BASE_ABILITY v1.2 branch was added after the frozen M5B
+// source delta. Keep it visible to the M5A inventory, but outside the formal
+// M5B historical digest and production-writer reachability gate.
+const POST_M5B_PREPARE_ONLY_FINGERPRINTS = new Set([
+  '3777a352469bfd176aec985ebe1a4d9607f7337bbc52a8a405a0fc631bb95b80'
+])
+
+// School-demo delivery was approved after M5B-15. Keep these exact additions
+// visible as an addendum while preserving the reviewed historical M5B digest.
+// Fingerprints are intentionally exact so changed or undeclared sinks fail the
+// frozen inventory instead of being hidden by a file- or directory-wide rule.
+const POST_M5B_SCHOOL_DEMO_CHANNELS = new Map([
+  ['397b0333d78f02e4e513a5c6e1b4a329c55faf380ef0aaafa03b12e743803e58', 'ACTIVATION_BOUNDARY'],
+  ['d64e73b32bd779f95adb94d26e01a3e6533f55356bf91b54abb205af33c48e93', 'ACTIVATION_BOUNDARY'],
+  ['fa8016f5407ff443af7c87a30c308cf471fa6126667d9b86fe542f4b7920ba6f', 'ACTIVATION_BOUNDARY'],
+  ['6613565742c7ba07be1911da88e4989ea453a06d4ab4d19777ecfbb159f54b28', 'ACTIVATION_BOUNDARY'],
+  ['aab8f3b64047668bc7957ce1db2997bdbf6b4c207f809afdea3ccb8b14f15797', 'QUESTION_BANK_CATALOG_READ']
+])
+
+const POST_M5B_SCHOOL_DEMO_DIRECT_CALLS = new Map([
+  ['13150ef7a5405fbd4b24ad0d27d9d159436fbaf9caa8587bd0df0a7ba9ae72a9', 'SCORING_PLANNING_PROJECTION_SEED'],
+  ['d973c178db362c84b2998858aac98dd0d3cab8bb46cb7752bddb3f1244ed27d4', 'CONTENT_PACK_DOMAIN_SEED'],
+  ['bc022d5bfd55a713b40bc04ea2755826617ee1ae6abda56eb4eeb927730d47c4', 'CONTENT_PACK_DEMO_ACTIVATION'],
+  ['beb557bd3c5164ea0539fbe5dcfd48cea7ddcf6b24795db52b92311fb767545a', 'CONTENT_PACK_DEMO_ACTIVATION'],
+  ['cff15480c706d75a23e634acfe22407fd7adc27667e91edd325e8c01d2f16be8', 'CONTENT_PACK_DEMO_ACTIVATION'],
+  ['077f586a344c1be9ddccd76e7c884e6159c7a668e8416977c4b039b8575fb412', 'TEST_ONLY_PLANNING_CLONE_FK_PARITY'],
+  ['5419cc2b5d5fca801716fb5d376b0b43b8e8735fe67aa522d767bfd1ab6f2528', 'ASSESSMENT_PREPARED_PROJECTOR_REPAIR'],
+  ['dfce231ecf696052564808cb8c2d4db392ee77f2363631220e346190e33f8bd7', 'ASSESSMENT_PREPARED_PROJECTOR_REPAIR'],
+  ['1a7fa7b98e85b46f0052bb9b71a25db0e2bc8d320e0d7dd502def7e7a4ee6b6b', 'ASSESSMENT_PREPARED_PROJECTOR_REPAIR']
+])
+
+const POST_M5B_SCHOOL_DEMO_CAPABILITIES = new Map([
+  ['e5f91ef9baa5e802aad6e5c2f62704ef6e2927cea3c896630eb9d97de5ea1f18', 'ACTIVATION_BOUNDARY_REGISTRATION'],
+  ['965e769afad543d8377a2e75b2df72b9bc61f7c87696eb688ba036f79b8ccc0e', 'QUESTION_BANK_CATALOG_BOUNDARY_REGISTRATION']
+])
+
+const POST_M5B_DIRECT_LINE_ALIASES = new Map([
+  // Assignment replay-fence logic was inserted above this unchanged M5B-15
+  // sink. Preserve the reviewed metadata line without weakening its fingerprint.
+  ['a0d8bd63ef581f2a2a886c9ebb575d5439545d9f29195020f5f4aecd71c04057', 343]
+])
+
+// report-export remains a prepare-only legacy oracle. Its formal-session guard
+// changes the AST snippet, but not the coordinator capability or callsite;
+// retain the frozen M5B identity with a one-way, exact compatibility alias.
+const POST_M5B_CAPABILITY_FINGERPRINT_ALIASES = new Map([
+  [
+    '8d308b2c5525305bd051621c6a3b99ed9eb74a26a4feb73fbd1040513968b9ee',
+    'cb830dc920022085acdcf3ec2dd2abe5f8c86165bd6687a7a5dec10bb60a8d05'
+  ],
+  [
+    // registerCentralIpcHandlers now receives the activation gate. The two new
+    // boundary registrations are tracked above; this preserves the old root.
+    '64803d2cd356bdf08347c3013626084b7b0f843263963efb9355d49d6132c6a4',
+    'a98bc59e718c62f6a1871a68254ef558e917271534c5426b428bb80d28d71442'
+  ]
+])
+
+function isPreviewContractChannel(entry) {
+  return typeof entry.channel === 'string'
+    && (entry.channel.startsWith('preview:') || entry.channel.startsWith('feedback:'))
+}
+
+function registeredAddendum(entries, registry, label) {
+  const matched = entries
+    .filter((entry) => registry.has(entry.fingerprint))
+    .map((entry) => ({ ...entry, target_class: registry.get(entry.fingerprint) }))
+  const matchedFingerprints = new Set(matched.map((entry) => entry.fingerprint))
+  const missing = [...registry.keys()].filter((fingerprint) => !matchedFingerprints.has(fingerprint))
+  if (missing.length > 0) {
+    throw new Error(`[m5b-event-batch] ${label} addendum drift; missing=${missing.join(',')}`)
+  }
+  return matched
+}
+
+function isM5bExcludedCallsite(entry) {
+  if (PREVIEW_CONTRACT_SOURCE_FILES.has(entry.file)) return true
+  if (entry.file === 'src/main/domain/assessment-reducer.ts' && entry.symbol === 'applySessionStartedV2') return true
+  if (entry.file === 'src/main/domain/event-batch/file-capability.ts' && entry.symbol === 'DurableFileCapability.moveNoClobber') return true
+  // The scanner's arrow-function symbol is shared by the M5B and preview
+  // backup helpers; the second occurrence is the preview helper.
+  if (entry.file === 'src/main/db/connection.ts'
+    && (entry.symbol === 'checkpointFull' || entry.symbol === 'vacuumInto')
+    && entry.occurrence > 1) return true
+  if (POST_M5B_PREPARE_ONLY_FINGERPRINTS.has(entry.fingerprint)) return true
+  if (POST_M5B_SCHOOL_DEMO_DIRECT_CALLS.has(entry.fingerprint)) return true
+  if (POST_M5B_SCHOOL_DEMO_CAPABILITIES.has(entry.fingerprint)) return true
+  return false
+}
+
+function formalM5bCheckout(scan) {
+  const schoolDemoAddendum = {
+    channels: registeredAddendum(scan.channels, POST_M5B_SCHOOL_DEMO_CHANNELS, 'school-demo channels'),
+    direct_callsites: registeredAddendum(scan.direct_callsites, POST_M5B_SCHOOL_DEMO_DIRECT_CALLS, 'school-demo direct callsites'),
+    capability_callsites: registeredAddendum(scan.capability_callsites, POST_M5B_SCHOOL_DEMO_CAPABILITIES, 'school-demo capability callsites')
+  }
+  const channels = scan.channels.filter((entry) =>
+    !isPreviewContractChannel(entry)
+    && !POST_M5B_SCHOOL_DEMO_CHANNELS.has(entry.fingerprint))
+  const directCallsites = scan.direct_callsites
+    .filter((entry) => !isM5bExcludedCallsite(entry))
+    .map((entry) => {
+      const frozenLine = POST_M5B_DIRECT_LINE_ALIASES.get(entry.fingerprint)
+      return frozenLine ? { ...entry, line: frozenLine } : entry
+    })
+  const capabilityCallsites = scan.capability_callsites
+    .filter((entry) => !isM5bExcludedCallsite(entry))
+    .map((entry) => {
+      const frozenFingerprint = POST_M5B_CAPABILITY_FINGERPRINT_ALIASES.get(entry.fingerprint)
+      return frozenFingerprint ? { ...entry, fingerprint: frozenFingerprint } : entry
+    })
+  const directFiles = [...new Set(directCallsites.map((entry) => entry.file))].sort()
+  const delegatingRoots = [...new Set(
+    capabilityCallsites
+      .map((entry) => entry.file)
+      .filter((file) => !directFiles.includes(file))
+  )].sort()
+  return {
+    ...scan,
+    channels,
+    direct_callsites: directCallsites,
+    direct_files: directFiles,
+    capability_callsites: capabilityCallsites,
+    delegating_roots: delegatingRoots,
+    post_m5b_school_demo: schoolDemoAddendum
+  }
+}
+
+const FROZEN_M5B_STEP_ORDER = Object.freeze([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 12, 14, 15])
+
+function sortM5bEntries(entries) {
+  return [...entries].sort((left, right) =>
+    String(left.file ?? left.channel).localeCompare(String(right.file ?? right.channel))
+    || Number(left.line ?? 0) - Number(right.line ?? 0)
+    || String(left.kind ?? '').localeCompare(String(right.kind ?? ''))
+    || String(left.fingerprint).localeCompare(String(right.fingerprint))
+  )
+}
+
+function applyM5bDelta(entries, delta, removedKey, addedKey) {
+  const result = new Map(entries.map((entry) => [entry.fingerprint, entry]))
+  for (const entry of delta[removedKey] ?? []) result.delete(entry.fingerprint)
+  for (const entry of delta[addedKey] ?? []) result.set(entry.fingerprint, entry)
+  return [...result.values()]
+}
+
+function buildFrozenM5bHistoricalStates(projectRoot) {
+  const documents = loadM5bInventoryDocuments(projectRoot)
+  const entryMetadata = new Map()
+  const remember = (entries) => {
+    for (const entry of entries) entryMetadata.set(entry.fingerprint, entry)
+  }
+  remember(documents.active.channels)
+  remember(documents.active.direct_callsites)
+  remember(documents.active.capability_callsites)
+  let state = {
+    channels: sortM5bEntries(documents.active.channels),
+    direct_callsites: sortM5bEntries(documents.active.direct_callsites),
+    capability_callsites: sortM5bEntries(documents.active.capability_callsites),
+    direct_files: documents.active.direct_files.map((entry) => entry.path ?? entry).sort(),
+    delegating_roots: documents.active.delegating_roots.map((entry) => entry.path ?? entry).sort()
+  }
+  const states = new Map()
+  for (const step of FROZEN_M5B_STEP_ORDER) {
+    const delta = documents[`step${step}SourceDelta`]
+    remember(delta.channel_removed_source ?? [])
+    remember(delta.channel_added_target ?? [])
+    remember(delta.removed_source ?? [])
+    remember(delta.added_target ?? [])
+    remember(delta.capability_removed_source ?? [])
+    remember(delta.capability_added_target ?? [])
+    state = {
+      channels: sortM5bEntries(applyM5bDelta(state.channels, delta, 'channel_removed_source', 'channel_added_target')),
+      direct_callsites: sortM5bEntries(applyM5bDelta(state.direct_callsites, delta, 'removed_source', 'added_target')),
+      capability_callsites: sortM5bEntries(applyM5bDelta(state.capability_callsites, delta, 'capability_removed_source', 'capability_added_target')),
+      direct_files: [],
+      delegating_roots: [...state.delegating_roots]
+    }
+    state.direct_files = [...new Set(state.direct_callsites.map((entry) => entry.file))].sort()
+    const roots = new Set(state.delegating_roots)
+    for (const entry of delta.delegating_root_removed_source ?? []) roots.delete(entry.path)
+    for (const entry of delta.delegating_root_added_target ?? []) roots.add(entry.path)
+    state.delegating_roots = [...roots].sort()
+    states.set(step, state)
+  }
+  states.entryMetadata = entryMetadata
+  return states
+}
+
+function frozenHistoricalState(scan, historical, fixtures) {
+  const steps = new Set(fixtures.map((fixture) => fixture.step))
+  const targetStep = steps.has('M5B-12') ? 13 : steps.has('M5B-14') ? 12 : steps.has('M5B-15') ? 14 : null
+  if (targetStep === 14 && scan.frozen_m5b_states?.entryMetadata) {
+    const metadata = scan.frozen_m5b_states.entryMetadata
+    const overlay = (entries) => entries.map((entry) => {
+      const frozen = metadata.get(entry.fingerprint)
+      return frozen ? { ...entry, line: frozen.line } : entry
+    })
+    const normalized = {
+      ...historical,
+      channels: overlay(historical.channels),
+      direct_callsites: overlay(historical.direct_callsites),
+      capability_callsites: overlay(historical.capability_callsites)
+    }
+    return { ...normalized, digest: m5aInventoryDigest(normalized) }
+  }
+  const state = targetStep === null ? null : scan.frozen_m5b_states?.get(targetStep)
+  if (!state) return null
+  return { ...state, digest: m5aInventoryDigest(state) }
+}
+
 function readJson(path) {
   return JSON.parse(readFileSync(path, 'utf8'))
 }
@@ -1301,7 +1528,7 @@ export function scanBeforeM5bSourceDeltas(scan, fixtures) {
       delegating_roots: delegatingRoots
     }
   }
-  return { ...historical, digest: m5aInventoryDigest(historical) }
+  return frozenHistoricalState(scan, historical, fixtures) ?? { ...historical, digest: m5aInventoryDigest(historical) }
 }
 
 function validateStep13CheckoutDelta(scan, active, fixtures, step13Fixture, laterFixtures = []) {
@@ -1474,11 +1701,15 @@ function validateStep15CheckoutDelta(scan, active, fixtures, step15Fixture) {
 }
 
 export function scanM5bCheckout(projectRoot) {
-  const scan = scanM5aCheckout(projectRoot)
+  const rawScan = scanM5aCheckout(projectRoot)
+  const scan = formalM5bCheckout(rawScan)
   const productionFiles = scanM5bProductionReachability(projectRoot)
-  const productionCapabilities = scan.capability_callsites.filter((entry) => productionFiles.has(entry.file))
+  // Reachability uses the unfiltered checkout so an addendum can preserve the
+  // historical digest without hiding a newly reintroduced legacy capability.
+  const productionCapabilities = rawScan.capability_callsites.filter((entry) => productionFiles.has(entry.file))
   return {
     ...scan,
+    frozen_m5b_states: buildFrozenM5bHistoricalStates(projectRoot),
     production_reachable_files: [...productionFiles].sort(),
     production_capability_callsites: productionCapabilities.filter((entry) => !PREPARE_ONLY_LEGACY_ORACLE_FILES.has(entry.file)),
     production_prepare_oracle_callsites: productionCapabilities.filter((entry) => PREPARE_ONLY_LEGACY_ORACLE_FILES.has(entry.file)),
@@ -1699,6 +1930,14 @@ export function validateM5bMigration({ scan, step, target = false, ...documents 
         .filter((entry) => PREPARE_ONLY_LEGACY_ORACLE_FILES.has(entry.file))
         .map((entry) => entry.fingerprint)
     )
+    for (const fingerprint of POST_M5B_PREPARE_ONLY_FINGERPRINTS) {
+      allowedOracleFingerprints.add(fingerprint)
+    }
+    for (const [currentFingerprint, frozenFingerprint] of POST_M5B_CAPABILITY_FINGERPRINT_ALIASES) {
+      if (allowedOracleFingerprints.has(frozenFingerprint)) {
+        allowedOracleFingerprints.add(currentFingerprint)
+      }
+    }
     for (const entry of oracleCallsites) {
       if (!allowedOracleFingerprints.has(entry.fingerprint)) {
         throw new M5bInventoryError(`unexpected legacy prepare oracle callsite ${entry.file}:${entry.line}`)

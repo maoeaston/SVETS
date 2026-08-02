@@ -1,33 +1,45 @@
-# 炫灿-职途向导系统 MVP 产品需求文档｜v1.0.9 权威合并版
+# 炫灿-职途向导系统 MVP 产品需求文档｜v1.0.10 权威合并版
 
-产品合同版本：PRD v1.0.9-job-skill-assessment-mvp-closure
+产品合同版本：PRD v1.0.10-job-skill-298-full-preview
 文档形态：Consolidated Authoritative Baseline（单一权威正文）
-当前工程基线：`schema.sql v0.1.17-multi-device-m4-safety-rekey`（M4 Step 2A 为 `ACCEPTED_STEP_2A`）
+当前工程基线：`schema.sql v0.1.18-event-batch-v2.2`（M5B-15 为 `PASS`）
 MVP 功能基线：`schema.sql v0.1.12-job-skill-assessment-mvp-closure`
 产品阶段：MVP
 目标平台：本地化桌面端
 核心岗位样板：超市理货员
 MVP 核心任务：拆箱与上架
-最后更新：2026-07-27
+最后更新：2026-07-31
 
-> 本文是当前唯一活跃的 MVP 产品合同。历史差异版 v1.0.5～v1.0.9 仅用于变更追溯，不再作为新开发的组合阅读入口。
+> 本文是当前唯一活跃的 MVP 产品合同。为避免破坏既有引用，文件路径暂时保留 `MVP_PRD_v1.0.9-authoritative.md`，但正文权威版本已经升级为 v1.0.10；后续会话不得再按“JOB_SKILL 首版仅 24 题”理解当前范围。历史差异版 v1.0.5～v1.0.9 仅用于变更追溯，不再作为新开发的组合阅读入口。
 
 ## 0. 定稿说明
 
+### 0.0 学校演示优先覆盖（2026-08-02）
+
+> [!] 本节是产品负责人在 2026-08-02 确认的最新交付决策；与后文 `PREVIEW_ONLY` 自定义信任锚、签名批准、principal enrollment 或 registry promotion 前置要求冲突时，以本节为准。详细边界和验收见 `doc/features/school-demo-first-online-activation-prd.md`。
+
+1. 预览版与正式版使用同一套应用、业务路由、数据结构和历史数据；差异由应用版本、发布说明、认可状态和题库版本表达，不再建设平行的“预览系统”。
+2. 软件使用权改由可配置服务器地址的普通在线激活控制。当前目标是限制未付费复制安装，不承诺防专业逆向，也不要求学校或项目方生成、保管或移交自定义公私钥。
+3. 学校小范围演示在激活后即可使用现有教师、学生、测评、训练、评分和报告闭环，并可由 TEACHER/ADMIN 只读浏览 298 道 JOB_SKILL 题。
+4. 当前 JOB_SKILL 固定 18+6 题负责跑通正式计分路径；其余岗位题可在教师目录查看但不自动进入学生作答。新安装自动带入当前 96+298 内容包，且不得覆盖已有题库数据。
+5. `PREVIEW_CONTRACT_V1` 及其 principal、签名发布、readiness registry 和反馈投影作为历史兼容/实验能力保留，但不得再阻断教师题库目录、固定 18+6 演示或主业务入口。
+6. 本覆盖不改变安全红线、事件批次、角色权限、结果分离、报告语义或 placement advice 关闭状态；未完成专业审核的内容不得借软件激活自动升级为正式可作答题。
+
 ### 0.1 权威性与合并口径
 
-本文将 v1.0.5 完整正文与 v1.0.6、v1.0.7、v1.0.8、v1.0.9 的全部有效替换和增补物化为一份可独立阅读的产品合同。发生冲突时，以后版本规则覆盖前版本规则；其中 v1.0.9 已废止 v1.0.8 关于“JOB_SPECIFIC 只做静态治理、不进入 MVP 运行时”的限制。
+本文将 v1.0.5 完整正文与 v1.0.6、v1.0.7、v1.0.8、v1.0.9、v1.0.10 的全部有效替换和增补物化为一份可独立阅读的产品合同。发生冲突时，以后版本规则覆盖前版本规则；其中 v1.0.9 已废止 v1.0.8 关于“JOB_SPECIFIC 只做静态治理、不进入 MVP 运行时”的限制，v1.0.10 进一步废止“298 题全库浏览与系统预设题包一律属于 Post-MVP”以及“24 题是 JOB_SKILL 首发内容上限”的限制。
 
-当前 MVP 同时包含两条互相隔离的测评路径：
+当前 MVP 同时包含两条互相隔离的正式测评路径和一条不产出正式分数的学校预览路径：
 
 1. `BASE_ABILITY`：基础能力测评 42+8，满分 100，生成 `ABILITY_SCORE`。
 2. `JOB_SPECIFIC`：专业岗位固定示范卷 18+6，可选 0～3 个不计分观察项，满分 48，生成 `JOB_SKILL_SCORE`。
+3. `JOB_SPECIFIC / PREVIEW_ONLY`：298 题全量进入教师可见预览库，按系统预设、不可变、版本化题包逐批开放；只形成“本题包作答情况”和学校反馈，不生成 `JOB_SKILL_SCORE`、岗位等级或就业安置建议。
 
 本文描述产品与数据合同；数据库 DDL 的唯一事实源是 `src/main/db/schema.sql`，JSON 与事件类型的唯一事实源分别是 `src/shared/types/json-schemas.ts` 和 `src/shared/types/event-payloads.ts`。若三者不一致，必须标记 `[!]` 并通过产品决策修正文档或实现，不得静默选择。
 
 ### 0.2 已固化的 MVP 默认值
 
-以下曾在差异版中标记为“需确认”的值，已经由 schema、实现和测试固化为当前 MVP 合同：
+以下值已经由当前产品决策、运行时权威或既有实现固化为 MVP 合同；尚未实现的 v1.0.10 条目在 §11.2 明确标记，不得把目标状态误写成已交付：
 
 - 专业岗位固定示范卷：线上 18 题 + 线下 6 题；观察项 0～3 个且不计分。
 - 专业岗位等级阈值：胜任 80，有条件胜任 60。
@@ -35,6 +47,11 @@ MVP 核心任务：拆箱与上架
 - 专业岗位 session 的 `task_code`：`JOB_SKILL_DEMO_M1M6`。
 - “拆箱与上架”训练任务编码：`UNBOXING_AND_SHELVING`。
 - 专业岗位模块低分只生成训练重点，不覆盖总等级；安全红线仍具有最高优先级。
+- JOB_SKILL 当前题库总量：298 题；M1-M6 分别为 48/41/58/48/55/48，题型为 96 道单选、68 道判断、34 道拖拽和 100 道线下题。
+- 100 道线下题的当前权威用途为 99 道 `SCORED_ITEM + OFFLINE_RUBRIC`、1 道 `OBSERVATION_ONLY + TEACHER_OBSERVATION`（`M1_OB_048_V3`）。`M5_OP_048_V4` 与 `M5_OP_055_V3` 的替代版本已经完成审核，按计分实操题管理；旧版本的观察语义只保留历史追溯价值。
+- 298 题先以 `DRAFT` 非破坏性进入预览内容库并对教师全库可见；`DRAFT` 不等于学生可作答，也不等于正式发布。
+- 预览交付按逐题门禁和不可变题包版本推进。缺素材、当前版本复核、rubric、renderer 或安全证据只阻断相关题目及包含它的题包，不阻断其他题目浏览或其他已就绪题包。
+- AI 辅助素材生产与学校预览并行；只有经过机器校验和人类审核批准的资产才可投影为 `ACTIVE` 并用于学生 session。
 - BASE_ABILITY 42+8 采用受控 Pilot 发布顺序：内容、专业与技术门禁先通过；独立 Pilot 激活批准后，仅将获批 50 题转为 `ACTIVE`；随后才能执行真实课堂试测；课堂试测证据只门禁正式分数解释与发布，不反向作为首次 Pilot 激活前置条件。
 
 ### 0.3 仍开放但不阻断当前 MVP 的专业决策
@@ -43,11 +60,11 @@ MVP 核心任务：拆箱与上架
 
 1. 预埋差错、干扰和隐蔽观察的事后告知伦理流程。当前字段可记录 `post_disclosure_status`，但不作为 ACTIVE、保存或报告门禁。
 2. `M1_TF_015` 答案键专业核验。裁决前保持 DRAFT，不得进入固定示范卷。
-3. 角色扮演逐题 rubric、支架题拆分、门店/文职配对、549 初始池疑错题和后续全量题库运营规则。这些属于内容治理或 Post-MVP，不得阻断当前固定示范卷。
+3. 角色扮演逐题 rubric、支架题拆分、门店/文职配对和 549 初始池疑错题属于后续内容治理；其未完成不得阻断当前固定示范卷，也不得阻断不涉及这些缺口的预览题包。
 
 ### 0.4 MVP 边界
 
-MVP 必须完成学生建档、基础能力测评、专业岗位示范测评、结构化训练、教师线下评分、安全红线、结果投影和报告闭环。MVP 不实现 298 题随机组卷、完整题库后台、多套或自定义试卷、岗位安置矩阵、AI 自动出题、PDF 报告渲染、ORM 或 CSV 解析库。
+MVP 必须完成学生建档、基础能力测评、专业岗位示范测评、JOB_SKILL 298 题教师全库预览、系统预设题包逐批开放、学校结构化反馈、结构化训练、教师线下评分、安全红线、结果投影和报告闭环。MVP 不实现 298 题随机组卷、教师自由组卷或编辑试卷、298 题正式综合计分、岗位安置矩阵、AI 自动出题或自动批准素材、PDF 报告渲染、ORM 或 CSV 解析库。
 
 ## 1. 项目背景与目标
 
@@ -90,6 +107,8 @@ MVP 成功不以功能数量多为标准，而以以下闭环是否稳定跑通�
 - 教师能够完成线下实操评分。
 - 系统能够生成基础任务闭环三类结果和独立的专业岗位测评结果。
 - 系统能够生成任务报告快照。
+- 教师能够浏览 298/298 道 JOB_SKILL 当前题目，并清楚区分“仅目录可见”和“可进入预览题包”。
+- 学校能够使用已就绪的系统预设题包并导出结构化反馈；未完成素材不再成为全库浏览和其他题包的总开关。
 - 安全红线、异常中断、资源缺失、数据写入失败等关键异常能够被阻断、记录和恢复。
 
 ---
@@ -98,7 +117,7 @@ MVP 成功不以功能数量多为标准，而以以下闭环是否稳定跑通�
 
 ### 2.1 MVP 范围
 
-MVP 覆盖一个岗位、一个训练任务、两条测评路径和一个可追溯教学闭环。
+MVP 覆盖一个岗位、一个训练任务、两条正式测评路径、一条学校预览路径和一个可追溯教学闭环。
 
 岗位：
 
@@ -118,17 +137,19 @@ MVP 覆盖一个岗位、一个训练任务、两条测评路径和一个可追�
 
 1. 基础能力测评：BASE_ABILITY 42+8，生成 `ABILITY_SCORE`。
 2. 专业岗位示范测评：JOB_SPECIFIC 固定 18+6，可选 0～3 个观察项，生成 `JOB_SKILL_SCORE` 和 M1-M6 岗位模块画像。
+3. 专业岗位全量预览：JOB_SPECIFIC 298 题教师全库可见，按 `PREVIEW_ONLY` 系统预设题包逐批开放，只生成本题包作答情况与学校反馈，不生成正式结果。
 
 核心闭环：
 
 1. 学生建档。
-2. 教师按教学目的发起基础能力测评或专业岗位示范测评；两者互相隔离，不要求强制串行。
+2. 教师按教学目的发起基础能力测评、专业岗位正式示范测评或已发布的专业岗位预览题包；三条路径没有业务前置顺序，但同一 `student_id + job_code + task_code` 的正式 JOB_SKILL 与 PREVIEW_ONLY 会话不得同时开放，任一路径的未解决安全事件都会阻断另一条路径。
 3. 系统生成对应结果与报告，并以固定规则给出训练重点。
 4. M2 低分可链接到现有“拆箱与上架”四步训练；其他模块只显示后续训练建议。
 5. 学生完成看、学、练、做训练。
 6. 教师完成任务实操评分。
 7. 系统生成训练完成度、实操达标率和任务报告快照。
 8. 全流程记录异常、安全红线、策略版本、题目/素材版本和领域事件。
+9. 教师浏览 298 题目录、按成熟度选择系统预设题包，并将逐题问题导出为学校反馈包。
 
 结果投影：
 
@@ -137,14 +158,16 @@ MVP 覆盖一个岗位、一个训练任务、两条测评路径和一个可追�
 - 训练完成度 `TRAINING_COMPLETION`
 - 实操达标率 `OPERATION_PASS_RATE`
 
-核心工程能力包括轻量事件溯源、SQLite 查询投影、事件驱动状态机、学生任务级安全红线、异常中心、报告快照、本地资源完整性校验、题库域隔离和策略版本锁定。
+`PREVIEW_ONLY` 不增加第五类正式结果投影。其题包内完成情况、逐题响应、线下评分、支持使用、技术中断和安全事实属于预览过程与反馈证据，不能写成上述四类结果。
+
+核心工程能力包括轻量事件溯源、SQLite 查询投影、事件驱动状态机、学生-岗位-任务级安全红线、异常中心、报告快照、本地资源完整性校验、题库域隔离和策略版本锁定。
 
 ### 2.2 MVP 非范围
 
 以下内容不进入 MVP 主流程：
 
 - 完整理货员岗位训练体系。
-- 完整 6 大维度全量测评体系。
+- 将 298 题解释为一个正式的 6 模块全量综合测评体系。
 - 公共标准模拟卷 1 / 2 / 3 的完整试卷管理。
 - 教师自定义岗位试卷库。
 - 自定义专项综合卷库。
@@ -195,8 +218,7 @@ MVP 可以在数据模型中保留扩展能力，但前端不开放这些复杂�
 - 4 大专项岗位技能训练模块。
 - 专项岗位技能综合测评。
 - 分项模块小测试。
-- 教师端模拟题库与组卷管理。
-- 全量总题库浏览。
+- 教师端自由组卷、编辑试卷和模拟题库运营后台。
 - 导出整套试卷 + 教具清单 PDF。
 - 教具使用说明书 PDF 在线预览与打印。
 - 我的训练成果完整勋章体系与综合汇总页。
@@ -256,15 +278,28 @@ MVP 固定示范卷采用以下已固化题量：
 
 ---
 
+#### 2.5.1 专业岗位 298 题全量预览规格
+
+1. 当前版本总量固定为 298 题，模块分布 M1-M6 为 48/41/58/48/55/48。
+2. 题型分布固定为 96 道 `SINGLE_CHOICE`、68 道 `TRUE_FALSE`、34 道 `DRAG` 和 100 道 `OFFLINE_OPERATION`。
+3. 当前用途分布固定为 297 道 `SCORED_ITEM` 和 1 道 `OBSERVATION_ONLY`；其中线下为 99 道计分实操题和 1 道教师观察题。
+4. 298 题全部先进入教师可见预览目录；学生只能进入发布时全部题目均就绪的系统预设题包。
+5. 单个预览 session 不承载 298 题。题包按 M1-M6、线上/线下和交付批次拆分，并随 strategy version 冻结。
+6. 预览题包不固定 18+6、满分 48 或岗位等级阈值；题量来自不可变题包合同，完成后不写正式 `result_record`。
+7. 24 道 Pilot 只作为历史复核批次和正式 18+6 候选来源，不是全量预览版的内容上限或总门禁。
+
+---
+
 ### 2.6 后续版本边界
 
-MVP 只验证“一个岗位任务的教学闭环是否成立”。
+MVP 同时验证“一个岗位任务的教学闭环是否成立”和“学校能否基于完整审核题库开展分批预览与反馈”。
 
 后续版本可以逐步扩展：
 
 - 从一个任务扩展到理货员完整岗位任务包。
 - 从单一基础能力评估策略扩展到多套标准化模拟卷（公共卷 1 / 2 / 3、教师自定义卷），题量与分值结构必须通过新策略版本明确。
 - 从 `strategy_config.question_policy_json` 扩展到正式 `assessment_paper / assessment_paper_question` 试卷模型。
+- 将 298 题预览数据经独立测量学评审升级为正式全量计分、模块测评或跨题包可比较结果。
 - 从理货员扩展到其他岗位，例如文件整理、后勤辅助、手工包装、AI 数据标注辅助等。
 - 从教师单点评分扩展到多评价人复核。
 - 从本地单机扩展到局域网或私有化部署。
@@ -319,6 +354,8 @@ MVP 只验证“一个岗位任务的教学闭环是否成立”。
 - 查看教学相关异常。
 - 生成、导出、锁定任务报告。
 - 发起复评或重训。
+- 浏览 JOB_SKILL 298 题完整预览目录、查看逐题交付状态和稳定阻断原因。
+- 分配系统已发布的 `PREVIEW_ONLY` 题包，并导出学校反馈 HTML/JSON/Markdown 留档。
 
 教师不可执行操作：
 
@@ -330,7 +367,9 @@ MVP 只验证“一个岗位任务的教学闭环是否成立”。
 - 将 `PENDING_DETAIL` 安全事件直接标记为 `RESOLVED`。
 - 将 `PENDING_DETAIL` 安全事件标记为 `VOIDED`。
 - 将 `CONFIRMED` 安全事件标记为 `RESOLVED` 或 `VOIDED`。
-- 绕过管理员复盘直接解除同一学生同一任务的新会话阻断。
+- 绕过管理员复盘直接解除同一学生、同一岗位、同一任务的新会话阻断。
+- 将仅目录可见题目临时加入学生 session，或把预览作答情况解释为正式岗位等级。
+- 批准 AI 候选素材、直接修改题目/资产状态或覆盖历史题包版本。
 
 ### 3.3 管理员 ADMIN
 
@@ -344,6 +383,8 @@ MVP 只验证“一个岗位任务的教学闭环是否成立”。
 - 维护策略配置。
 - 查看系统级异常。
 - 执行资源完整性检查。
+- 校验并导入显式版本的 298 题预览内容包、批准资产批次和系统预设题包。
+- 停用有缺陷的预览题包版本，保留历史 session 与版本证据。
 - 执行本地备份与恢复。
 - 查看 schema 与版本信息。
 - 将 `PENDING_DETAIL` 安全事件标记为 `VOIDED`。
@@ -362,11 +403,11 @@ MVP 只验证“一个岗位任务的教学闭环是否成立”。
 
 安全红线事件实行两级处理机制：教师负责触发与事实确认，管理员负责解除安全阻断。
 
-教师端拥有安全红线触发权与事实确认权。教师发现危险行为后，可立即触发红线。系统自动创建学生任务级 `safety_incident`，并批量熔断同一 `student_id + task_code` 下所有开放态 `assessment_session` 与 `training_session`。红线触发后，`safety_incident` 初始状态为 `PENDING_DETAIL`。教师随后补充发生环节、原因代码、事件说明，并可将事件从 `PENDING_DETAIL` 推进至 `CONFIRMED`。
+教师端拥有安全红线触发权与事实确认权。教师发现危险行为后，可立即触发红线。系统自动创建学生-岗位-任务级 `safety_incident`，并批量熔断同一 `student_id + job_code + task_code` 下所有开放态 `assessment_session` 与 `training_session`。红线触发后，`safety_incident` 初始状态为 `PENDING_DETAIL`。教师随后补充发生环节、原因代码、事件说明，并可将事件从 `PENDING_DETAIL` 推进至 `CONFIRMED`。
 
-管理员端拥有安全阻断解除权。任何 `PENDING_DETAIL` / `CONFIRMED` 状态的 `safety_incident` 都会阻断同一学生同一任务的新测评或训练会话。只有管理员将事件标记为 `RESOLVED` 或 `VOIDED` 后，系统才允许继续发起新的会话。
+管理员端拥有安全阻断解除权。任何 `PENDING_DETAIL` / `CONFIRMED` 状态的 `safety_incident` 都会阻断同一学生、同一岗位、同一任务的新测评或训练会话。只有管理员将事件标记为 `RESOLVED` 或 `VOIDED` 后，系统才允许继续发起新的会话。
 
-`RESOLVED` 表示安全事件属实，已经完成复盘并采取补救措施，允许重新发起同一学生同一任务的新会话。
+`RESOLVED` 表示安全事件属实，已经完成复盘并采取补救措施，允许重新发起同一学生、同一岗位、同一任务的新会话。
 
 `VOIDED` 表示安全事件被管理员作废或被替代，但必须通过 `void_reason` 明确作废原因。系统不得将所有 `VOIDED` 一律解释为“误报”。
 
@@ -391,7 +432,7 @@ MVP 阶段只开放学生端、教师端、管理员维护入口。
 
 ### 4.1 MVP 主流程
 
-MVP 提供两条独立测评入口，并共同衔接到现有训练任务：
+MVP 提供两条独立正式测评入口和一条学校预览入口；只有正式测评按既有合同生成结果：
 
 ```text
 学生建档
@@ -401,6 +442,13 @@ MVP 提供两条独立测评入口，并共同衔接到现有训练任务：
    └─ JOB_SKILL_SCORE + M1-M6 岗位画像 + 固定规则训练重点
       └─ M2 低分可链接“拆箱与上架”训练
 
+专业岗位 298 题预览目录（教师全库可见）
+→ 逐题就绪状态
+→ 系统预设、不可变题包
+→ 学生作答 / 教师线下评分 / 安全事实
+→ 本题包作答情况 + 学校结构化反馈
+→ 不生成 JOB_SKILL_SCORE、岗位等级或就业安置建议
+
 拆箱与上架四步训练
 → TRAINING_COMPLETION
 → 教师任务实操评分
@@ -408,7 +456,7 @@ MVP 提供两条独立测评入口，并共同衔接到现有训练任务：
 → 任务报告快照
 ```
 
-基础能力和专业岗位测评均复用 assessment session、坐次暂停恢复、安全红线和事件审计机制，但使用不同的题库域、策略、计分分母、结果类型和报告 scope。任何一条路径都不得读取另一题库域的题目或把结果混算成单一总分。
+基础能力、专业岗位正式示范测评和专业岗位预览题包均复用 assessment session、坐次暂停恢复、安全红线和事件审计机制，但使用不同的题库域、策略用途、计分边界和输出语义。任何路径都不得读取另一题库域的题目或把结果混算成单一总分；预览题包尤其不得进入正式结果与报告投影。
 
 ### 4.2 教师端流程
 
@@ -431,6 +479,8 @@ MVP 提供两条独立测评入口，并共同衔接到现有训练任务：
 15. 生成任务报告。
 16. 导出报告。
 17. 锁定报告。
+
+学校预览流程可以从第 3 步进入 JOB_SKILL 全量目录：筛选并查看题目状态，选择系统已发布题包，完成分配、作答、线下评分和安全处置后导出反馈包。教师不能在此流程中自由改卷，也不能把预览汇总转为正式岗位报告。
 
 ### 4.3 学生端流程
 
@@ -483,7 +533,7 @@ MVP 提供两条独立测评入口，并共同衔接到现有训练任务：
 系统必须立即执行红线流程：
 
 - 创建 `safety_incident`。
-- 批量熔断同一学生同一任务下所有开放会话。
+- 批量熔断同一学生、同一岗位、同一任务下所有开放会话。
 - 将相关 session 置为 `REDLINE_HALTED`。
 - 后续再由教师补充 `context_phase`、`reason_code` 和说明。
 
@@ -634,7 +684,7 @@ Post-MVP 可扩展 `TRAINING_ONLY / FINAL_EXAM_ONLY / PRACTICE_VARIANT`；当前
 观察用途补充规则：
 
 - `OBSERVATION_ONLY` 允许两种交互：`SYSTEM_DERIVED_OBSERVATION`（从软件任务事件派生指标）与 `TEACHER_OBSERVATION`（线下嵌入观察，教师现场编码）。
-- 3 条嵌入观察项（`M1_OB_048`、`M5_OB_048`、`M5_OB_055`）为 TEACHER_OBSERVATION 通道的当前示例：重导时必须从 OFFLINE_OPERATION 修正为 `item_usage = OBSERVATION_ONLY` + `interaction_type = TEACHER_OBSERVATION` + `scoring_type = NO_SCORE`，其现存"RUBRIC_BASED max_score=2"评分规则作废。
+- 当前 298 题权威中只有 `M1_OB_048_V3` 为 `OBSERVATION_ONLY + TEACHER_OBSERVATION + NO_SCORE`。历史来源中的 `M5_OP_048`、`M5_OP_055` 曾被解释为观察项，但其当前替代版本 `M5_OP_048_V4`、`M5_OP_055_V3` 已完成审核并采用 `SCORED_ITEM + OFFLINE_RUBRIC`；不得再按旧语义重导或验收。
 
 #### 5.3.3 interaction_type
 
@@ -1173,23 +1223,31 @@ JOB_SPECIFIC
 → report_scope = JOB_SKILL 专业岗位报告
 → 基于固定规则的训练重点建议
 → 不复用基础能力模块兜底；不输出就业安置结论
-→ 298 题全量运营、随机组卷进入 Post-MVP
+
+JOB_SPECIFIC / PREVIEW_ONLY
+→ 298 题教师全库目录（DRAFT 也可见）
+→ 逐题内容、答案/rubric、素材、renderer、安全和版本证据门禁
+→ 系统预设、不可变、版本化题包
+→ 本题包作答情况 + 学校结构化反馈
+→ 不写 result_record；不生成 JOB_SKILL_SCORE、模块综合画像或就业安置结论
+
+JOB_SPECIFIC 随机组卷、教师自由组卷和 298 题正式综合计分仍进入 Post-MVP
 ```
 
 ##### 5.3.10.5 M1-M6 旧库重导规则
 
 1. 重导后 298 条全部默认 DRAFT，**不得沿用旧 ACTIVE 状态**（现库 295 条 ACTIVE 视为 v0.1.10 历史遗留错误状态）。
-2. 逐题通过答案键审核（`answer_key_verified`）、素材审核、rubric 三档锚点审核后方可进入 ACTIVE 门禁流程。
-3. 安全题（safety_sensitive 26 条）、角色扮演题（5 条）、嵌入观察题（3 条）必须通过专业审核（`professional_review`）。
+2. 逐题通过答案键审核（`answer_key_verified`）、素材审核、rubric 三档锚点审核后方可进入学生可运行的 ACTIVE 门禁流程；这些缺口不阻断教师目录读取 DRAFT 题。
+3. 安全题（safety_sensitive 26 条）、角色扮演题（5 条）和当前嵌入观察题（1 条）必须通过专业审核（`professional_review`）。
 4. 无素材、无三档 rubric、答案存疑（含 `M1_TF_015`）、交互未实现的题不得转 ACTIVE。
 5. 数据清洗强制项：
    - `ability_tags` 含 `"0"` 或 `"1"` → 导入失败（修复后重试）。
    - `note` 存储状态值 → 数据质量告警并清洗。
    - `RUBRIC_BASED` / `DRAG_PARTIAL` → 按 §5.3.7 迁移，原值不得入库。
-   - 3 条嵌入观察 → 按 §5.3.2 修正为 OBSERVATION_ONLY + TEACHER_OBSERVATION + NO_SCORE。
+   - 当前 1 条嵌入观察 `M1_OB_048_V3` → 按 §5.3.2 保持 OBSERVATION_ONLY + TEACHER_OBSERVATION + NO_SCORE；`M5_OP_048_V4`、`M5_OP_055_V3` 保持计分实操语义。
    - `supermarket_stocking` → `SUPERMARKET_SHELVER` + `source.legacy_job_code`。
 6. 导入 dry-run 必须输出：
-   - 模块×题型对账矩阵（必须与 §0.2 实测一致：96/68/34/97/3）。
+   - 模块×题型与用途对账矩阵（必须与 §0.2 实测一致：96 单选 / 68 判断 / 34 拖拽 / 99 计分实操 / 1 观察）。
    - 单选与判断题答案位置/方向分布（含 C 位偏置统计）。
    - 素材缺口清单（media_brief 有值但无资产逐条列出）。
    - 非法字段清洗报告（ability_tags、note、命名迁移、job_code）。
@@ -1241,7 +1299,7 @@ JOB_SPECIFIC
 4. 中断后的恢复方式、预埋差错检出、是否报告、是否需提示等属于观察指标，不得直接等同成绩（沿用 §16.6.7 与工程约束第 46 条精神）。
 5. INTERRUPTION / DISTRACTION / PLANTED_ERROR / VIGILANCE / ROLE_PLAY 仅允许用于 OFFLINE_OPERATION 或 OBSERVATION_ONLY 条目；TIME_LIMITED 可用于线上 SOFTWARE_TASK（此时时限由 scoring_rule 显式定义为目标构念）。
 
-当前 MVP 必须提供固定示范卷所需的专业岗位施测 UI、数据合同、validator、导入和存储；不实现 298 题全量运营后台。
+当前 MVP 必须提供固定示范卷和系统预设预览题包所需的专业岗位施测 UI、数据合同、validator、导入和存储，并提供 298 题教师只读目录与反馈入口；不实现教师自由组卷、试卷编辑或 298 题正式综合计分后台。
 
 #### 5.3.12 平行/配对关系 variant_group_id + variant_role
 
@@ -1268,7 +1326,7 @@ MVP `variant_role` 允许值：
 
 ---
 
-#### 5.3.13 固定示范卷与 question_policy FIXED_SET
+#### 5.3.13 固定示范卷、预览题包与 question_policy FIXED_SET
 
 本版不新增 `assessment_paper` 表。固定题集保存在 JOB_SKILL_ASSESSMENT 策略的 `strategy_config.question_policy_json`：
 
@@ -1291,28 +1349,59 @@ MVP `variant_role` 允许值：
 }
 ```
 
-规则：
+正式示范卷规则：
 
 1. `fixed_scored_question_ids`（24 个）与 `embedded_observation_question_ids`（0-3 个）随 strategy version 冻结；同一 version 不得原地修改固定题集，调整必须新增 strategy version。
-2. session 创建时校验：固定题全部存在、status = ACTIVE、bank_domain = JOB_SPECIFIC、item_usage 与列表用途一致、模块配额满足、素材齐全、renderer 已注册；任一不满足 → 发起测评失败（返回明确原因码），不得临时从 DRAFT 题中随机补题。
+2. session 创建时校验：固定题全部存在、status = ACTIVE、bank_domain = JOB_SPECIFIC、item_usage 与列表用途一致、模块配额满足、素材齐全、renderer 已注册，并且当前正式 strategy/题集精确绑定的 Phase 4/正式发布批准仍可验证；任一不满足 → 发起测评失败（返回明确原因码），不得临时从 DRAFT 题中随机补题。题目因 PREVIEW_ONLY 批准成为 ACTIVE 不能替代正式发布授权，缺失时返回 `FORMAL_RELEASE_AUTHORITY_MISSING`。
 3. 不得为凑题量降低素材、rubric 或答案审核标准（沿用工程约束第 56 条精神）。
 4. 基础能力策略的 question-policy-v1.2 继续使用 §7.6.1 结构（`eligible_bank_domains: ["BASE_ABILITY"]`、`selection_mode` 缺省为随机组卷）；validator 按 `selection_mode` 分支校验。
-5. 观察项 ID 必须满足 `item_usage = OBSERVATION_ONLY` 且 `interaction_type = TEACHER_OBSERVATION`；候选为 3 条嵌入观察（M1_OB_048、M5_OB_048、M5_OB_055）；只有通过内容、专业与素材门禁的观察项才可进入当前策略版本。
+5. 观察项 ID 必须满足 `item_usage = OBSERVATION_ONLY` 且 `interaction_type = TEACHER_OBSERVATION`；当前 298 题权威中的候选只有 `M1_OB_048_V3`。只有通过内容、专业与素材门禁的观察项才可进入当前策略版本；0～3 是策略容量，不表示当前必须存在 3 项。
 
-#### 5.3.14 固定示范卷素材范围
+预览题包继续复用 `FIXED_SET` 思路，但必须与正式示范卷显式隔离：
 
-MVP 不要求完成 298 题全部素材，只需完成：
+1. v1.0.10 以后新建的 question policy 使用版本化判别联合，并显式声明 `delivery_mode = FORMAL_DEMO | PREVIEW_ONLY`。PREVIEW_ONLY 还必须声明题包 ID/version、固定计分题 ID 和固定观察题 ID；具体 schema version 由实现计划同步共享类型与 validator，不能只靠命名约定判断。
+2. 题包只能包含发布时已经通过当前版本内容、答案或 rubric、专业、安全、renderer、required asset 和合同校验的 JOB_SPECIFIC 题。
+3. 题包按 M1-M6、线上/线下和交付批次拆分，单个 session 不得临时拼入 298 题全集，也不得设置 24 题总量上限。
+4. 题目 ID/version、资产 ID/hash、renderer 版本、策略 ID/version 和可用性证据随题包版本冻结；任一 session 引用后不得原地修改。
+5. 缺口题只保持教师目录可见，不得进入新题包；不得因为其他题目或 270 项资产中无关项未完成而阻断已就绪题包。
+6. 预览题包不使用正式 18+6 的满分 48、等级阈值或结果合同；session 完成只形成题包内过程汇总和反馈。
+7. 兼容旧正式策略时，只有列入版本化兼容注册表的既有 strategy_id/version 可以在缺少 `delivery_mode` 时解释为 `FORMAL_DEMO`；不得根据题量、max_score、task_code、名称或 fixed IDs 猜测。任何新策略缺少 delivery_mode、值拼写错误或未知值都必须失败关闭。
+8. 预览题包至少包含 1 道 SCORED_ITEM。当前唯一 OBSERVATION_ONLY 题只能嵌入含计分题的题包，不得独立成包；这保证现有 `strategy_config.max_score > 0` 合同不被绕过。
+9. delivery mode 解析顺序与错误码固定为：字段存在时按判别联合校验；缺字段且 strategy_id/version 精确命中冻结兼容注册表时解释为 FORMAL_DEMO；v1.0.10+ 新 policy 缺字段返回 `QUESTION_POLICY_DELIVERY_MODE_MISSING`；其他缺字段返回 `QUESTION_POLICY_LEGACY_COMPATIBILITY_DENIED`；拼写错误或未知值返回 `QUESTION_POLICY_DELIVERY_MODE_UNKNOWN`。validator 不得读取题量、task_code、名称、max_score 或 fixed IDs 推断。
+
+#### 5.3.14 固定示范卷与全量预览素材范围
+
+固定 18+6 正式示范卷在发起前必须完成：
 
 1. 固定 18 道线上题的全部素材（场景图/选项图/视频）。
 2. 固定 6 道线下题的标准材料清单与逐题 rubric。
-3. 0-3 个教师观察项的施测脚本（标准动作、台词、编码卡）。
+3. 当前策略实际包含的 0-3 个教师观察项的施测脚本（标准动作、台词、编码卡）。
 4. **至少 1 个特色施测变体**，优先从预埋差错、角色扮演、中断恢复中选择（administration 合同按 §5.3.11 执行）。
+
+全量预览版同步推进 270 项素材生产，但不把 270 项全部批准设为全库浏览或首批题包的总门槛：
+
+1. 直接阻断题目作答的刺激素材优先生产；线下交付材料、共享参考和 UI 资产按依赖批次推进。
+2. AI 只生成候选资产和机器预审信息；人类视觉、职业、特教、安全与测评审核通过后，资产才能进入 `asset_resource.status = ACTIVE`。
+3. 每项候选资产必须按 `doc/features/question-bank-resources-prd.md` 和 `doc/assets/asset-manifest.json` 保存可追溯来源、生成模型或制作方式、许可和版权审核结论。`rights.commercial_use_cleared` 不是 `true` 时必须以 `ASSET_COMMERCIAL_USE_NOT_CLEARED` 失败关闭，不得批准、投影为 ACTIVE 或解锁题目。
+4. 每个批准批次只重算受影响题目的交付状态，并通过新题目版本或新题包版本补绑；不得改变已被 session 引用的题目或资产。
+5. 题目不依赖数字素材且其他门禁通过时，可以先成为 `PREVIEW_RELEASE_CANDIDATE` 并进入题包发布候选；缺素材只阻断依赖它的题目和题包。
+
+##### 5.3.14.1 PREVIEW_ONLY 逐题激活与题包原子发布
+
+1. 当前版本通过内容、答案或 rubric、专业/安全、renderer、required asset、商用授权和合同门禁但尚未绑定 PREVIEW_ONLY 发布批准时，状态为 `PREVIEW_RELEASE_CANDIDATE`；库内状态可为 DRAFT，也可因正式发布或其他授权来源已经 ACTIVE。只有题目为 ACTIVE 且绑定至少一个有效 `JOB_SKILL_PREVIEW_ONLY` 批准及已发布 PREVIEW_ONLY 题包后，才是 `PREVIEW_READY`。共享 ACTIVE 只说明至少一条运行授权链成立，不证明正式与预览均获授权。
+2. 每个新题包版本必须同时有不可变 `job-skill-preview-pack-release-responsibility-manifest-v1` 和 `job-skill-preview-pack-release-approval-v1`，两者均由安装版完整性固定的产品负责人 Ed25519 信任根直接验签。责任清单绑定 pack ID/version、批准签发人 principal_id、计划执行发布的 `user_account.user_id ↔ principal_id` 唯一映射和责任范围；批准 `scope = JOB_SKILL_PREVIEW_ONLY`，至少绑定责任清单 ID/hash、pack ID/version、delivery mode、job code、精确 question ID/version/semantic hash、asset ID/hash、renderer registry hash、内容/答案或 rubric/专业/安全审核证据 ID/hash、门禁结果 hash、签发人 principal_id、issued/effective/expires 时间和 payload hash；两者必须满足 `issued_at <= effective_at < expires_at` 且有效期不超过 30 天。
+3. 批准只授权该精确题包必要的 DRAFT→ACTIVE、PREVIEW_ONLY 授权引用与发布；题目已经由正式链或其他有效来源转为 ACTIVE 时，不得重写状态，但仍必须写入并复验当前 PREVIEW_ONLY 授权引用。该批准不授权正式 18+6、JOB_SKILL_SCORE、其他题目/版本或后续题包。批准必须在执行时有效；到期不回写已发布历史，但阻断未完成发布和以该批准创建新题包。
+4. ADMIN 只能在可信认证上下文中执行机器验签通过的批准。Electron 从当前 sender 绑定且仍 ACTIVE 的 auth_session 取得 `user_id`；独立 CLI 在目标库交互验证 ACTIVE ADMIN 并创建仅限本进程的认证上下文。系统再按已签名责任清单把该 `user_id` 机械映射为 executor principal_id，并验证其不同于批准签发人。映射缺失/多值/签名无效、请求自报或覆盖映射、同一 principal、姓名/勾选框/Markdown/未签名 JSON 均不授权。
+5. 一个 durable `JOB_SKILL_PREVIEW_PACK_RELEASE` 命令必须在单一原子提交边界内复验责任清单/批准/身份/全部 hash/逐题门禁，把批准集合中仍为 DRAFT 的精确版本转为 ACTIVE；对已因正式发布或其他有效授权来源 ACTIVE 的同一语义版本只增加当前 PREVIEW_ONLY 发布引用而不重写状态；写入不可变 PREVIEW_ONLY strategy/题包版本、责任清单与批准 ID/hash 及可恢复审计事实。DISABLED/ARCHIVED 题失败关闭，不得复活。
+6. 任一题、资产、renderer、身份映射、批准或写入失败都必须整体回滚，不得留下部分 ACTIVE、半个题包或无审计策略。批准/签名/期限无效返回 `PREVIEW_PACK_RELEASE_APPROVAL_INVALID`；映射无效返回 `PREVIEW_PACK_RELEASE_EXECUTOR_IDENTITY_INVALID`；签发与执行同 principal 返回 `PREVIEW_PACK_RELEASE_SEPARATION_OF_DUTIES_FAILED`；相同 approval ID/hash 重放幂等，同 ID 不同 hash 返回 `PREVIEW_PACK_RELEASE_CONFLICT`；dry-run 零写入。
+7. ACTIVE 不是绕过 delivery mode 对应发布来源、题包、assignment/grant、学生权限或安全阻断的充分条件。FORMAL_DEMO 必须验证正式 Phase 4/发布批准 ID/hash，PREVIEW_ONLY 必须验证当前责任清单、预览批准和题包引用；两条来源不能互相替代。发布后创建/恢复 session 仍按 §5.4.5.5 逐次复验。
+8. 本阶段不授权为该链新增 Schema/migration。实现计划必须证明现有 strategy、审计和 durable command 边界可保存批准引用并原子恢复；若不能，停止并提交单独 R3 变更，不得退化为 ADMIN 手工激活或先激活后补题包。
 
 视频规则：
 
 - 必须依赖动态线索的题（动作过程判断）制作短视频（VIDEO_SCENE + SCENE_VIDEO）。
 - 静态图片不影响构念的题，可经逐题专业审核降级为 IMAGE_CARD（`source.transformation = VIDEO_TO_IMAGE_CARD` + 效度说明）。
-- 其余非示范题继续 DRAFT，不要求制作全部 68 道视频。
+- 其余依赖视频的预览题继续教师目录可见并保持不可作答，按资产批次逐步解锁；不得用静态图片批量替代动态目标构念。
 
 #### 5.3.15 答案键审核合同 content_json.review
 
@@ -1479,11 +1568,18 @@ answer_payload_json.metrics.unsure_selected = true
 
 专业岗位测评复用现有 `assessment_session` 及其全部机制：坐次（sitting）、暂停/恢复、崩溃中断恢复、`EMOTION_INTERRUPTED` / `SUSPENDED_REVIEW_REQUIRED` / `OFFLINE_PENDING` 开放态、安全红线（`REDLINE_HALTED` 优先且不可转出）、事件溯源与报告快照。**不得另建 `job_skill_assessment_session` 表。**
 
-session 创建参数：
+正式示范测评 session 创建参数：
 
 - `strategy_type = 'JOB_SKILL_ASSESSMENT'`、`job_code = 'SUPERMARKET_SHELVER'`。
 - `task_code`：现表为 NOT NULL；专业岗位示范测评固定为 `JOB_SKILL_DEMO_M1M6`。
 - `online_question_count = 18`、`offline_question_count = 6`（现有列直接承载）。
+
+预览题包 session 创建参数：
+
+- 继续使用 `strategy_type = 'JOB_SKILL_ASSESSMENT'` 和 `job_code = 'SUPERMARKET_SHELVER'`，由冻结的 question policy 中 `delivery_mode = PREVIEW_ONLY` 判别，不新增第二套 session 类型。
+- `task_code` 与正式示范测评共用 `JOB_SKILL_DEMO_M1M6`。PREVIEW_ONLY 只由冻结策略判别，不另造安全 task_code；因此同一学生、岗位、任务的预览与正式会话不能并行开放，任一路径触发的未解决安全事件都会阻断另一条路径。
+- `online_question_count / offline_question_count` 来自当前不可变题包版本，不得硬编码为 18/6；观察项仍不进入这两个计分题数量列。
+- 若现有必填 `max_score` 需要保存题包内计分题理论上限，只作为题包完成核对数据，不得据此生成正式百分制、岗位等级或跨题包比较。
 
 ##### 5.4.5.2 session 题目快照
 
@@ -1544,6 +1640,15 @@ JOB_SKILL_ASSESSMENT session
 - 线上题沿用 §5.4.3 提交与自动评分链路：renderer 提交结构化 response + metrics → 主进程 validator → 评分器按冻结 scoring_rule_json 产生 0/2 → 事件 → answer_record；response_status / 支持等级 / accommodations / UNSURE 合同全部适用。
 - 线下题由教师按逐题三档锚点评 0/1/2，写入 offline_score_record（score_scope = JOB_SKILL）；施测变体观察编码写 `observation_payload_json`，不改变 0/1/2 得分。
 
+##### 5.4.5.5 PREVIEW_ONLY 运行时边界
+
+1. 预览 session 创建前必须在同一事务视图中验证题包版本、固定题目版本、题目 `ACTIVE`、required asset `ACTIVE` 与 hash、renderer、审核证据、assignment/grant，以及当前题包精确绑定且仍有效的责任清单、预览批准和 PREVIEW_ONLY 发布引用；缺少预览发布来源返回 `PREVIEW_RELEASE_AUTHORITY_MISSING`。任一题或任一授权失败则阻断该题包，不得仅凭共享 ACTIVE 放行、运行时换题或跳题。
+2. 预览 session 冻结题目、评分规则、资产和策略快照后，后续资产批次或题目修订只能影响新题包版本。
+3. 学生作答、教师线下评分、观察、安全红线、暂停恢复、幂等和事件批次继续使用现有运行时合同。
+4. 正常完成预览 session 后，系统只能展示“本题包作答情况”：已答/未答、自动评分题答对数、线下 0/1/2 分布、response status、支持使用、技术中断和安全事实。
+5. 预览完成不得调用正式 JOB_SKILL result/report 生成链，不得写 `JOB_SKILL_SCORE`、M1-M6 综合画像、等级、训练重点结论或就业安置建议。
+6. 资产文件缺失或 hash 失配时失败关闭并记录 `TECHNICAL_INTERRUPTION`；已提交事实不得改写为 0 分，进行中 session 不得临时换资产或换题。
+
 #### 5.4.6 validateQuestionContract()
 
 统一跨层 validator，导入、审核门禁、session 创建三处复用：
@@ -1574,7 +1679,7 @@ validateQuestionContract({
 12. renderer registry 已注册且启用。
 13. required assets 存在、ACTIVE、hash 一致。
 14. ability_tags 合法性（含 JOB_SPECIFIC 空数组规则、拦截 `"0"`/`"1"`）。
-15. 固定示范卷校验模式：fixed set 中题目全部 ACTIVE 且满足以上全部。
+15. FIXED_SET 校验模式：正式示范卷和预览题包中的题目都必须全部 ACTIVE 且满足以上门禁；预览模式还必须校验 `delivery_mode = PREVIEW_ONLY`、不可变题包版本和“不生成正式结果”边界。
 
 ---
 
@@ -1786,7 +1891,7 @@ MVP 不新增独立 `practical_evaluation_session`。
 
 #### 功能说明
 
-安全红线是学生任务级全局事件。
+安全红线是学生-岗位-任务级全局事件。
 
 它不是 `assessment_session` 或 `training_session` 的附属动作。
 
@@ -1811,8 +1916,8 @@ MVP 不新增独立 `practical_evaluation_session`。
 
 1. 教师点击红线按钮。
 2. 系统立即创建 `PENDING_DETAIL` 状态的 `safety_incident`。
-3. 系统查询同一 `student_id + task_code` 下所有开放 `assessment_session`。
-4. 系统查询同一 `student_id + task_code` 下所有开放 `training_session`。
+3. 系统查询同一 `student_id + job_code + task_code` 下所有开放 `assessment_session`。
+4. 系统查询同一 `student_id + job_code + task_code` 下所有开放 `training_session`。
 5. 系统将所有开放会话批量更新为 `REDLINE_HALTED`。
 6. 系统为每个受影响会话生成 `safety_incident_binding`。
 7. 系统暂停媒体、输入和计时。
@@ -1822,7 +1927,7 @@ MVP 不新增独立 `practical_evaluation_session`。
 11. 教师确认事实后，将事件从 `PENDING_DETAIL` 推进至 `CONFIRMED`。
 12. 管理员完成复盘后，将事件标记为 `RESOLVED`；若需要作废，则标记为 `VOIDED`，并必须填写 `void_reason`。
 
-红线触发后，教师不得直接恢复训练或测评。系统必须阻断该学生该任务的新会话，直到管理员完成复盘并将安全事件标记为 `RESOLVED`，或按明确 `void_reason` 将事件标记为 `VOIDED`。
+红线触发后，教师不得直接恢复训练或测评。系统必须阻断该学生、该岗位、该任务的新会话，直到管理员完成复盘并将安全事件标记为 `RESOLVED`，或按明确 `void_reason` 将事件标记为 `VOIDED`。
 
 #### 安全事件上下文 context_phase
 
@@ -1848,11 +1953,10 @@ MVP 不新增独立 `practical_evaluation_session`。
 - 每个被熔断会话必须生成一条 `safety_incident_binding`。
 - binding 必须记录 `aggregate_type`、`aggregate_id`、`pre_status`、`post_status`。
 - `post_status` 固定为 `REDLINE_HALTED`。
-- 被熔断 session 的 `redline_incident_id` 必须指向同一 `student_id + task_code` 的 `safety_incident`。
-- 不得将一个学生或一个任务的安全事件错误绑定到另一个学生或另一个任务的 session。
-- 相关 `result_record` 必须 `safety_overridden = 1`。
-- 相关 `level_result` 必须为 `LEVEL_FAIL_BY_SAFETY`。
-- 后续只能生成 `SAFETY_TERMINATION_REPORT`。
+- 被熔断 session 的 `redline_incident_id` 必须指向同一 `student_id + job_code + task_code` 的 `safety_incident`。
+- 不得将一个学生、岗位或任务的安全事件错误绑定到另一个学生、岗位或任务的 session。
+- 对本来会生成正式结果的基础能力、训练、任务实操或固定 18+6 专业岗位 session：相关 `result_record` 必须 `safety_overridden = 1`，`level_result` 必须为 `LEVEL_FAIL_BY_SAFETY`，且后续只能生成 `SAFETY_TERMINATION_REPORT`。
+- 对 `delivery_mode = PREVIEW_ONLY` 的 session：仍必须保存 `REDLINE_HALTED`、safety incident、binding 和红线前过程事实，但不得生成任何 `result_record`、正式 `task_report` 或 `SAFETY_TERMINATION_REPORT`；教师端只在“本题包作答情况”和学校反馈中显示安全终止事实。
 
 #### 无开放会话时的红线规则
 
@@ -1863,7 +1967,7 @@ MVP 不新增独立 `practical_evaluation_session`。
 - 不生成 `result_record`。
 - 不更新 session 状态。
 - 必须设置 `requires_review_before_next_session = 1`。
-- 后续教师尝试为同一学生同一任务发起新测评或训练时，系统必须阻断。
+- 后续教师尝试为同一学生、同一岗位、同一任务发起新测评或训练时，系统必须阻断。
 - 只有该安全事件状态变为 `RESOLVED` 或 `VOIDED` 后，才允许继续新会话。
 
 #### 安全事件两级权限
@@ -1895,7 +1999,7 @@ MVP 不新增独立 `practical_evaluation_session`。
 
 - `PENDING_DETAIL`：红线已触发，等待教师补充细节。
 - `CONFIRMED`：事件事实已确认，等待管理员复盘处理。
-- `RESOLVED`：事件属实，已完成复盘并采取补救措施，可以重新发起同一学生同一任务的新会话。
+- `RESOLVED`：事件属实，已完成复盘并采取补救措施，可以重新发起同一学生、同一岗位、同一任务的新会话。
 - `VOIDED`：事件被管理员作废或被替代。该状态本身不表达“误报”，必须结合 `void_reason` 判断统计口径。
 
 合法状态流转：
@@ -1965,7 +2069,7 @@ VOIDED -> PENDING_DETAIL
 
 - `status = VOIDED` 时，`void_reason` 必须非空。
 - `status != VOIDED` 时，`void_reason` 必须为空。
-- `void_reason = FACTUAL_CORRECTION` 时，`replacement_incident_id` 必须非空，并指向同一 `student_id + task_code` 下的新 safety_incident。
+- `void_reason = FACTUAL_CORRECTION` 时，`replacement_incident_id` 必须非空，并指向同一 `student_id + job_code + task_code` 下的新 safety_incident。
 - `void_reason = DUPLICATE_RECORD` 时，`replacement_incident_id` 应指向保留的主 incident。
 - `replacement_incident_id` 不得等于自身 `incident_id`。
 - `FALSE_TRIGGER / NON_SAFETY_EVENT` 可以不填写 `replacement_incident_id`。
@@ -1976,7 +2080,7 @@ VOIDED -> PENDING_DETAIL
 2. 将旧 safety_incident 更新为 `status = VOIDED`。
 3. 设置旧事件 `void_reason = FACTUAL_CORRECTION`。
 4. 设置旧事件 `replacement_incident_id = 新 incident_id`。
-5. 确保 replacement safety_incident 继续阻断同一学生同一任务的新 session，直到管理员后续处理为 `RESOLVED` 或具备明确原因的 `VOIDED`。
+5. 确保 replacement safety_incident 继续阻断同一学生、同一岗位、同一任务的新 session，直到管理员后续处理为 `RESOLVED` 或具备明确原因的 `VOIDED`。
 
 该动作应对应领域命令 `ReplaceSafetyIncidentForFactualCorrection` 或领域事件 `SAFETY_INCIDENT_REPLACED_FOR_FACTUAL_CORRECTION`。不得拆成两次独立 IPC 操作，以免在旧事件作废与新事件创建之间出现新会话发起空窗。
 
@@ -2056,8 +2160,8 @@ MVP 不提供报告草稿编辑流，因此不设置 `DRAFT` 状态。
 - 旧报告进入 `SUPERSEDED` 或 `ARCHIVED`。
 - `LOCKED` 报告不可修改。
 - 导出失败不应删除报告快照。
-- `REDLINE_HALTED` 来源不得生成 `FULL_REPORT`。
-- 安全红线后只能生成 `SAFETY_TERMINATION_REPORT`。
+- 正式结果路径的 `REDLINE_HALTED` 来源不得生成 `FULL_REPORT`，只能生成 `SAFETY_TERMINATION_REPORT`。
+- PREVIEW_ONLY 的 `REDLINE_HALTED` 来源不得生成任何正式 `task_report`，按 §5.8.5 输出安全终止事实和反馈。
 
 ---
 
@@ -2278,6 +2382,20 @@ M4/M5/M6 同理 → 仅显示建议文案
 1. 当前 MVP 只有“拆箱与上架”是完整训练闭环：M2 可直接链接现有训练任务，其他模块只显示建议文案，**不伪造尚未实现的训练模块与虚假链接**。
 2. 推荐生成是纯函数：输入模块得分 + 固定规则表，输出建议列表；规则表随 strategy version 冻结。
 
+#### 5.8.5 PREVIEW_ONLY 作答情况与学校反馈包
+
+预览题包不生成 `task_report` 正式报告快照。教师端提供独立的“本题包作答情况”和学校反馈导出：
+
+1. 作答情况只绑定当前题包 ID/version、session、题目/资产版本，展示完成情况、逐题响应、线下 0/1/2 记录、支持使用、技术中断和安全事实。
+2. 不展示归一化总分、胜任等级、M1-M6 综合岗位画像、跨题包排名、训练重点结论或就业安置建议。
+3. 面向教师和职教专家的填写入口默认使用自包含 HTML，支持本地自动保存、必填校验和提交导出。
+4. JSON 是机器可读的权威反馈结果；Markdown 只能由 JSON 生成作为人类可读留档。
+5. 校内工作记录可以使用真实 `session_id` 定位原始事实；外部自包含 HTML、JSON 和 Markdown 只能绑定随机生成、不可由真实 ID 推导的 `session_export_ref`、`subject_export_ref`、学校匿名代码、题包 ID/version、question ID/version、asset ID/hash、结构化问题类型、严重程度、稳定反馈 ID/revision 和提交时间，不得序列化原始 session/student/teacher ID。
+6. 匿名引用与真实 ID 的映射只保留在学校受控的本地 userData 区域，受既有角色权限约束，不得进入导出、日志或 AI Prompt。实现计划必须证明现有持久化边界足以完成映射隔离与恢复；否则必须停止并另行批准 Schema 变更。
+7. 复现步骤、教学观察等自由文本默认只保存在本地草稿，不进入外部 JSON。显式外发必须先通过本地敏感数据检测，并由教师在最终脱敏预览页确认；检测到姓名、电话、身份证号、邮箱或其他疑似身份信息时失败关闭，删除或替换后必须重新扫描。
+8. 反馈提交不得直接激活或停用题目、修改策略、批准素材、覆盖历史 manifest 或改变 session 事实。
+9. PREVIEW_ONLY 因红线进入 `REDLINE_HALTED` 时，作答情况必须标记安全终止并引用 incident/binding，但仍不得生成 `result_record`、岗位等级或正式安全中止报告。
+
 ---
 
 ## 6. 会话并发与开放态唯一性
@@ -2315,8 +2433,8 @@ M4/M5/M6 同理 → 仅显示建议文案
 
 数据库层必须强制：
 
-1. 同一 `student_id + task_code + strategy_type` 下，只允许存在一个开放态 `assessment_session`。
-2. 同一 `student_id + task_code` 下，只允许存在一个开放态 `training_session`。
+1. 同一 `student_id + job_code + task_code + strategy_type` 下，只允许存在一个开放态 `assessment_session`。
+2. 同一 `student_id + job_code + task_code` 下，只允许存在一个开放态 `training_session`。
 
 这必须通过 partial unique index 实现，不得只依赖前端判断。
 
@@ -2336,7 +2454,7 @@ M4/M5/M6 同理 → 仅显示建议文案
 
 ### 6.4 未解决安全事件阻断新会话
 
-如果同一 `student_id + task_code` 下存在状态为：
+如果同一 `student_id + job_code + task_code` 下存在状态为：
 
 - `PENDING_DETAIL`
 - `CONFIRMED`
@@ -2363,7 +2481,7 @@ M4/M5/M6 同理 → 仅显示建议文案
 1. 坐次不是独立聚合，不新增 session 表；坐次由 `SITTING_STARTED / SITTING_ENDED` 事件在 `domain_event_projection` 中投影（`sitting_no` 列）。
 2. 坐次进行中 session 为 `ACTIVE`；坐次间歇 session 为 `SUSPENDED_REVIEW_REQUIRED`（开放态，仍受唯一开放会话约束与安全阻断约束）。
 3. 同一 session 同一时刻只能有一个进行中坐次。
-4. 未解决安全事件阻断的对象是"新会话"与"新坐次"：存在 `PENDING_DETAIL / CONFIRMED` 安全事件时，同学生同任务的挂起 session **不得发起新坐次**。
+4. 未解决安全事件阻断的对象是"新会话"与"新坐次"：存在 `PENDING_DETAIL / CONFIRMED` 安全事件时，同一学生、岗位和任务的挂起 session **不得发起新坐次**。
 5. `session_validity_days` 超期的 session 由教师作废，作废原因记录为 `VALIDITY_EXPIRED`。
 
 ---
@@ -2372,7 +2490,7 @@ M4/M5/M6 同理 → 仅显示建议文案
 
 ### 7.1 结果类型
 
-MVP 固定维护四类独立结果投影。
+MVP 固定维护四类独立正式结果投影。`PREVIEW_ONLY` 作答情况不新增结果类型，也不得写入 `result_record`。
 
 #### 第一类：能力测评分 ABILITY_SCORE
 
@@ -2416,7 +2534,7 @@ MVP 固定维护四类独立结果投影。
 
 ---
 
-#### 第四类：专业岗位测评分 JOB_SKILL_SCORE
+#### 第四类：专业岗位正式示范测评分 JOB_SKILL_SCORE
 
 用于回答：学生在超市理货员 M1-M6 岗位模块上的当前表现如何，哪些模块需要优先训练？
 
@@ -2426,7 +2544,7 @@ MVP 固定维护四类独立结果投影。
 - `offline_score_record（score_scope = JOB_SKILL）`
 - 不计分的 TEACHER_OBSERVATION 仅进入观察完成度和报告，不进入 raw score
 
-JOB_SKILL_SCORE 满分 48，独立生成 M1-M6 岗位模块画像。它不得写成 ABILITY_SCORE，也不得与训练完成度或实操达标率混算；专业岗位报告不得输出就业安置结论。
+JOB_SKILL_SCORE 只由固定 18+6 正式示范测评产生，满分 48，独立生成 M1-M6 岗位模块画像。它不得写成 ABILITY_SCORE，也不得与训练完成度或实操达标率混算；专业岗位报告不得输出就业安置结论。298 题预览题包即使包含计分题，也不得进入本结果投影。
 
 ### 7.2 统一百分制模型
 
@@ -2461,9 +2579,9 @@ normalized_score = raw_score / max_score * 100
 
 `raw_score` 与 `max_score` 必须在 `result_record` 中独立记录，不得只存 `normalized_score`。
 
-#### 7.2.1 中途终止计分规则
+#### 7.2.1 基础能力中途终止计分规则
 
-适用于崩溃兜底终止、安全红线终止、作废等一切非正常完成场景：
+本节只适用于会生成 ABILITY_SCORE 的基础能力测评在崩溃兜底、安全红线或作废等非正常终止场景。专业岗位固定 18+6 使用 §7.2.3 的 /48 合同；PREVIEW_ONLY 不生成结果，完全不适用本节：
 
 1. `max_score` 恒为 **100**，不随已答题量缩减。
 2. 未答题目一律计 **0 分**。
@@ -2491,9 +2609,9 @@ normalized_score = raw_score / max_score * 100
 
 ---
 
-#### 7.2.3 专业岗位评分模型
+#### 7.2.3 专业岗位正式示范测评评分模型
 
-MVP 必须形成：总原始分（/48）、百分制归一化分、M1-M6 模块得分与得分率、线上得分（/36）、线下实操得分（/12）、支持等级分布、教师观察、安全表现、推荐训练重点。
+固定 18+6 正式示范测评必须形成：总原始分（/48）、百分制归一化分、M1-M6 模块得分与得分率、线上得分（/36）、线下实操得分（/12）、支持等级分布、教师观察、安全表现、推荐训练重点。本节公式和等级不适用于 PREVIEW_ONLY 题包。
 
 ##### 等级
 
@@ -2671,9 +2789,11 @@ MVP 默认阈值：
 - `TRAINING_COMPLETION`
 - `OPERATION_PASS_RATE`
 
-基础任务报告可以并列展示 ABILITY_SCORE、TRAINING_COMPLETION 和 OPERATION_PASS_RATE；专业岗位报告独立展示 JOB_SKILL_SCORE 与 M1-M6 岗位画像。任何页面、报告或统计都不得把这些结果平均或合成为单一总分。
+基础任务报告可以并列展示 ABILITY_SCORE、TRAINING_COMPLETION 和 OPERATION_PASS_RATE；专业岗位正式报告独立展示 JOB_SKILL_SCORE 与 M1-M6 岗位画像。任何页面、报告或统计都不得把这些结果平均或合成为单一总分。
 
 基础能力线上 42 题与线下 8 题合并为满分 100，属于 ABILITY_SCORE 内部结构，不违反结果独立原则。专业岗位线上 18 题与线下 6 题合并为满分 48，属于 JOB_SKILL_SCORE 内部结构；观察项不计分。
+
+PREVIEW_ONLY 的“本题包作答情况”不属于正式结果。它可以逐题呈现原始响应和教师评分，但不得跨题包平均、换算百分制、映射等级、生成 M1-M6 综合画像或与上述四类结果并列为学生能力结论。
 
 ### 7.6 策略配置版本锁定
 
@@ -2732,7 +2852,7 @@ MVP 默认阈值：
 1. 基础能力评估策略的 `eligible_bank_domains` 固定为 `["BASE_ABILITY"]`。
 2. 组卷器必须把 `bank_domain` 过滤写入候选题 SQL，不得依赖后置内存过滤。
 3. 缺省值：历史策略无该字段时按 `["BASE_ABILITY"]` 解释（向后兼容）。
-4. MVP 不定义 `["JOB_SPECIFIC"]` 组卷策略；专业岗位组卷进入 Post-MVP。
+4. JOB_SPECIFIC 正式示范卷和 PREVIEW_ONLY 题包只允许 `FIXED_SET`；随机组卷、教师自由组卷和运行时补题进入 Post-MVP。
 
 ---
 
@@ -2773,7 +2893,9 @@ MVP 默认阈值：
 
 禁止 BASELINE_ASSESSMENT 选择 JOB_SPECIFIC 题；禁止 JOB_SKILL_ASSESSMENT 选择 BASE_ABILITY 题。绑定关系由组卷服务 + validateQuestionContract + 单元测试三层保证。
 
-- JOB_SKILL 策略种子：`online_question_count = 18`、`offline_question_count = 6`、`max_score = 48`、question_policy_json 用 §5.3.13 FIXED_SET 结构、scoring_policy_json 用 §7.2.3 结构。
+- JOB_SKILL 正式示范策略种子：`online_question_count = 18`、`offline_question_count = 6`、`max_score = 48`、question_policy_json 用 §5.3.13 正式 FIXED_SET 结构、scoring_policy_json 用 §7.2.3 结构。
+- JOB_SKILL 预览题包策略：继续使用 JOB_SKILL_ASSESSMENT 与 JOB_SPECIFIC 域，但 question policy 必须显式声明 `delivery_mode = PREVIEW_ONLY`；题量按不可变题包版本保存，评分 policy 必须关闭正式 result/report/placement 输出。不能从 task_code、题包名称或题量推断预览语义。
+- 历史正式 JOB_SKILL 策略缺少 delivery_mode 时，只允许通过冻结的 strategy_id/version 兼容注册表解释为 FORMAL_DEMO。新策略缺失、拼写错误或未知 delivery_mode 一律拒绝，不能降级为正式或预览。
 - 策略版本冻结、`UNIQUE(strategy_type, job_code, version)`、session 创建锁定 strategy_id + version 等现有机制不变。
 
 ---
@@ -2883,7 +3005,7 @@ MVP 默认阈值：
 
 ### 8.4 ResultRecord 状态
 
-结果记录用于投影三类结果。
+结果记录用于投影 §7.1 的四类正式结果。
 
 每个来源聚合、每种 `result_type` 只能有一个 current result。
 
@@ -2894,11 +3016,13 @@ MVP 默认阈值：
 - 旧 `result_record` 标记为非 current。
 - 新 `result_record` 成为 current。
 
-安全覆盖结果必须满足：
+正式结果路径产生的安全覆盖结果必须满足：
 
 - `safety_overridden = 1`
 - `level_result = LEVEL_FAIL_BY_SAFETY`
 - `redline_incident_id` 非空
+
+PREVIEW_ONLY 即使进入 `REDLINE_HALTED` 也不得创建安全覆盖结果；安全事实由 session、incident、binding、事件和题包作答情况承载。
 
 ### 8.5 TaskReport 状态
 
@@ -2920,7 +3044,7 @@ MVP 默认阈值：
 
 ### 8.6 SafetyIncident 状态
 
-`safety_incident` 是学生任务级安全事件聚合。其生命周期独立于单一 session，但可通过 `safety_incident_binding` 影响一个或多个开放态 `assessment_session` / `training_session`。
+`safety_incident` 是学生-岗位-任务级安全事件聚合。其生命周期独立于单一 session，但可通过 `safety_incident_binding` 影响一个或多个开放态 `assessment_session` / `training_session`。
 
 安全事件状态：
 
@@ -2933,7 +3057,7 @@ MVP 默认阈值：
 
 - `PENDING_DETAIL`：红线已触发，等待教师补充细节。
 - `CONFIRMED`：事件事实已确认，等待管理员复盘处理。
-- `RESOLVED`：事件属实，已完成复盘并采取补救措施，可以重新发起同一学生同一任务的新会话。
+- `RESOLVED`：事件属实，已完成复盘并采取补救措施，可以重新发起同一学生、同一岗位、同一任务的新会话。
 - `VOIDED`：事件被管理员作废或被替代。该状态本身不表达“误报”，必须结合 `void_reason` 判断统计口径。
 
 合法状态流转：
@@ -2982,13 +3106,13 @@ VOIDED -> PENDING_DETAIL
 - 终态安全事件还不得修改 `status`、`resolved_by`、`resolved_at` 等生命周期字段。
 - `status = VOIDED` 时，`void_reason` 必须非空。
 - `status != VOIDED` 时，`void_reason` 必须为空。
-- `void_reason = FACTUAL_CORRECTION` 时，`replacement_incident_id` 必须非空，并指向同一 `student_id + task_code` 下的 replacement safety_incident。
+- `void_reason = FACTUAL_CORRECTION` 时，`replacement_incident_id` 必须非空，并指向同一 `student_id + job_code + task_code` 下的 replacement safety_incident。
 - `void_reason = DUPLICATE_RECORD` 时，`replacement_incident_id` 应指向保留的主 incident。
 - `replacement_incident_id` 不得等于自身 `incident_id`。
 
 产品规则：
 
-- 未解决安全事件必须阻断同一 `student_id + task_code` 下的新测评或训练会话。
+- 未解决安全事件必须阻断同一 `student_id + job_code + task_code` 下的新测评或训练会话。
 - 只有管理员将事件推进至 `RESOLVED` 或 `VOIDED` 后，系统才允许继续发起新会话。
 - 若 `CONFIRMED` 后发现核心事实错误，MVP 阶段不得原地 `UPDATE` 修正；必须由管理员通过同一事务执行 `FACTUAL_CORRECTION` 作废重建，旧事件写入 `void_reason = FACTUAL_CORRECTION` 与 `replacement_incident_id`，新事件承接真实安全事件与阻断责任。
 - 管理员不得通过直接修改 session 状态绕过安全事件生命周期。
@@ -3276,6 +3400,16 @@ MVP 初始错误码至少包括：
 - `ASSET_MISSING`
 - `FSM_INVALID_TRANSITION`
 - `SCORING_POLICY_MISSING`
+- `QUESTION_POLICY_DELIVERY_MODE_MISSING`
+- `QUESTION_POLICY_DELIVERY_MODE_UNKNOWN`
+- `QUESTION_POLICY_LEGACY_COMPATIBILITY_DENIED`
+- `PREVIEW_PACK_SCORED_ITEM_REQUIRED`
+- `PREVIEW_PACK_RELEASE_APPROVAL_INVALID`
+- `PREVIEW_PACK_RELEASE_EXECUTOR_IDENTITY_INVALID`
+- `PREVIEW_PACK_RELEASE_SEPARATION_OF_DUTIES_FAILED`
+- `PREVIEW_PACK_RELEASE_CONFLICT`
+- `FORMAL_RELEASE_AUTHORITY_MISSING`
+- `PREVIEW_RELEASE_AUTHORITY_MISSING`
 - `REPORT_GENERATION_FAILED`
 
 ### 9.8 异常处理规则
@@ -3345,7 +3479,9 @@ MVP 采用轻量事件溯源 + SQLite 查询投影：
 
 ### 11.2 当前 schema 基线
 
-当前工程基线为 `schema.sql v0.1.17-multi-device-m4-safety-rekey`（M4 Step 2A 为 `ACCEPTED_STEP_2A`）。v0.1.12 已物化题库合同、岗位题库治理和专业岗位测评运行时；v0.1.13 在其上增量增加组织、节点、设备与认证拓扑；v0.1.14 增加 business_session 父记录、assessment delivery_phase / event_sequence_version / observation_template_id、assessment/training business_session_id 与 D2-D6/D8 约束；v0.1.15 增加 delegated_access_grant、business_session_assignment、M3 assignment IPC/事件投影、D1 与 D9-D11 约束，并收窄 assessment:startSession；v0.1.16 增加教师确认且可审计修订的 task_closure，为 task_report 增加不可变的 lineage、来源/hash、内容合同和生命周期事实，并将 TASK_CLOSURE 纳入事件与错误聚合合同；v0.1.17 在 F7 后以独立 migration 将安全聚合、开放会话唯一性、阻断、熔断、replacement 与结果/报告关联收口为 `student_id + job_code + task_code`，并保持既有权限、FSM、事件和报告 JSON 合同不变。
+当前工程基线为 `schema.sql v0.1.18-event-batch-v2.2`（M5B-15 为 `PASS`）。v0.1.12 已物化题库合同、岗位题库治理和专业岗位测评运行时；v0.1.13-v0.1.15 增量增加组织、节点、设备、认证、business session、grant 与 assignment；v0.1.16 增加可审计 task closure；v0.1.17 将安全聚合、开放会话唯一性、阻断、熔断、replacement 与结果/报告关联收口为 `student_id + job_code + task_code`；v0.1.18 以 durable command ledger、event batch apply cursor、processed event 和 projector cursor 收口生产写入与恢复边界。具体 DDL 仍只以 `src/main/db/schema.sql` 为准。
+
+[!] v1.0.10 的 298 题全量预览是已批准产品范围，不代表当前 v0.1.18 代码已经实现教师目录、PREVIEW_ONLY 策略、反馈导出或逐题门禁。本阶段不授权新增 Schema/migration；若实现计划证明现有表无法满足不可变题包审计或反馈边界，必须另立 R3 变更并取得明确批准。
 
 核心业务表包括：
 
@@ -3365,10 +3501,12 @@ MVP 采用轻量事件溯源 + SQLite 查询投影：
 5. 题目 ACTIVE 或被历史 session/答题/评分引用后，语义字段冻结；修订必须新建 question_id，并用 `superseded_by_question_id` 追溯。
 6. required 资产必须存在、状态可用且 hash 一致；已引用素材不得覆盖同一 asset_id，修订必须创建新 asset_id。
 7. 题目跨层一致性由 `validateQuestionContract()` 在导入、ACTIVE 门禁和 session 创建时统一校验。
+8. 298 道 JOB_SPECIFIC 当前题可以全部以 DRAFT 写入预览内容库并供 TEACHER 只读查询；DRAFT 目录可见性不得绕过学生 session 必须使用 ACTIVE 且门禁通过题目的规则。
+9. 预览交付状态由题目权威、审核证据、资产注册表、renderer registry 和题包版本确定性计算，不新增数据库状态枚举；缺口只局部阻断。
 
 ### 11.4 Session 题目快照与作答记录
 
-`assessment_session` 同时承载 BASELINE_ASSESSMENT、MOCK_EXAM 与 JOB_SKILL_ASSESSMENT，不建立第二套专业岗位 session 表。
+`assessment_session` 同时承载 BASELINE_ASSESSMENT、MOCK_EXAM、正式 JOB_SKILL_ASSESSMENT 与 PREVIEW_ONLY JOB_SKILL_ASSESSMENT，不建立第二套专业岗位 session 表。
 
 `assessment_session_question.question_phase` 支持：
 
@@ -3376,7 +3514,7 @@ MVP 采用轻量事件溯源 + SQLite 查询投影：
 - `OFFLINE`：教师 0/1/2 评分题。
 - `OBSERVATION`：教师嵌入观察项，不计分。
 
-插入题目快照时必须校验 strategy_type 与 bank_domain、job_code、模块字段、题型、item_usage 和 phase 配对。JOB_SKILL_ASSESSMENT 只能选择 JOB_SPECIFIC；基础能力策略只能选择 BASE_ABILITY。
+插入题目快照时必须校验 strategy_type、delivery_mode 与 bank_domain、job_code、模块字段、题型、item_usage、phase 和题包版本配对。JOB_SKILL_ASSESSMENT 只能选择 JOB_SPECIFIC；基础能力策略只能选择 BASE_ABILITY。PREVIEW_ONLY 只能读取冻结题包中的 ACTIVE 题目和批准资产。
 
 `answer_record` 使用结构化 `response_status`：ANSWERED 时线上 score 只能为 0/2；NR、ST、技术中断或直接协助等非计分状态必须使用 NULL score，不得伪装成 0 分。
 
@@ -3400,18 +3538,20 @@ MVP 采用轻量事件溯源 + SQLite 查询投影：
 - `OPERATION_PASS_RATE`
 - `JOB_SKILL_SCORE`
 
-专业岗位的 M1-M6 画像保存在单条 JOB_SKILL_SCORE 的 `result_payload_json`，不得拆成六条结果。报告复用 `task_report`，并通过 `report_content_json.report_scope` 区分 BASE_ABILITY 与 JOB_SKILL。结果和报告都是不可被后续重测静默覆盖的快照。
+专业岗位正式示范测评的 M1-M6 画像保存在单条 JOB_SKILL_SCORE 的 `result_payload_json`，不得拆成六条结果。报告复用 `task_report`，并通过 `report_content_json.report_scope` 区分 BASE_ABILITY 与 JOB_SKILL。结果和报告都是不可被后续重测静默覆盖的快照。
+
+PREVIEW_ONLY 不写 `result_record`，也不生成正式 `task_report`；其题包作答情况和学校反馈必须与正式结果查询、报告统计和岗位等级解释隔离。若复用现有事件与记录表，读取方必须以冻结策略的 `delivery_mode` 判别，不能按题量、task_code 文本或是否存在分数猜测。
 
 ### 11.6 安全事件与一致性保护
 
-1. `safety_incident` 以 student_id + task_code 为归属，可在无开放 session 时独立成立。
+1. `safety_incident` 以 `student_id + job_code + task_code` 为归属，可在无开放 session 时独立成立。
 2. 安全事件必须先熔断再补充事实，并通过 `safety_incident_binding` 记录受影响聚合。
 3. 教师负责触发、补充与确认；管理员负责 RESOLVED / VOIDED。
 4. CONFIRMED 后核心事实冻结；事实修正必须在同一事务中 VOID 旧事件并创建 replacement。
-5. REDLINE_HALTED session 的 incident 必须与同一学生、同一任务匹配。
+5. REDLINE_HALTED session 的 incident 必须与同一学生、同一岗位、同一任务匹配。
 6. 安全红线结果覆盖所有分数等级。
 
-> **后续版本覆盖说明（M4，Step 2A 已验收）：** 上述第 1、5 项保留其在 v1.0.9 / schema v0.1.16 及以前的历史二元叙述；当前 v0.1.17 工程实现及其派生的开放会话唯一性、新会话阻断、批量熔断、replacement/factual-correction、结果和报告归属，统一采用 `student_id + job_code + task_code`。M4 已通过独立 migration 一次性替换相关 Schema 守卫和运行查询，并由 production SQL inventory 禁止二元/三元混用；该覆盖不改变既有角色责任、安全事件生命周期、先熔断后归因、安全结果优先级或历史事实。独立 Review 与 `/vibe-accept` 已为 `PASS`，M4 状态为 `ACCEPTED_STEP_2A`；Step 2B 获得开始资格但尚未实施；`task_code` 允许跨岗位复用。
+> v0.1.17 已将开放会话唯一性、新会话阻断、批量熔断、replacement/factual-correction、结果和报告归属统一为 `student_id + job_code + task_code`，当前 v0.1.18 继续保持该语义。权威正文所有执行规则均使用三元聚合键；旧二元口径只存在于归档历史文档，不得用于实现或验收。
 
 ### 11.7 多设备 M1 边界
 
@@ -3720,6 +3860,10 @@ MVP 支持：
 - 评分高效。
 - 报告可导出。
 - 关键操作有二次确认。
+- JOB_SKILL 预览目录必须显示 298 题总数，并支持按 M1-M6、题型、线上/线下、当前版本复核、素材和可作答状态筛选。
+- 每题必须明确区分“可作答”“仅目录可见”“已停用”，并显示稳定阻断原因；缺素材不得让题目从目录消失。
+- 教师只能分配系统已发布的不可变题包，不能在学生发起前临时自由增删题目。
+- 预览完成页使用“本题包作答情况”，不得使用“岗位总分”“胜任等级”或容易与正式报告混淆的视觉层级。
 
 ### 15.4 安全红线 UI 原则
 
@@ -3796,6 +3940,13 @@ MVP 不依赖外部埋点系统。
 
 - 校验通过资源数 / 已登记资源数。
 
+JOB_SKILL 预览交付指标：
+
+- 教师目录可见题数 / 298，目标为 298/298。
+- `PREVIEW_READY`、`PREVIEW_RELEASE_CANDIDATE`、`CATALOG_ONLY`、`PREVIEW_DISABLED` 数量及按稳定原因码分布。
+- 已发布题包数、题包分配/完成数、技术中断数和学校反馈数。
+- 每个资产批次的计划、生成、审核、批准、入库和解锁题目数量。
+
 ### 16.3 教学效率指标
 
 - 教师建档平均耗时。
@@ -3820,6 +3971,7 @@ MVP 不依赖外部埋点系统。
 - 同一任务复评通过率。
 - 教师复用率。
 - 学生任务完成稳定性。
+- 预览题包只统计完成、支持、技术和反馈事实，不纳入能力得分变化、岗位等级分布、跨题包排名或就业安置方向分布。
 - 模块兜底触发率（按 6 大模块分组，统计任一模块 `< 50%` 强制 `LEVEL_NOT_COMPETENT` 的发生频次）。
 - 情绪崩溃兜底触发率（统计因累计情绪崩溃达阈值而强制 `LEVEL_NOT_COMPETENT` 的发生频次，以及平均崩溃次数分布）。
 - 就业安置方向分布（按日间照料 / 支持性就业 / 竞争性就业 三档分组统计学生数量）。
@@ -3846,6 +3998,8 @@ MVP 成功需要同时满足：
 - 无会话红线能被独立记录。
 - 未解决安全事件能阻断新会话。
 - 资源缺失能被识别并记录。
+- 教师能够看到 298/298 道 JOB_SKILL 当前题，并能使用所有已就绪的系统预设题包；单题素材或复核缺口只局部阻断。
+- 学校反馈可从自包含 HTML 导出权威 JSON，且不直接改变题目、素材或策略状态。
 - 教师愿意在真实课堂中复用该流程。
 
 ---
@@ -4025,14 +4179,14 @@ MVP 不要求保存每个 pointer move。
 - 有开放会话时，系统批量熔断所有相关开放 session。
 - 无开放会话时，系统仍可独立创建 safety_incident。
 - 安全红线后 session 进入 `REDLINE_HALTED`。
-- 结果强制 `LEVEL_FAIL_BY_SAFETY`。
-- 系统生成安全中止报告。
+- 对正式结果路径，结果强制 `LEVEL_FAIL_BY_SAFETY`，系统生成安全中止报告。
+- 对 PREVIEW_ONLY，只记录安全终止事实，不生成 result_record 或正式 task_report。
 - 未解决安全事件阻断新会话。
 
 #### 报告
 
 - 系统可以生成完整任务报告。
-- 系统可以生成安全中止报告。
+- 正式结果路径可以生成安全中止报告；PREVIEW_ONLY 不生成正式报告。
 - 系统可以导出报告。
 - 系统可以锁定报告。
 - 重测后旧报告不被覆盖。
@@ -4049,8 +4203,8 @@ MVP 不要求保存每个 pointer move。
 - `action_log.jsonl` 是事实来源。
 - SQLite 快照可由事件回放恢复。
 - 终态 session 不可直接修改。
-- 同一学生同一任务重复创建开放 assessment_session 应失败。
-- 同一学生同一任务重复创建开放 training_session 应失败。
+- 同一学生、同一岗位、同一任务、同一 strategy_type 重复创建开放 assessment_session 应失败。
+- 同一学生、同一岗位、同一任务重复创建开放 training_session 应失败。
 - `answer_record` 支持 revision。
 - `offline_score_record` 支持 revision。
 - `result_record` 同一来源同一类型只有一个 current result。
@@ -4089,16 +4243,16 @@ MVP 不要求保存每个 pointer move。
 
 必须覆盖以下场景：
 
-1. 同一学生同一任务重复创建开放 `assessment_session` 应失败。
-2. 同一学生同一任务重复创建开放 `training_session` 应失败。
+1. 同一学生、同一岗位、同一任务、同一 strategy_type 重复创建开放 `assessment_session` 应失败。
+2. 同一学生、同一岗位、同一任务重复创建开放 `training_session` 应失败。
 3. `assessment_session + training_session` 同时开放时触发红线，两者都进入 `REDLINE_HALTED`。
 4. `safety_incident_binding` 正确生成两条绑定记录。
 5. 无开放会话时可以创建 `safety_incident`。
 6. 无会话 `safety_incident` 未解决前，新 session 创建应被阻断。
-7. `safety_overridden = 1` 时 `result_record` 必须是 `LEVEL_FAIL_BY_SAFETY`。
+7. 正式结果路径中 `safety_overridden = 1` 时 `result_record` 必须是 `LEVEL_FAIL_BY_SAFETY`。
 8. 红线触发前的 `answer_record / offline_score_record / training_step_record` 不被删除。
 9. 红线后的普通报告生成会被阻断。
-10. 红线后允许生成 `SAFETY_TERMINATION_REPORT`。
+10. 正式结果路径红线后允许且只允许生成 `SAFETY_TERMINATION_REPORT`。
 11. 无会话安全事件不会生成 binding。
 12. `TEACHER` 可以创建 `PENDING_DETAIL`。
 13. `TEACHER` 可以将 `PENDING_DETAIL` 推进到 `CONFIRMED`。
@@ -4124,11 +4278,15 @@ MVP 不要求保存每个 pointer move。
 33. `void_reason = FACTUAL_CORRECTION` 且 `replacement_incident_id` 为空应失败。
 34. `void_reason = DUPLICATE_RECORD` 且 `replacement_incident_id` 为空应失败。
 35. `replacement_incident_id = incident_id` 应失败。
-36. `FACTUAL_CORRECTION` 指向同一 `student_id + task_code` 的 replacement incident 应通过。
-37. `FACTUAL_CORRECTION` 指向不同 `student_id` 或不同 `task_code` 的 incident 应失败。
+36. `FACTUAL_CORRECTION` 指向同一 `student_id + job_code + task_code` 的 replacement incident 应通过。
+37. `FACTUAL_CORRECTION` 指向不同 `student_id`、不同 `job_code` 或不同 `task_code` 的 incident 应失败。
 38. `FACTUAL_CORRECTION` 作废重建必须在同一事务完成，不得存在旧事件已 `VOIDED` 且新事件尚未创建的可发起新会话空窗。
+39. PREVIEW_ONLY 红线 session 必须进入 `REDLINE_HALTED` 并生成 incident/binding，但不得创建任一 result_record。
+40. PREVIEW_ONLY 红线 session 不得生成 FULL_REPORT 或 SAFETY_TERMINATION_REPORT。
+41. PREVIEW_ONLY 红线前的作答与评分事实必须保留，并只在本题包作答情况/学校反馈中标记为安全终止过程证据。
+42. 同一 student/task 但不同 job 的安全事件不得熔断、阻断或绑定另一岗位的 session。
 
-> **M4 v0.1.17 验收映射（Step 2A 已验收）：** 本节 1–38 保留 v1.0.9 的历史“同一学生同一任务”验收措辞。当前工程实现对其中的开放会话唯一性、未解决事件阻断、批量熔断、redline incident 归属和 replacement 归属统一增加同一 `job_code`；同学生同任务的跨岗位会话必须隔离，且跨岗位 incident 不得进入 JOB_SKILL 安全摘要。自动与原生/UI 证据记录于 `multi-device-m4-safety-rekey-validation.md`；独立 Review 与 `/vibe-accept` 均为 `PASS`，Step 2B 解除前置阻断但尚未开始。
+> 本节全部验收使用当前三元安全键。相同 student/task 但不同 job 的会话必须隔离，跨岗位 incident 不得熔断会话、承担 replacement、阻断新会话或进入 JOB_SKILL 安全摘要。
 
 ### 17.6 策略版本锁定专项验收
 
@@ -4210,9 +4368,9 @@ MVP 不要求保存每个 pointer move。
 5. `training_session.strategy_id / strategy_type / job_code / strategy_version` 任一字段与 `strategy_config` 不匹配时应失败。
 6. `assessment_session.status = REDLINE_HALTED` 时，`redline_incident_id` 为空应失败。
 7. `training_session.status = REDLINE_HALTED` 时，`redline_incident_id` 为空应失败。
-8. `assessment_session.status = REDLINE_HALTED` 绑定到不同 `student_id` 或不同 `task_code` 的 `safety_incident` 应失败。
-9. `training_session.status = REDLINE_HALTED` 绑定到不同 `student_id` 或不同 `task_code` 的 `safety_incident` 应失败。
-10. 正常创建同一 `student_id + task_code` 的 `safety_incident` 后，开放 `assessment_session` 和 `training_session` 应仍可被批量熔断。
+8. `assessment_session.status = REDLINE_HALTED` 绑定到不同 `student_id`、不同 `job_code` 或不同 `task_code` 的 `safety_incident` 应失败。
+9. `training_session.status = REDLINE_HALTED` 绑定到不同 `student_id`、不同 `job_code` 或不同 `task_code` 的 `safety_incident` 应失败。
+10. 正常创建同一 `student_id + job_code + task_code` 的 `safety_incident` 后，开放 `assessment_session` 和 `training_session` 应仍可被批量熔断。
 11. `training_step_record.status = IN_PROGRESS` 应成功。
 12. `training_step_record.status = ACTIVE` 应失败。
 13. `training_step_record.status = VOID` 应失败。
@@ -4360,7 +4518,7 @@ MVP 不要求保存每个 pointer move。
 7. OBSERVATION_ONLY 必须 NO_SCORE。
 8. TEACHER_OBSERVATION 不生成 answer score；写入 offline_score_record 时 score 必须为 NULL。
 9. 观察项不进入 completion_ratio。
-10. 3 条嵌入观察（M1_OB_048、M5_OP_048、M5_OP_055）重导后必须识别为 OBSERVATION_ONLY + TEACHER_OBSERVATION。
+10. 当前嵌入观察 `M1_OB_048_V3` 重导后必须识别为 OBSERVATION_ONLY + TEACHER_OBSERVATION；`M5_OP_048_V4`、`M5_OP_055_V3` 必须保持已审核的 SCORED_ITEM + OFFLINE_RUBRIC，不能回退为旧观察语义。
 
 #### 呈现与素材
 
@@ -4380,7 +4538,7 @@ MVP 不要求保存每个 pointer move。
 18. ability_tags 包含 `"0"` 或 `"1"` 时导入失败。
 19. note 存储 ACTIVE/DRAFT 等状态值时输出数据质量告警。
 20. `supermarket_stocking` 不得作为正式 job_code 写入新题；迁移题的 `source.legacy_job_code` 保留原值。
-21. M1-M6 298 条 dry-run 模块×题型矩阵与 §0.2 实测一致（96 单选 / 68 判断 / 34 拖拽 / 97 实操 / 3 观察）。
+21. M1-M6 298 条 dry-run 模块×题型与用途矩阵与 §0.2 实测一致（96 单选 / 68 判断 / 34 拖拽 / 99 计分实操 / 1 观察）。
 22. dry-run 输出答案位置分布、素材缺口与非法字段清洗报告。
 23. 295 条旧 ACTIVE 数据重导后不得继续保持 ACTIVE。
 
@@ -4396,7 +4554,7 @@ MVP 不要求保存每个 pointer move。
 
 ---
 
-### 17.11 专业岗位示范测评专项验收
+### 17.11 专业岗位正式示范测评专项验收
 
 #### 策略与题库域
 
@@ -4480,6 +4638,44 @@ MVP 不要求保存每个 pointer move。
 
 ---
 
+### 17.12 专业岗位 298 题全量预览专项验收
+
+#### 全量目录与权限
+
+1. 隔离预览数据库导入后恰好包含 298 道当前 JOB_SPECIFIC 题，M1-M6 为 48/41/58/48/55/48，题型和用途与 §2.5.1 一致。
+2. 即使 298 题均为 DRAFT、270 项资产均未全部批准，TEACHER 仍能看到 298/298 道题及逐题交付状态；STUDENT 和无权限账号不能浏览全库、答案键或 rubric。
+3. 目录支持按模块、题型、线上/线下、复核、素材和可作答状态筛选；空筛选结果不得把全库总数误显示为 0。
+
+#### 逐题门禁与题包
+
+4. 缺资产、当前版本复核、rubric、renderer 或安全证据的题保持 `CATALOG_ONLY`；缺口只阻断该题及包含它的题包，不阻断其他已就绪题目。
+5. 首批题包不得硬编码或截断为 24 题。所有不依赖数字素材且通过其余门禁的当前题目都进入首批分包候选；数量漂移输出逐题差异。
+6. 24 道 Pilot 按当前 candidate/semantic hash 逐题继承或保留复核缺口，不得把整个集合一律通过或一律退回。
+7. 99 道线下计分题必须具备绑定当前语义 hash 的具体 0/1/2 锚点；无匹配审核证据的题不能进入预览题包。
+8. 每个题包均为系统预设 FIXED_SET，并冻结 delivery mode、题包 ID/version、题目 ID/version、资产 ID/hash、renderer 和策略版本；已被 session 引用后不得原地修改。
+9. session 创建时任何固定题非 ACTIVE、资产缺失/hash 不符、renderer 或审核门禁失败，整个当前题包失败关闭且返回稳定原因；不得运行时换题、跳题或从 DRAFT 补题。
+
+#### 运行、结果与反馈
+
+10. PREVIEW_ONLY session 正常完成后只生成“本题包作答情况”，不得新增 JOB_SKILL_SCORE、ABILITY_SCORE、TRAINING_COMPLETION 或 OPERATION_PASS_RATE，不得生成岗位等级、M1-M6 综合画像或就业建议。
+11. PREVIEW_ONLY session 红线终止时必须保存 REDLINE_HALTED、incident、binding 和红线前过程事实，但不得新增任何 result_record、FULL_REPORT 或 SAFETY_TERMINATION_REPORT；安全说明只进入本题包作答情况和学校反馈。
+12. 固定 18+6 正式示范测评继续按满分 48 生成 JOB_SKILL_SCORE 和 JOB_SKILL 报告；预览策略不得改变其题量、结果或历史报告。
+13. 素材批准批次只解锁受影响题目和新题包版本；缺少可追溯来源、许可、`rights.commercial_use_cleared = true` 或任一必需人工批准门的资产不能进入 `asset_resource.status = ACTIVE`，已引用题目/资产/题包不得原地改变。
+14. session 冻结资产后文件缺失或 hash 改变时，启动/恢复/进入题目失败关闭并记录 TECHNICAL_INTERRUPTION；已答数据不丢失且不得记 0 分。
+15. 自包含反馈 HTML 必须支持自动保存、必填校验和 JSON 导出；JSON Schema 正负 fixture 通过，Markdown 可由 JSON 重建，提交不改变题目、素材、策略或历史 manifest。外部 HTML/JSON/Markdown 只使用随机匿名引用，不得序列化原始 session/student/teacher ID。
+16. 默认反馈、AI Prompt 和日志不得包含学生姓名、身份证号、电话、邮箱、凭据或未脱敏自由文本；自由文本外发必须通过本地敏感数据检测、最终脱敏预览和教师显式确认，检测命中时失败关闭，并以正负 fixture 验收。
+
+#### 数据安全、恢复与体验
+
+17. 内容包和资产包重复导入必须幂等；同 ID 不同 hash 拒绝。已有历史 JOB_SKILL 数据库不得执行全域 DELETE、改变已引用题目语义或删除 session/event/result/report。
+18. 预览 session 继续通过 assignment/grant、durable command、event batch、恢复和安全红线回归；未解决安全事件按 `student_id + job_code + task_code` 阻断新的预览 session。
+19. 目标学校设备上 298 题目录首屏不超过 2 秒，筛选/翻页反馈不超过 500ms；键盘、触控、焦点、字号、对比度和学生低认知负荷验收通过。
+20. delivery mode 表驱动测试必须证明：冻结注册表内旧正式策略缺字段兼容为 FORMAL_DEMO；v1.0.10+ 新 policy 缺字段、注册表外旧 policy 缺字段、拼写错误和未知值分别以上述稳定错误码失败；改变题量、task_code、名称、max_score 或 fixed IDs 不得改变结论。
+21. 有效 `job-skill-preview-pack-release-responsibility-manifest-v1` 必须以签名 `user_id ↔ principal_id` 映射绑定允许执行的 ADMIN，有效 `job-skill-preview-pack-release-approval-v1` 精确绑定当前题包与全部版本/hash；当前 auth_session/CLI user_id 必须机械解析为不同于签发人的 principal。映射缺失/多值/伪造、签发与执行同 principal、签名/期限/hash/逐题门禁/写入任一失败整体回滚。发布以单一 durable 原子命令完成必要的 DRAFT→ACTIVE、PREVIEW_ONLY 授权引用、不可变 strategy 和审计，同 ID/hash 重放幂等，同 ID 异 hash 冲突，dry-run 零写入。正式先 ACTIVE 的重叠题仍可经预览批准进入题包；预览先 ACTIVE 的重叠题在正式 Phase 4/发布批准前必须以 `FORMAL_RELEASE_AUTHORITY_MISSING` 阻断正式 18+6。
+22. 仅含 OBSERVATION_ONLY 的题包必须以 `PREVIEW_PACK_SCORED_ITEM_REQUIRED` 拒绝；至少一道 SCORED_ITEM 加观察题可通过其余门禁，且观察题不进入 max_score、计分题数、分数或计分 completion ratio。
+
+---
+
 ## 18. 版本边界
 
 ### 18.1 当前 MVP 产品合同
@@ -4488,6 +4684,8 @@ MVP 不要求保存每个 pointer move。
 
 - 基础能力 42+8 测评与 ABILITY_SCORE。
 - 专业岗位固定 18+6 示范卷、0～3 观察项与 JOB_SKILL_SCORE。
+- JOB_SKILL 298 题教师全库预览、逐题交付状态、系统预设不可变题包和学校结构化反馈；24 题不再是首发内容上限。
+- AI 辅助素材分批生产、人类批准和逐题/逐题包解锁；270 项全部完成不再是全库浏览总门槛。
 - M1-M6 岗位模块画像和专业岗位报告。
 - 四步训练、拆箱与上架实操评分及固定规则训练建议。
 - 坐次暂停恢复、支持等级、合理便利、安全红线、事件审计和报告快照。
@@ -4495,17 +4693,19 @@ MVP 不要求保存每个 pointer move。
 
 ### 18.2 当前内容生产边界
 
-题目、图片和视频只有通过内容、答案、rubric、素材、专业审核、renderer 和合同校验门禁后才能进入 ACTIVE。固定示范卷只读取当前 strategy version 明确列出的题目；其他 JOB_SPECIFIC 题即使 ACTIVE，也不会自动进入 Demo。
+298 道当前题可先以 DRAFT 进入教师可见预览目录。题目通过内容、答案/rubric、素材及商用授权、专业/安全审核、renderer 和合同校验后成为 `PREVIEW_RELEASE_CANDIDATE`；正式链已将同题转为 ACTIVE 但尚无预览批准时仍保持这一预览交付状态。只有产品负责人签名的逐题包责任清单/批准通过，并由可信映射证明不同的执行主体在单一原子命令中完成必要的 DRAFT→ACTIVE、PREVIEW_ONLY 授权引用与题包发布后，才成为 `PREVIEW_READY`。正式与预览 session 必须分别验证各自发布来源，不能仅凭共享 ACTIVE 放行。固定示范卷和预览题包都只读取当前 strategy version 明确列出的题目；其他 JOB_SPECIFIC 题即使 ACTIVE，也不会自动进入任一题包。
+
+素材生产按依赖批次推进：批准资产只解除相关题目门禁，不等于全库激活，也不得原地改变已被 session 引用的题目。教师目录可见、题目可作答、题包可分配和正式结果发布是四个不同层级。
 
 BASE_ABILITY 42+8 还必须遵循 §5.4.7 的方案 A：选定 50 题通过内容、专业和技术门禁后，先经独立 Pilot 激活批准成为 `ACTIVE`，再执行真实课堂试测。这里的 `ACTIVE` 仅授予受控 Pilot 运行资格；课堂试测证据接受前，不得形成正式量表解释、就业安置方向或对外发布。课堂证据接受后仍需新的正式解释批准和策略版本，不能把 Pilot ACTIVE 自动升格为正式发布。
 
 ### 18.3 Post-MVP
 
-- 298 题全量 ACTIVE 与随机组卷、多套卷、自定义卷、单模块测评。
+- 298 题一次性全量 ACTIVE、随机组卷、多套卷、教师自由/自定义卷、单模块正式测评和跨题包可比较的正式全量计分。
 - 549 题训练变式、question_role、parent_question_id 和四层题库分层。
 - 支架前后分差、门店/文职分差、警觉衰减曲线和五类高级指标。
 - 岗位安置矩阵、对外与内部双报告。
-- 完整题库/试卷后台、视频高级行为分析和多设备 M2-M7 能力。
+- 完整试卷编辑/运营后台、视频高级行为分析和多设备 M6-M7 后续能力。
 
 ## 19. 关键工程约束清单
 
@@ -4550,7 +4750,7 @@ BASE_ABILITY 42+8 还必须遵循 §5.4.7 的方案 A：选定 50 题通过内�
 - `REDLINE_HALTED` 的 `assessment_session.redline_incident_id` 必须指向同一 `student_id + job_code + task_code` 的 `safety_incident`。
 - `REDLINE_HALTED` 的 `training_session.redline_incident_id` 必须指向同一 `student_id + job_code + task_code` 的 `safety_incident`。
 - `training_step_record.status` 不得出现 `ACTIVE` 或 `VOID`。
-- 当前全量初始化基线为 `schema.sql v0.1.17-multi-device-m4-safety-rekey`；已有真实数据升级必须提供独立 migration。M4 Step 2A 已独立验收通过；Step 2B 可开始但未在本轮实施。
+- 当前全量初始化基线为 `schema.sql v0.1.18-event-batch-v2.2`；已有真实数据升级必须提供独立 migration。M5B-15 已验收为 PASS。
 - 基础能力 CSV 题库导入不得直接发布为正式题库，必须先入 `DRAFT`，审核后再转 `ACTIVE`。
 - 完整试卷系统不属于当前 MVP，不得在现有固定策略上临时拼接实现。
 - 基础能力代码不得硬编码或假设「17+3 / 满分 40 / 阈值 70/40」等 v1.0.4 旧默认值；所有题量、满分、阈值必须从 `strategy_config` 读取。
@@ -4622,6 +4822,18 @@ BASE_ABILITY 42+8 还必须遵循 §5.4.7 的方案 A：选定 50 题通过内�
 
 ---
 
+#### v1.0.10 全量预览补充约束
+
+- 不得把 24 道 Pilot 当作 JOB_SKILL 全量预览的首发上限或总门禁。
+- 不得因 270 项资产尚未全部批准而隐藏 298 题目录、阻断无关题目或撤销其他已发布题包。
+- 不得把 DRAFT 目录可见性解释为学生可作答、题目 ACTIVE 或正式发布。
+- 不得让 PREVIEW_ONLY session 生成 JOB_SKILL_SCORE、正式岗位等级、跨题包比较、训练重点结论或就业安置建议。
+- 不得在已被 session 引用的题目、资产或题包版本上原地补挂素材、改内容或改评分语义。
+- 不得执行全域删除重导覆盖已有 JOB_SKILL 业务数据；全量内容包必须显式目标库、dry-run、幂等且可对账。
+- 不得把 AI 候选或机器预审当作人类批准；未批准资产不能写为 ACTIVE。
+
+---
+
 81. 不得把课堂试测证据设为 BASE_ABILITY 首次 Pilot 激活的前置条件。
 82. 不得在独立 Pilot 激活批准前将真实 BASE_ABILITY 候选转为 ACTIVE，或由执行激活的 ADMIN 自授批准。
 83. 不得把 BASE_ABILITY 题目 ACTIVE 解释为已完成标准化验证、正式诊断或就业安置授权。
@@ -4658,7 +4870,8 @@ BASE_ABILITY 42+8 还必须遵循 §5.4.7 的方案 A：选定 50 题通过内�
 | PRD v1.0.6 | 评分、坐次、线下分流、题目冻结和中途终止规则 | 已物化 |
 | PRD v1.0.7 | 题库数据合同、交互/呈现、评分与报告 JSON 合同 | 已物化 |
 | PRD v1.0.8 | 专业岗位题库域治理、观察、视频、施测变体和导入清洗 | 已物化 |
-| PRD v1.0.9 | 专业岗位示范测评运行时及对 v1.0.8 范围判断的最终覆盖 | 当前产品版本 |
+| PRD v1.0.9 | 专业岗位正式示范测评运行时及对 v1.0.8 范围判断的覆盖 | 已物化 |
+| PRD v1.0.10 | 298 题全量预览、教师全库可见、素材并行生产、逐题/逐题包开放和预览结果隔离 | 当前产品版本 |
 
 历史差异版保留在仓库中，仅用于审计决策来源。新需求、验收和实现不得要求读者按顺序拼接历史文件。
 
@@ -4670,7 +4883,9 @@ BASE_ABILITY 42+8 还必须遵循 §5.4.7 的方案 A：选定 50 题通过内�
 | JSON 字段与判别联合类型 | `src/shared/types/json-schemas.ts` |
 | 事件类型与 payload | `src/shared/types/event-payloads.ts` |
 | IPC 公共接口 | `src/shared/types/ipc-api.ts` |
-| 专业岗位固定卷题目与资源状态 | 当前 strategy version + `doc/assets/asset-manifest.json` |
+| 专业岗位 298 题当前版本与复核状态 | `doc/features/job-skill-shelver-runtime-authority-v1.json` |
+| 专业岗位正式卷与预览题包 | 当前不可变 strategy version；目标边界见 `doc/features/job-skill-298-full-preview-prd.md` |
+| 专业岗位素材计划与批准状态 | `doc/assets/asset-manifest.json` + `asset_resource` 运行库投影 |
 | 视觉风格和生产数量 | `doc/reference/visual-asset-master-plan.md` |
 
 ## 附录 C：历史章节兼容映射

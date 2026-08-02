@@ -1,0 +1,259 @@
+{
+  "schema_version": "preview-contract-ipc-inventory-v1",
+  "source_files": {
+    "previewChannels": "src/main/ipc/preview-channel-definitions.ts",
+    "feedbackChannels": "src/main/ipc/feedback-channel-definitions.ts",
+    "previewReadDefinitions": "src/main/application/query/preview-read-definitions.ts",
+    "feedbackReadDefinitions": "src/main/application/query/feedback-read-definitions.ts",
+    "principalCommands": "src/main/application/command/preview-principal-command-definitions.ts",
+    "releaseCommands": "src/main/application/command/preview-release-command-definitions.ts",
+    "feedbackCommands": "src/main/application/command/preview-feedback-command-definitions.ts",
+    "runtimeExecutor": "src/main/application/runtime/m5b-domain-executor.ts",
+    "handlerRegistry": "src/main/ipc/handler-registry.ts",
+    "preload": "src/preload/index.ts"
+  },
+  "source_sets": {
+    "preview_reads": [
+      "preview:getRelease",
+      "preview:getSession",
+      "preview:listSessionQuestions",
+      "preview:listSources"
+    ],
+    "preview_mutations": [
+      "preview:enrollPrincipal",
+      "preview:releasePack",
+      "preview:revokePack",
+      "preview:rotatePrincipal"
+    ],
+    "feedback_reads": [
+      "feedback:get",
+      "feedback:list"
+    ],
+    "feedback_mutations": [
+      "feedback:delete",
+      "feedback:export",
+      "feedback:purge",
+      "feedback:reconcile",
+      "feedback:repair",
+      "feedback:saveDraft",
+      "feedback:submit"
+    ],
+    "reads": [
+      "feedback:get",
+      "feedback:list",
+      "preview:getRelease",
+      "preview:getSession",
+      "preview:listSessionQuestions",
+      "preview:listSources"
+    ],
+    "mutations": [
+      "feedback:delete",
+      "feedback:export",
+      "feedback:purge",
+      "feedback:reconcile",
+      "feedback:repair",
+      "feedback:saveDraft",
+      "feedback:submit",
+      "preview:enrollPrincipal",
+      "preview:releasePack",
+      "preview:revokePack",
+      "preview:rotatePrincipal"
+    ],
+    "channels": [
+      "feedback:delete",
+      "feedback:export",
+      "feedback:get",
+      "feedback:list",
+      "feedback:purge",
+      "feedback:reconcile",
+      "feedback:repair",
+      "feedback:saveDraft",
+      "feedback:submit",
+      "preview:enrollPrincipal",
+      "preview:getRelease",
+      "preview:getSession",
+      "preview:listSessionQuestions",
+      "preview:listSources",
+      "preview:releasePack",
+      "preview:revokePack",
+      "preview:rotatePrincipal"
+    ]
+  },
+  "command_sources": {
+    "preview_principal": [
+      "preview:enrollPrincipal",
+      "preview:rotatePrincipal"
+    ],
+    "preview_release": [
+      "preview:releasePack",
+      "preview:revokePack"
+    ],
+    "feedback": [
+      "feedback:delete",
+      "feedback:export",
+      "feedback:purge",
+      "feedback:reconcile",
+      "feedback:repair",
+      "feedback:saveDraft",
+      "feedback:submit"
+    ],
+    "mutations": [
+      "feedback:delete",
+      "feedback:export",
+      "feedback:purge",
+      "feedback:reconcile",
+      "feedback:repair",
+      "feedback:saveDraft",
+      "feedback:submit",
+      "preview:enrollPrincipal",
+      "preview:releasePack",
+      "preview:revokePack",
+      "preview:rotatePrincipal"
+    ]
+  },
+  "read_definitions": {
+    "preview": [
+      "preview:getRelease",
+      "preview:getSession",
+      "preview:listSessionQuestions",
+      "preview:listSources"
+    ],
+    "feedback": [
+      "feedback:get",
+      "feedback:list"
+    ],
+    "channels": [
+      "feedback:get",
+      "feedback:list",
+      "preview:getRelease",
+      "preview:getSession",
+      "preview:listSessionQuestions",
+      "preview:listSources"
+    ]
+  },
+  "runtime_mutation_sets": {
+    "preview_principal": [
+      "preview:enrollPrincipal",
+      "preview:rotatePrincipal"
+    ],
+    "preview_release": [
+      "preview:releasePack",
+      "preview:revokePack"
+    ],
+    "feedback": [
+      "feedback:delete",
+      "feedback:export",
+      "feedback:purge",
+      "feedback:reconcile",
+      "feedback:repair",
+      "feedback:saveDraft",
+      "feedback:submit"
+    ],
+    "mutations": [
+      "feedback:delete",
+      "feedback:export",
+      "feedback:purge",
+      "feedback:reconcile",
+      "feedback:repair",
+      "feedback:saveDraft",
+      "feedback:submit",
+      "preview:enrollPrincipal",
+      "preview:releasePack",
+      "preview:revokePack",
+      "preview:rotatePrincipal"
+    ]
+  },
+  "owner_map": {
+    "preview:enrollPrincipal": {
+      "mode": "MUTATION",
+      "owner": "preview-principal-command-definitions.ts",
+      "mapping": "PRINCIPAL_BINDING_ENROLLMENT"
+    },
+    "preview:rotatePrincipal": {
+      "mode": "MUTATION",
+      "owner": "preview-principal-command-definitions.ts",
+      "mapping": "PRINCIPAL_BINDING_ROTATION"
+    },
+    "preview:releasePack": {
+      "mode": "MUTATION",
+      "owner": "preview-release-command-definitions.ts",
+      "mapping": "PREVIEW_PACK_RELEASED"
+    },
+    "preview:revokePack": {
+      "mode": "MUTATION",
+      "owner": "preview-release-command-definitions.ts",
+      "mapping": "PREVIEW_PACK_REVOKED"
+    },
+    "preview:listSources": {
+      "mode": "READ",
+      "owner": "preview-read-definitions.ts",
+      "mapping": "preview_publish_set"
+    },
+    "preview:getRelease": {
+      "mode": "READ",
+      "owner": "preview-read-definitions.ts",
+      "mapping": "preview_release_projection"
+    },
+    "preview:getSession": {
+      "mode": "READ",
+      "owner": "preview-read-definitions.ts",
+      "mapping": "preview_session_projection"
+    },
+    "preview:listSessionQuestions": {
+      "mode": "READ",
+      "owner": "preview-read-definitions.ts",
+      "mapping": "preview_session_question_projection"
+    },
+    "feedback:saveDraft": {
+      "mode": "MUTATION",
+      "owner": "preview-feedback-command-definitions.ts",
+      "mapping": "PREVIEW_FEEDBACK_DRAFT_SAVED"
+    },
+    "feedback:submit": {
+      "mode": "MUTATION",
+      "owner": "preview-feedback-command-definitions.ts",
+      "mapping": "PREVIEW_FEEDBACK_REFERENCE_COMMITTED"
+    },
+    "feedback:reconcile": {
+      "mode": "MUTATION",
+      "owner": "preview-feedback-command-definitions.ts",
+      "mapping": "PREVIEW_FEEDBACK_RECONCILED"
+    },
+    "feedback:delete": {
+      "mode": "MUTATION",
+      "owner": "preview-feedback-command-definitions.ts",
+      "mapping": "PREVIEW_FEEDBACK_TOMBSTONE_COMMITTED"
+    },
+    "feedback:purge": {
+      "mode": "MUTATION",
+      "owner": "preview-feedback-command-definitions.ts",
+      "mapping": "PREVIEW_FEEDBACK_PURGED"
+    },
+    "feedback:repair": {
+      "mode": "MUTATION",
+      "owner": "preview-feedback-command-definitions.ts",
+      "mapping": "PREVIEW_FEEDBACK_REPAIRED"
+    },
+    "feedback:export": {
+      "mode": "MUTATION",
+      "owner": "preview-feedback-command-definitions.ts",
+      "mapping": "PREVIEW_FEEDBACK_EXPORT_COMMITTED"
+    },
+    "feedback:list": {
+      "mode": "READ",
+      "owner": "feedback-query-service.ts",
+      "mapping": "preview_feedback_reference_projection"
+    },
+    "feedback:get": {
+      "mode": "READ",
+      "owner": "feedback-query-service.ts",
+      "mapping": "preview_feedback_reference_projection"
+    }
+  },
+  "counts": {
+    "channels": 17,
+    "reads": 6,
+    "mutations": 11
+  },
+  "source_digest": "20a90b64c6833bf2a320ff8b6bf44b62e951e04311cfe3d5c5edf5713f549a36"
+}

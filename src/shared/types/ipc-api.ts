@@ -159,8 +159,60 @@ import type {
   ReportLifecycleMutationResult,
   ReportsResult
 } from './report'
+import type { PreviewErrorCode } from './preview-errors'
+import type {
+  PreviewReleaseQueryParams,
+  PreviewReleaseView,
+  PreviewSessionQueryParams,
+  PreviewSessionQuestionView,
+  PreviewSessionView,
+  PreviewSourceQueryParams,
+  PreviewSourceView
+} from './preview-ipc'
+import type {
+  FeedbackGetQueryParams,
+  FeedbackListQueryParams,
+  FeedbackQueryErrorCode,
+  FeedbackReferenceView
+} from './feedback-ipc'
+import type {
+  ActivateInstallationParams,
+  ActivationOperationResult,
+  ActivationSnapshot,
+  ConfigureActivationServerParams
+} from './activation'
+import type {
+  QuestionBankCatalogParams,
+  QuestionBankCatalogResult
+} from './question-bank-catalog'
+
+export type PreviewPrincipalCommandResult =
+  | { success: true; mappingId: string; status: 'ACTIVE'; eventId: string }
+  | { success: false; errorCode: PreviewErrorCode | 'FORBIDDEN' | 'VALIDATION_ERROR' | 'SYSTEM_ERROR' }
+
+export type PreviewReadError = { success: false; errorCode: PreviewErrorCode | 'FORBIDDEN' }
+export type PreviewSourceListResult = readonly PreviewSourceView[] | PreviewReadError
+export type PreviewReleaseResult = PreviewReleaseView | PreviewReadError
+export type PreviewSessionResult = PreviewSessionView | PreviewReadError
+export type PreviewSessionQuestionsResult = readonly PreviewSessionQuestionView[] | PreviewReadError
+export type FeedbackQueryResult<T> = T | { success: false; errorCode: FeedbackQueryErrorCode | PreviewErrorCode }
+export type PreviewReleaseCommandResult =
+  | { success: true; commandType: 'preview:releasePack' | 'preview:revokePack'; eventId: string; releaseId: string }
+  | { success: false; errorCode: PreviewErrorCode | 'FORBIDDEN' | 'VALIDATION_ERROR' | 'SYSTEM_ERROR' }
+export type PreviewFeedbackCommandResult =
+  | { success: true; commandType: string; eventId: string }
+  | { success: false; errorCode: PreviewErrorCode | 'FORBIDDEN' | 'VALIDATION_ERROR' | 'SYSTEM_ERROR' }
 
 export interface IpcApi {
+  activation: {
+    getStatus: () => Promise<ActivationSnapshot>
+    configureServer: (params: ConfigureActivationServerParams) => Promise<ActivationOperationResult>
+    activate: (params: ActivateInstallationParams) => Promise<ActivationOperationResult>
+    validate: () => Promise<ActivationOperationResult>
+  }
+  questionBank: {
+    list: (params: QuestionBankCatalogParams) => Promise<QuestionBankCatalogResult>
+  }
   runtime: {
     getHealth: () => Promise<{
       schemaVersion: 'runtime-health-v1'
@@ -315,5 +367,26 @@ export interface IpcApi {
     ) => Promise<ReportsResult<ReportLifecycleMutationResult>>
     lock: (params: LockReportParams) => Promise<ReportsResult<ReportLifecycleMutationResult>>
     export: (params: ExportReportParams) => Promise<ReportsResult<ExportReportResult>>
+  }
+  preview: {
+    enrollPrincipal: (params: { enrollmentPackage: Record<string, unknown> }) => Promise<PreviewPrincipalCommandResult>
+    rotatePrincipal: (params: { rotationPackage: Record<string, unknown> }) => Promise<PreviewPrincipalCommandResult>
+    releasePack: (params: { releasePackage: Record<string, unknown> }) => Promise<PreviewReleaseCommandResult>
+    revokePack: (params: { revokePackage: Record<string, unknown> }) => Promise<PreviewReleaseCommandResult>
+    listSources: (params: PreviewSourceQueryParams) => Promise<PreviewSourceListResult>
+    getRelease: (params: PreviewReleaseQueryParams) => Promise<PreviewReleaseResult>
+    getSession: (params: PreviewSessionQueryParams) => Promise<PreviewSessionResult>
+    listSessionQuestions: (params: PreviewSessionQueryParams) => Promise<PreviewSessionQuestionsResult>
+  }
+  feedback: {
+    list: (params: FeedbackListQueryParams) => Promise<FeedbackQueryResult<readonly FeedbackReferenceView[]>>
+    get: (params: FeedbackGetQueryParams) => Promise<FeedbackQueryResult<FeedbackReferenceView>>
+    saveDraft: (params: unknown) => Promise<PreviewFeedbackCommandResult>
+    submit: (params: unknown) => Promise<PreviewFeedbackCommandResult>
+    reconcile: (params: unknown) => Promise<PreviewFeedbackCommandResult>
+    delete: (params: unknown) => Promise<PreviewFeedbackCommandResult>
+    purge: (params: unknown) => Promise<PreviewFeedbackCommandResult>
+    repair: (params: unknown) => Promise<PreviewFeedbackCommandResult>
+    export: (params: unknown) => Promise<PreviewFeedbackCommandResult>
   }
 }

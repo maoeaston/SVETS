@@ -22,6 +22,13 @@ sources:
   ipc_contract:
     shared_type_source: src/shared/types/ipc-api.ts
     preload_whitelist: src/preload/index.ts
+  job_skill_preview_contract_impl_plan: doc/features/job-skill-298-full-preview-persistence-contract-impl.md
+  job_skill_preview_contract_impl_review: doc/features/job-skill-298-full-preview-persistence-contract-impl-r3-review.md
+  job_skill_preview_contract_impl_acceptance: doc/features/job-skill-298-full-preview-persistence-contract-impl-acceptance.md
+  job_skill_preview_contract_impl_code_review: doc/features/job-skill-298-full-preview-persistence-contract-impl-code-review-r3.md
+  school_demo_activation_prd: doc/features/school-demo-first-online-activation-prd.md
+  school_demo_activation_prd_review: doc/features/school-demo-first-online-activation-prd-review.md
+  school_demo_activation_impl_plan: doc/features/school-demo-first-online-activation-impl.md
   doc_index: doc/index.md
 
 commands:
@@ -42,6 +49,7 @@ commands:
   m5a_command_boundary_check: npm run contract:m5a:command-boundary:check
   m5a_contract_scope_check: npm run contract:m5a:scope:check -- --base 40541c82ef374f28ce300365e0e5cc82423dd99a
   m5a_isolated_db_verify: npm run db:m5a:isolated:verify
+  preview_contract_parity: npm run contract:preview:parity -- --db <explicit-absolute-isolated-db-path>
 
 risk_triggers:
   R3:
@@ -74,8 +82,10 @@ manual_acceptance:
   - multi_device_assignment_flow
 
 notes:
-  - 当前工程 Schema 基线为 v0.1.18-event-batch-v2.2：M5B-14 已接通 production runtime、启动迁移、IPC/preload 与 renderer runtime health 边界。M4 Step 2A 与 M5A Step 2B 已 ACCEPTED；M5B-15 自动化验收、当前 HEAD 独立 R3 复核与 isolated userData 人工业务走查均已 PASS，见 doc/features/event-batch-v2.2-runtime-m5b15-r3-review.md。BASE_ABILITY Step 1 已重验为 PASS，42+8 实施计划第二轮 R3 复审（doc/features/base-ability-42plus8-impl-r3-revalidation-review-2.md）结论为 PASS（审查者与作者/修复者跨会话独立，证据可复算）；首轮 CONDITIONAL_PASS 记录保留。P1-01（计划当前 v0.1.18/M5B 基线说明）和 P1-02（workbook↔SQL 对账强制门禁及字段漂移负向测试）均已关闭。下一工作项是 BASE_ABILITY Step 3 评估。
-  - AGENTS.md 的工程基线摘要已同步为 v0.1.18-event-batch-v2.2（M5B-15 PASS）。当前权威 Schema 声明仍以本文件与 src/main/db/schema.sql 为准。
-  - MVP_PRD_v1.0.9-authoritative.md declares src/main/db/schema.sql as the database DDL source of truth.
-  - MVP_PRD_v1.0.9-authoritative.md declares src/shared/types/json-schemas.ts and src/shared/types/event-payloads.ts as runtime JSON and event type sources; the Markdown specs remain readable historical references.
+  - 2026-08-02 产品负责人确认“学校演示和业务闭环优先”：预览版与正式版共用同一应用，使用可配置地址的普通在线激活；教师/管理员可直接浏览 298 道 JOB_SKILL 题，当前固定 18+6 负责跑通测评到报告。PREVIEW_CONTRACT_V1 的自定义信任锚、签名、principal 和 registry promotion 保留为历史兼容/实验能力，但不再是题库目录或主业务演示的前置门。详细合同见 doc/features/school-demo-first-online-activation-prd.md。该 R3 产品方向已经用户批准；独立 Reviewer 服务不可用，当前技术复核为 CONDITIONAL_PASS_NON_INDEPENDENT，不得宣称独立 PASS。
+  - authoritative_prd 路径为兼容既有引用保留 MVP_PRD_v1.0.9-authoritative.md 文件名，但正文当前权威版本为 PRD v1.0.10-job-skill-298-full-preview。后续会话必须按“298 题全量入预览库、教师全库可见、素材 AI 并行生产、逐题包开放”理解 JOB_SKILL 当前范围；固定 18+6 仅为正式计分路径。该产品范围已经确认，对应产品 Mini-PRD 已通过独立 R3 闭合复核（PASS），状态为 APPROVED；独立持久化/权限数据合同 Mini-PRD 也已通过最终独立 R3 复审（PASS，P0/P1=0，P2=2）。其实现计划已完成 Step 0–10 自动化闭合，当前状态为 `AUTOMATION_PASS_MANUAL_PENDING`；原产品计划仍不等同于已交付题库、素材或 UI。
+  - 当前工程 Schema 基线为 v0.1.19-job-skill-preview-contract-v1，前置 M5B 基线为 v0.1.18-event-batch-v2.2。M5B-15、预览 migration、principal、preview session/safety、feedback vault/reference、17 通道 IPC 和 readiness verifier 的自动化证据已通过；fresh/current isolated DB 的 `preview_contract_registry` 仍为 INSTALLING，未执行默认库 promotion。M4 Step 2A 与 M5A Step 2B 已 ACCEPTED；M5B-15 见 doc/features/event-batch-v2.2-runtime-m5b15-r3-review.md。BASE_ABILITY 与既有用户改动保持原样。
+  - AGENTS.md 的工程基线摘要已同步为 v0.1.19-job-skill-preview-contract-v1（前置 M5B-15 PASS）。当前权威 Schema 声明仍以本文件与 src/main/db/schema.sql 为准；实现级自动化验收和人工未完成项分别见 `doc/features/job-skill-298-full-preview-persistence-contract-impl-acceptance.md` 与 `doc/features/job-skill-298-full-preview-persistence-contract-impl-code-review-r3.md`。
+  - MVP_PRD_v1.0.9-authoritative.md（正文 v1.0.10）declares src/main/db/schema.sql as the database DDL source of truth.
+  - MVP_PRD_v1.0.9-authoritative.md（正文 v1.0.10）declares src/shared/types/json-schemas.ts and src/shared/types/event-payloads.ts as runtime JSON and event type sources; the Markdown specs remain readable historical references.
   - No CI workflow directory was found in this checkout during installation.

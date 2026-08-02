@@ -200,6 +200,29 @@ describe('M5B event batch runtime inventory', () => {
     expect(scan.production_prepare_oracle_callsites.length).toBeGreaterThan(0)
   })
 
+  it('tracks school-demo additions separately from the frozen M5B-15 digest', () => {
+    const addendum = scanM5bCheckout(projectRoot).post_m5b_school_demo
+    expect(addendum.channels.map((entry) => entry.channel).sort()).toEqual([
+      'activation:activate',
+      'activation:configureServer',
+      'activation:getStatus',
+      'activation:validate',
+      'questionBank:list'
+    ])
+    expect(addendum.direct_callsites).toHaveLength(9)
+    expect(new Set(addendum.direct_callsites.map((entry) => entry.target_class))).toEqual(new Set([
+      'ASSESSMENT_PREPARED_PROJECTOR_REPAIR',
+      'CONTENT_PACK_DEMO_ACTIVATION',
+      'CONTENT_PACK_DOMAIN_SEED',
+      'SCORING_PLANNING_PROJECTION_SEED',
+      'TEST_ONLY_PLANNING_CLONE_FK_PARITY'
+    ]))
+    expect(addendum.capability_callsites.map((entry) => entry.target_class).sort()).toEqual([
+      'ACTIVATION_BOUNDARY_REGISTRATION',
+      'QUESTION_BANK_CATALOG_BOUNDARY_REGISTRATION'
+    ])
+  })
+
   it('classifies all 46 command rows and binds unique differential evidence', () => {
     const { inventory } = loadM5bInventoryDocuments(projectRoot)
     const classes = inventory.commands.reduce((counts, entry) => {

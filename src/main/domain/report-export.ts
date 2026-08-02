@@ -8,6 +8,7 @@ import { parseReportContent } from './report-contract'
 import { sha256CanonicalJson } from './report-canonical'
 import { renderReportHtml } from './report-html'
 import { recordReportExportError } from './report-errors'
+import { assertFormalAssessmentSession } from './preview/preview-session-guard'
 import type { ReportCommandCoordinator, ReportCommandKey } from './report-command-coordinator'
 import type { ReportExportedV2Payload } from '@shared/types/event-payloads'
 import type { ReportLifecycleStatus, ReportPresentationDocument } from '@shared/types/report'
@@ -19,6 +20,7 @@ interface ExportReportRow {
   report_id: string
   report_type: 'FULL_REPORT' | 'SAFETY_TERMINATION_REPORT'
   student_id: string
+  source_aggregate_type: string | null
   source_aggregate_id: string | null
   report_title: string
   report_content_json: string
@@ -117,6 +119,7 @@ export function prepareReportHtmlExport(
   if (!isNonEmptyString(reportId)) throw new ReportExportError('VALIDATION_ERROR', 'reportId is required')
   const row = readReportRow(db, reportId)
   if (!row) throw new ReportExportError('NOT_FOUND', `Report ${reportId} was not found`)
+  assertFormalReportSource(db, row)
   const content = assertExportableRow(row)
   const pageDocument = buildReportPresentation(content, row.report_id)
   const exportDocument = buildReportExportPresentation(pageDocument, row.student_id)
@@ -180,6 +183,7 @@ export async function completeReportHtmlExport(
       buildIntent: () => {
         const current = readReportRow(db, params.prepared.reportId)
         if (!current) throw new ReportExportError('REPORT_STATE_CONFLICT', 'Report disappeared before export completion')
+        assertFormalReportSource(db, current)
         const content = assertExportableRow(current)
         const pageDocument = buildReportPresentation(content, current.report_id)
         const exportDocument = buildReportExportPresentation(pageDocument, current.student_id)
@@ -260,11 +264,18 @@ export function buildExportDocumentForTest(document: ReportPresentationDocument,
 function readReportRow(db: DBAdapter, reportId: string): ExportReportRow | null {
   return db.prepare(
     `SELECT report_id, report_type, student_id, source_aggregate_id, report_title, report_content_json,
+            source_aggregate_type,
             placement_review_by, placement_review_at, lineage_key, content_hash,
             contract_validation_status, status
        FROM task_report
       WHERE report_id = ?`
   ).get(reportId) as ExportReportRow | undefined ?? null
+}
+
+function assertFormalReportSource(db: DBAdapter, row: ExportReportRow): void {
+  if (row.source_aggregate_type === 'ASSESSMENT_SESSION' && row.source_aggregate_id) {
+    assertFormalAssessmentSession(db, row.source_aggregate_id, 'formal report export')
+  }
 }
 
 function assertExportableRow(row: ExportReportRow): ReportContentJson {

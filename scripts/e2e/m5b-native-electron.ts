@@ -11,6 +11,12 @@ import {
   EVENT_BATCH_SCHEMA_VERSION,
   inspectEventBatchStructure
 } from '../../src/main/db/event-batch-migration'
+import {
+  PREVIEW_CONTRACT_INDEX_NAMES,
+  PREVIEW_CONTRACT_TABLE_NAMES,
+  PREVIEW_CONTRACT_TRIGGER_NAMES
+} from '../../src/main/db/preview-contract-migration'
+import { PREVIEW_CONTRACT_MIGRATION_ID } from '../../src/shared/types/preview-contract'
 
 const root = mkdtempSync(join(tmpdir(), 'svets-m5b-native-'))
 const dbPath = join(root, 'xc-career-guide.db')
@@ -40,6 +46,9 @@ try {
     database.pragma('foreign_keys = ON')
     database.exec(schema)
     database.exec(`
+      ${PREVIEW_CONTRACT_TRIGGER_NAMES.map((name) => `DROP TRIGGER IF EXISTS ${name};`).join('\n      ')}
+      ${PREVIEW_CONTRACT_INDEX_NAMES.map((name) => `DROP INDEX IF EXISTS ${name};`).join('\n      ')}
+      ${[...PREVIEW_CONTRACT_TABLE_NAMES].reverse().map((name) => `DROP TABLE IF EXISTS ${name};`).join('\n      ')}
       DROP INDEX IF EXISTS ux_command_idempotency;
       DROP INDEX IF EXISTS idx_applied_event_batch_segment;
       DROP INDEX IF EXISTS idx_processed_event_batch;
@@ -49,6 +58,7 @@ try {
       DROP TABLE IF EXISTS command_log;
     `)
     database.prepare('DELETE FROM schema_migration WHERE migration_id = ?').run(EVENT_BATCH_MIGRATION_ID)
+    database.prepare('DELETE FROM schema_migration WHERE migration_id = ?').run(PREVIEW_CONTRACT_MIGRATION_ID)
     writeFileSync(join(root, 'action_log.jsonl'), '{"event":"m5b-native-history"}\n', 'utf8')
     const adapter = asAdapter(database)
     assert(inspectEventBatchStructure(adapter) === 'ABSENT', 'native fixture is not exact M4')

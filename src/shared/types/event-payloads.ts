@@ -3,9 +3,11 @@
 import type {
   AbilityTag,
   JobSkillResultPayload,
+  QuestionPolicyBaseAbility,
   ReportContentJson,
   ReportScope,
   ReportType,
+  ScoringPolicyBaseAbility,
   StrategyType,
   TaskResultSnapshot,
   TeacherObservationPayload
@@ -23,6 +25,19 @@ import type {
   BusinessSessionAssignmentStatus,
   SupportedAssignmentConfirmationMethod
 } from './assignment'
+import type {
+  PreviewApprovalRef,
+  PreviewCanonicalReferenceSet,
+  PreviewContractVersion,
+  PreviewSessionSnapshot,
+  PreviewSourceRef,
+  PreviewPublishBinding
+} from './preview-contract'
+import type {
+  FeedbackCommitProof,
+  FeedbackOperation,
+  FeedbackReferenceStatus
+} from './preview-feedback'
 
 export type AggregateType =
   | 'ASSESSMENT_SESSION'
@@ -35,6 +50,10 @@ export type AggregateType =
   | 'TASK_REPORT'
   | 'SAFETY_INCIDENT'
   | 'ASSET_RESOURCE'
+  | 'PREVIEW_RELEASE'
+  | 'PREVIEW_SESSION'
+  | 'PREVIEW_FEEDBACK'
+  | 'PRINCIPAL_BINDING'
   | 'SYSTEM'
 
 export type ActorRole = 'STUDENT' | 'TEACHER' | 'ADMIN' | 'SYSTEM'
@@ -83,6 +102,22 @@ export type EventType =
   | 'ASSIGNMENT_ASSESSMENT_STARTED'
   | 'GRANT_REBOUND'
   | 'ASSIGNMENT_RELEASED'
+  | 'PRINCIPAL_BINDING_ENROLLMENT'
+  | 'PRINCIPAL_BINDING_ROTATION'
+  | 'PREVIEW_PACK_RELEASED'
+  | 'PREVIEW_PACK_REVOKED'
+  | 'PREVIEW_SESSION_STARTED'
+  | 'PREVIEW_SESSION_COMPLETED'
+  | 'PREVIEW_SESSION_ABORTED'
+  | 'PREVIEW_SESSION_TECHNICAL_INTERRUPTION'
+  | 'PREVIEW_SAFETY_INCIDENT_CREATED'
+  | 'PREVIEW_FEEDBACK_DRAFT_SAVED'
+  | 'PREVIEW_FEEDBACK_REFERENCE_COMMITTED'
+  | 'PREVIEW_FEEDBACK_RECONCILED'
+  | 'PREVIEW_FEEDBACK_TOMBSTONE_COMMITTED'
+  | 'PREVIEW_FEEDBACK_PURGED'
+  | 'PREVIEW_FEEDBACK_REPAIRED'
+  | 'PREVIEW_FEEDBACK_EXPORT_COMMITTED'
 
 export interface ActionLogEntry {
   event_id: string
@@ -117,6 +152,74 @@ export interface SessionStartedPayload {
   online_question_count: number
   offline_question_count: number
   question_ids: string[]
+  initial_delivery_phase?: 'PREPARED'
+  observation_template_id?: string | null
+}
+
+// ---------------------------------------------------------------------------
+// SESSION_STARTED payload v2 — BASE_ABILITY 业务层完整冻结快照。
+//
+// 与 M5B durable batch 的 AssessmentSessionStartedBatchV2Payload 不同：
+// 那个是 envelope 层的 batch 信封包装（携带轻量 session_questions + batch 元数据）；
+// 本类型是 envelope schema_version=1 内的业务 payload_version=2 判别式 payload，
+// 冻结逐题完整合同（content / scoring / renderer / 资产 hash），使冷启动删除业务投影后
+// 仅凭 action log + 基线静态外键数据即可恢复完全相同的 session/question 投影，
+// payload-v2 reducer 不再回查 question_bank。
+//
+// envelope 保持 schema_version=1；业务版本只由 payload 内必填 payload_version=2 判定，
+// 不占用 F7 report 事件的 envelope schema v2。payload-v1 历史事件保留原回查分支。
+// ---------------------------------------------------------------------------
+
+/** SESSION_STARTED v2 逐题冻结快照。reducer 仅据此建立 assessment_session_question，不回查题库。 */
+export interface SessionQuestionSnapshotV2 {
+  question_id: string
+  question_version: number
+  question_order: number
+  question_phase: 'ONLINE' | 'OFFLINE'
+  bank_domain: 'BASE_ABILITY' | 'JOB_SPECIFIC'
+  module_type: AbilityTag
+  question_type: 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG' | 'SOFTWARE_TASK' | 'OFFLINE_OPERATION'
+  item_usage: 'SCORED_ITEM' | 'OBSERVATION_ONLY'
+  job_module_code: string | null
+  content_json: unknown
+  content_hash: string
+  scoring_rule_json: unknown
+  scoring_hash: string
+  renderer_key: string
+  renderer_requirement_hash: string
+  asset_ids: string[]
+  asset_hash: string | null
+}
+
+/** SESSION_STARTED v2 冻结策略快照。会话引用同一版本 strategy_config 的不可漂移事实。 */
+export interface SessionStrategySnapshotV2 {
+  strategy_id: string
+  strategy_type: StrategyType
+  strategy_version: number
+  job_code: string
+  task_code: string
+  question_policy: QuestionPolicyBaseAbility
+  scoring_policy: ScoringPolicyBaseAbility
+  paper_seed: string
+  selected_question_set_hash: string
+}
+
+/** SESSION_STARTED payload v2（envelope schema_version=1 + 业务 payload_version=2）。 */
+export interface SessionStartedPayloadV2 {
+  payload_version: 2
+  session_id: string
+  business_session_id?: string
+  student_id: string
+  job_code: string
+  task_code: string
+  online_question_count: number
+  offline_question_count: number
+  strategy: SessionStrategySnapshotV2
+  questions: SessionQuestionSnapshotV2[]
+  selected_question_set_hash: string
+  content_root_hash: string
+  scoring_root_hash: string
+  renderer_requirements_root_hash: string
   initial_delivery_phase?: 'PREPARED'
   observation_template_id?: string | null
 }
@@ -1112,3 +1215,148 @@ export interface TeacherObservationRecordedPayload {
   recorded_by: string
   recorded_at: string
 }
+
+/** M5B preview contract metadata. Preview events are never interpreted as formal events. */
+export interface PreviewEventBatchMetadataV1 {
+  event_payload_version: 1
+  batch_context: EventBatchContextV1Payload
+  actor_role: 'ADMIN' | 'TEACHER' | 'SYSTEM'
+  app_version: string
+  correlation_id: string
+  contract_version: PreviewContractVersion
+  allowed_shell_kind: 'PREVIEW_SHELL'
+  root_result?: Record<string, unknown>
+}
+
+export interface PrincipalBindingEnrollmentPayload extends PreviewEventBatchMetadataV1 {
+  enrollment_id: string
+  mapping_id: string
+  target_installation_id: string
+  organization_id: string
+  user_id: string
+  principal_id: string
+  mapping_version: number
+  mapping_hash: string
+  source_manifest_id: string
+  source_manifest_hash: string
+  effective_at: string
+  expires_at: string
+  signer_key_id: string
+  signature: string
+  status_after: 'ACTIVE'
+}
+
+export interface PrincipalBindingRotationPayload extends PreviewEventBatchMetadataV1 {
+  old_mapping_id: string
+  old_mapping_hash: string
+  new_mapping_id: string
+  new_mapping_hash: string
+  target_installation_id: string
+  organization_id: string
+  old_user_id: string
+  old_principal_id: string
+  new_user_id: string
+  new_principal_id: string
+  effective_at: string
+  expires_at: string
+  reason: string
+  signer_key_id: string
+  signature: string
+  old_status_after: 'SUPERSEDED' | 'REVOKED'
+  new_status_after: 'ACTIVE'
+}
+
+export interface PreviewPackReleasedPayload extends PreviewEventBatchMetadataV1 {
+  release_id: string
+  delivery_mode: 'PREVIEW_ONLY'
+  source_ref: PreviewSourceRef
+  references: PreviewCanonicalReferenceSet
+  binding: PreviewPublishBinding
+  executor_principal_id: string
+  approval_ref: PreviewApprovalRef
+  status_before: 'DRAFT'
+  status_after: 'ACTIVE'
+}
+
+export interface PreviewPackRevokedPayload extends PreviewEventBatchMetadataV1 {
+  release_id: string
+  source_ref_id: string
+  revoked_at: string
+  reason_code: string
+  executor_principal_id: string
+  status_before: 'ACTIVE'
+  status_after: 'REVOKED'
+}
+
+export interface PreviewSessionStartedPayload extends PreviewEventBatchMetadataV1 {
+  session_id: string
+  assessment_session_id: string
+  snapshot: PreviewSessionSnapshot
+  status_before: 'PREPARED'
+  status_after: 'ACTIVE'
+}
+
+export interface PreviewSessionCompletedPayload extends PreviewEventBatchMetadataV1 {
+  session_id: string
+  assessment_session_id: string
+  snapshot_root_hash: string
+  completed_at: string
+  status_before: 'ACTIVE'
+  status_after: 'COMPLETED'
+  result_suppressed: true
+}
+
+export interface PreviewSessionAbortedPayload extends PreviewEventBatchMetadataV1 {
+  session_id: string
+  assessment_session_id: string
+  reason_code: string
+  aborted_at: string
+  status_before: 'ACTIVE'
+  status_after: 'ABORTED'
+  result_suppressed: true
+}
+
+export interface PreviewSessionTechnicalInterruptionPayload extends PreviewEventBatchMetadataV1 {
+  session_id: string
+  assessment_session_id: string
+  reason_code: string
+  interruption_at: string
+  status_before: 'ACTIVE'
+  status_after: 'TECHNICAL_INTERRUPTED'
+  result_suppressed: true
+}
+
+export interface PreviewSafetyIncidentCreatedPayload extends PreviewEventBatchMetadataV1 {
+  incident_id: string
+  session_id: string
+  assessment_session_id: string
+  student_id: string
+  job_code: string
+  task_code: string
+  reason_code: string
+  occurred_at: string
+  status_before: 'ACTIVE'
+  status_after: 'REDLINE_HALTED'
+  preview_redline_ref: string
+  result_suppressed: true
+}
+
+export interface PreviewFeedbackEventPayload extends PreviewEventBatchMetadataV1 {
+  feedback_id: string
+  revision_no: number
+  operation: FeedbackOperation
+  commit_proof: FeedbackCommitProof
+  status_after: FeedbackReferenceStatus
+}
+
+export type PreviewEventPayload =
+  | PrincipalBindingEnrollmentPayload
+  | PrincipalBindingRotationPayload
+  | PreviewPackReleasedPayload
+  | PreviewPackRevokedPayload
+  | PreviewSessionStartedPayload
+  | PreviewSessionCompletedPayload
+  | PreviewSessionAbortedPayload
+  | PreviewSessionTechnicalInterruptionPayload
+  | PreviewSafetyIncidentCreatedPayload
+  | PreviewFeedbackEventPayload

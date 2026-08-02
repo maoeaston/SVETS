@@ -1,37 +1,40 @@
-# 新会话启动 Prompt（当前模板）
+# 新会话启动 Prompt（学校演示体验收口）
 
-> 当前以 Pilot R0 基础底座开发为主线推进；跨会话进度一律以 `.continue-here.md` 为准。`impl/` 目录主体是历史实施记录，不再把“待实现”状态复制到新会话。
+> 跨会话进度以 `.continue-here.md` 为准。本 Prompt 只承接下一条报告展示层原子动作，不把它扩大成整轮产品交付。
 
 ---开始复制---
 
 你正在维护 **SVETS（炫灿-职途向导系统）**，技术栈为 Electron + Vue3 + TypeScript + SQLite。
 
-请按顺序读取：
+请先按顺序读取：
 
 1. `AGENTS.md`
 2. `doc/会话启动.md`
-3. `.continue-here.md`，并分别复述 `Project Direction`、`Current Milestone`、`Next Action` 和 `Milestone Queue`
-4. `.continue-here.md` 的 `Relevant Files`（把它们当成当前任务真正必读文件集）
-5. `doc/specs/MVP_PRD_v1.0.9-authoritative.md`（仅在任务涉及产品范围、结果、题库、评分、报告或验收时读取相关章节）
-6. `src/main/db/schema.sql`（仅在任务涉及数据库、状态机或约束时读取）
-7. 当前任务对应的 `doc/features/*-prd.md` 与 `*-impl.md`
+3. `.continue-here.md`，复述 `Project Direction`、`Current Milestone`、`Next Action` 和 `Milestone Queue`
+4. `doc/specs/baseline.yaml`、`doc/specs/project-invariants.md`、`doc/ai/vibe-workflow-contract.md`
+5. `doc/features/school-demo-first-online-activation-prd.md` 与 `doc/features/school-demo-first-online-activation-impl.md`
+6. 下一动作直接涉及的报告展示文件和测试
 
-当前工程事实：
+当前已确认事实：
 
-- 产品合同：PRD v1.0.9 consolidated authoritative baseline
-- 项目方向：Pilot R0 是阶段收口，不是项目终点；后续目标是 Full Product 1.0，AI 自动评分和 AI 岗位推荐是 1.0 必选能力
-- 权威边界：`doc/specs/FULL_PRODUCT_PRD_v2.0-draft.md` 仍是待修订草案，`doc/features/full-product-1.0-planning-review-2026-07-18.md` 仅是审查快照；不得把两者静默当成已批准产品合同
-- schema：v0.1.15-multi-device-m3-grant-assignment
-- 多设备 M2 已落地 business_session 父记录、assessment delivery_phase / event_sequence_version / observation_template_id、assessment/training business_session_id 和 D2-D6/D8 约束；M3 已落地本地 Grant/Assignment 最小闭环、D1、D9-D11 和 assignment:* IPC；learning_session、M5 command_log/REST/SSE、自动 JSONL 冷启动重放仍未落地
-- v0.1.12 的 JOB_SKILL_ASSESSMENT、bank_domain、TEACHER_OBSERVATION、JOB_SKILL_SCORE 已落地
-- 历史 PRD 差异版和 `doc/specs/impl/` 中的“待实现”描述只用于追溯，不代表当前代码状态
+- 学校演示闭环已通过临时数据库和 Electron E2E：在线激活 → 教师查看 JOB_SKILL 题库 → 学生完成 18 道线上题 → 教师完成 6 道线下评分 → 生成有效报告。
+- 题库数量为 JOB_SPECIFIC 全部 298 道、当前使用 24 道、待审核 274 道；preview registry 仍为 `INSTALLING`，不需要 promotion 才能进行学校演示。
+- 当前 Schema 基线为 `v0.1.19-job-skill-preview-contract-v1`；默认数据库没有访问或写入，不能把隔离临时库证据解释成生产 `READY`。
+- 机器枚举和报告 JSON 是稳定合同。`SUPERMARKET_SHELVER`、`LEVEL_COMPETENT` 等值必须保留在主进程、事件和持久化数据中；本次只改 renderer/shared presentation 的用户可见中文。
 
-本次任务：
+本次唯一原子动作：
 
-<!-- 在这里写清具体目标、范围和验收标准。 -->
+1. 检查 `src/shared/report-presentation.ts`、`src/renderer/src/components/report/report-page-state.ts`、报告 store/view 及相关测试，列出学校用户可见的岗位、能力等级、报告状态、版本/修订和合同校验词。
+2. 将这些展示词映射为清楚的中文，例如“超市理货员”“达到要求/需要加强/未达标”“内容校验”“报告版本”；不要修改底层枚举、Schema、`report_content_json`、事件载荷或历史复现语义。
+3. 保持报告列表、详情、导出和异常状态的语义一致；为新增映射补定向测试。
+4. 运行 `npm run typecheck`、`npm run lint`、相关报告测试和 `npm run build`；如修改 `doc/`，再运行 `npm run docs:index:check`。
 
-不得把本次原子任务误写成整个项目的终点；任务完成时必须保留 `.continue-here.md` 中的项目总目标和后续里程碑。
+约束：
 
-修改前先核对当前代码和 Git 状态；发现 PRD、schema 与实现不一致时标记 `[!]`，不要按历史目标文档覆盖当前实现。
+- 不访问、初始化、promotion 或修改默认数据库。
+- 不激活题目、不改策略、不覆盖题库审核结果，不把 24 道误写成题库总量。
+- 不把 `PREVIEW_CONTRACT_V1` 的隔离 parity/native harness 写成全局 `READY`。
+- 发现 PRD、Schema、代码或报告快照不一致时标记 `[!]` 并停止扩大范围。
+- 完成当前原子动作后更新 `.continue-here.md`，写明实际验证结果和下一条原子动作；不要顺手实现题库入口、学生页或高级设置。
 
 ---结束复制---

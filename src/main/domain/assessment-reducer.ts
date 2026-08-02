@@ -26,7 +26,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { DBAdapter } from '../db/interface'
 import type {
   ActionLogEntry,
-  SessionStartedPayload,
+  SessionStartedPayloadV2,
   SessionFirstQuestionActivatedPayload,
   AssignmentAssessmentStartedPayload,
   AnswerSubmittedPayload,
@@ -43,6 +43,9 @@ import type {
   ResultCalculatedPayload,
   TeacherObservationRecordedPayload
 } from '@shared/types/event-payloads'
+
+import { parseSessionStartedPayload } from './assessment-event-contract'
+import { assertFormalAssessmentSession } from './preview/preview-session-guard'
 
 type BusinessSessionType = 'ASSESSMENT' | 'TRAINING' | 'LEARNING'
 type AssessmentDeliveryPhase =
@@ -258,6 +261,11 @@ function resolveJobSkillPhaseAfterTeacherObservation(
  * 未知 event_type 静默 no-op（向前兼容 schema_version 升级后的新事件回放旧二进制）。
  */
 export function applyAssessmentEvent(db: DBAdapter, event: ActionLogEntry): void {
+  const payload = event.payload as unknown as Record<string, unknown>
+  const targetSessionId = event.event_type === 'RESULT_CALCULATED'
+    ? payload.source_type === 'ASSESSMENT_SESSION' ? payload.source_id : undefined
+    : payload.session_id
+  if (typeof targetSessionId === 'string') assertFormalAssessmentSession(db, targetSessionId, 'formal assessment event')
   switch (event.event_type) {
     case 'SESSION_STARTED':
       applySessionStarted(db, event)
@@ -381,7 +389,13 @@ function applyEmotionCollapseRecorded(db: DBAdapter, event: ActionLogEntry): voi
 // SESSION_STARTED → 创建 business_session + assessment_session + question snapshot.
 // 幂等：先修复/校验父记录，再判断子会话是否已存在。
 function applySessionStarted(db: DBAdapter, event: ActionLogEntry): void {
-  const p = event.payload as unknown as SessionStartedPayload
+  // payload 版本判别：v2 走不回查 question_bank 的冻结快照分支；v1 保留原回查逻辑。
+  const parsed = parseSessionStartedPayload(event)
+  if (parsed.version === 2) {
+    applySessionStartedV2(db, event, parsed.payload)
+    return
+  }
+  const p = parsed.payload
   const businessSessionId = p.business_session_id ?? p.session_id
   ensureBusinessSession(db, {
     businessSessionId,
@@ -467,6 +481,78 @@ function applySessionStarted(db: DBAdapter, event: ActionLogEntry): void {
       qb.question_type,
       qb.item_usage,
       qb.job_module_code,
+      event.event_id
+    )
+  }
+}
+
+// SESSION_STARTED v2：逐题投影完全来自事件 payload，不回查 question_bank。
+// payload-v2 冻结了每题的 module/type/usage/合同 hash，冷启动删除业务投影后
+// 仅凭 action log + 基线静态外键数据即可恢复完全相同的 session/question 投影。
+function applySessionStartedV2(db: DBAdapter, event: ActionLogEntry, p: SessionStartedPayloadV2): void {
+  const businessSessionId = p.business_session_id ?? p.session_id
+  ensureBusinessSession(db, {
+    businessSessionId,
+    sessionType: 'ASSESSMENT',
+    studentId: p.student_id,
+    jobCode: p.job_code,
+    taskCode: p.task_code,
+    createdBy: event.actor_id
+  })
+
+  const existing = db
+    .prepare('SELECT session_id FROM assessment_session WHERE session_id = ?')
+    .get(p.session_id)
+  if (existing) return
+
+  // INSERT assessment_session（strategy 复合字段从 payload.strategy 取）
+  db.prepare(
+    `INSERT INTO assessment_session
+       (session_id, business_session_id, student_id, strategy_id, strategy_type, job_code, task_code,
+        strategy_version, status, delivery_phase, online_question_count, offline_question_count,
+        observation_template_id,
+        created_by, started_at,
+        created_event_id, last_applied_event_id, last_status_event_id, event_sequence_version)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'INIT', ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)`
+  ).run(
+    p.session_id,
+    businessSessionId,
+    p.student_id,
+    p.strategy.strategy_id,
+    p.strategy.strategy_type,
+    p.job_code,
+    p.task_code,
+    p.strategy.strategy_version,
+    p.initial_delivery_phase ?? 'PREPARED',
+    p.online_question_count,
+    p.offline_question_count,
+    p.observation_template_id ?? null,
+    event.actor_id,
+    event.event_id,
+    event.event_id,
+    event.event_id,
+    event.event_sequence
+  )
+
+  // question 行：完全来自 payload.questions，不查 question_bank（payload-v2 核心目标）
+  const insertQ = db.prepare(
+    `INSERT INTO assessment_session_question
+       (session_question_id, session_id, question_id, question_order, question_phase,
+        bank_domain, module_type, question_type, item_usage, job_module_code, generated_event_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  )
+  for (const q of p.questions) {
+    insertQ.run(
+      uuidv4(),
+      p.session_id,
+      q.question_id,
+      q.question_order,
+      q.question_phase,
+      q.bank_domain,
+      q.module_type,
+      q.question_type,
+      q.item_usage,
+      q.job_module_code,
       event.event_id
     )
   }

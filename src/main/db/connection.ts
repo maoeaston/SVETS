@@ -23,6 +23,13 @@ import {
   assertExactEventBatchStructure,
   EVENT_BATCH_MIGRATION_ID
 } from './event-batch-migration'
+import {
+  applyPreviewContractMigration
+} from './preview-contract-migration'
+import { PREVIEW_CONTRACT_MIGRATION_ID } from '../../shared/types/preview-contract'
+import type { MigrationBackupStage } from './migration-startup'
+import { seedBundledQuestionContent } from './content-pack-seed'
+import contentPack from '../../../scripts/config/database-content-pack.json'
 
 let db: Database.Database | null = null
 
@@ -30,7 +37,7 @@ type StartupUpgradeDatabase = Pick<Database.Database, 'pragma' | 'exec'>
 
 export type ConnectionStartupUpgradeDependencies = {
   preReconcileF7?: () => void
-  createVerifiedBackup?: (stage: 'F7' | 'M4' | 'M5B', migrationId: string) => void
+  createVerifiedBackup?: (stage: MigrationBackupStage, migrationId: string) => void
 }
 
 export function getDatabase(): Database.Database {
@@ -82,9 +89,25 @@ export function initDatabase(): void {
         logPath: actionLogPath,
         archiveDir: join(dirname(actionLogPath), 'recovery-archive')
       }),
-      createVerifiedBackup: () => createM5bVerifiedBackup({ database, dataDir, actionLogPath })
+      createVerifiedBackup: () => createM5bVerifiedBackup({ database, dataDir, actionLogPath }),
+      applyPreviewContract: () => applyPreviewContractMigration(adapter, {
+        fresh,
+        createVerifiedBackupBeforeDdl: () => createPreviewVerifiedBackup({ database, dataDir, actionLogPath })
+      })
     })
     seedDevUsers(database)
+    seedBundledQuestionContent(database as unknown as DBAdapter, [
+      {
+        domain: 'BASE_ABILITY',
+        expectedCount: contentPack.questionContracts.find((item) => item.domain === 'BASE_ABILITY')!.expectedCount,
+        sql: readFileSync(join(__dirname, 'content/question-bank-base-ability.sql'), 'utf8')
+      },
+      {
+        domain: 'JOB_SPECIFIC',
+        expectedCount: contentPack.questionContracts.find((item) => item.domain === 'JOB_SPECIFIC')!.expectedCount,
+        sql: readFileSync(join(__dirname, 'content/question-bank-job-specific.sql'), 'utf8')
+      }
+    ])
     db = database
 
     if (fresh) console.log('[DB] Initialized fresh schema')
@@ -104,12 +127,14 @@ export function runConnectionEventBatchCutover(options: {
   loadTargetSchema: () => void
   reconcileHistorical: () => void
   createVerifiedBackup: () => void
+  applyPreviewContract?: () => void
 }): { source: string; applied: boolean } {
   if (options.fresh) {
     options.loadTargetSchema()
     assertCurrentDatabaseSchema(options.adapter)
     const migration = applyEventBatchMigration(options.adapter)
     assertExactEventBatchStructure(options.adapter)
+    options.applyPreviewContract?.()
     return migration
   }
 
@@ -120,6 +145,7 @@ export function runConnectionEventBatchCutover(options: {
   const migration = applyEventBatchMigration(options.adapter, {
     createVerifiedBackupBeforeDdl: options.createVerifiedBackup
   })
+  options.applyPreviewContract?.()
   options.loadTargetSchema()
   assertExactEventBatchStructure(options.adapter)
   return migration
@@ -201,6 +227,35 @@ function createM5bVerifiedBackup(options: {
     migrationId: EVENT_BATCH_MIGRATION_ID
   })
   console.log(`[DB] Paired M5B backup before ${EVENT_BATCH_MIGRATION_ID}: ${backup.backupDir}`)
+}
+
+function createPreviewVerifiedBackup(options: {
+  database: Database.Database
+  dataDir: string
+  actionLogPath: string
+}): void {
+  const backup = createVerifiedMigrationBackup({
+    source: {
+      checkpointFull: () => options.database.pragma('wal_checkpoint(FULL)'),
+      vacuumInto: (path) => options.database.exec(`VACUUM INTO '${path.replace(/'/g, "''")}'`),
+      verifyBackup: (path) => {
+        const backupDatabase = new Database(path, { readonly: true })
+        try {
+          const integrity = backupDatabase.prepare('PRAGMA integrity_check').all() as Array<Record<string, string>>
+          if (integrity.map((row) => Object.values(row)[0]).join(',') !== 'ok') {
+            throw new Error('backup database integrity_check failed')
+          }
+        } finally {
+          backupDatabase.close()
+        }
+      }
+    },
+    dataDir: options.dataDir,
+    actionLogPath: options.actionLogPath,
+    stage: 'PREVIEW',
+    migrationId: PREVIEW_CONTRACT_MIGRATION_ID
+  })
+  console.log(`[DB] Paired PREVIEW backup before ${PREVIEW_CONTRACT_MIGRATION_ID}: ${backup.backupDir}`)
 }
 
 function hasNonEmptyActionLog(actionLogPath: string): boolean {

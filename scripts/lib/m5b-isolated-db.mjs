@@ -22,6 +22,12 @@ import {
   inspectEventBatchStructure
 } from '../../src/main/db/event-batch-migration.ts'
 import {
+  PREVIEW_CONTRACT_INDEX_NAMES,
+  PREVIEW_CONTRACT_TABLE_NAMES,
+  PREVIEW_CONTRACT_TRIGGER_NAMES
+} from '../../src/main/db/preview-contract-migration.ts'
+import { PREVIEW_CONTRACT_MIGRATION_ID } from '../../src/shared/types/preview-contract.ts'
+import {
   DurableFileCapability,
   probeRequiredFileCapabilities
 } from '../../src/main/domain/event-batch/file-capability.ts'
@@ -196,6 +202,9 @@ function assertSqliteFile(dbPath, { target }) {
 /** The authoritative schema is now v2.2; cutover evidence must begin from exact M4. */
 function prepareExactM4Source(adapter) {
   adapter.exec(`
+    ${PREVIEW_CONTRACT_TRIGGER_NAMES.map((name) => `DROP TRIGGER IF EXISTS ${name};`).join('\n    ')}
+    ${PREVIEW_CONTRACT_INDEX_NAMES.map((name) => `DROP INDEX IF EXISTS ${name};`).join('\n    ')}
+    ${[...PREVIEW_CONTRACT_TABLE_NAMES].reverse().map((name) => `DROP TABLE IF EXISTS ${name};`).join('\n    ')}
     DROP INDEX IF EXISTS ux_command_idempotency;
     DROP INDEX IF EXISTS idx_applied_event_batch_segment;
     DROP INDEX IF EXISTS idx_processed_event_batch;
@@ -205,6 +214,7 @@ function prepareExactM4Source(adapter) {
     DROP TABLE IF EXISTS command_log;
   `)
   adapter.prepare('DELETE FROM schema_migration WHERE migration_id = ?').run(EVENT_BATCH_MIGRATION_ID)
+  adapter.prepare('DELETE FROM schema_migration WHERE migration_id = ?').run(PREVIEW_CONTRACT_MIGRATION_ID)
 }
 
 function createPairedBackup(paths, database, legacyBytes) {

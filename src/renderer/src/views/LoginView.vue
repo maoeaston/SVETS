@@ -42,6 +42,7 @@
         >
           {{ error }}
         </p>
+        <RouterLink class="activation-link" to="/activation">授权设置</RouterLink>
       </form>
     </div>
   </div>
@@ -102,7 +103,7 @@ async function handleLogin(): Promise<void> {
 }
 .login-card {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 48px 40px;
   width: 360px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
@@ -161,4 +162,5 @@ async function handleLogin(): Promise<void> {
   font-size: 14px;
   text-align: center;
 }
+.activation-link { color: #52606d; font-size: 13px; text-align: center; text-underline-offset: 3px; }
 </style>

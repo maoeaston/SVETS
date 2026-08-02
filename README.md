@@ -10,14 +10,14 @@
 
 | 阶段 | 状态 |
 |---|---|
-| PRD v1.0.9 consolidated authoritative baseline | ✅ 当前唯一产品合同 |
-| Schema v0.1.17-multi-device-m4-safety-rekey | ✅ M4 Step 2A 已独立审查并验收；MVP 功能合同由 v1.0.9 承载 |
+| PRD v1.0.10 JOB_SKILL 298 full preview authoritative baseline | ✅ 当前唯一产品合同；文件路径为兼容保留 v1.0.9 |
+| Schema v0.1.18-event-batch-v2.2 | ✅ M5B-15 已验收 PASS；v1.0.10 新增预览范围尚待实现 |
 | JSON 字段规范 | ✅ 已完成 |
 | 事件载荷规范 | ✅ 已完成 |
 | Electron 脚手架 | ✅ 已就绪（typecheck + build 通过）|
-| 功能开发 | 🚧 进行中（已完成登录、学生档案、策略配置、基础能力测评、专业岗位固定卷/评分/观察/结果/报告生成核心、DRAG 渲染；报告页面与导出待 F7 实现）|
+| 功能开发 | 🚧 进行中（已完成登录、学生档案、策略配置、基础能力测评、专业岗位固定卷/评分/观察/结果/报告生成核心、DRAG 渲染；JOB_SKILL 298 题目录、PREVIEW_ONLY 题包和学校反馈尚待实现）|
 | 教学素材 | 🚧 进行中（270 项资产合同已落地，当前 0 条 approved；待先制作 R1-R6 并编译 Prompt）|
-| 题库审核 | 🚧 进行中（BASE_ABILITY 96题与 JOB_SPECIFIC 298题均为 DRAFT；基础能力 42+8 和专业岗位 Pilot 门禁均未授予激活权）|
+| 题库审核 | 🚧 进行中（BASE_ABILITY 96题与 JOB_SPECIFIC 298题均为 DRAFT；专业岗位旧 Pilot 门禁只约束正式发布，不再限制 298 题教师预览目标范围）|
 
 ---
 
@@ -35,7 +35,8 @@
 - 岗位：超市理货员
 - 任务：拆箱与上架
 - 用户角色：学生 / 教师 / 管理员
-- 核心流程：基础能力或专业岗位测评 → 四步训练（看学练做）→ 线下实操评分 → 四类独立结果投影 → 对应报告
+- 核心流程：基础能力或专业岗位正式测评 → 四步训练（看学练做）→ 线下实操评分 → 四类独立结果投影 → 对应报告
+- 学校预览：JOB_SKILL 298 题全量进入教师可见预览库，素材 AI 并行生产，按逐题门禁和不可变题包开放；预览不生成正式岗位分数或等级
 - 平台：Windows 10 / 11，最低分辨率 1366×768，离线运行
 
 ---
@@ -124,7 +125,7 @@ SVETS/
 
 | 文档 | 说明 |
 |---|---|
-| `doc/specs/MVP_PRD_v1.0.9-authoritative.md` | 当前唯一产品需求合同（完整功能范围、数据合同、验收标准） |
+| `doc/specs/MVP_PRD_v1.0.9-authoritative.md` | 当前唯一产品需求合同（兼容路径，正文权威版本 v1.0.10；包含 JOB_SKILL 298 题全量预览） |
 | `src/main/db/schema.sql` | 当前 SQLite schema（表、触发器、状态机、投影约束） |
 | `doc/specs/xc-career-guide-json-field-schema-v1.0.0.md` | 各 JSON TEXT 字段的结构定义 |
 | `doc/specs/xc-career-guide-event-payload-schema-v1.0.0.md` | 领域事件载荷格式 + action_log.jsonl 规范 |

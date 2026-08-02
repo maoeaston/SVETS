@@ -1,5 +1,5 @@
 -- ============================================================================
--- 炫灿-职途向导系统 MVP schema.sql v0.1.18-event-batch-v2.2
+-- 炫灿-职途向导系统 MVP schema.sql v0.1.19-job-skill-preview-contract-v1
 -- Architecture baseline:
 --   1. Lightweight event sourcing + SQLite projection.
 --   2. action_log.jsonl is the source of truth; SQLite is a query snapshot.
@@ -519,6 +519,12 @@ CREATE INDEX IF NOT EXISTS idx_domain_event_projection_applied
 
 CREATE TABLE IF NOT EXISTS assessment_session (
   session_id                    TEXT PRIMARY KEY,
+  -- PREVIEW_CONTRACT_V1 infrastructure discriminator. Formal business
+  -- semantics remain owned by the legacy columns and projectors.
+  session_contract_kind         TEXT NOT NULL DEFAULT 'FORMAL_SHELL'
+                                CHECK (session_contract_kind IN ('FORMAL_SHELL', 'PREVIEW_SHELL')),
+  preview_contract_version      TEXT CHECK (preview_contract_version IS NULL OR preview_contract_version = 'PREVIEW_CONTRACT_V1'),
+  preview_redline_ref            TEXT,
   business_session_id           TEXT REFERENCES business_session(business_session_id),
   student_id                    TEXT NOT NULL REFERENCES student_profile(student_id),
   strategy_id                   TEXT NOT NULL,
@@ -598,9 +604,23 @@ CREATE TABLE IF NOT EXISTS assessment_session (
   CHECK (
     status <> 'REDLINE_HALTED'
     OR (
-      COALESCE(level_result, '') = 'LEVEL_FAIL_BY_SAFETY'
+      session_contract_kind = 'FORMAL_SHELL'
+      AND COALESCE(level_result, '') = 'LEVEL_FAIL_BY_SAFETY'
       AND redline_incident_id IS NOT NULL
       AND length(trim(redline_incident_id)) > 0
+    )
+    OR (
+      session_contract_kind = 'PREVIEW_SHELL'
+      AND preview_redline_ref IS NOT NULL
+      AND length(trim(preview_redline_ref)) > 0
+    )
+  ),
+  CHECK (
+    session_contract_kind = 'FORMAL_SHELL'
+    OR (
+      preview_contract_version = 'PREVIEW_CONTRACT_V1'
+      AND level_result IS NULL
+      AND redline_incident_id IS NULL
     )
   ),
   FOREIGN KEY (strategy_id, strategy_version) REFERENCES strategy_config(strategy_id, version)
@@ -910,7 +930,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_training_business_session
 CREATE TRIGGER IF NOT EXISTS trg_assessment_delivery_phase_forward_only
 BEFORE UPDATE OF delivery_phase ON assessment_session
 FOR EACH ROW
-WHEN OLD.delivery_phase IS NOT NULL AND NEW.delivery_phase IS NOT NULL
+WHEN NEW.session_contract_kind = 'FORMAL_SHELL'
+  AND OLD.delivery_phase IS NOT NULL AND NEW.delivery_phase IS NOT NULL
   AND OLD.delivery_phase <> NEW.delivery_phase
 BEGIN
   SELECT CASE
@@ -940,28 +961,32 @@ END;
 
 CREATE TRIGGER IF NOT EXISTS trg_assessment_delivery_phase_insert_prepared
 BEFORE INSERT ON assessment_session
-FOR EACH ROW WHEN NEW.delivery_phase IS NOT NULL AND NEW.delivery_phase <> 'PREPARED'
+FOR EACH ROW WHEN NEW.session_contract_kind = 'FORMAL_SHELL'
+  AND NEW.delivery_phase IS NOT NULL AND NEW.delivery_phase <> 'PREPARED'
 BEGIN SELECT RAISE(ABORT, 'new assessment_session delivery_phase must start at PREPARED'); END;
 
 CREATE TRIGGER IF NOT EXISTS trg_assessment_delivery_phase_frozen_on_abnormal
 BEFORE UPDATE OF delivery_phase ON assessment_session
 FOR EACH ROW
-WHEN OLD.status IN ('REDLINE_HALTED','ABORTED')
+WHEN NEW.session_contract_kind = 'FORMAL_SHELL'
+  AND OLD.status IN ('REDLINE_HALTED','ABORTED')
   AND ((OLD.delivery_phase IS NULL) <> (NEW.delivery_phase IS NULL) OR OLD.delivery_phase <> NEW.delivery_phase)
 BEGIN SELECT RAISE(ABORT, 'delivery_phase of REDLINE_HALTED/ABORTED session is frozen'); END;
 
 CREATE TRIGGER IF NOT EXISTS trg_assessment_finalized_completed_consistency_insert
 BEFORE INSERT ON assessment_session
 FOR EACH ROW
-WHEN (NEW.delivery_phase='FINALIZED' AND NEW.status<>'COMPLETED')
-  OR (NEW.status='COMPLETED' AND (NEW.delivery_phase IS NULL OR NEW.delivery_phase<>'FINALIZED'))
+WHEN NEW.session_contract_kind = 'FORMAL_SHELL'
+  AND ((NEW.delivery_phase='FINALIZED' AND NEW.status<>'COMPLETED')
+    OR (NEW.status='COMPLETED' AND (NEW.delivery_phase IS NULL OR NEW.delivery_phase<>'FINALIZED')))
 BEGIN SELECT RAISE(ABORT, 'FINALIZED must correspond to COMPLETED and vice versa'); END;
 
 CREATE TRIGGER IF NOT EXISTS trg_assessment_finalized_completed_consistency_update
 BEFORE UPDATE OF delivery_phase, status ON assessment_session
 FOR EACH ROW
-WHEN (NEW.delivery_phase='FINALIZED' AND NEW.status<>'COMPLETED')
-  OR (NEW.status='COMPLETED' AND (NEW.delivery_phase IS NULL OR NEW.delivery_phase<>'FINALIZED'))
+WHEN NEW.session_contract_kind = 'FORMAL_SHELL'
+  AND ((NEW.delivery_phase='FINALIZED' AND NEW.status<>'COMPLETED')
+    OR (NEW.status='COMPLETED' AND (NEW.delivery_phase IS NULL OR NEW.delivery_phase<>'FINALIZED')))
 BEGIN SELECT RAISE(ABORT, 'FINALIZED must correspond to COMPLETED and vice versa'); END;
 
 CREATE TRIGGER IF NOT EXISTS trg_assessment_business_session_consistency_insert
@@ -1502,6 +1527,7 @@ CREATE TRIGGER IF NOT EXISTS trg_assessment_session_redline_requires_fail_by_saf
 BEFORE INSERT ON assessment_session
 FOR EACH ROW
 WHEN NEW.status = 'REDLINE_HALTED'
+     AND NEW.session_contract_kind = 'FORMAL_SHELL'
      AND COALESCE(NEW.level_result, '') <> 'LEVEL_FAIL_BY_SAFETY'
 BEGIN
   SELECT RAISE(ABORT, 'REDLINE_HALTED requires LEVEL_FAIL_BY_SAFETY');
@@ -1511,6 +1537,7 @@ CREATE TRIGGER IF NOT EXISTS trg_assessment_session_redline_update_requires_fail
 BEFORE UPDATE ON assessment_session
 FOR EACH ROW
 WHEN NEW.status = 'REDLINE_HALTED'
+     AND NEW.session_contract_kind = 'FORMAL_SHELL'
      AND COALESCE(NEW.level_result, '') <> 'LEVEL_FAIL_BY_SAFETY'
 BEGIN
   SELECT RAISE(ABORT, 'REDLINE_HALTED requires LEVEL_FAIL_BY_SAFETY');
@@ -1636,6 +1663,7 @@ CREATE TRIGGER IF NOT EXISTS trg_assessment_session_redline_incident_same_studen
 BEFORE INSERT ON assessment_session
 FOR EACH ROW
 WHEN NEW.status = 'REDLINE_HALTED'
+     AND NEW.session_contract_kind = 'FORMAL_SHELL'
      AND NOT EXISTS (
        SELECT 1 FROM safety_incident si
        WHERE si.incident_id = NEW.redline_incident_id
@@ -1651,6 +1679,7 @@ CREATE TRIGGER IF NOT EXISTS trg_assessment_session_redline_incident_same_studen
 BEFORE UPDATE ON assessment_session
 FOR EACH ROW
 WHEN NEW.status = 'REDLINE_HALTED'
+     AND NEW.session_contract_kind = 'FORMAL_SHELL'
      AND NOT EXISTS (
        SELECT 1 FROM safety_incident si
        WHERE si.incident_id = NEW.redline_incident_id
@@ -1700,6 +1729,7 @@ CREATE TRIGGER IF NOT EXISTS trg_assessment_session_no_insert_redline_status
 BEFORE INSERT ON assessment_session
 FOR EACH ROW
 WHEN NEW.status = 'REDLINE_HALTED'
+     AND NEW.session_contract_kind = 'FORMAL_SHELL'
 BEGIN
   SELECT RAISE(ABORT, 'assessment_session cannot be inserted directly as REDLINE_HALTED');
 END;
@@ -1716,6 +1746,7 @@ CREATE TRIGGER IF NOT EXISTS trg_assessment_session_explicit_redline_paths
 BEFORE UPDATE OF status ON assessment_session
 FOR EACH ROW
 WHEN NEW.status = 'REDLINE_HALTED'
+     AND NEW.session_contract_kind = 'FORMAL_SHELL'
      AND OLD.status NOT IN ('INIT','ACTIVE','EMOTION_INTERRUPTED','SUSPENDED_REVIEW_REQUIRED','OFFLINE_PENDING')
 BEGIN
   SELECT RAISE(ABORT, 'invalid assessment_session redline path');
@@ -1733,7 +1764,7 @@ END;
 CREATE TRIGGER IF NOT EXISTS trg_assessment_session_block_unresolved_safety_incident
 BEFORE INSERT ON assessment_session
 FOR EACH ROW
-WHEN EXISTS (
+WHEN NEW.session_contract_kind = 'FORMAL_SHELL' AND EXISTS (
   SELECT 1 FROM safety_incident si
   WHERE si.student_id = NEW.student_id
     AND si.job_code = NEW.job_code
@@ -1923,6 +1954,7 @@ BEGIN
     s.status, 'REDLINE_HALTED', NEW.trigger_event_id, datetime('now')
   FROM assessment_session s
   WHERE s.student_id = NEW.student_id AND s.job_code = NEW.job_code AND s.task_code = NEW.task_code
+    AND s.session_contract_kind = 'FORMAL_SHELL'
     AND s.status IN ('INIT','ACTIVE','EMOTION_INTERRUPTED','SUSPENDED_REVIEW_REQUIRED','OFFLINE_PENDING');
 
   UPDATE assessment_session
@@ -1935,6 +1967,7 @@ BEGIN
       last_status_event_id = NEW.trigger_event_id,
       last_applied_event_id = NEW.trigger_event_id
   WHERE student_id = NEW.student_id AND job_code = NEW.job_code AND task_code = NEW.task_code
+    AND session_contract_kind = 'FORMAL_SHELL'
     AND status IN ('INIT','ACTIVE','EMOTION_INTERRUPTED','SUSPENDED_REVIEW_REQUIRED','OFFLINE_PENDING');
 END;
 
@@ -2488,6 +2521,270 @@ CREATE INDEX IF NOT EXISTS idx_applied_event_batch_segment
   ON applied_event_batch(segment_id, batch_sequence);
 CREATE INDEX IF NOT EXISTS idx_processed_event_batch ON processed_event(batch_id);
 
+-- ----------------------------------------------------------------------------
+-- 20. PREVIEW_CONTRACT_V1 additive projections and fail-closed boundaries
+-- ----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS preview_contract_registry (
+  registry_id TEXT PRIMARY KEY CHECK (registry_id = 'PREVIEW_CONTRACT_V1'),
+  contract_version TEXT NOT NULL CHECK (contract_version = 'PREVIEW_CONTRACT_V1'),
+  schema_version TEXT NOT NULL,
+  migration_id TEXT NOT NULL,
+  status TEXT NOT NULL CHECK (status IN ('INSTALLING','READY','DISABLED')),
+  event_registry_digest TEXT NOT NULL,
+  projection_digest TEXT NOT NULL,
+  query_digest TEXT NOT NULL,
+  recovery_digest TEXT NOT NULL,
+  error_map_digest TEXT NOT NULL,
+  installed_at TEXT,
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS preview_bootstrap_replay_projection (
+  replay_key TEXT PRIMARY KEY,
+  target_installation_id TEXT NOT NULL,
+  certificate_id TEXT NOT NULL,
+  challenge_id TEXT NOT NULL,
+  nonce_hash TEXT NOT NULL CHECK (length(nonce_hash) = 64),
+  enrollment_id TEXT NOT NULL,
+  enrollment_package_hash TEXT NOT NULL CHECK (length(enrollment_package_hash) = 64),
+  mapping_id TEXT NOT NULL,
+  accepted_at TEXT NOT NULL,
+  UNIQUE (target_installation_id, enrollment_id),
+  UNIQUE (target_installation_id, nonce_hash)
+);
+
+CREATE TABLE IF NOT EXISTS preview_event_projection (
+  event_id TEXT PRIMARY KEY,
+  contract_registry_id TEXT NOT NULL REFERENCES preview_contract_registry(registry_id),
+  aggregate_type TEXT NOT NULL CHECK (aggregate_type IN ('PREVIEW_RELEASE','PREVIEW_SESSION','PREVIEW_FEEDBACK','PRINCIPAL_BINDING')),
+  aggregate_id TEXT NOT NULL,
+  event_type TEXT NOT NULL CHECK (event_type IN (
+    'PRINCIPAL_BINDING_ENROLLMENT','PRINCIPAL_BINDING_ROTATION','PREVIEW_PACK_RELEASED','PREVIEW_PACK_REVOKED',
+    'PREVIEW_SESSION_STARTED','PREVIEW_SESSION_COMPLETED','PREVIEW_SESSION_ABORTED','PREVIEW_SESSION_TECHNICAL_INTERRUPTION',
+    'PREVIEW_SAFETY_INCIDENT_CREATED','PREVIEW_FEEDBACK_DRAFT_SAVED','PREVIEW_FEEDBACK_REFERENCE_COMMITTED',
+    'PREVIEW_FEEDBACK_RECONCILED','PREVIEW_FEEDBACK_TOMBSTONE_COMMITTED','PREVIEW_FEEDBACK_PURGED',
+    'PREVIEW_FEEDBACK_REPAIRED','PREVIEW_FEEDBACK_EXPORT_COMMITTED'
+  )),
+  event_sequence INTEGER NOT NULL CHECK (event_sequence >= 1),
+  payload_json TEXT NOT NULL CHECK (json_valid(payload_json)),
+  checksum TEXT NOT NULL CHECK (length(checksum) = 64),
+  source_batch_id TEXT REFERENCES applied_event_batch(batch_id),
+  source_batch_hash TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (aggregate_type, aggregate_id, event_sequence)
+);
+
+CREATE TABLE IF NOT EXISTS preview_release_projection (
+  release_id TEXT PRIMARY KEY,
+  source_ref_id TEXT NOT NULL UNIQUE,
+  delivery_mode TEXT NOT NULL CHECK (delivery_mode = 'PREVIEW_ONLY'),
+  question_id TEXT NOT NULL,
+  question_version INTEGER NOT NULL CHECK (question_version >= 1),
+  semantic_hash TEXT NOT NULL CHECK (length(semantic_hash) = 64),
+  pack_id TEXT NOT NULL,
+  pack_version TEXT NOT NULL,
+  pack_hash TEXT NOT NULL CHECK (length(pack_hash) = 64),
+  strategy_id TEXT NOT NULL,
+  strategy_version INTEGER NOT NULL CHECK (strategy_version >= 1),
+  policy_hash TEXT NOT NULL CHECK (length(policy_hash) = 64),
+  approval_id TEXT NOT NULL,
+  approval_hash TEXT NOT NULL CHECK (length(approval_hash) = 64),
+  manifest_id TEXT NOT NULL,
+  manifest_hash TEXT NOT NULL CHECK (length(manifest_hash) = 64),
+  references_json TEXT NOT NULL CHECK (json_valid(references_json)),
+  status TEXT NOT NULL CHECK (status IN ('DRAFT','ACTIVE','REVOKED','SUPERSEDED','DISABLED','ARCHIVED')),
+  effective_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  revoked_at TEXT,
+  created_event_id TEXT NOT NULL REFERENCES preview_event_projection(event_id),
+  audit_ref TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (delivery_mode, question_id, question_version, semantic_hash, pack_id, pack_version, approval_id)
+);
+
+CREATE TABLE IF NOT EXISTS principal_binding_projection (
+  mapping_id TEXT PRIMARY KEY,
+  target_installation_id TEXT NOT NULL,
+  organization_id TEXT NOT NULL,
+  user_id TEXT NOT NULL REFERENCES user_account(user_id),
+  principal_id TEXT NOT NULL,
+  mapping_version INTEGER NOT NULL CHECK (mapping_version >= 1),
+  mapping_hash TEXT NOT NULL CHECK (length(mapping_hash) = 64),
+  source_manifest_id TEXT NOT NULL,
+  source_manifest_hash TEXT NOT NULL CHECK (length(source_manifest_hash) = 64),
+  effective_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  revoked_at TEXT,
+  status TEXT NOT NULL CHECK (status IN ('ACTIVE','REVOKED','SUPERSEDED')),
+  signer_key_id TEXT NOT NULL,
+  signature TEXT NOT NULL,
+  created_event_id TEXT NOT NULL REFERENCES preview_event_projection(event_id),
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS preview_session_projection (
+  preview_session_id TEXT PRIMARY KEY,
+  assessment_session_id TEXT NOT NULL UNIQUE REFERENCES assessment_session(session_id) ON DELETE RESTRICT,
+  contract_registry_id TEXT NOT NULL REFERENCES preview_contract_registry(registry_id),
+  contract_version TEXT NOT NULL CHECK (contract_version = 'PREVIEW_CONTRACT_V1'),
+  delivery_mode TEXT NOT NULL CHECK (delivery_mode = 'PREVIEW_ONLY'),
+  student_id TEXT NOT NULL REFERENCES student_profile(student_id),
+  job_code TEXT NOT NULL,
+  task_code TEXT NOT NULL,
+  pack_id TEXT NOT NULL,
+  pack_version TEXT NOT NULL,
+  pack_hash TEXT NOT NULL CHECK (length(pack_hash) = 64),
+  source_ref_id TEXT NOT NULL REFERENCES preview_release_projection(source_ref_id),
+  strategy_id TEXT NOT NULL,
+  strategy_version INTEGER NOT NULL CHECK (strategy_version >= 1),
+  snapshot_json TEXT NOT NULL CHECK (json_valid(snapshot_json)),
+  content_root_hash TEXT NOT NULL CHECK (length(content_root_hash) = 64),
+  scoring_root_hash TEXT NOT NULL CHECK (length(scoring_root_hash) = 64),
+  renderer_root_hash TEXT NOT NULL CHECK (length(renderer_root_hash) = 64),
+  snapshot_root_hash TEXT NOT NULL CHECK (length(snapshot_root_hash) = 64),
+  assignment_id TEXT NOT NULL,
+  grant_id TEXT NOT NULL,
+  status TEXT NOT NULL CHECK (status IN ('PREPARED','ACTIVE','COMPLETED','ABORTED','TECHNICAL_INTERRUPTED','REDLINE_HALTED')),
+  result_suppressed INTEGER NOT NULL DEFAULT 1 CHECK (result_suppressed = 1),
+  preview_redline_ref TEXT,
+  created_event_id TEXT NOT NULL REFERENCES preview_event_projection(event_id),
+  last_event_id TEXT REFERENCES preview_event_projection(event_id),
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS preview_session_question_projection (
+  session_question_id TEXT PRIMARY KEY,
+  preview_session_id TEXT NOT NULL REFERENCES preview_session_projection(preview_session_id) ON DELETE RESTRICT,
+  question_id TEXT NOT NULL,
+  question_version INTEGER NOT NULL CHECK (question_version >= 1),
+  semantic_hash TEXT NOT NULL CHECK (length(semantic_hash) = 64),
+  question_order INTEGER NOT NULL CHECK (question_order >= 1),
+  question_phase TEXT NOT NULL CHECK (question_phase IN ('ONLINE','OFFLINE','OBSERVATION')),
+  snapshot_json TEXT NOT NULL CHECK (json_valid(snapshot_json)),
+  content_hash TEXT NOT NULL CHECK (length(content_hash) = 64),
+  scoring_hash TEXT NOT NULL CHECK (length(scoring_hash) = 64),
+  renderer_hash TEXT NOT NULL CHECK (length(renderer_hash) = 64),
+  safety_ref TEXT NOT NULL,
+  UNIQUE (preview_session_id, question_order),
+  UNIQUE (preview_session_id, question_id, question_version, semantic_hash)
+);
+
+CREATE TABLE IF NOT EXISTS preview_safety_incident_projection (
+  incident_id TEXT PRIMARY KEY,
+  preview_session_id TEXT NOT NULL REFERENCES preview_session_projection(preview_session_id),
+  student_id TEXT NOT NULL REFERENCES student_profile(student_id),
+  job_code TEXT NOT NULL,
+  task_code TEXT NOT NULL,
+  reason_code TEXT NOT NULL,
+  status TEXT NOT NULL CHECK (status IN ('OPEN','RESOLVED','VOIDED')),
+  preview_redline_ref TEXT NOT NULL UNIQUE,
+  occurred_at TEXT NOT NULL,
+  created_event_id TEXT NOT NULL REFERENCES preview_event_projection(event_id),
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS preview_feedback_reference_projection (
+  feedback_id TEXT NOT NULL,
+  revision_no INTEGER NOT NULL CHECK (revision_no >= 1),
+  feedback_commit_id TEXT NOT NULL UNIQUE,
+  proof_hash TEXT NOT NULL CHECK (length(proof_hash) = 64),
+  session_id TEXT NOT NULL,
+  organization_id TEXT NOT NULL,
+  status TEXT NOT NULL CHECK (status IN ('DRAFT','VAULT_PREPARED','RECONCILE_REQUIRED','RECONCILED_SUBMITTED','RECONCILED_DELETED','PURGED','TOMBSTONED')),
+  body_hash TEXT NOT NULL CHECK (length(body_hash) = 64),
+  session_export_ref TEXT NOT NULL,
+  subject_export_ref TEXT NOT NULL,
+  created_event_id TEXT NOT NULL REFERENCES preview_event_projection(event_id),
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (feedback_id, revision_no, status)
+);
+
+CREATE TABLE IF NOT EXISTS preview_feedback_tombstone_projection (
+  tombstone_id TEXT PRIMARY KEY,
+  feedback_id TEXT NOT NULL,
+  revision_no INTEGER NOT NULL CHECK (revision_no >= 1),
+  feedback_commit_id TEXT NOT NULL UNIQUE,
+  proof_hash TEXT NOT NULL CHECK (length(proof_hash) = 64),
+  reason_code TEXT NOT NULL,
+  tombstoned_by TEXT NOT NULL,
+  tombstoned_at TEXT NOT NULL,
+  audit_ref TEXT NOT NULL,
+  created_event_id TEXT NOT NULL REFERENCES preview_event_projection(event_id),
+  UNIQUE (feedback_id, revision_no)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_preview_release_source_ref ON preview_release_projection(source_ref_id);
+CREATE UNIQUE INDEX IF NOT EXISTS ux_preview_release_binding ON preview_release_projection(delivery_mode, question_id, question_version, semantic_hash, pack_id, pack_version, approval_id);
+CREATE UNIQUE INDEX IF NOT EXISTS ux_principal_active_user ON principal_binding_projection(target_installation_id, organization_id, user_id) WHERE status = 'ACTIVE';
+CREATE UNIQUE INDEX IF NOT EXISTS ux_principal_active_principal ON principal_binding_projection(target_installation_id, organization_id, principal_id) WHERE status = 'ACTIVE';
+CREATE INDEX IF NOT EXISTS idx_preview_session_status ON preview_session_projection(student_id, job_code, task_code, status);
+CREATE INDEX IF NOT EXISTS idx_preview_session_question_order ON preview_session_question_projection(preview_session_id, question_order);
+CREATE UNIQUE INDEX IF NOT EXISTS ux_preview_safety_open_triplet ON preview_safety_incident_projection(student_id, job_code, task_code) WHERE status = 'OPEN';
+CREATE UNIQUE INDEX IF NOT EXISTS ux_feedback_reference_commit ON preview_feedback_reference_projection(feedback_commit_id);
+CREATE UNIQUE INDEX IF NOT EXISTS ux_feedback_tombstone_commit ON preview_feedback_tombstone_projection(feedback_commit_id);
+
+CREATE TRIGGER IF NOT EXISTS trg_preview_principal_no_overlap_insert
+BEFORE INSERT ON principal_binding_projection FOR EACH ROW
+WHEN NEW.status = 'ACTIVE' AND EXISTS (
+  SELECT 1 FROM principal_binding_projection old
+  WHERE old.status = 'ACTIVE' AND old.target_installation_id = NEW.target_installation_id
+    AND old.organization_id = NEW.organization_id AND (old.user_id = NEW.user_id OR old.principal_id = NEW.principal_id)
+    AND old.effective_at < NEW.expires_at AND NEW.effective_at < old.expires_at
+)
+BEGIN SELECT RAISE(ABORT, 'active principal binding window overlaps'); END;
+CREATE TRIGGER IF NOT EXISTS trg_preview_principal_no_overlap_update
+BEFORE UPDATE OF status, user_id, principal_id, effective_at, expires_at ON principal_binding_projection FOR EACH ROW
+WHEN NEW.status = 'ACTIVE' AND EXISTS (
+  SELECT 1 FROM principal_binding_projection old
+  WHERE old.mapping_id <> NEW.mapping_id AND old.status = 'ACTIVE'
+    AND old.target_installation_id = NEW.target_installation_id AND old.organization_id = NEW.organization_id
+    AND (old.user_id = NEW.user_id OR old.principal_id = NEW.principal_id)
+    AND old.effective_at < NEW.expires_at AND NEW.effective_at < old.expires_at
+)
+BEGIN SELECT RAISE(ABORT, 'active principal binding window overlaps'); END;
+CREATE TRIGGER IF NOT EXISTS trg_preview_session_shell_match_insert
+BEFORE INSERT ON preview_session_projection FOR EACH ROW
+WHEN NOT EXISTS (SELECT 1 FROM assessment_session s WHERE s.session_id = NEW.assessment_session_id AND s.session_contract_kind = 'PREVIEW_SHELL' AND s.preview_contract_version = 'PREVIEW_CONTRACT_V1' AND s.student_id = NEW.student_id AND s.job_code = NEW.job_code AND s.task_code = NEW.task_code)
+BEGIN SELECT RAISE(ABORT, 'preview session requires a matching PREVIEW_SHELL'); END;
+CREATE TRIGGER IF NOT EXISTS trg_preview_session_shell_match_update
+BEFORE UPDATE OF assessment_session_id, student_id, job_code, task_code ON preview_session_projection FOR EACH ROW
+WHEN NOT EXISTS (SELECT 1 FROM assessment_session s WHERE s.session_id = NEW.assessment_session_id AND s.session_contract_kind = 'PREVIEW_SHELL' AND s.preview_contract_version = 'PREVIEW_CONTRACT_V1' AND s.student_id = NEW.student_id AND s.job_code = NEW.job_code AND s.task_code = NEW.task_code)
+BEGIN SELECT RAISE(ABORT, 'preview session requires a matching PREVIEW_SHELL'); END;
+CREATE TRIGGER IF NOT EXISTS trg_preview_session_snapshot_immutable
+BEFORE UPDATE OF preview_session_id, assessment_session_id, contract_registry_id, contract_version, delivery_mode, student_id, job_code, task_code, pack_id, pack_version, pack_hash, source_ref_id, strategy_id, strategy_version, snapshot_json, content_root_hash, scoring_root_hash, renderer_root_hash, snapshot_root_hash, assignment_id, grant_id, created_event_id, created_at ON preview_session_projection FOR EACH ROW
+WHEN OLD.preview_session_id <> NEW.preview_session_id OR OLD.assessment_session_id <> NEW.assessment_session_id OR OLD.contract_registry_id <> NEW.contract_registry_id OR OLD.contract_version <> NEW.contract_version OR OLD.delivery_mode <> NEW.delivery_mode OR OLD.student_id <> NEW.student_id OR OLD.job_code <> NEW.job_code OR OLD.task_code <> NEW.task_code OR OLD.pack_id <> NEW.pack_id OR OLD.pack_version <> NEW.pack_version OR OLD.pack_hash <> NEW.pack_hash OR OLD.source_ref_id <> NEW.source_ref_id OR OLD.strategy_id <> NEW.strategy_id OR OLD.strategy_version <> NEW.strategy_version OR OLD.snapshot_json <> NEW.snapshot_json OR OLD.content_root_hash <> NEW.content_root_hash OR OLD.scoring_root_hash <> NEW.scoring_root_hash OR OLD.renderer_root_hash <> NEW.renderer_root_hash OR OLD.snapshot_root_hash <> NEW.snapshot_root_hash OR OLD.assignment_id <> NEW.assignment_id OR OLD.grant_id <> NEW.grant_id OR OLD.created_event_id <> NEW.created_event_id OR OLD.created_at <> NEW.created_at
+BEGIN SELECT RAISE(ABORT, 'preview session frozen snapshot is immutable'); END;
+CREATE TRIGGER IF NOT EXISTS trg_preview_result_suppression_insert
+BEFORE INSERT ON result_record FOR EACH ROW
+WHEN NEW.source_aggregate_type = 'ASSESSMENT_SESSION' AND EXISTS (SELECT 1 FROM preview_session_projection p WHERE p.assessment_session_id = NEW.source_aggregate_id)
+BEGIN SELECT RAISE(ABORT, 'PREVIEW_ONLY session cannot create formal result_record'); END;
+CREATE TRIGGER IF NOT EXISTS trg_preview_result_suppression_update
+BEFORE UPDATE ON result_record FOR EACH ROW
+WHEN NEW.source_aggregate_type = 'ASSESSMENT_SESSION' AND EXISTS (SELECT 1 FROM preview_session_projection p WHERE p.assessment_session_id = NEW.source_aggregate_id)
+BEGIN SELECT RAISE(ABORT, 'PREVIEW_ONLY session cannot create formal result_record'); END;
+CREATE TRIGGER IF NOT EXISTS trg_preview_report_suppression_insert
+BEFORE INSERT ON task_report FOR EACH ROW
+WHEN NEW.source_aggregate_type = 'ASSESSMENT_SESSION' AND EXISTS (SELECT 1 FROM preview_session_projection p WHERE p.assessment_session_id = NEW.source_aggregate_id)
+BEGIN SELECT RAISE(ABORT, 'PREVIEW_ONLY session cannot create formal task_report'); END;
+CREATE TRIGGER IF NOT EXISTS trg_preview_report_suppression_update
+BEFORE UPDATE ON task_report FOR EACH ROW
+WHEN NEW.source_aggregate_type = 'ASSESSMENT_SESSION' AND EXISTS (SELECT 1 FROM preview_session_projection p WHERE p.assessment_session_id = NEW.source_aggregate_id)
+BEGIN SELECT RAISE(ABORT, 'PREVIEW_ONLY session cannot create formal task_report'); END;
+CREATE TRIGGER IF NOT EXISTS trg_preview_safety_scope
+BEFORE INSERT ON preview_safety_incident_projection FOR EACH ROW
+WHEN NOT EXISTS (SELECT 1 FROM preview_session_projection p WHERE p.preview_session_id = NEW.preview_session_id AND p.student_id = NEW.student_id AND p.job_code = NEW.job_code AND p.task_code = NEW.task_code)
+BEGIN SELECT RAISE(ABORT, 'preview safety incident scope mismatch'); END;
+
+INSERT OR IGNORE INTO preview_contract_registry (
+  registry_id, contract_version, schema_version, migration_id, status,
+  event_registry_digest, projection_digest, query_digest, recovery_digest, error_map_digest
+) VALUES (
+  'PREVIEW_CONTRACT_V1', 'PREVIEW_CONTRACT_V1', '0.1.19-job-skill-preview-contract-v1',
+  '2026-08-01_job_skill_preview_contract_v1', 'INSTALLING', '', '', '', '', ''
+);
+
 -- Record the baseline only after every table, index, trigger, and seed above succeeded.
 INSERT OR IGNORE INTO schema_migration (
   migration_id, schema_version, description
@@ -2536,8 +2833,13 @@ INSERT OR IGNORE INTO schema_migration (
   '2026-07-29_mvp_schema_v0_1_18_event_batch_v2_2',
   '0.1.18-event-batch-v2.2',
   'M5B: durable command ledger and event batch apply cursors'
+),
+(
+  '2026-08-01_job_skill_preview_contract_v1',
+  '0.1.19-job-skill-preview-contract-v1',
+  'PREVIEW_CONTRACT_V1: additive preview, principal and feedback projections'
 );
 
 -- ============================================================================
--- End of schema.sql v0.1.18-event-batch-v2.2
+-- End of schema.sql v0.1.19-job-skill-preview-contract-v1
 -- ============================================================================

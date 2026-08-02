@@ -160,7 +160,8 @@ describe('CommandRegistry', () => {
       TRAINING: 'TRAINING_SYSTEM_ERROR',
       ASSIGNMENT: 'ASSIGNMENT_SYSTEM_ERROR',
       SAFETY: 'SAFETY_SYSTEM_ERROR',
-      REPORT: 'REPORT_SYSTEM_ERROR'
+      REPORT: 'REPORT_SYSTEM_ERROR',
+      PREVIEW_FEEDBACK: 'PREVIEW_CONTRACT_MIGRATION_REQUIRED'
     })
     expect(Object.keys(createPreflightErrorMap('SYSTEM_ERROR'))).toEqual([
       'UNKNOWN_COMMAND',

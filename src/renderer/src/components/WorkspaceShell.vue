@@ -18,7 +18,11 @@
           <span>{{ item.label }}</span>
         </RouterLink>
       </nav>
-      <p class="workspace-boundary">本机离线运行，操作记录可追溯</p>
+      <div class="workspace-meta">
+        <RouterLink to="/activation">授权设置</RouterLink>
+        <span>应用 {{ activation.snapshot?.appVersion ?? '—' }}</span>
+        <span>题库 {{ activation.snapshot?.questionBankVersion ?? '—' }}</span>
+      </div>
     </aside>
 
     <div class="workspace-main">
@@ -39,6 +43,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { useActivationStore } from '../stores/activation'
 
 defineProps<{
   roleLabel: string
@@ -48,6 +53,7 @@ defineProps<{
 
 const router = useRouter()
 const auth = useAuthStore()
+const activation = useActivationStore()
 
 async function handleLogout(): Promise<void> {
   try {
@@ -76,7 +82,8 @@ async function handleLogout(): Promise<void> {
 .workspace-nav-item.router-link-exact-active { background: var(--color-sidebar-active); color: white; }
 .nav-index { color: var(--color-sidebar-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
 .workspace-nav-item.router-link-exact-active .nav-index { color: var(--color-accent-soft); }
-.workspace-boundary { margin: auto 6px 0; padding-top: 22px; color: var(--color-sidebar-muted); font-size: 11px; line-height: 1.65; }
+.workspace-meta { display: grid; gap: 2px; margin: auto 6px 0; padding-top: 22px; color: var(--color-sidebar-muted); font-size: 11px; line-height: 1.55; }
+.workspace-meta a { width: max-content; color: var(--color-sidebar-text); text-underline-offset: 3px; }
 .workspace-main { display: flex; flex: 1; flex-direction: column; min-width: 0; }
 .workspace-topbar { display: flex; flex: 0 0 64px; align-items: center; justify-content: space-between; gap: 20px; padding: 0 28px; background: var(--color-surface); box-shadow: var(--shadow-divider); }
 .workspace-topbar > div { display: grid; gap: 1px; }
@@ -95,7 +102,7 @@ async function handleLogout(): Promise<void> {
   .brand-mark { width: 38px; height: 38px; }
   .workspace-nav { display: flex; gap: 6px; padding-bottom: 2px; overflow-x: auto; }
   .workspace-nav-item { flex: none; grid-template-columns: auto auto; padding: 6px 11px; }
-  .workspace-boundary { display: none; }
+  .workspace-meta { display: none; }
   .workspace-topbar { flex-basis: 58px; padding: 0 18px; }
 }
 @media (max-width: 520px) {

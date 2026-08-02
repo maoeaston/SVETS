@@ -117,6 +117,7 @@ async function launchApp(paths, viewport) {
     env: {
       ...process.env,
       SVETS_E2E: '1',
+      SVETS_E2E_ACTIVATION_BYPASS: '1',
       SVETS_E2E_VIEWPORT: viewport,
       SVETS_USER_DATA_DIR: paths.userDataDir,
       SVETS_REPORT_E2E_EXPORT_DIR: paths.exportDir,

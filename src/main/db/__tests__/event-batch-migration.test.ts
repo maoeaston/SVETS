@@ -16,6 +16,11 @@ import type { DBAdapter, DBStatement } from '../interface'
 import { MemoryAdapter } from '../memory-adapter'
 import { SqliteAdapter } from '../sqlite-adapter'
 import { createTestDb } from '../test-helpers'
+import {
+  PREVIEW_CONTRACT_INDEX_NAMES,
+  PREVIEW_CONTRACT_TABLE_NAMES,
+  PREVIEW_CONTRACT_TRIGGER_NAMES
+} from '../preview-contract-migration'
 
 const databases: MemoryAdapter[] = []
 
@@ -28,6 +33,12 @@ async function freshDatabase(): Promise<MemoryAdapter> {
 
 async function m4Database(): Promise<MemoryAdapter> {
   const database = await createTestDb()
+  database.exec([
+    ...PREVIEW_CONTRACT_TRIGGER_NAMES.map((name) => `DROP TRIGGER IF EXISTS ${name}`),
+    ...PREVIEW_CONTRACT_INDEX_NAMES.map((name) => `DROP INDEX IF EXISTS ${name}`),
+    ...[...PREVIEW_CONTRACT_TABLE_NAMES].reverse().map((name) => `DROP TABLE IF EXISTS ${name}`),
+    "DELETE FROM schema_migration WHERE migration_id = '2026-08-01_job_skill_preview_contract_v1'"
+  ].join(';\n'))
   database.exec(`
     DROP INDEX IF EXISTS ux_command_idempotency;
     DROP INDEX IF EXISTS idx_applied_event_batch_segment;

@@ -40,15 +40,19 @@ const CURRENT_INDEX_SQL = [
   'CREATE INDEX idx_safety_incident_student_job_task_status ON safety_incident(student_id, job_code, task_code, status, requires_review_before_next_session)'
 ] as const
 
-function redlineTrigger(table: 'assessment_session' | 'training_session', operation: 'INSERT' | 'UPDATE', keyed: boolean): string {
+function redlineTrigger(table: 'assessment_session' | 'training_session', operation: 'INSERT' | 'UPDATE', keyed: boolean, formalOnly = false): string {
   const aggregate = table === 'assessment_session' ? 'assessment_session' : 'training_session'
   const suffix = keyed ? 'same_student_job_task' : 'same_student_task'
   const jobPredicate = keyed ? '\n         AND si.job_code = NEW.job_code' : ''
   const message = keyed ? 'same student_id, job_code and task_code' : 'same student_id and task_code'
+  const shellPredicate = formalOnly && table === 'assessment_session'
+    ? "\n     AND NEW.session_contract_kind = 'FORMAL_SHELL'"
+    : ''
   return `CREATE TRIGGER trg_${aggregate}_redline_incident_${suffix}_${operation.toLowerCase()}
 BEFORE ${operation} ON ${table}
 FOR EACH ROW
 WHEN NEW.status = 'REDLINE_HALTED'
+     ${shellPredicate}
      AND NOT EXISTS (
        SELECT 1 FROM safety_incident si
        WHERE si.incident_id = NEW.redline_incident_id
@@ -60,13 +64,16 @@ BEGIN
 END`
 }
 
-function unresolvedTrigger(table: 'assessment_session' | 'training_session', keyed: boolean): string {
+function unresolvedTrigger(table: 'assessment_session' | 'training_session', keyed: boolean, formalOnly = false): string {
   const aggregate = table === 'assessment_session' ? 'assessment_session' : 'training_session'
   const jobPredicate = keyed ? '\n    AND si.job_code = NEW.job_code' : ''
+  const shellPredicate = formalOnly && table === 'assessment_session'
+    ? "NEW.session_contract_kind = 'FORMAL_SHELL' AND "
+    : ''
   return `CREATE TRIGGER trg_${aggregate}_block_unresolved_safety_incident
 BEFORE INSERT ON ${table}
 FOR EACH ROW
-WHEN EXISTS (
+WHEN ${shellPredicate}EXISTS (
   SELECT 1 FROM safety_incident si
   WHERE si.student_id = NEW.student_id${jobPredicate}
     AND si.task_code = NEW.task_code
@@ -96,7 +103,7 @@ BEGIN
 END`
 }
 
-function bindOpenTrigger(table: 'assessment_session' | 'training_session', keyed: boolean): string {
+function bindOpenTrigger(table: 'assessment_session' | 'training_session', keyed: boolean, formalOnly = false): string {
   const isAssessment = table === 'assessment_session'
   const aggregateType = isAssessment ? 'ASSESSMENT_SESSION' : 'TRAINING_SESSION'
   const idColumn = isAssessment ? 'session_id' : 'training_session_id'
@@ -107,6 +114,12 @@ function bindOpenTrigger(table: 'assessment_session' | 'training_session', keyed
       report_type = 'SAFETY_TERMINATION_REPORT',`
     : ''
   const jobPredicate = keyed ? ` AND ${alias}.job_code = NEW.job_code` : ''
+  const selectShellPredicate = formalOnly && isAssessment
+    ? ` AND ${alias}.session_contract_kind = 'FORMAL_SHELL'`
+    : ''
+  const updateShellPredicate = formalOnly && isAssessment
+    ? " AND session_contract_kind = 'FORMAL_SHELL'"
+    : ''
   return `CREATE TRIGGER trg_safety_incident_bind_open_${isAssessment ? 'assessments' : 'trainings'}
 AFTER INSERT ON safety_incident
 FOR EACH ROW
@@ -121,7 +134,7 @@ BEGIN
     NEW.incident_id, '${aggregateType}', ${alias}.${idColumn},
     ${alias}.status, 'REDLINE_HALTED', NEW.trigger_event_id, datetime('now')
   FROM ${table} ${alias}
-  WHERE ${alias}.student_id = NEW.student_id${jobPredicate} AND ${alias}.task_code = NEW.task_code
+  WHERE ${alias}.student_id = NEW.student_id${jobPredicate} AND ${alias}.task_code = NEW.task_code${selectShellPredicate}
     AND ${alias}.status IN ${open};
 
   UPDATE ${table}
@@ -132,7 +145,7 @@ ${assignment}
       updated_at = datetime('now'),
       last_status_event_id = NEW.trigger_event_id,
       last_applied_event_id = NEW.trigger_event_id
-  WHERE student_id = NEW.student_id${keyed ? ' AND job_code = NEW.job_code' : ''} AND task_code = NEW.task_code
+  WHERE student_id = NEW.student_id${keyed ? ' AND job_code = NEW.job_code' : ''} AND task_code = NEW.task_code${updateShellPredicate}
     AND status IN ${open};
 END`
 }
@@ -163,11 +176,32 @@ const CURRENT_TRIGGER_SQL = [
   bindOpenTrigger('training_session', true)
 ] as const
 
+// PREVIEW_CONTRACT_V1 keeps the historical M4 trigger names but narrows the
+// assessment side to FORMAL_SHELL. The legacy form remains valid for a
+// pre-preview database; the preview-aware form is the current fresh schema.
+const CURRENT_PREVIEW_AWARE_TRIGGER_SQL = [
+  redlineTrigger('assessment_session', 'INSERT', true, true),
+  redlineTrigger('assessment_session', 'UPDATE', true, true),
+  redlineTrigger('training_session', 'INSERT', true),
+  redlineTrigger('training_session', 'UPDATE', true),
+  unresolvedTrigger('assessment_session', true, true),
+  unresolvedTrigger('training_session', true),
+  replacementTrigger('INSERT', true),
+  replacementTrigger('UPDATE', true),
+  bindOpenTrigger('assessment_session', true, true),
+  bindOpenTrigger('training_session', true)
+] as const
+
 /** Frozen DDL contracts, shared by migration tests without exposing a down-migration. */
 export function m4SafetyRekeyObjectSql(state: 'LEGACY_V016' | 'CURRENT_M4'): readonly string[] {
   return state === 'LEGACY_V016'
     ? [...LEGACY_TRIGGER_SQL, ...LEGACY_INDEX_SQL]
     : [...CURRENT_TRIGGER_SQL, ...CURRENT_INDEX_SQL]
+}
+
+/** Object SQL contract used by the additive PREVIEW_CONTRACT_V1 schema. */
+export function m4SafetyRekeyPreviewAwareObjectSql(): readonly string[] {
+  return [...CURRENT_PREVIEW_AWARE_TRIGGER_SQL, ...CURRENT_INDEX_SQL]
 }
 
 function normalizeSql(sql: string | null | undefined): string {
@@ -230,7 +264,10 @@ export function inspectM4SafetyRekeyStructure(database: DBAdapter): M4StructureS
   const legacy = allMatch(database, LEGACY_TRIGGER_SQL, LEGACY_INDEX_SQL)
     && !anyObjectExists(database, CURRENT_RENAMED_OBJECTS)
   if (legacy) return 'LEGACY_V016'
-  const current = allMatch(database, CURRENT_TRIGGER_SQL, CURRENT_INDEX_SQL)
+  const current = (
+    allMatch(database, CURRENT_TRIGGER_SQL, CURRENT_INDEX_SQL)
+    || allMatch(database, CURRENT_PREVIEW_AWARE_TRIGGER_SQL, CURRENT_INDEX_SQL)
+  )
     && !anyObjectExists(database, LEGACY_RENAMED_OBJECTS)
   if (current) return 'CURRENT_M4'
   return 'PARTIAL_OR_DRIFTED'

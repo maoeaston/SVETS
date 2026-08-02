@@ -108,6 +108,7 @@ import {
   registerCentralIpcHandlers,
   type CentralIpcBoundary
 } from '../../../ipc/handler-registry'
+import { TEST_BUSINESS_ACCESS_GATE } from '../../../test-helpers/business-access-gate'
 
 const ASSESSMENT_CORE_MUTATIONS = [
   'assessment:abortSession',
@@ -152,7 +153,7 @@ async function createRuntime(): Promise<{
     }
   })
   runtimes.push(runtime)
-  const boundary = registerCentralIpcHandlers(runtime)
+  const boundary = registerCentralIpcHandlers(runtime, TEST_BUSINESS_ACCESS_GATE)
   runtime.markBoundaryReady()
   return { db, runtime, boundary }
 }

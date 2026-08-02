@@ -14,6 +14,28 @@ export interface AuthSessionSnapshot {
   expiresAt: string
 }
 
+/**
+ * Sender-bound snapshot for sensitive commands.  Principal identity is not
+ * included here: it must be resolved from the signed principal projection.
+ */
+export interface TrustedCallerSnapshot {
+  success: true
+  authSessionId: string
+  userId: string
+  role: AuthRole
+  displayName: string
+  expiresAt: string
+  deviceRuntimeSessionId: string | null
+  deviceId: string | null
+  nodeId: string | null
+  organizationId: string | null
+  capabilities: readonly string[]
+}
+
+export type TrustedCallerResult =
+  | TrustedCallerSnapshot
+  | { success: false; errorCode: 'FORBIDDEN' }
+
 export interface LoginError {
   success: false
   errorCode: 'INVALID_CREDENTIALS' | 'ACCOUNT_DISABLED' | 'SYSTEM_ERROR'

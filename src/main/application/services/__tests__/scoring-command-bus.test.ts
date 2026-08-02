@@ -101,6 +101,7 @@ import {
   registerCentralIpcHandlers,
   type CentralIpcBoundary
 } from '../../../ipc/handler-registry'
+import { TEST_BUSINESS_ACCESS_GATE } from '../../../test-helpers/business-access-gate'
 import { TASK_OPERATION_CODES } from '../../../../shared/types/operation-scoring'
 import { finalizeJobSkillResultCore } from '../job-skill-result-service'
 import { acceptedScoringTestContext } from './scoring-test-support'
@@ -156,7 +157,7 @@ async function createRuntime(): Promise<{
     }
   })
   runtimes.push(runtime)
-  const boundary = registerCentralIpcHandlers(runtime)
+  const boundary = registerCentralIpcHandlers(runtime, TEST_BUSINESS_ACCESS_GATE)
   runtime.markBoundaryReady()
   return { db, runtime, boundary }
 }

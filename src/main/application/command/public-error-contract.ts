@@ -10,6 +10,7 @@ import type { StrategyErrorCode } from '@shared/types/strategy'
 import type { StudentErrorCode } from '@shared/types/student'
 import type { TeacherObservationErrorCode } from '@shared/types/teacher-observation'
 import type { TrainingErrorCode } from '@shared/types/training'
+import type { PreviewErrorCode } from '../../domain/preview/preview-errors'
 import {
   COMMAND_PREFLIGHT_REASONS,
   type CommandPreflightReason,
@@ -32,6 +33,7 @@ export type PublicCommandErrorCode =
   | AssignmentErrorCode
   | SafetyIncidentErrorCode
   | ReportErrorCode
+  | PreviewErrorCode
 
 export type PublicErrorFamily =
   | 'AUTH_STUDENT_STRATEGY'
@@ -40,6 +42,7 @@ export type PublicErrorFamily =
   | 'ASSIGNMENT'
   | 'SAFETY'
   | 'REPORT'
+  | 'PREVIEW_FEEDBACK'
 
 export const PUBLIC_ERROR_FAMILY_DEFAULT = Object.freeze({
   AUTH_STUDENT_STRATEGY: 'SYSTEM_ERROR',
@@ -47,7 +50,8 @@ export const PUBLIC_ERROR_FAMILY_DEFAULT = Object.freeze({
   TRAINING: 'TRAINING_SYSTEM_ERROR',
   ASSIGNMENT: 'ASSIGNMENT_SYSTEM_ERROR',
   SAFETY: 'SAFETY_SYSTEM_ERROR',
-  REPORT: 'REPORT_SYSTEM_ERROR'
+  REPORT: 'REPORT_SYSTEM_ERROR',
+  PREVIEW_FEEDBACK: 'PREVIEW_CONTRACT_MIGRATION_REQUIRED'
 } satisfies Record<PublicErrorFamily, PublicCommandErrorCode>)
 
 export function createPreflightErrorMap<ErrorCode extends PublicCommandErrorCode>(

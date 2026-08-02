@@ -40,6 +40,7 @@ import {
   replaceSenderAuthSession
 } from '../../../utils/auth-session'
 import { registerCentralIpcHandlers } from '../../../ipc/handler-registry'
+import { TEST_BUSINESS_ACCESS_GATE } from '../../../test-helpers/business-access-gate'
 import type { CentralIpcBoundary } from '../../../ipc/handler-registry'
 
 const M5A5_MUTATIONS = [
@@ -83,7 +84,7 @@ async function createRuntime(): Promise<{
     }
   })
   runtimes.push(runtime)
-  const boundary = registerCentralIpcHandlers(runtime)
+  const boundary = registerCentralIpcHandlers(runtime, TEST_BUSINESS_ACCESS_GATE)
   runtime.markBoundaryReady()
   return { db, runtime, boundary }
 }

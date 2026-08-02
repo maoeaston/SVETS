@@ -46,6 +46,7 @@ export interface DurableFileHandle {
 export interface FileDurabilityHooks {
   syncFile: (fd: number) => void
   syncDirectory: (fd: number) => void
+  removeFile?: (absolutePath: string) => void
 }
 
 export interface FileCapabilityProbeResult {
@@ -67,6 +68,7 @@ export class FileCapabilityError extends Error {
       | 'EXCLUSIVE_CREATE_FAILED'
       | 'SYNC_UNSUPPORTED'
       | 'NO_CLOBBER_FAILED'
+      | 'REMOVE_FAILED'
       | 'ATOMIC_REPLACE_FAILED',
     message: string,
     public readonly cause?: unknown
@@ -78,7 +80,8 @@ export class FileCapabilityError extends Error {
 
 const DEFAULT_HOOKS: FileDurabilityHooks = {
   syncFile: (fd) => fsyncSync(fd),
-  syncDirectory: (fd) => fsyncSync(fd)
+  syncDirectory: (fd) => fsyncSync(fd),
+  removeFile: unlinkSync
 }
 
 function identity(stats: Stats): FileIdentity {
@@ -364,6 +367,23 @@ export class DurableFileCapability {
     }
   }
 
+  removeFile(relativePath: string, expectedIdentity?: FileIdentity): void {
+    const absolutePath = this.resolveRelative(relativePath)
+    const before = lstatSync(absolutePath)
+    assertRegularSingleLink(before, absolutePath)
+    const beforeIdentity = identity(before)
+    if (expectedIdentity && !identityEquals(expectedIdentity, beforeIdentity)) {
+      throw new FileCapabilityError('IDENTITY_DRIFT', `${relativePath} changed before removal`)
+    }
+    try {
+      (this.hooks.removeFile ?? unlinkSync)(absolutePath)
+    } catch (error) {
+      throw new FileCapabilityError('REMOVE_FAILED', `failed to remove ${relativePath}`, error)
+    }
+    if (pathExists(absolutePath)) throw new FileCapabilityError('IDENTITY_DRIFT', `${relativePath} remained after removal`)
+    this.syncDirectory(protocolRelative(this.dataRoot, dirname(absolutePath)))
+  }
+
   listRegularFiles(relativeDirectory: string): string[] {
     const absoluteDirectory = this.resolveRelative(relativeDirectory)
     if (!pathExists(absoluteDirectory)) return []
@@ -425,6 +445,26 @@ export class DurableFileCapability {
       throw new FileCapabilityError('IDENTITY_DRIFT', `${targetRelative} changed after no-clobber publication`)
     }
     return publishedIdentity
+  }
+
+  moveNoClobber(sourceRelative: string, targetRelative: string): FileIdentity {
+    const sourcePath = this.resolveRelative(sourceRelative)
+    const targetPath = this.resolveRelative(targetRelative)
+    const sourceStats = lstatSync(sourcePath)
+    assertRegularSingleLink(sourceStats, sourcePath)
+    if (pathExists(targetPath)) {
+      throw new FileCapabilityError('NO_CLOBBER_FAILED', String(targetRelative) + ' already exists')
+    }
+    try {
+      renameSync(sourcePath, targetPath)
+    } catch (error) {
+      throw new FileCapabilityError('NO_CLOBBER_FAILED', 'atomic move failed for ' + targetRelative, error)
+    }
+    this.syncDirectory(protocolRelative(this.dataRoot, dirname(sourcePath)))
+    this.syncDirectory(protocolRelative(this.dataRoot, dirname(targetPath)))
+    const targetStats = lstatSync(targetPath)
+    assertRegularSingleLink(targetStats, targetPath)
+    return identity(targetStats)
   }
 
   atomicReplace(tempRelative: string, targetRelative: string, expectedTargetIdentity?: FileIdentity): void {

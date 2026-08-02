@@ -1,0 +1,76 @@
+{
+  "$schema": "internal://base-ability-renderer-requirements-v1.json",
+  "schema_version": "base-ability-renderer-requirements-v1",
+  "purpose": "Step 3 冻结的 BASE_ABILITY 入选交互 renderer registry：登记 Step 1 选定交互所需的稳定 renderer key、合同 hash 与实现状态。Step 3 不在 renderer 进程实现组件；缺实现时主进程稳定返回 QUESTION_RENDERER_UNAVAILABLE / BLOCKED_RENDERER_IMPLEMENTATION。implementation_status 由 Step 5 登记真实 registry 后改为 IMPLEMENTED。",
+  "derived_from_authority": "doc/features/base-ability-42plus8-authority-v1.json",
+  "authority_hash": "sha256:1ebd14451caffcf71a73c409831d068723d7436823f75ebc45910059e313875f",
+  "renderer_requirements_root_hash": "sha256:c59d30e2eee7a05b48fffb18b3658f5039da4e9335742f6756893ed9c1d286b5",
+  "content_root_hash": "sha256:2ccf247e76b3089dd6713b8d1d122333085ac4a2b2fa598f1d9b885181974401",
+  "scoring_root_hash": "sha256:143153373d725d7394c1eccaff0637299db1a5e84f99b17e05f7492296c26480",
+  "requirements": [
+    {
+      "renderer_key": "base-ability/single-select/v1",
+      "interaction_type": "SINGLE_SELECT",
+      "response_shape": "{ selected_option_id: string }",
+      "implementation_status": "PENDING_IMPLEMENTATION",
+      "required_before_session_start": true,
+      "question_count": 8
+    },
+    {
+      "renderer_key": "base-ability/ordering/v1",
+      "interaction_type": "ORDERING",
+      "response_shape": "{ ordered_item_ids: string[] }",
+      "implementation_status": "PENDING_IMPLEMENTATION",
+      "required_before_session_start": true,
+      "question_count": 2
+    },
+    {
+      "renderer_key": "base-ability/drag-drop/v1",
+      "interaction_type": "DRAG_DROP",
+      "response_shape": "{ placements: [{ item_id, zone_id }] }",
+      "implementation_status": "PENDING_IMPLEMENTATION",
+      "required_before_session_start": true,
+      "question_count": 7
+    },
+    {
+      "renderer_key": "base-ability/task-sequence/v1",
+      "interaction_type": "TASK_SEQUENCE",
+      "response_shape": "{ completed_steps, step_order, metrics }",
+      "implementation_status": "PENDING_IMPLEMENTATION",
+      "required_before_session_start": true,
+      "question_count": 4
+    },
+    {
+      "renderer_key": "base-ability/gesture-task/v1",
+      "interaction_type": "GESTURE_TASK",
+      "response_shape": "{ outcome, metrics }",
+      "implementation_status": "PENDING_IMPLEMENTATION",
+      "required_before_session_start": true,
+      "question_count": 4
+    },
+    {
+      "renderer_key": "base-ability/branching-task/v1",
+      "interaction_type": "BRANCHING_TASK",
+      "response_shape": "{ path, messages, final_state }",
+      "implementation_status": "PENDING_IMPLEMENTATION",
+      "required_before_session_start": true,
+      "question_count": 14
+    },
+    {
+      "renderer_key": "base-ability/timed-task/v1",
+      "interaction_type": "TIMED_TASK",
+      "response_shape": "{ actions, metrics, final_state }",
+      "implementation_status": "PENDING_IMPLEMENTATION",
+      "required_before_session_start": true,
+      "question_count": 3
+    },
+    {
+      "renderer_key": "base-ability/offline-rubric/v1",
+      "interaction_type": "OFFLINE_RUBRIC",
+      "response_shape": "教师按审核通过的线下 rubric 提交 0/1/2 分",
+      "implementation_status": "PENDING_IMPLEMENTATION",
+      "required_before_session_start": true,
+      "question_count": 8
+    }
+  ]
+}

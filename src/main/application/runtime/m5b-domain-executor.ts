@@ -1,5 +1,5 @@
 import type { DBAdapter } from '../../db/interface'
-import { applyAssessmentEvent } from '../../domain/assessment-reducer'
+import { projectPreparedAssessmentSessionStarted } from '../../domain/projectors/assessment-projector'
 import {
   EventBatchCoordinator,
   type EventBatchExecutionResult
@@ -39,6 +39,30 @@ import {
   TrainingPlanner,
   loadTrainingPlannerSnapshot
 } from '../planners/training-planner'
+import {
+  PreviewPrincipalPlanner,
+  loadPreviewPrincipalPlannerSnapshot
+} from '../planners/preview-principal-planner'
+import type { PreviewPrincipalTrustContext } from '../planners/preview-principal-planner'
+import {
+  PreviewReleasePlanner,
+  loadPreviewReleasePlannerSnapshot
+} from '../planners/preview-release-planner'
+import type { PreviewReleaseTrustContext } from '../planners/preview-release-planner'
+import {
+  PreviewFeedbackPlanner,
+  loadPreviewFeedbackPlannerSnapshot
+} from '../planners/preview-feedback-planner'
+import type { PreviewFeedbackTrustContext } from '../planners/preview-feedback-planner'
+import {
+  PreviewSessionPlanner,
+  loadPreviewSessionPlannerSnapshot
+} from '../planners/preview-session-planner'
+import {
+  PreviewSafetyPlanner,
+  loadPreviewSafetyPlannerSnapshot
+} from '../planners/preview-safety-planner'
+import type { FeedbackVault } from '../../domain/feedback-vault/feedback-vault'
 import {
   DurableCommandCoordinator,
   PRE_PONR_EXECUTION_ERROR_CODE,
@@ -100,6 +124,21 @@ const SAFETY_COMMANDS = new Set([
   'safety:resolve',
   'safety:void'
 ])
+const PREVIEW_PRINCIPAL_COMMANDS = new Set([
+  'preview:enrollPrincipal',
+  'preview:rotatePrincipal'
+])
+const PREVIEW_RELEASE_COMMANDS = new Set([
+  'preview:releasePack',
+  'preview:revokePack'
+])
+const PREVIEW_FEEDBACK_COMMANDS = new Set([
+  'feedback:saveDraft', 'feedback:submit', 'feedback:reconcile', 'feedback:delete', 'feedback:purge', 'feedback:repair', 'feedback:export'
+])
+const PREVIEW_SESSION_COMMANDS = new Set([
+  'preview:startSession', 'preview:completeSession', 'preview:abortSession', 'preview:technicalInterruption'
+])
+const PREVIEW_SAFETY_COMMANDS = new Set(['preview:triggerSafety'])
 
 export type M5bMutationExecution = Readonly<{
   publicResult: Readonly<Record<string, CanonicalJsonValue>>
@@ -110,6 +149,10 @@ export interface M5bDomainExecutorDependencies {
   readonly database: DBAdapter
   readonly durableCoordinator: DurableCommandCoordinator
   readonly batchCoordinator: EventBatchCoordinator
+  readonly previewPrincipalTrustContext?: PreviewPrincipalTrustContext
+  readonly previewReleaseTrustContext?: PreviewReleaseTrustContext
+  readonly feedbackVault?: FeedbackVault
+  readonly previewFeedbackTrustContext?: PreviewFeedbackTrustContext
 }
 
 function timestamp(envelope: CommandEnvelopeV2): string {
@@ -137,6 +180,25 @@ export class M5bDomainExecutor {
     transportMetadata: unknown
   }): Promise<DurableCommandAcceptance<ValidatedInput>> {
     return this.dependencies.durableCoordinator.accept<RawInput, ValidatedInput>(request)
+  }
+
+  acceptInternal<RawInput, ValidatedInput>(request: {
+    commandType: string
+    rawInput: RawInput
+    transportId: string
+    parentCorrelationId?: string
+    transportMetadata: unknown
+  }): Promise<DurableCommandAcceptance<ValidatedInput>> {
+    return this.dependencies.durableCoordinator.accept<RawInput, ValidatedInput>({
+      commandType: request.commandType,
+      rawInput: request.rawInput,
+      transport: {
+        source: 'INTERNAL',
+        transportId: request.transportId,
+        parentCorrelationId: request.parentCorrelationId
+      },
+      transportMetadata: request.transportMetadata
+    })
   }
 
   failRetryableBeforePrepare<ValidatedInput>(accepted: DurableCommandAccepted<ValidatedInput>): void {
@@ -223,6 +285,57 @@ export class M5bDomainExecutor {
         planner: new SafetyPlanner()
       })
     }
+    if (PREVIEW_PRINCIPAL_COMMANDS.has(envelope.commandType)) {
+      return this.dependencies.batchCoordinator.execute({
+        envelope,
+        readSnapshot: () => loadPreviewPrincipalPlannerSnapshot(
+          this.dependencies.database,
+          envelope,
+          common,
+          this.dependencies.previewPrincipalTrustContext
+        ),
+        planner: new PreviewPrincipalPlanner()
+      })
+    }
+    if (PREVIEW_RELEASE_COMMANDS.has(envelope.commandType)) {
+      return this.dependencies.batchCoordinator.execute({
+        envelope,
+        readSnapshot: () => loadPreviewReleasePlannerSnapshot(
+          this.dependencies.database,
+          envelope,
+          common,
+          this.dependencies.previewReleaseTrustContext
+        ),
+        planner: new PreviewReleasePlanner()
+      })
+    }
+    if (PREVIEW_FEEDBACK_COMMANDS.has(envelope.commandType)) {
+      return this.dependencies.batchCoordinator.execute({
+        envelope,
+        readSnapshot: () => loadPreviewFeedbackPlannerSnapshot(
+          this.dependencies.database,
+          envelope,
+          common,
+          this.dependencies.feedbackVault,
+          this.dependencies.previewFeedbackTrustContext
+        ),
+        planner: new PreviewFeedbackPlanner()
+      })
+    }
+    if (PREVIEW_SESSION_COMMANDS.has(envelope.commandType)) {
+      return this.dependencies.batchCoordinator.execute({
+        envelope,
+        readSnapshot: () => loadPreviewSessionPlannerSnapshot(this.dependencies.database, envelope, common),
+        planner: new PreviewSessionPlanner()
+      })
+    }
+    if (PREVIEW_SAFETY_COMMANDS.has(envelope.commandType)) {
+      return this.dependencies.batchCoordinator.execute({
+        envelope,
+        readSnapshot: () => loadPreviewSafetyPlannerSnapshot(this.dependencies.database, envelope, common),
+        planner: new PreviewSafetyPlanner()
+      })
+    }
     if (envelope.commandType === 'reports:export' && reportExportInteraction) {
       return this.dependencies.batchCoordinator.execute({
         envelope,
@@ -238,5 +351,5 @@ export class M5bDomainExecutor {
 }
 
 export function projectM5bAssessmentSessionStarted(context: PreparedProjectorContext): void {
-  applyAssessmentEvent(context.database, context.event.record as unknown as Parameters<typeof applyAssessmentEvent>[1])
+  projectPreparedAssessmentSessionStarted(context)
 }

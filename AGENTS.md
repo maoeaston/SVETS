@@ -1,8 +1,8 @@
 # 炫灿-职途向导系统 MVP
 
-**工程基线：** schema v0.1.18-event-batch-v2.2（M5B-15 PASS） | PRD v1.0.9 authoritative
+**工程基线：** schema v0.1.19-job-skill-preview-contract-v1（前置 M5B-15 / v0.1.18-event-batch-v2.2 PASS；preview readiness fresh/current 默认为 INSTALLING） | PRD v1.0.10 authoritative
 **技术栈：** Electron + Vue3 + TypeScript + SQLite  
-**MVP 范围：** 一岗位（超市理货员）| 一任务（拆箱与上架）| 两条测评路径（BASE_ABILITY / JOB_SKILL）| 一闭环（测评→训练→评分→报告）
+**MVP 范围：** 一岗位（超市理货员）| 一任务（拆箱与上架）| 两条正式测评路径（BASE_ABILITY / JOB_SKILL）+ JOB_SKILL 298 题全量预览路径 | 一闭环（测评→训练→评分→报告）
 
 ---
 
@@ -12,7 +12,7 @@
 - 渲染进程：`src/renderer/src/` — `views/` | `stores/`（Pinia）| `router/`
 - 共享类型：`src/shared/types/` — `event-payloads.ts` | `json-schemas.ts` | `ipc-api.ts`
 - 设计文档：`doc/specs/` — PRD | JSON 字段规范 | 事件规范 | 题库架构说明 | `doc/features/` — 功能 Mini-PRD + 实现文档 | `doc/reference/` — 原始素材
-- 当前唯一产品合同：`doc/specs/MVP_PRD_v1.0.9-authoritative.md`；v1.0.6～v1.0.9 差异版只用于历史追溯
+- 当前唯一产品合同：`doc/specs/MVP_PRD_v1.0.9-authoritative.md`（为兼容既有引用保留旧文件名，正文权威版本为 v1.0.10）；v1.0.6～v1.0.9 差异版只用于历史追溯
 
 ---
 
@@ -40,6 +40,10 @@
 ### 文档索引同步
 
 新增、移动、重命名或归档 `doc/` 下的文档后，运行 `npm run docs:index:update` 更新 `doc/index.md` 的自动清单，再运行 `npm run docs:index:check`。自动清单标记区块不得手工编辑；阅读顺序和权威性说明仍由 `doc/index.md` 的人工导航部分维护。
+
+### Preview readiness 边界
+
+`PREVIEW_CONTRACT_V1` 的代码合同和隔离自动化验收已完成，但新鲜或当前同步数据库的 registry 默认保持 `INSTALLING`。未完成真实签名、Electron/userData、多设备流程和 migration upgrade/rollback 人工验收前，不得宣称全局 `READY`，不得访问或 promotion 默认数据库。
 
 ### 人工审核产物
 

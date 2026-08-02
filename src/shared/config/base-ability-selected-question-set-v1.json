@@ -1,0 +1,518 @@
+{
+  "$schema": "internal://base-ability-selected-question-set-v1.json",
+  "schema_version": "base-ability-selected-question-set-v1",
+  "purpose": "Pilot 冻结的 BASE_ABILITY 50 题选定集合运行权威。createSession 据此校验 authority 选定集合与逐题 renderer/hash，构建 SESSION_STARTED v2 冻结快照。",
+  "derived_from_authority": "doc/features/base-ability-42plus8-authority-v1.json",
+  "authority_hash": "sha256:1ebd14451caffcf71a73c409831d068723d7436823f75ebc45910059e313875f",
+  "content_root_hash": "sha256:2ccf247e76b3089dd6713b8d1d122333085ac4a2b2fa598f1d9b885181974401",
+  "scoring_root_hash": "sha256:143153373d725d7394c1eccaff0637299db1a5e84f99b17e05f7492296c26480",
+  "renderer_requirements_root_hash": "sha256:c59d30e2eee7a05b48fffb18b3658f5039da4e9335742f6756893ed9c1d286b5",
+  "summary": {
+    "selected_total": 50,
+    "online_total": 42,
+    "offline_total": 8
+  },
+  "selected_question_set_hash": "sha256:689605322b3ee1252b4163bc747fb44eaa21493b4c1cd211af409eca10d3a755",
+  "questions": [
+    {
+      "question_id": "GA-COG-001",
+      "module_type": "COGNITION",
+      "question_type": "SINGLE_CHOICE",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/single-select/v1",
+      "renderer_requirement_hash": "sha256:a529676156bde5f5df1becaee46c062e331c72c340b0baae3750ae7b97b4ba28",
+      "content_hash": "sha256:e691076e8dc5f4e8d4f3cd3114bc7689fffe8b833d7e4aa3d1e14c4e7cfc4985",
+      "scoring_hash": "sha256:03b19e633d5c3b5ffc79afae63a3b5e0b909dfa82f67329f6e0c2e8a6d9f308d"
+    },
+    {
+      "question_id": "GA-COG-004",
+      "module_type": "COGNITION",
+      "question_type": "SINGLE_CHOICE",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/single-select/v1",
+      "renderer_requirement_hash": "sha256:a529676156bde5f5df1becaee46c062e331c72c340b0baae3750ae7b97b4ba28",
+      "content_hash": "sha256:20d496a8177237395be5be1b09c545bab31d0ddff8490c12b9c554e0975a89e1",
+      "scoring_hash": "sha256:a3603443367a26381f9543338d9652af2903c88adc98811634e6a39632bc14b5"
+    },
+    {
+      "question_id": "GA-COG-006",
+      "module_type": "COGNITION",
+      "question_type": "DRAG",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/ordering/v1",
+      "renderer_requirement_hash": "sha256:90541f0eaab4b2d486d4e757362f63cfc8c5b94c95b1318d57df2cba3f0848e9",
+      "content_hash": "sha256:0c540ca3f1c1361d84b67b074002c6adf03cb741e67aa451964f89b395e5b8d9",
+      "scoring_hash": "sha256:028aad34e98f9d1e075fa5fb587ca41e106e97a11f52c280aa5315ddafcd9c78"
+    },
+    {
+      "question_id": "GA-COG-009",
+      "module_type": "COGNITION",
+      "question_type": "DRAG",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/drag-drop/v1",
+      "renderer_requirement_hash": "sha256:7e5986e5bc15b3343c707caca5430e8689cea13ce3660fd87f3569760cb7378d",
+      "content_hash": "sha256:8ce93bcaf16a6f2fa4360ca358c3b364dd08b5043e6567476fc1cd5406eb3e26",
+      "scoring_hash": "sha256:731c20a1f02701670c69ecd67222dbbe422ae4ad6265a73b40540fe7441131f7"
+    },
+    {
+      "question_id": "GA-COG-011",
+      "module_type": "COGNITION",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/task-sequence/v1",
+      "renderer_requirement_hash": "sha256:93eff012f5b7253e6c3e3dac5a89bec95ffb4ef882e5e715b0b5f44b83c40e71",
+      "content_hash": "sha256:213139f783181166ef3e6a1d6df43661eca66a5aaaf00597c858dde1c5af9961",
+      "scoring_hash": "sha256:6c2cf4ed9fe4af94bc39d38f6755dadf2deaa4e467197dfacb7c359c4dfe4bb4"
+    },
+    {
+      "question_id": "GA-COG-014",
+      "module_type": "COGNITION",
+      "question_type": "DRAG",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/ordering/v1",
+      "renderer_requirement_hash": "sha256:90541f0eaab4b2d486d4e757362f63cfc8c5b94c95b1318d57df2cba3f0848e9",
+      "content_hash": "sha256:428a000b4fccd71e0d6e63b1cb59ed01d0f08f3b9404b57e887fbeb562248947",
+      "scoring_hash": "sha256:028aad34e98f9d1e075fa5fb587ca41e106e97a11f52c280aa5315ddafcd9c78"
+    },
+    {
+      "question_id": "GA-COG-020",
+      "module_type": "COGNITION",
+      "question_type": "SINGLE_CHOICE",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/gesture-task/v1",
+      "renderer_requirement_hash": "sha256:06d4491b06c8aeb757b24f48d03385fc47422548cc1177d9f9dd71d08a9d6a0e",
+      "content_hash": "sha256:d107d77070942e4d638d1484da97dc5327ed685f84b62c3e12f7b0f2cff3d2e9",
+      "scoring_hash": "sha256:50da95697f5af230462b728a3b20b8fafab47e1cf3dd150b39c933d89687e339"
+    },
+    {
+      "question_id": "GA-EMO-001",
+      "module_type": "EMOTION_REGULATION",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/branching-task/v1",
+      "renderer_requirement_hash": "sha256:bced16771196f9eeeda0c2c945c0dc546e06f6cb082053cae71d224c2600e0bb",
+      "content_hash": "sha256:176b1397ae4a8b9fd7fb58e2e5f0a8f9eea4688ed64c4e9fa6e8a7dc9bec6264",
+      "scoring_hash": "sha256:4d269f027a1486ce501eb0498e5f73f6d764f5c70b17b20c840f5ea2ec5e6067"
+    },
+    {
+      "question_id": "GA-EMO-002",
+      "module_type": "EMOTION_REGULATION",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/branching-task/v1",
+      "renderer_requirement_hash": "sha256:bced16771196f9eeeda0c2c945c0dc546e06f6cb082053cae71d224c2600e0bb",
+      "content_hash": "sha256:ba3bb8dcd72e11fd59bb79235612c72f891860971dfb72f4611c763de8098ebf",
+      "scoring_hash": "sha256:ce9dca68bda62686d3609eabfc54de0d3813e0718723e50a7cd9df4a99770924"
+    },
+    {
+      "question_id": "GA-EMO-003",
+      "module_type": "EMOTION_REGULATION",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/branching-task/v1",
+      "renderer_requirement_hash": "sha256:bced16771196f9eeeda0c2c945c0dc546e06f6cb082053cae71d224c2600e0bb",
+      "content_hash": "sha256:e48fba269c7faabc99e1c219db0998d94e3868d3f069e55b7f2546933c5a017c",
+      "scoring_hash": "sha256:46e653d956e292dbc7e4949f49dd15f85ebddcbd606fac77a77ea38784760782"
+    },
+    {
+      "question_id": "GA-EMO-004",
+      "module_type": "EMOTION_REGULATION",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/timed-task/v1",
+      "renderer_requirement_hash": "sha256:a37db4f3c3e9fd75bb1e41a505cfab969f05a39dd85ea7e3a23fced6f1a1d6a3",
+      "content_hash": "sha256:14b044721d429b60bf2f25818b0a62171cc7dd99b9b1fb3dffc597cbe5c3fb47",
+      "scoring_hash": "sha256:90288dafe207ef85799b5333e13f76ce3f0ccb0b3d73619a8ffeb28658d6933a"
+    },
+    {
+      "question_id": "GA-EMO-005",
+      "module_type": "EMOTION_REGULATION",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/task-sequence/v1",
+      "renderer_requirement_hash": "sha256:93eff012f5b7253e6c3e3dac5a89bec95ffb4ef882e5e715b0b5f44b83c40e71",
+      "content_hash": "sha256:a3ad0e81776797dfe0d014eca7a7d45a3d97dc86d296e2f5bb449f6ee4caebf9",
+      "scoring_hash": "sha256:07d37b90efc2d331d2b0bc4f352d73e83e9235331cc263dba3d347276f56357c"
+    },
+    {
+      "question_id": "GA-EMO-010",
+      "module_type": "EMOTION_REGULATION",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/branching-task/v1",
+      "renderer_requirement_hash": "sha256:bced16771196f9eeeda0c2c945c0dc546e06f6cb082053cae71d224c2600e0bb",
+      "content_hash": "sha256:eca72979abfd56da5f3d8a08e3556c0531d703a7d5c9aa402f25488662f72d68",
+      "scoring_hash": "sha256:90dd78b6a62eb480bca9f18448ad07f3ec6d636513c69de465902a1cca4c194f"
+    },
+    {
+      "question_id": "GA-EMO-013",
+      "module_type": "EMOTION_REGULATION",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/branching-task/v1",
+      "renderer_requirement_hash": "sha256:bced16771196f9eeeda0c2c945c0dc546e06f6cb082053cae71d224c2600e0bb",
+      "content_hash": "sha256:87a3310bdafb6476cbf2a9277239f42e0b7ce65260d53bcc5f7639f84cff484c",
+      "scoring_hash": "sha256:c780ce9c49dedc1c7f916bdcd4bd03216e42a179d3c0b6b352e91f3d3ffd7ed9"
+    },
+    {
+      "question_id": "GA-FM-001",
+      "module_type": "FINE_MOTOR",
+      "question_type": "OFFLINE_OPERATION",
+      "question_phase": "OFFLINE",
+      "renderer_key": "base-ability/offline-rubric/v1",
+      "renderer_requirement_hash": "sha256:833c6a941e9a8ff6672a9f9a612aacfa2a5e85c73bc9cb7371c6746dd2183b1f",
+      "content_hash": "sha256:c0689f78da781f6934141db7d97789d136e64d635b8b004a9b09f98224e98ca6",
+      "scoring_hash": "sha256:04c8724ffcbbdbeca64f9fe0491192caff0d273c0c5ff61f3dd60ec9289599af"
+    },
+    {
+      "question_id": "GA-FM-002",
+      "module_type": "FINE_MOTOR",
+      "question_type": "OFFLINE_OPERATION",
+      "question_phase": "OFFLINE",
+      "renderer_key": "base-ability/offline-rubric/v1",
+      "renderer_requirement_hash": "sha256:833c6a941e9a8ff6672a9f9a612aacfa2a5e85c73bc9cb7371c6746dd2183b1f",
+      "content_hash": "sha256:5bfba7129fc67ce8db2bbb5e52d6eb2c1c23a0fb1cf21b95f0aa9614fc50f8d3",
+      "scoring_hash": "sha256:a8330e48ca3e1b383f5f0ac1fd4b4b67666539db857cf0fa26977018efe99343"
+    },
+    {
+      "question_id": "GA-FM-003",
+      "module_type": "FINE_MOTOR",
+      "question_type": "OFFLINE_OPERATION",
+      "question_phase": "OFFLINE",
+      "renderer_key": "base-ability/offline-rubric/v1",
+      "renderer_requirement_hash": "sha256:833c6a941e9a8ff6672a9f9a612aacfa2a5e85c73bc9cb7371c6746dd2183b1f",
+      "content_hash": "sha256:c3e010b5c71d9a5373965f3896b03ece7fdd6625e23ea240f992d8861c2debc3",
+      "scoring_hash": "sha256:11d8ed73411095c623f5ff04e6678bbe8feb977f2a5364a77d7c0f7585c0f7eb"
+    },
+    {
+      "question_id": "GA-FM-004",
+      "module_type": "FINE_MOTOR",
+      "question_type": "OFFLINE_OPERATION",
+      "question_phase": "OFFLINE",
+      "renderer_key": "base-ability/offline-rubric/v1",
+      "renderer_requirement_hash": "sha256:833c6a941e9a8ff6672a9f9a612aacfa2a5e85c73bc9cb7371c6746dd2183b1f",
+      "content_hash": "sha256:e1cdfff3b3e71b91504bded0f24ca64c5e44e34f2d0ba6850946115824ca75f4",
+      "scoring_hash": "sha256:61a1c0c3a8248fbc036ef20b4bbded9c24c1f5a6594e31009e5bc354a28d32c0"
+    },
+    {
+      "question_id": "GA-FM-005",
+      "module_type": "FINE_MOTOR",
+      "question_type": "DRAG",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/drag-drop/v1",
+      "renderer_requirement_hash": "sha256:7e5986e5bc15b3343c707caca5430e8689cea13ce3660fd87f3569760cb7378d",
+      "content_hash": "sha256:945ec341e0e9a750377b2c8dbfdbfd26e8b6a79f6789b71735900721b79cf8c8",
+      "scoring_hash": "sha256:3046d5d8914f7dd4ef8f1db1d114b9017510f7bc935e067ad94672baab97bcc7"
+    },
+    {
+      "question_id": "GA-FM-006",
+      "module_type": "FINE_MOTOR",
+      "question_type": "OFFLINE_OPERATION",
+      "question_phase": "OFFLINE",
+      "renderer_key": "base-ability/offline-rubric/v1",
+      "renderer_requirement_hash": "sha256:833c6a941e9a8ff6672a9f9a612aacfa2a5e85c73bc9cb7371c6746dd2183b1f",
+      "content_hash": "sha256:89d095cd3b592cb35b95e6b954588e25a6f8b0a01e0389fef86cb0b815483291",
+      "scoring_hash": "sha256:31fba1bb3bbfec0169aee09fc16e985aed48b48b14735e3c6616acea4f46f7e8"
+    },
+    {
+      "question_id": "GA-FM-007",
+      "module_type": "FINE_MOTOR",
+      "question_type": "DRAG",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/drag-drop/v1",
+      "renderer_requirement_hash": "sha256:7e5986e5bc15b3343c707caca5430e8689cea13ce3660fd87f3569760cb7378d",
+      "content_hash": "sha256:121915fbbfefb11b504b0d1d48a4a7538038e456012878e1b3a9d2b856fd15e0",
+      "scoring_hash": "sha256:3046d5d8914f7dd4ef8f1db1d114b9017510f7bc935e067ad94672baab97bcc7"
+    },
+    {
+      "question_id": "GA-FM-008",
+      "module_type": "FINE_MOTOR",
+      "question_type": "DRAG",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/drag-drop/v1",
+      "renderer_requirement_hash": "sha256:7e5986e5bc15b3343c707caca5430e8689cea13ce3660fd87f3569760cb7378d",
+      "content_hash": "sha256:da97faa67aae1f1d7d46d7ff2b97d0bf5b3638dcbc54d12bbda51804ad9a817a",
+      "scoring_hash": "sha256:3046d5d8914f7dd4ef8f1db1d114b9017510f7bc935e067ad94672baab97bcc7"
+    },
+    {
+      "question_id": "GA-FM-009",
+      "module_type": "FINE_MOTOR",
+      "question_type": "DRAG",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/drag-drop/v1",
+      "renderer_requirement_hash": "sha256:7e5986e5bc15b3343c707caca5430e8689cea13ce3660fd87f3569760cb7378d",
+      "content_hash": "sha256:252bbe56a3a8a7e0592f158945a7a7b4f4fda16021ee538d031f3ecbd78f12f8",
+      "scoring_hash": "sha256:3046d5d8914f7dd4ef8f1db1d114b9017510f7bc935e067ad94672baab97bcc7"
+    },
+    {
+      "question_id": "GA-FM-010",
+      "module_type": "FINE_MOTOR",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/gesture-task/v1",
+      "renderer_requirement_hash": "sha256:06d4491b06c8aeb757b24f48d03385fc47422548cc1177d9f9dd71d08a9d6a0e",
+      "content_hash": "sha256:5ea36e17cb60e4e93bc3ebf965e0aad1394f782ddb6c8f1d422071fdc7ad93f3",
+      "scoring_hash": "sha256:870df8d07294fa32e3500d4a5ca4efd3bc2db626a308ce6f00265f07ca4df9a4"
+    },
+    {
+      "question_id": "GA-FM-011",
+      "module_type": "FINE_MOTOR",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/gesture-task/v1",
+      "renderer_requirement_hash": "sha256:06d4491b06c8aeb757b24f48d03385fc47422548cc1177d9f9dd71d08a9d6a0e",
+      "content_hash": "sha256:bf486d4a68927c89c0dc0baf72babfe264ed06e5efb196aafaf993f82ca3663e",
+      "scoring_hash": "sha256:caf86d56ce304f14e29a13d445d1dc36e0ce4c45e765ee2afc3fa1f3c8fb3271"
+    },
+    {
+      "question_id": "GA-FM-012",
+      "module_type": "FINE_MOTOR",
+      "question_type": "OFFLINE_OPERATION",
+      "question_phase": "OFFLINE",
+      "renderer_key": "base-ability/offline-rubric/v1",
+      "renderer_requirement_hash": "sha256:833c6a941e9a8ff6672a9f9a612aacfa2a5e85c73bc9cb7371c6746dd2183b1f",
+      "content_hash": "sha256:8d952ddb79993f7cd5170ed712e1fc7ff592e0b72b79bdabf6ffbe459c453192",
+      "scoring_hash": "sha256:48a101962667c83ff86a420b9fe4417147a4065078967ccb8de2ab8d5bdb8f1e"
+    },
+    {
+      "question_id": "GA-FM-014",
+      "module_type": "FINE_MOTOR",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/gesture-task/v1",
+      "renderer_requirement_hash": "sha256:06d4491b06c8aeb757b24f48d03385fc47422548cc1177d9f9dd71d08a9d6a0e",
+      "content_hash": "sha256:ef81742dc3db67cd6ecc259eecbf105f5486f5462b51cf049b749aa54a5228b3",
+      "scoring_hash": "sha256:d75eb05723b7a3fffc6a879be953de7ada8d8451c3f287a5e7500410f674f873"
+    },
+    {
+      "question_id": "GA-FM-016",
+      "module_type": "FINE_MOTOR",
+      "question_type": "OFFLINE_OPERATION",
+      "question_phase": "OFFLINE",
+      "renderer_key": "base-ability/offline-rubric/v1",
+      "renderer_requirement_hash": "sha256:833c6a941e9a8ff6672a9f9a612aacfa2a5e85c73bc9cb7371c6746dd2183b1f",
+      "content_hash": "sha256:0d15892de6b723e58e9dd1a8a7f0e48e72f95c1b8ca24163e4ad6dc9a0d6d5ef",
+      "scoring_hash": "sha256:5da7dbf3f05aec5008b5c2d01284819d849e1ee652d7e9a6e7ffb95609b3b66b"
+    },
+    {
+      "question_id": "GA-RULE-001",
+      "module_type": "RULE_EXECUTION",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/timed-task/v1",
+      "renderer_requirement_hash": "sha256:a37db4f3c3e9fd75bb1e41a505cfab969f05a39dd85ea7e3a23fced6f1a1d6a3",
+      "content_hash": "sha256:77750fd78a2a9a2417c0fcc1b7a586adc1183b5443db8c2e48e9559847a95ac9",
+      "scoring_hash": "sha256:bc5ae77f825695729c53d603e7f66ed6bbd7b5b5c5c3c2e85194471e55e5d6d1"
+    },
+    {
+      "question_id": "GA-RULE-002",
+      "module_type": "RULE_EXECUTION",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/timed-task/v1",
+      "renderer_requirement_hash": "sha256:a37db4f3c3e9fd75bb1e41a505cfab969f05a39dd85ea7e3a23fced6f1a1d6a3",
+      "content_hash": "sha256:12d065555515aad824d57691069b1afce7878676530d3f8c1c1bf5d27453bd7a",
+      "scoring_hash": "sha256:3c22dc62d64ee29199131be7fa6167694f3fa91640c7203300a035c385ed1f29"
+    },
+    {
+      "question_id": "GA-RULE-003",
+      "module_type": "RULE_EXECUTION",
+      "question_type": "DRAG",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/drag-drop/v1",
+      "renderer_requirement_hash": "sha256:7e5986e5bc15b3343c707caca5430e8689cea13ce3660fd87f3569760cb7378d",
+      "content_hash": "sha256:91cc03c2e3cee571116c8fc0e5d89e31f8f7fd0dca818b07614b84c39cfe81f9",
+      "scoring_hash": "sha256:3046d5d8914f7dd4ef8f1db1d114b9017510f7bc935e067ad94672baab97bcc7"
+    },
+    {
+      "question_id": "GA-RULE-005",
+      "module_type": "RULE_EXECUTION",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/task-sequence/v1",
+      "renderer_requirement_hash": "sha256:93eff012f5b7253e6c3e3dac5a89bec95ffb4ef882e5e715b0b5f44b83c40e71",
+      "content_hash": "sha256:87003b34943d54d1dc86cd1518f3bf91d79e65ea684c7e53bb57cf29c4a5fa8d",
+      "scoring_hash": "sha256:72de2fe969bb1c57ad9fd583bc2033e8675d324fb8975e801e39651b8c35e775"
+    },
+    {
+      "question_id": "GA-RULE-006",
+      "module_type": "RULE_EXECUTION",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/task-sequence/v1",
+      "renderer_requirement_hash": "sha256:93eff012f5b7253e6c3e3dac5a89bec95ffb4ef882e5e715b0b5f44b83c40e71",
+      "content_hash": "sha256:898e15fa0a6cc97f13884f1c6c2a99c5db8213198dc24729f4ee4227793461ab",
+      "scoring_hash": "sha256:9cc6b3c62bbbc31094ebcb5b14d6d5549e52b53632ff6e87d5d7267fc9e4d5a8"
+    },
+    {
+      "question_id": "GA-RULE-009",
+      "module_type": "RULE_EXECUTION",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/branching-task/v1",
+      "renderer_requirement_hash": "sha256:bced16771196f9eeeda0c2c945c0dc546e06f6cb082053cae71d224c2600e0bb",
+      "content_hash": "sha256:e12db211391340110a8c1c94576bb3e21732b8abdaf33a36192e7c4eb5336d28",
+      "scoring_hash": "sha256:39dad80c866459b05254efbbc53a9181de5669cc0bfa0e687046dfe6bf86c092"
+    },
+    {
+      "question_id": "GA-RULE-016",
+      "module_type": "RULE_EXECUTION",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/branching-task/v1",
+      "renderer_requirement_hash": "sha256:bced16771196f9eeeda0c2c945c0dc546e06f6cb082053cae71d224c2600e0bb",
+      "content_hash": "sha256:31ad2f016133417e9a92cf5b1caf143c887e06ebf4141b914d2c35652a921644",
+      "scoring_hash": "sha256:4fa240dded4ab2bac10b31cbe4c2d36e2dee1d0d57d3806394ac2550e0a872b3"
+    },
+    {
+      "question_id": "GA-SAFE-001",
+      "module_type": "SAFETY_OPERATION",
+      "question_type": "SINGLE_CHOICE",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/single-select/v1",
+      "renderer_requirement_hash": "sha256:a529676156bde5f5df1becaee46c062e331c72c340b0baae3750ae7b97b4ba28",
+      "content_hash": "sha256:5963e97c4d7c9f4bd9459c2fea9867a3cd1971ae79dba2e081d48e639d55410c",
+      "scoring_hash": "sha256:9b7e24ef233993c376089f04e95037da61dda4539c737d5da65f2d33c16685de"
+    },
+    {
+      "question_id": "GA-SAFE-002",
+      "module_type": "SAFETY_OPERATION",
+      "question_type": "SINGLE_CHOICE",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/single-select/v1",
+      "renderer_requirement_hash": "sha256:a529676156bde5f5df1becaee46c062e331c72c340b0baae3750ae7b97b4ba28",
+      "content_hash": "sha256:1947bcf35196590f90f860386182eb4fc5e997c6b474b0ec34dd6a9ae3aa73dd",
+      "scoring_hash": "sha256:6d8c39d137724f061240b3d294d0b3cb1afaaeba687cbb905676e5260492f3a1"
+    },
+    {
+      "question_id": "GA-SAFE-004",
+      "module_type": "SAFETY_OPERATION",
+      "question_type": "SINGLE_CHOICE",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/single-select/v1",
+      "renderer_requirement_hash": "sha256:a529676156bde5f5df1becaee46c062e331c72c340b0baae3750ae7b97b4ba28",
+      "content_hash": "sha256:a8149a578d98fd1e54711f6347456fc4ef6b35eaa1b3c4b8dbddea692f1851e1",
+      "scoring_hash": "sha256:3e1bf703155aeff954b3b7b3c37b155c81391c0fb60894698477432d9c984f20"
+    },
+    {
+      "question_id": "GA-SAFE-005",
+      "module_type": "SAFETY_OPERATION",
+      "question_type": "SINGLE_CHOICE",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/single-select/v1",
+      "renderer_requirement_hash": "sha256:a529676156bde5f5df1becaee46c062e331c72c340b0baae3750ae7b97b4ba28",
+      "content_hash": "sha256:0f71004f81f101572fb8112f93041f3238931a7a7e136197ae9c7eab654a46fb",
+      "scoring_hash": "sha256:a571bfa06abc5a33430fe58ceb0396b18b111fa0880dbba2127413ee50b0a3c7"
+    },
+    {
+      "question_id": "GA-SAFE-007",
+      "module_type": "SAFETY_OPERATION",
+      "question_type": "SINGLE_CHOICE",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/single-select/v1",
+      "renderer_requirement_hash": "sha256:a529676156bde5f5df1becaee46c062e331c72c340b0baae3750ae7b97b4ba28",
+      "content_hash": "sha256:39ce98a1f43e6de37285d598b498aefad45768f918c895b00d940aeab6723227",
+      "scoring_hash": "sha256:0c2c387a03d7463fb290819e5af4fcd3e4b0f9a88ec9a70e546d43e13cff1d91"
+    },
+    {
+      "question_id": "GA-SAFE-008",
+      "module_type": "SAFETY_OPERATION",
+      "question_type": "OFFLINE_OPERATION",
+      "question_phase": "OFFLINE",
+      "renderer_key": "base-ability/offline-rubric/v1",
+      "renderer_requirement_hash": "sha256:833c6a941e9a8ff6672a9f9a612aacfa2a5e85c73bc9cb7371c6746dd2183b1f",
+      "content_hash": "sha256:3b86fc7a98e9e1a46cb2d0855265cc0dfbac459052aa758b76e8c367709feafb",
+      "scoring_hash": "sha256:2646965f450a5a45e89ca2b8525f54e4526d09d704548e7a1e3b74614b223967"
+    },
+    {
+      "question_id": "GA-SAFE-009",
+      "module_type": "SAFETY_OPERATION",
+      "question_type": "DRAG",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/drag-drop/v1",
+      "renderer_requirement_hash": "sha256:7e5986e5bc15b3343c707caca5430e8689cea13ce3660fd87f3569760cb7378d",
+      "content_hash": "sha256:2ee6ad2cf7ec628945a1f331d8becfa074f5cf80f880eff774e8306c5f1c92fa",
+      "scoring_hash": "sha256:3046d5d8914f7dd4ef8f1db1d114b9017510f7bc935e067ad94672baab97bcc7"
+    },
+    {
+      "question_id": "GA-SAFE-014",
+      "module_type": "SAFETY_OPERATION",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/branching-task/v1",
+      "renderer_requirement_hash": "sha256:bced16771196f9eeeda0c2c945c0dc546e06f6cb082053cae71d224c2600e0bb",
+      "content_hash": "sha256:3d54ff0b93950a713986b5a1107d22fec5ec283a8893367f837dbed70ade145e",
+      "scoring_hash": "sha256:ee665da06b9e30934bddcd96b6d3467772a306d0e86aa483a1b5bcae8586c893"
+    },
+    {
+      "question_id": "GA-SOC-001",
+      "module_type": "BASIC_SOCIAL",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/branching-task/v1",
+      "renderer_requirement_hash": "sha256:bced16771196f9eeeda0c2c945c0dc546e06f6cb082053cae71d224c2600e0bb",
+      "content_hash": "sha256:0cc5f555f263ad6a5d03020da83b55079ecbc22d23a40c1a5105e30a418874f0",
+      "scoring_hash": "sha256:d62c49691d91faf657d0d7e986cae1daf482bea9d8a494262c78494275f3bdaa"
+    },
+    {
+      "question_id": "GA-SOC-002",
+      "module_type": "BASIC_SOCIAL",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/branching-task/v1",
+      "renderer_requirement_hash": "sha256:bced16771196f9eeeda0c2c945c0dc546e06f6cb082053cae71d224c2600e0bb",
+      "content_hash": "sha256:826f8d922317f035f8718ffbf52af5fa3757109e82d66d2d0f317d338a71f816",
+      "scoring_hash": "sha256:7ed8440ff7623425e24f277aa07b3f068426b893e4218baa1ed15dd9764497d9"
+    },
+    {
+      "question_id": "GA-SOC-003",
+      "module_type": "BASIC_SOCIAL",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/branching-task/v1",
+      "renderer_requirement_hash": "sha256:bced16771196f9eeeda0c2c945c0dc546e06f6cb082053cae71d224c2600e0bb",
+      "content_hash": "sha256:4f91207ae2e410f9a96fa65f74830628d0f1c8ad3a446c342095e9693fbe042e",
+      "scoring_hash": "sha256:5d3890fdd2d9efbe2cc597ca469ea2cc6f1ff0dd57cf5fb43821d95b87a8f0c0"
+    },
+    {
+      "question_id": "GA-SOC-004",
+      "module_type": "BASIC_SOCIAL",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/branching-task/v1",
+      "renderer_requirement_hash": "sha256:bced16771196f9eeeda0c2c945c0dc546e06f6cb082053cae71d224c2600e0bb",
+      "content_hash": "sha256:5ae6c1e9ce717f160271791fb01e2b3bb96f3034c9e9981253f403470fa1f08e",
+      "scoring_hash": "sha256:f9a6ba7e0cd34b995766532a8c63af4079560b946baa9b47ae6ee406442f10d1"
+    },
+    {
+      "question_id": "GA-SOC-005",
+      "module_type": "BASIC_SOCIAL",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/branching-task/v1",
+      "renderer_requirement_hash": "sha256:bced16771196f9eeeda0c2c945c0dc546e06f6cb082053cae71d224c2600e0bb",
+      "content_hash": "sha256:a6d3b2159e8d66444c85b76d5f5fc596988403e7088e5a0d3b2d553dd91e4f7d",
+      "scoring_hash": "sha256:22dc7358a97a8ee01ebc4f216a18534d12b0fc2e359fae1b1a40daa0e8504799"
+    },
+    {
+      "question_id": "GA-SOC-010",
+      "module_type": "BASIC_SOCIAL",
+      "question_type": "SINGLE_CHOICE",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/single-select/v1",
+      "renderer_requirement_hash": "sha256:a529676156bde5f5df1becaee46c062e331c72c340b0baae3750ae7b97b4ba28",
+      "content_hash": "sha256:6f4c36fc9dbf61ffabcc17cca7a0eaf694d28f8a763ac3f52c625c0374864ce7",
+      "scoring_hash": "sha256:754deb95fae650b2d72df5c30102d042b179a1e0f81d24b206eaca98535bded8"
+    },
+    {
+      "question_id": "GA-SOC-014",
+      "module_type": "BASIC_SOCIAL",
+      "question_type": "SOFTWARE_TASK",
+      "question_phase": "ONLINE",
+      "renderer_key": "base-ability/branching-task/v1",
+      "renderer_requirement_hash": "sha256:bced16771196f9eeeda0c2c945c0dc546e06f6cb082053cae71d224c2600e0bb",
+      "content_hash": "sha256:1ae7a2b05aafb9e0177f691ed31b6e4526fee578dace32bd0865f7ea63b4c7a5",
+      "scoring_hash": "sha256:00974a90ceb9537bffe1ca6724ede008c15f1ca01cf4366cbd246d2679c6bbdb"
+    }
+  ]
+}

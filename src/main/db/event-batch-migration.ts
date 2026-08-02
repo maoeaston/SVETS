@@ -2,21 +2,12 @@ import { createHash } from 'crypto'
 import type { DBAdapter } from './interface'
 import {
   assertCurrentDatabaseSchema,
-  CURRENT_MIGRATION_ID,
-  CURRENT_SCHEMA_VERSION,
-  F4_SITTING_MIGRATION_ID,
-  F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID,
-  F7_REPORT_FRAMEWORK_MIGRATION_ID,
-  F7_SCHEMA_VERSION,
-  isFreshDatabase,
-  M1_MIGRATION_ID,
-  M1_SCHEMA_VERSION,
-  M2_MIGRATION_ID,
-  M2_SCHEMA_VERSION,
-  M4_SAFETY_REKEY_MIGRATION_ID,
-  M4_SCHEMA_VERSION,
-  PHASE4_ASSET_ROLE_MIGRATION_ID
+  LEGACY_SCHEMA_MIGRATION_LEDGER,
+  isFreshDatabase
 } from './migrations'
+import {
+  PREVIEW_CONTRACT_MIGRATION_ID
+} from '../../shared/types/preview-contract'
 
 export const EVENT_BATCH_SCHEMA_VERSION = '0.1.18-event-batch-v2.2'
 export const EVENT_BATCH_MIGRATION_ID =
@@ -119,6 +110,15 @@ CREATE INDEX IF NOT EXISTS idx_applied_event_batch_segment
 CREATE INDEX IF NOT EXISTS idx_processed_event_batch ON processed_event(batch_id)`
 })
 
+export const EVENT_BATCH_OBJECT_NAMES = Object.freeze([
+  ...Object.keys(TABLE_SQL).map((name) => `table:${name}`),
+  ...Object.keys(INDEX_SQL).map((name) => `index:${name}`)
+].sort())
+
+export const EVENT_BATCH_OBJECT_DIGEST = createHash('sha256')
+  .update(EVENT_BATCH_OBJECT_NAMES.join('\n'))
+  .digest('hex')
+
 export const EVENT_BATCH_SCHEMA_SQL = `${Object.values(TABLE_SQL).join(';\n')};\n${Object.values(INDEX_SQL).join(';\n')};`
 
 type ColumnContract = readonly [
@@ -194,17 +194,35 @@ const INDEX_COLUMNS = Object.freeze({
   idx_processed_event_batch: ['batch_id']
 })
 
-const BASELINE_LEDGER = Object.freeze(new Map<string, string>([
-  [M1_MIGRATION_ID, M1_SCHEMA_VERSION],
-  [M2_MIGRATION_ID, M2_SCHEMA_VERSION],
-  [CURRENT_MIGRATION_ID, CURRENT_SCHEMA_VERSION],
-  [PHASE4_ASSET_ROLE_MIGRATION_ID, CURRENT_SCHEMA_VERSION],
-  [F4_SITTING_MIGRATION_ID, CURRENT_SCHEMA_VERSION],
-  [F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID, CURRENT_SCHEMA_VERSION],
-  [F7_REPORT_FRAMEWORK_MIGRATION_ID, F7_SCHEMA_VERSION],
-  [M4_SAFETY_REKEY_MIGRATION_ID, M4_SCHEMA_VERSION]
-]))
+const BASELINE_LEDGER = Object.freeze(new Map<string, string>(
+  LEGACY_SCHEMA_MIGRATION_LEDGER.map(({ migrationId, schemaVersion }) => [migrationId, schemaVersion])
+))
 const M4_OBJECT_NAMESET_SHA256 = 'ec6a6f1e32bf240b8768aafdbf173f58fec3cbd2cb01f15c5f89ef1c2bc88913'
+
+export const EVENT_BATCH_PREDECESSOR_LEDGER = Object.freeze(
+  LEGACY_SCHEMA_MIGRATION_LEDGER.map(({ migrationId, schemaVersion }) => ({ migrationId, schemaVersion }))
+)
+export const EVENT_BATCH_TARGET_LEDGER = Object.freeze([
+  ...EVENT_BATCH_PREDECESSOR_LEDGER,
+  { migrationId: EVENT_BATCH_MIGRATION_ID, schemaVersion: EVENT_BATCH_SCHEMA_VERSION }
+])
+
+export function migrationLedgerDigest(entries: readonly { migrationId: string; schemaVersion: string }[]): string {
+  const canonical = entries
+    .map(({ migrationId, schemaVersion }) => ({ migrationId, schemaVersion }))
+    .sort((left, right) => left.migrationId.localeCompare(right.migrationId))
+  return createHash('sha256').update(JSON.stringify(canonical)).digest('hex')
+}
+
+export const EVENT_BATCH_TARGET_LEDGER_DIGEST = migrationLedgerDigest(EVENT_BATCH_TARGET_LEDGER)
+
+const PREVIEW_CONTRACT_TARGET_LEDGER = Object.freeze([
+  ...EVENT_BATCH_TARGET_LEDGER,
+  {
+    migrationId: PREVIEW_CONTRACT_MIGRATION_ID,
+    schemaVersion: '0.1.19-job-skill-preview-contract-v1'
+  }
+])
 
 function normalizeSql(sql: string | null): string {
   return (sql ?? '')
@@ -385,7 +403,9 @@ function assertTargetLedger(database: DBAdapter): void {
   const freshTarget = nonTarget.length === 0
   const historicalTarget = nonTarget.length === BASELINE_LEDGER.size
     && nonTarget.every((row) => BASELINE_LEDGER.get(row.migration_id) === row.schema_version)
-  if (!freshTarget && !historicalTarget) issues.push('ledger:source-history')
+  const previewTarget = rows.length === PREVIEW_CONTRACT_TARGET_LEDGER.length
+    && PREVIEW_CONTRACT_TARGET_LEDGER.every((entry) => actualLedgerHas(rows, entry.migrationId, entry.schemaVersion))
+  if (!freshTarget && !historicalTarget && !previewTarget) issues.push('ledger:source-history')
   if (issues.length > 0) {
     throw new EventBatchMigrationError(
       'M5B_LEDGER_DRIFT',
@@ -393,6 +413,14 @@ function assertTargetLedger(database: DBAdapter): void {
       issues
     )
   }
+}
+
+function actualLedgerHas(
+  rows: readonly { migration_id: string; schema_version: string }[],
+  migrationId: string,
+  schemaVersion: string
+): boolean {
+  return rows.some((row) => row.migration_id === migrationId && row.schema_version === schemaVersion)
 }
 
 function isTrulyFresh(database: DBAdapter): boolean {

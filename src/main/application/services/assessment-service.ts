@@ -21,12 +21,15 @@ import type { ReportMutationPort } from '../../domain/report-command-coordinator
 import { haltTrainingSessionSteps } from './training-service'
 import type { AcceptedCommandContext } from '../command/command-types'
 import { applyAssessmentEvent } from '../../domain/assessment-reducer'
+import { parseSessionStartedPayload } from '../../domain/assessment-event-contract'
 import {
   generatePaper,
+  generateBaseAbilityPaperV12,
   type QuestionBankRow
 } from '../../domain/paper-generator'
-import type { AbilityTag, QuestionPolicyJson, QuestionPolicyJobSkillFixedSet } from '../../../shared/types/json-schemas'
+import type { AbilityTag, QuestionPolicyBaseAbility, QuestionPolicyJson, QuestionPolicyJobSkillFixedSet, ScoringPolicyBaseAbility } from '../../../shared/types/json-schemas'
 import type {
+  ActionLogEntry,
   SessionStartedPayload,
   SessionFirstQuestionActivatedPayload,
   AnswerSubmittedPayload,
@@ -43,6 +46,14 @@ import type {
   ResultCalculatedPayload,
   SafetyIncidentCreatedPayload
 } from '@shared/types/event-payloads'
+
+import {
+  buildSessionStartedPayloadV2,
+  type BaseAbilitySelectedQuestionSet,
+  type QuestionBankSnapshotRow
+} from '../../domain/assessment-session-snapshot'
+import baseAbilitySelectedQuestionSet from '../../../shared/config/base-ability-selected-question-set-v1.json'
+import baseAbilityRendererRequirements from '../../../shared/config/base-ability-renderer-requirements-v1.json'
 
 import {
   calculateAbilityScore,
@@ -333,6 +344,7 @@ interface StrategyConfigRow {
   online_question_count: number
   offline_question_count: number
   question_policy_json: string
+  scoring_policy_json: string
 }
 
 // --- createSession ---
@@ -393,7 +405,7 @@ export function createSession(
   const strategy = db
     .prepare(
       `SELECT strategy_type, job_code, online_question_count, offline_question_count,
-              question_policy_json
+              question_policy_json, scoring_policy_json
          FROM strategy_config
         WHERE strategy_id = ? AND version = ?`
     )
@@ -587,6 +599,170 @@ export function createSession(
         strategyVersion: params.strategyVersion
       })
       return { success: false, errorCode: 'ASSESSMENT_SYSTEM_ERROR' }
+    }
+
+    if ((questionPolicy as { schema_version?: string }).schema_version === 'question-policy-v1.2') {
+      // ── v1.2 BASE_ABILITY 路径：authority 选定集合 + SESSION_STARTED v2 冻结快照 ──
+      const policy = questionPolicy as unknown as QuestionPolicyBaseAbility
+
+      // renderer gate：任一入选 renderer 未实现 → 稳定失败关闭（Step 3 阶段全 PENDING）
+      const pendingRenderers = (baseAbilityRendererRequirements as { requirements: Array<{ renderer_key: string; implementation_status: string }> }).requirements.filter(
+        (r) => r.implementation_status !== 'IMPLEMENTED'
+      )
+      if (pendingRenderers.length > 0) {
+        logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', sessionId, caller.row.user_id, {
+          operation: 'createSession',
+          error: 'BLOCKED_RENDERER_IMPLEMENTATION',
+          pendingRendererKeys: pendingRenderers.map((r) => r.renderer_key),
+          strategyId: params.strategyId,
+          strategyVersion: params.strategyVersion
+        })
+        return { success: false as const, errorCode: 'BLOCKED_RENDERER_IMPLEMENTATION' as const }
+      }
+
+      // 全 IMPLEMENTED（Step 5 后）：组卷 + snapshot + v2 事件（v1.2 独立事务，不触碰 v1 共享事务）
+      const paperSeed = `${sessionId}:${params.studentId}:${params.strategyId}:${params.strategyVersion}`
+      const selectedIds = new Set(
+        (baseAbilitySelectedQuestionSet as unknown as BaseAbilitySelectedQuestionSet).questions.map((q) => q.question_id)
+      )
+      const qbRows = db
+        .prepare(
+          `SELECT question_id, module_type, question_type, sensory_tags_json
+             FROM question_bank
+            WHERE job_code = ? AND bank_domain = 'BASE_ABILITY' AND status = 'ACTIVE' AND item_usage = 'SCORED_ITEM'`
+        )
+        .all(strategy.job_code) as QuestionBankRow[]
+
+      const paper = generateBaseAbilityPaperV12({
+        policy,
+        questionBankRows: qbRows,
+        selectedQuestionIds: selectedIds,
+        paperSeed
+      })
+      if (!paper.ok) {
+        const isInsufficient = paper.errorCode === 'QUESTION_BANK_INSUFFICIENT'
+        logAssessmentEvent(
+          db,
+          isInsufficient ? 'QUESTION_BANK_INSUFFICIENT' : 'ASSESSMENT_SYSTEM_ERROR',
+          'ERROR',
+          isInsufficient ? 'unknown' : sessionId,
+          caller.row.user_id,
+          { operation: 'createSession', strategyId: params.strategyId, strategyVersion: params.strategyVersion, error: isInsufficient ? undefined : `generateBaseAbilityPaperV12 ${paper.errorCode}` }
+        )
+        return { success: false as const, errorCode: isInsufficient ? ('QUESTION_BANK_INSUFFICIENT' as const) : ('ASSESSMENT_SYSTEM_ERROR' as const) }
+      }
+
+      const paperIds = paper.questions.map((q) => q.questionId)
+      const paperPh = paperIds.map(() => '?').join(',')
+      const qbSnapshotRows = db
+        .prepare(
+          `SELECT question_id, version, item_usage, job_module_code, content_json, scoring_rule_json
+             FROM question_bank WHERE question_id IN (${paperPh})`
+        )
+        .all(...paperIds) as QuestionBankSnapshotRow[]
+
+      let scoringPolicy: ScoringPolicyBaseAbility
+      try {
+        scoringPolicy = JSON.parse(strategy.scoring_policy_json) as ScoringPolicyBaseAbility
+      } catch (err) {
+        logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', sessionId, caller.row.user_id, {
+          operation: 'createSession',
+          error: `parse scoring_policy_json: ${String(err)}`,
+          strategyId: params.strategyId
+        })
+        return { success: false as const, errorCode: 'ASSESSMENT_SYSTEM_ERROR' as const }
+      }
+
+      const snap = buildSessionStartedPayloadV2({
+        sessionId,
+        businessSessionId,
+        studentId: params.studentId,
+        jobCode: strategy.job_code,
+        taskCode: params.taskCode,
+        onlineQuestionCount: strategy.online_question_count,
+        offlineQuestionCount: strategy.offline_question_count,
+        strategy: {
+          strategy_id: params.strategyId,
+          strategy_type: strategyType,
+          strategy_version: params.strategyVersion,
+          question_policy: policy,
+          scoring_policy: scoringPolicy
+        },
+        paperSeed,
+        paper: paper.questions,
+        questionBankRows: qbSnapshotRows,
+        selectedQuestionSet: baseAbilitySelectedQuestionSet as unknown as BaseAbilitySelectedQuestionSet
+      })
+      if (!snap.ok) {
+        logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', sessionId, caller.row.user_id, {
+          operation: 'createSession',
+          error: `buildSessionStartedPayloadV2 ${snap.errorCode}`,
+          strategyId: params.strategyId
+        })
+        return { success: false as const, errorCode: 'ASSESSMENT_SYSTEM_ERROR' as const }
+      }
+
+      // 事件持久化前复用 v1/v2 统一合同 parser，保证写入与 reducer/recovery
+      // 使用相同的 envelope/payload 判别和冻结 hash 校验。
+      try {
+        parseSessionStartedPayload({
+          event_type: 'SESSION_STARTED',
+          schema_version: 1,
+          payload: snap.payload as unknown as Record<string, unknown>
+        } as ActionLogEntry)
+      } catch (err) {
+        logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', sessionId, caller.row.user_id, {
+          operation: 'createSession',
+          error: `validate SESSION_STARTED v2 payload: ${String(err)}`,
+          strategyId: params.strategyId,
+          strategyVersion: params.strategyVersion
+        })
+        return { success: false as const, errorCode: 'ASSESSMENT_SYSTEM_ERROR' as const }
+      }
+
+      try {
+        const tx = db.transaction(() => {
+          const event = execution.eventPort.writeEvent({
+            aggregateType: 'ASSESSMENT_SESSION',
+            aggregateId: sessionId,
+            eventType: 'SESSION_STARTED',
+            payload: snap.payload as unknown as Record<string, unknown>,
+            actorId: caller.row.user_id,
+            actorRole: 'TEACHER',
+            correlationId
+          })
+          applyAssessmentEvent(db, event)
+        })
+        tx()
+      } catch (err) {
+        logAssessmentEvent(db, 'ASSESSMENT_SYSTEM_ERROR', 'ERROR', sessionId, caller.row.user_id, {
+          operation: 'createSession',
+          error: String(err),
+          strategyId: params.strategyId,
+          strategyVersion: params.strategyVersion
+        })
+        return { success: false as const, errorCode: 'ASSESSMENT_SYSTEM_ERROR' as const }
+      }
+
+      questionIds = paper.questions.map((q) => q.questionId)
+      onlineQuestionsToReturn = paper.questions
+        .filter((q) => q.questionPhase === 'ONLINE')
+        .map((q) => ({
+          questionId: q.questionId,
+          questionOrder: q.questionOrder,
+          questionPhase: 'ONLINE' as const,
+          moduleType: q.moduleType,
+          questionType: q.questionType as 'TRUE_FALSE' | 'SINGLE_CHOICE' | 'DRAG' | 'SOFTWARE_TASK'
+        }))
+
+      logAssessmentEvent(db, 'SESSION_CREATED', 'INFO', sessionId, caller.row.user_id, {
+        studentId: params.studentId,
+        strategyId: params.strategyId,
+        strategyVersion: params.strategyVersion,
+        taskCode: params.taskCode,
+        payloadVersion: 2
+      })
+      return { success: true as const, sessionId, businessSessionId, questions: onlineQuestionsToReturn }
     }
 
     const requiredModules =

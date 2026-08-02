@@ -42,6 +42,13 @@ export const INTERNAL_MUTATION_INVENTORY: readonly InternalMutationInventoryEntr
     trigger: 'STARTUP'
   },
   {
+    id: 'INTERNAL-ACTIVATION-STATE-DIRECTORY',
+    owner: 'electron-main:activation-state-directory',
+    phase: 'PRE_DB_INIT',
+    sideEffects: ['FILE_MKDIR'],
+    trigger: 'STARTUP'
+  },
+  {
     id: 'INTERNAL-DB-STARTUP',
     owner: 'database-connection:startup-upgrade-recovery',
     phase: 'DB_INIT_RECOVERY',

@@ -16,6 +16,7 @@ import {
   SAFETY_CONTEXT_PHASES,
   SAFETY_REASON_CODES
 } from '../../../shared/types/safety'
+import { isPreviewAssessmentSession } from '../../domain/preview/preview-session-guard'
 
 export const SAFETY_EVENT_PAYLOAD_VERSION = 2 as const
 export const SAFETY_SNAPSHOT_VERSION = 'm5b-safety-snapshot-v1'
@@ -279,6 +280,7 @@ function readRedlineSnapshot(
        FROM assessment_session WHERE session_id = ?`
   ).get(sessionId) as Record<string, unknown> | undefined
   if (!session) return noOpSnapshot(timestamp, 'NOT_FOUND')
+  if (isPreviewAssessmentSession(db, sessionId)) return noOpSnapshot(timestamp, 'PREVIEW_RESULT_SUPPRESSED')
   if (!OPEN_ASSESSMENT_STATUSES.includes(session.status as OpenStatus)) {
     return noOpSnapshot(timestamp, session.status === 'REDLINE_HALTED' ? 'SESSION_HALTED' : 'SESSION_NOT_ACTIVE')
   }

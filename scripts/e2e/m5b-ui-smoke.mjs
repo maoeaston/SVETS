@@ -15,7 +15,12 @@ try {
   assert(existsSync('out/main/index.js'), 'out/main/index.js missing; run npm run build first')
   app = await electron.launch({
     args: ['--no-sandbox', 'out/main/index.js'],
-    env: { ...process.env, SVETS_E2E: '1', SVETS_USER_DATA_DIR: userDataDir },
+    env: {
+      ...process.env,
+      SVETS_E2E: '1',
+      SVETS_E2E_ACTIVATION_BYPASS: '1',
+      SVETS_USER_DATA_DIR: userDataDir
+    },
     timeout: 30000
   })
   const page = await app.firstWindow()

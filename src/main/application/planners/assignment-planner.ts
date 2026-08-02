@@ -153,12 +153,17 @@ function nextSequence(database: DBAdapter, aggregateType: AggregateType, aggrega
       WHERE aggregate_type = ? AND aggregate_id = ?`
   ).get(aggregateType, aggregateId) as { max_sequence: number | null } | undefined
   const projectionSequence = row?.max_sequence ?? 0
-  if (aggregateType !== 'ASSESSMENT_SESSION') return projectionSequence + 1
-  const session = database.prepare(
-    'SELECT event_sequence_version FROM assessment_session WHERE session_id = ?'
-  ).get(aggregateId) as { event_sequence_version: number | null } | undefined
   // Assignment events advance the same session's replay fence while living on
   // BUSINESS_SESSION. The prepared ASSESSMENT_SESSION event must follow that fence.
+  const session = aggregateType === 'BUSINESS_SESSION'
+    ? database.prepare(
+      'SELECT event_sequence_version FROM assessment_session WHERE business_session_id = ?'
+    ).get(aggregateId) as { event_sequence_version: number | null } | undefined
+    : aggregateType === 'ASSESSMENT_SESSION'
+      ? database.prepare(
+        'SELECT event_sequence_version FROM assessment_session WHERE session_id = ?'
+      ).get(aggregateId) as { event_sequence_version: number | null } | undefined
+      : undefined
   return Math.max(projectionSequence, session?.event_sequence_version ?? 0) + 1
 }
 

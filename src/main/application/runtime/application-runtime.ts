@@ -22,6 +22,18 @@ import { registerSafetyPreparedFacts } from '../../domain/projectors/safety-proj
 import { registerScoringPreparedFacts } from '../../domain/projectors/scoring-projector'
 import { registerTaskClosurePreparedFacts } from '../../domain/projectors/task-closure-projector'
 import { registerTrainingPreparedFacts } from '../../domain/projectors/training-projector'
+import { registerPrincipalBindingPreparedFacts } from '../../domain/projectors/principal-binding-projector'
+import { registerPreviewReleaseContract, registerPreviewReleasePreparedFacts } from '../../domain/projectors/preview-release-projector'
+import { registerPreviewSessionContract, registerPreviewSessionPreparedFacts } from '../../domain/projectors/preview-session-projector'
+import { registerPreviewSafetyContract, registerPreviewSafetyPreparedFacts } from '../../domain/projectors/preview-safety-projector'
+import {
+  createFailClosedPreviewTrustContexts,
+  type PreviewRuntimeTrustContexts
+} from './preview-trust-context'
+import { FeedbackVault } from '../../domain/feedback-vault/feedback-vault'
+import { registerPreviewFeedbackContract, registerPreviewFeedbackPreparedFacts } from '../../domain/projectors/preview-feedback-projector'
+import { registerPreviewErrorContract } from '../../domain/preview/preview-error-contract'
+import { registerPreviewQueryContract } from '../../domain/preview/preview-query-contract'
 import {
   clearAuthSessionBindingForOwner,
   clearAuthSessionBindingsByOwner,
@@ -64,6 +76,7 @@ export interface ApplicationRuntimeDependencies {
   scheduler?: RuntimeScheduler
   logRuntimeError?: (record: Readonly<{ owner: string; errorName: string }>) => void
   now?: () => Date
+  previewTrustContexts?: PreviewRuntimeTrustContexts
 }
 
 export interface CreateApplicationRuntimeOptions {
@@ -115,7 +128,7 @@ function nowIso(now: () => Date): string {
   return value
 }
 
-function createPreparedRegistry(): PreparedFactRegistry {
+function createPreparedRegistry(feedbackVault?: FeedbackVault): PreparedFactRegistry {
   const registry = new PreparedFactRegistry()
   registerAssessmentPreparedFacts(registry, { projectSessionStarted: projectM5bAssessmentSessionStarted })
   registerTrainingPreparedFacts(registry)
@@ -125,6 +138,17 @@ function createPreparedRegistry(): PreparedFactRegistry {
   registerAssignmentPreparedFacts(registry)
   registerSafetyPreparedFacts(registry)
   registerReportExportPreparedFacts(registry)
+  registerPrincipalBindingPreparedFacts(registry)
+  registerPreviewReleasePreparedFacts(registry)
+  registerPreviewReleaseContract()
+  registerPreviewSessionPreparedFacts(registry)
+  registerPreviewSessionContract()
+  registerPreviewSafetyPreparedFacts(registry)
+  registerPreviewSafetyContract()
+  registerPreviewFeedbackPreparedFacts(registry, feedbackVault)
+  registerPreviewFeedbackContract()
+  registerPreviewErrorContract()
+  registerPreviewQueryContract()
   return registry.seal()
 }
 
@@ -176,6 +200,7 @@ class ApplicationRuntimeImpl implements ApplicationRuntime {
   private readonly legacyRecordCount: number
   private readonly startupRecovery: StartupRecovery
   private readonly batchCoordinator: EventBatchCoordinator
+  private readonly feedbackVault: FeedbackVault
 
   constructor(
     readonly db: DBAdapter,
@@ -184,7 +209,8 @@ class ApplicationRuntimeImpl implements ApplicationRuntime {
     private readonly scheduler: RuntimeScheduler,
     private readonly sweepAuthSessions: NonNullable<ApplicationRuntimeDependencies['sweepAuthSessions']>,
     private readonly logRuntimeError: NonNullable<ApplicationRuntimeDependencies['logRuntimeError']>,
-    private readonly now: () => Date
+    private readonly now: () => Date,
+    private readonly previewTrustContexts: PreviewRuntimeTrustContexts
   ) {
     this.maintenanceCapability = createInternalMutationCapability({
       owner: 'application-runtime:auth-session-sweep',
@@ -192,10 +218,11 @@ class ApplicationRuntimeImpl implements ApplicationRuntime {
       dataRoot
     })
     this.capability = new DurableFileCapability(dataRoot)
+    this.feedbackVault = new FeedbackVault(this.capability)
     const legacy = prepareLegacyAnchor({ dataRoot, capability: this.capability, now })
     this.legacyAnchor = legacy.anchor
     this.legacyRecordCount = legacy.legacyRecordCount
-    this.preparedRegistry = createPreparedRegistry()
+    this.preparedRegistry = createPreparedRegistry(this.feedbackVault)
     this.commandStore = new DurableCommandStore(db)
     const workerId = `runtime:${this.runtimeId}`
     this.batchCoordinator = new EventBatchCoordinator({
@@ -299,7 +326,11 @@ class ApplicationRuntimeImpl implements ApplicationRuntime {
         workerId: `runtime:${this.runtimeId}`,
         now: this.now
       }),
-      batchCoordinator: this.batchCoordinator
+      batchCoordinator: this.batchCoordinator,
+      previewPrincipalTrustContext: this.previewTrustContexts.principal,
+      previewReleaseTrustContext: this.previewTrustContexts.release,
+      feedbackVault: this.feedbackVault,
+      previewFeedbackTrustContext: this.previewTrustContexts.feedback
     })
   }
 
@@ -368,6 +399,7 @@ export function createApplicationRuntime(options: CreateApplicationRuntimeOption
     const sweep = dependencies.sweepAuthSessions ?? sweepInvalidAuthSessions
     const scheduler = dependencies.scheduler ?? defaultScheduler
     const now = dependencies.now ?? (() => new Date())
+    const previewTrustContexts = dependencies.previewTrustContexts ?? createFailClosedPreviewTrustContexts()
     const logRuntimeError = dependencies.logRuntimeError ?? ((record) => {
       console.error(`[runtime] ${record.owner} failed: ${record.errorName}`)
     })
@@ -389,7 +421,8 @@ export function createApplicationRuntime(options: CreateApplicationRuntimeOption
       scheduler,
       sweep,
       logRuntimeError,
-      now
+      now,
+      previewTrustContexts
     )
     activeDataRoots.set(dataRoot, runtime)
     runtime.startMaintenance()

@@ -30,11 +30,11 @@ doc/
 
 ### 2.1 当前已实现基线
 
-当前工程基线以 **AGENTS.md + `src/main/db/schema.sql`** 为准（现为 `schema.sql v0.1.17-multi-device-m4-safety-rekey`，M4 Step 2A 已 `PASS / CLOSED`；MVP 功能基线 `PRD v1.0.9`）。以下文件是跨版本稳定的规范类文档：
+当前工程基线以 **AGENTS.md + `src/main/db/schema.sql`** 为准（现为 `schema.sql v0.1.19-job-skill-preview-contract-v1`，前置 M5B-15 / v0.1.18 已 `PASS`；产品合同正文为 `PRD v1.0.10`）。以下文件是跨版本稳定的规范类文档：
 
 | 文件 | 用途 | 何时读 |
 |------|------|--------|
-| `specs/MVP_PRD_v1.0.9-authoritative.md` | **当前唯一产品合同**：完整 MVP 范围、结果模型、题库/素材/运行时合同与验收标准 | 判断功能边界、确认验收口径 |
+| `specs/MVP_PRD_v1.0.9-authoritative.md` | **当前唯一产品合同**：文件名为兼容保留，正文权威版本 v1.0.10；包含 298 题全量预览、正式 18+6 结果隔离与验收 | 判断功能边界、确认验收口径 |
 | `specs/xc-career-guide-json-field-schema-v1.0.0.md` | JSON TEXT 历史可读规范；当前类型以 `src/shared/types/json-schemas.ts` 为准 | 追溯字段设计、写 validator |
 | `specs/xc-career-guide-event-payload-schema-v1.0.0.md` | 事件载荷历史可读规范；当前类型以 `src/shared/types/event-payloads.ts` 为准 | 追溯事件设计、核对 JSONL 信封 |
 | `specs/题库分层架构说明.md` | 四层题库（MASTER/变式/泛化/结业）设计与 `question_role` 字段规划（Post-MVP 参考，MVP 不落地） | 题库新增、组卷策略、结业逻辑设计 |
@@ -45,7 +45,7 @@ doc/
 
 ### 2.1.1 全量产品演进草案
 
-以下文件承接 MVP 冻结后的产品演进，目前均为 **DRAFT**，尚未替代 MVP PRD v1.0.9：
+以下文件承接 MVP 当前范围之外的产品演进，目前均为 **DRAFT**，尚未替代 MVP PRD v1.0.10：
 
 | 文件 | 用途 | 何时读 |
 |---|---|---|
@@ -60,23 +60,23 @@ doc/
 | `specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md` | **v2.2 唯一权威实施基线**：完整 DDL、delivery_phase 状态机、命令熔断、安全聚合键、发布模型、离线评分草稿、资产授权、回滚 | 多设备架构实施、认证/设备/授权设计、JSONL 一致性、状态机与触发器 |
 | `specs/architecture-plan-b-multi-device-v2.2-coverage-matrix.md` | 36 设计域覆盖矩阵 + 机械提取的 DDL 清单 + 13 问题 / 10 硬化项收口状态 | 核对某设计域是否收口、DDL 差异清单 |
 | `specs/architecture-plan-b-multi-device-v2.2-validation-report.md` | 真实 SQLite 执行验证记录（迁移、触发器行为、哈希、DDL diff、禁用/必需词检查） | 复核验证口径、重跑验证 |
-| `features/multi-device-v2.2-migration-prd.md` | v2.2 拆分为 M1-M7 里程碑的迁移 PRD（**M1 身份拓扑、M2 Business Session Foundation 与 M3 Grant/Assignment 已实施**，M4-M7 待推进） | 推进多设备实施、确认里程碑边界 |
+| `features/multi-device-v2.2-migration-prd.md` | v2.2 拆分为 M1-M7 里程碑的迁移 PRD；当前已实施和验收进度以 `baseline.yaml` 为准 | 推进多设备实施、确认里程碑边界 |
 
 > v1.1 / v1.2 / v2.0 / v2.0.1 / v2.1 已全部标记 SUPERSEDED，仅作历史决策追溯，不再作为实施依据。
 
 ### 2.3 当前产品合同与历史版本
 
-`specs/MVP_PRD_v1.0.9-authoritative.md` 已将 v1.0.5 完整正文与 v1.0.6～v1.0.9 的有效替换、增补和废止规则物化为一份可独立阅读的权威 PRD。新功能、验收和新会话只读该文件，不再顺序拼接历史差异版。
+`specs/MVP_PRD_v1.0.9-authoritative.md` 为兼容既有引用保留旧文件名，正文已将 v1.0.5～v1.0.10 的有效替换、增补和废止规则物化为一份可独立阅读的权威 PRD。新功能、验收和新会话只读该文件，不再顺序拼接历史差异版；不得把 24 题误读为 JOB_SKILL 当前首发上限。
 
 | 文件 | 状态 | 用途 |
 |------|------|------|
-| `specs/MVP_PRD_v1.0.9-authoritative.md` | **AUTHORITATIVE** | 当前完整产品合同 |
+| `specs/MVP_PRD_v1.0.9-authoritative.md` | **AUTHORITATIVE v1.0.10** | 当前完整产品合同；文件路径保留旧版本号 |
 | `archive/prd-history/PRD_v1.0.6.md` | SUPERSEDED | 评分收口历史来源 |
 | `archive/prd-history/MVP_PRD_v1.0.7-question-contract-closure.md` | SUPERSEDED | 题库数据合同历史来源 |
 | `archive/prd-history/MVP_PRD_v1.0.8-job-bank-governance-closure.md` | SUPERSEDED | 专业岗位题库治理历史来源 |
 | `archive/prd-history/MVP_PRD_v1.0.9-job-skill-assessment-mvp-closure.md` | SUPERSEDED | 专业岗位运行时差异来源 |
 
-> schema v0.1.12 已实现 v1.0.7～v1.0.9 的合同，当前 schema v0.1.15 在其上增加多设备 M1 身份拓扑、M2 Business Session Foundation 与 M3 Grant/Assignment。历史差异版中的“待实现”“目标基线”只代表当时状态。
+> schema v0.1.12 已实现 v1.0.7～v1.0.9 的核心合同，当前 schema v0.1.19 在 v0.1.18 event-batch 基线上增加 JOB_SKILL `PREVIEW_CONTRACT_V1` 的 additive projection、principal、feedback reference/vault 和 fail-closed readiness 边界。v1.0.10 的 298 题全量预览是用户已确认的产品范围；其持久化实现已完成自动化验收，但真实签名、Electron/userData、多设备流程、migration rollback 和 UI/内容交付仍未完成。新鲜/当前同步库保持 `INSTALLING`，不能写成全局 `READY`。历史差异版中的“待实现”“目标基线”只代表当时状态。
 
 ### 2.4 专业岗位技术实施记录（doc/specs/impl/）
 
@@ -162,8 +162,9 @@ doc/
 - `features/base-ability-current-contracts.md` — **当前 BASE_ABILITY 96 题与 42+8 门禁导航入口**，明确候选池、DRAFT/NO_SCORE 阻断、renderer/线下教具和历史文件边界
 - `features/base-ability-42plus8-activation-gate-v1.json` — 基础能力 42+8 机器门禁；供给够 42+8，但 DRAFT/NO_SCORE/素材/试测未闭合时保持关闭
 - `features/job-skill-shelver-current-contracts.md` — **当前 JOB_SKILL 298 题与 270 项素材合同导航入口**，明确日常只读入口、历史审核链边界和禁止动作
+- `features/job-skill-298-full-preview-prd.md` — **298 题全量预览已批准的产品范围**，定义教师全库可见、素材并行生产、逐题/逐题包开放和正式结果隔离；Mini-PRD 状态为 `APPROVED / PASS`。持久化/权限实现计划已完成 Step 0–10 自动化闭合，交付状态为 `AUTOMATION_PASS_MANUAL_PENDING`；人工验收、真实 migration rollback、UI/内容交付和默认库 promotion 仍未完成，见对应 acceptance/code-review 文档
 - `features/job-skill-shelver-runtime-authority-v1.json` — 298 道当前版本 DRAFT 题的机器权威；不得由此直接激活
-- `features/job-skill-shelver-phase4-activation-gate-v1.json` — 当前激活门禁；Pilot 未过且 270 项资产未批准时保持关闭
+- `features/job-skill-shelver-phase4-activation-gate-v1.json` — 历史正式 18+6 全局激活门禁；继续约束旧发布链，不得阻断教师全库目录或无关 `PREVIEW_ONLY` 题包
 - `features/job-skill-shelver-question-delivery-lock-v1.json` — 181 道需要视频、答案图、脚本、音频或线下工具支撑的交付锁
 - `features/job-skill-shelver-pilot-current-question-authority.md` — Pilot 24 题 strategy v3 历史门禁入口；不再作为 298 题素材生产唯一入口
 - `features/job-skill-shelver-pilot-revision-candidates-v3.json` — Pilot strategy v3 的24题机器候选合同，用于 Pilot 门禁追溯
@@ -225,11 +226,11 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | MVP Pilot 收口 | `features/mvp-pilot-freeze-plan.md` |
 | 多设备 M4/M5 推进 | `features/multi-device-m4-m5-prd.md` → `specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md` |
 | **多设备架构设计（方案 B）** | **`specs/architecture-plan-b-multi-device-v2.2-authoritative-baseline.md`**（M1 落地进度见 `features/multi-device-v2.2-migration-prd.md`） |
-| **专业岗位测评维护** | **`specs/MVP_PRD_v1.0.9-authoritative.md` + 当前 feature 文档；§2.4 impl 仅作 v0.1.12 实施追溯** |
+| **专业岗位测评维护** | **`specs/MVP_PRD_v1.0.9-authoritative.md`（正文 v1.0.10）+ `features/job-skill-298-full-preview-prd.md` + 当前合同导航；全量预览实现验收见 `features/job-skill-298-full-preview-persistence-contract-impl-acceptance.md`；§2.4 impl 仅作 v0.1.12 实施追溯** |
 | **视觉资产 Prompt 编译** | `features/job-skill-shelver-current-contracts.md` → `assets/asset-manifest.json` → `features/visual-asset-prompt-compilation-session-guide.md` |
 | **Seedance 视频生产** | `features/job-skill-shelver-current-contracts.md` → `features/visual-asset-video-production-sop.md` → `assets/asset-manifest.json` |
 | **视觉资产审核/入库** | `features/job-skill-shelver-current-contracts.md` → `assets/asset-manifest.json` → `features/question-bank-image-integration-checklist.md` |
-| 专业岗位 PRD 理解（要做什么） | `specs/MVP_PRD_v1.0.9-authoritative.md` |
+| 专业岗位 PRD 理解（要做什么） | `specs/MVP_PRD_v1.0.9-authoritative.md`（正文 v1.0.10）→ `features/job-skill-298-full-preview-prd.md` |
 | 298 条题库数据核对 | `doc/reference/` M1-M6 298 条导出 + `doc/archive/` 审查报告 v2 |
 
 ---
@@ -251,7 +252,7 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | 文件 | 标题 |
 |---|---|
 | [specs/FULL_PRODUCT_PRD_v2.0-draft.md](specs/FULL_PRODUCT_PRD_v2.0-draft.md) | 炫灿-职途向导系统全量产品 PRD｜v2.0 草案 |
-| [specs/MVP_PRD_v1.0.9-authoritative.md](specs/MVP_PRD_v1.0.9-authoritative.md) | 炫灿-职途向导系统 MVP 产品需求文档｜v1.0.9 权威合并版 |
+| [specs/MVP_PRD_v1.0.9-authoritative.md](specs/MVP_PRD_v1.0.9-authoritative.md) | 炫灿-职途向导系统 MVP 产品需求文档｜v1.0.10 权威合并版 |
 | [specs/architecture-plan-b-multi-device-v2.0-authoritative-baseline.md](specs/architecture-plan-b-multi-device-v2.0-authoritative-baseline.md) | 方案 B 多设备架构 v2.0 — 权威实施基线（已废止） |
 | [specs/architecture-plan-b-multi-device-v2.0.1-schema-alignment.md](specs/architecture-plan-b-multi-device-v2.0.1-schema-alignment.md) | 方案 B 架构 v2.0.1 — Schema 对齐硬化修订 |
 | [specs/architecture-plan-b-multi-device-v2.1-authoritative-baseline.md](specs/architecture-plan-b-multi-device-v2.1-authoritative-baseline.md) | 方案 B 多设备架构 v2.1 — 唯一权威实施基线（已废止） |
@@ -272,7 +273,7 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | [specs/impl/06-acceptance-test-plan.md](specs/impl/06-acceptance-test-plan.md) | 验收测试方案 |
 | [specs/impl/07-implementation-task-book.md](specs/impl/07-implementation-task-book.md) | 实施任务书 |
 | [specs/impl/AGENT-PROMPT-T1.md](specs/impl/AGENT-PROMPT-T1.md) | 编码任务 T1：共享类型升级 |
-| [specs/impl/NEW-SESSION-PROMPT.md](specs/impl/NEW-SESSION-PROMPT.md) | 新会话启动 Prompt（当前模板） |
+| [specs/impl/NEW-SESSION-PROMPT.md](specs/impl/NEW-SESSION-PROMPT.md) | 新会话启动 Prompt（学校演示体验收口） |
 | [specs/project-invariants.md](specs/project-invariants.md) | Project Invariants |
 | [specs/xc-career-guide-event-payload-schema-v1.0.0.md](specs/xc-career-guide-event-payload-schema-v1.0.0.md) | 炫灿-职途向导系统 事件载荷规范 |
 | [specs/xc-career-guide-json-field-schema-v1.0.0.md](specs/xc-career-guide-json-field-schema-v1.0.0.md) | 炫灿-职途向导系统 JSON 字段规范 |
@@ -289,6 +290,8 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | `drag-render` | [features/drag-render-prd.md](features/drag-render-prd.md) | [features/drag-render-impl.md](features/drag-render-impl.md) |
 | `event-batch-v2.2-runtime` | [features/event-batch-v2.2-runtime-prd.md](features/event-batch-v2.2-runtime-prd.md) | [features/event-batch-v2.2-runtime-impl.md](features/event-batch-v2.2-runtime-impl.md) |
 | `foundation-pages-exception-center` | [features/foundation-pages-exception-center-prd.md](features/foundation-pages-exception-center-prd.md) | [features/foundation-pages-exception-center-impl.md](features/foundation-pages-exception-center-impl.md) |
+| `job-skill-298-full-preview` | [features/job-skill-298-full-preview-prd.md](features/job-skill-298-full-preview-prd.md) | [features/job-skill-298-full-preview-impl.md](features/job-skill-298-full-preview-impl.md) |
+| `job-skill-298-full-preview-persistence-contract` | [features/job-skill-298-full-preview-persistence-contract-prd.md](features/job-skill-298-full-preview-persistence-contract-prd.md) | [features/job-skill-298-full-preview-persistence-contract-impl.md](features/job-skill-298-full-preview-persistence-contract-impl.md) |
 | `login-by-role` | [features/login-by-role-prd.md](features/login-by-role-prd.md) | [features/login-by-role-impl.md](features/login-by-role-impl.md) |
 | `m5a-command-bus-boundary` | [features/m5a-command-bus-boundary-prd.md](features/m5a-command-bus-boundary-prd.md) | [features/m5a-command-bus-boundary-impl.md](features/m5a-command-bus-boundary-impl.md) |
 | `multi-device-m4-m5` | [features/multi-device-m4-m5-prd.md](features/multi-device-m4-m5-prd.md) | [features/multi-device-m4-m5-impl.md](features/multi-device-m4-m5-impl.md) |
@@ -298,6 +301,7 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | `pause-recovery-safety` | [features/pause-recovery-safety-prd.md](features/pause-recovery-safety-prd.md) | [features/pause-recovery-safety-impl.md](features/pause-recovery-safety-impl.md) |
 | `question-bank-resources` | [features/question-bank-resources-prd.md](features/question-bank-resources-prd.md) | [features/question-bank-resources-impl.md](features/question-bank-resources-impl.md) |
 | `report-page-framework` | [features/report-page-framework-prd.md](features/report-page-framework-prd.md) | [features/report-page-framework-impl.md](features/report-page-framework-impl.md) |
+| `school-demo-first-online-activation` | [features/school-demo-first-online-activation-prd.md](features/school-demo-first-online-activation-prd.md) | [features/school-demo-first-online-activation-impl.md](features/school-demo-first-online-activation-impl.md) |
 | `scoring-framework-dual-track` | [features/scoring-framework-dual-track-prd.md](features/scoring-framework-dual-track-prd.md) | [features/scoring-framework-dual-track-impl.md](features/scoring-framework-dual-track-impl.md) |
 | `strategy-config` | [features/strategy-config-prd.md](features/strategy-config-prd.md) | [features/strategy-config-impl.md](features/strategy-config-impl.md) |
 | `student-profile` | [features/student-profile-prd.md](features/student-profile-prd.md) | [features/student-profile-impl.md](features/student-profile-impl.md) |
@@ -325,6 +329,19 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | [features/event-batch-v2.2-runtime-prd-review.md](features/event-batch-v2.2-runtime-prd-review.md) | M5B Event Batch Runtime — 独立 R3 PRD 审查 |
 | [features/event-batch-v2.2-runtime-validation.md](features/event-batch-v2.2-runtime-validation.md) | M5B Event Batch Runtime 验收记录 |
 | [features/full-product-1.0-planning-review-2026-07-18.md](features/full-product-1.0-planning-review-2026-07-18.md) | SVETS MVP Pilot 收口与全量产品 1.0 规划审查报告 |
+| [features/job-skill-298-full-preview-persistence-contract-impl-acceptance.md](features/job-skill-298-full-preview-persistence-contract-impl-acceptance.md) | JOB_SKILL 298 全量预览持久化合同 Step 10 验收记录 |
+| [features/job-skill-298-full-preview-persistence-contract-impl-code-review-r3.md](features/job-skill-298-full-preview-persistence-contract-impl-code-review-r3.md) | JOB_SKILL 298 全量预览持久化实现 R3 复核 |
+| [features/job-skill-298-full-preview-persistence-contract-impl-independent-r3-review.md](features/job-skill-298-full-preview-persistence-contract-impl-independent-r3-review.md) | JOB_SKILL 298 全量预览持久化合同独立实现 R3 复核 |
+| [features/job-skill-298-full-preview-persistence-contract-impl-r3-review.md](features/job-skill-298-full-preview-persistence-contract-impl-r3-review.md) | JOB_SKILL 298 全量预览持久化实施计划 R3 独立审查 |
+| [features/job-skill-298-full-preview-persistence-contract-prd-r3-review-final.md](features/job-skill-298-full-preview-persistence-contract-prd-r3-review-final.md) | JOB_SKILL 298 全量预览持久化与权限数据合同 R3 复审报告 |
+| [features/job-skill-298-full-preview-persistence-contract-prd-r3-review-round2.md](features/job-skill-298-full-preview-persistence-contract-prd-r3-review-round2.md) | R3 独立审查报告（第二轮） |
+| [features/job-skill-298-full-preview-persistence-contract-prd-r3-review.md](features/job-skill-298-full-preview-persistence-contract-prd-r3-review.md) | JOB_SKILL 298 题全量预览持久化与权限数据合同 R3 独立审查 |
+| [features/job-skill-298-full-preview-prd-r3-closure-review-handoff.md](features/job-skill-298-full-preview-prd-r3-closure-review-handoff.md) | JOB_SKILL 298 题全量预览 PRD R3 独立闭合复核交接 |
+| [features/job-skill-298-full-preview-prd-r3-closure-review.md](features/job-skill-298-full-preview-prd-r3-closure-review.md) | JOB_SKILL 298 题全量预览版 PRD R3 独立闭合复核报告 |
+| [features/job-skill-298-full-preview-prd-r3-review.md](features/job-skill-298-full-preview-prd-r3-review.md) | JOB_SKILL 298 题全量预览版 PRD R3 独立审查记录 |
+| [features/job-skill-298-full-preview-step1-persistence-feasibility-acceptance.md](features/job-skill-298-full-preview-step1-persistence-feasibility-acceptance.md) | JOB_SKILL 298 题全量预览 Step 1 持久化可行性验收记录 |
+| [features/job-skill-298-full-preview-step1-persistence-feasibility-r3-review.md](features/job-skill-298-full-preview-step1-persistence-feasibility-r3-review.md) | JOB_SKILL 298 题全量预览 Step 1 持久化可行性 R3 独立审查 |
+| [features/job-skill-298-full-preview-step1-persistence-feasibility.md](features/job-skill-298-full-preview-step1-persistence-feasibility.md) | JOB_SKILL 298 题全量预览 Step 1 持久化可行性证明 |
 | [features/job-skill-shelver-298-content-review-result-2026-07-19.md](features/job-skill-shelver-298-content-review-result-2026-07-19.md) | 超市理货员 298 题来源池内容全量审核包（剩余 274 题） |
 | [features/job-skill-shelver-298-question-content-review-packet-remaining-274-v1.md](features/job-skill-shelver-298-question-content-review-packet-remaining-274-v1.md) | 超市理货员 298 题来源池内容全量审核包（剩余 274 题） |
 | [features/job-skill-shelver-298-question-revision-ledger-2026-07-19.md](features/job-skill-shelver-298-question-revision-ledger-2026-07-19.md) | 超市理货员剩余274题审核合并与修订台账 |
@@ -364,6 +381,7 @@ agents 不需要主动读，仅在需要核对源数据时查阅：
 | [features/question-bank-image-integration-checklist.md](features/question-bank-image-integration-checklist.md) | 视觉资产合同执行清单 |
 | [features/question-bank-launch-gate.md](features/question-bank-launch-gate.md) | 题库上线门禁脚本 |
 | [features/question-bank-source-csv-template.md](features/question-bank-source-csv-template.md) | 题库源 CSV 模板 |
+| [features/school-demo-first-online-activation-prd-review.md](features/school-demo-first-online-activation-prd-review.md) | 学校演示优先与在线激活 Mini-PRD R3 复核 |
 | [features/visual-asset-prompt-compilation-session-guide.md](features/visual-asset-prompt-compilation-session-guide.md) | 逐资产 Prompt 编译新会话指南 |
 | [features/visual-asset-video-production-sop.md](features/visual-asset-video-production-sop.md) | Seedance 视频资产生产 SOP |
 

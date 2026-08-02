@@ -11,6 +11,7 @@ const app = await electron.launch({
   env: {
     ...process.env,
     SVETS_E2E: '1',
+    SVETS_E2E_ACTIVATION_BYPASS: '1',
     SVETS_USER_DATA_DIR: userDataDir
   },
   timeout: 30000

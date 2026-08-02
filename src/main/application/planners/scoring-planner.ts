@@ -41,6 +41,7 @@ import type { SubmitOfflineAbilityScoresParams } from '@shared/types/ability-sco
 import type { SubmitOperationScoresParams } from '@shared/types/operation-scoring'
 import type { SubmitJobSkillOfflineScoresParams } from '@shared/types/job-skill-scoring'
 import type { RecordTeacherObservationParams } from '@shared/types/teacher-observation'
+import { isPreviewAssessmentSession } from '../../domain/preview/preview-session-guard'
 
 export const SCORING_EVENT_PAYLOAD_VERSION = 3 as const
 export const SCORING_SNAPSHOT_VERSION = 'm5b-scoring-snapshot-v1'
@@ -284,6 +285,23 @@ function captureLegacyEvents(input: Readonly<{
       app_version: 'm5b-scoring-planner',
       correlation_id: params.correlationId
     }
+    input.database.prepare(
+      `INSERT INTO domain_event_projection
+         (event_id, aggregate_type, aggregate_id, event_type, event_sequence,
+          payload_json, checksum, source_log_path, schema_version, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).run(
+      entry.event_id,
+      entry.aggregate_type,
+      entry.aggregate_id,
+      entry.event_type,
+      entry.event_sequence,
+      JSON.stringify(entry.payload),
+      entry.checksum,
+      'm5b-scoring-planner.jsonl',
+      entry.schema_version,
+      entry.created_at
+    )
     events.push(Object.freeze({
       event_id: eventId,
       aggregate_type: params.aggregateType,
@@ -415,6 +433,14 @@ export async function loadScoringPlannerSnapshot(
   text(envelope.correlationId, 'correlationId')
   if (!Object.prototype.hasOwnProperty.call(SCORING_PLAN_VERSIONS, envelope.commandType)) {
     throw new ScoringPlannerError('COMMAND_UNSUPPORTED', `unsupported ${envelope.commandType}`)
+  }
+  if (isPreviewAssessmentSession(database, sessionId(envelope))) {
+    return createPlannerReadSnapshot(canonicalRecord({
+      schema_version: SCORING_SNAPSHOT_VERSION,
+      kind: 'NO_OP',
+      no_op_result: { success: false, errorCode: 'PREVIEW_RESULT_SUPPRESSED' },
+      events: []
+    }, 'scoring_snapshot'))
   }
   const clone = await cloneDatabase(database)
   try {

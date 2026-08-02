@@ -3,7 +3,11 @@ import { existsSync, mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { syncDatabase, verifyDatabase } from '../lib/database-content-pack.mjs'
+import {
+  buildJobSkillDemoActivationSql,
+  syncDatabase,
+  verifyDatabase
+} from '../lib/database-content-pack.mjs'
 
 let tempDir = null
 let dbPath = null
@@ -25,8 +29,8 @@ describe.sequential('database content pack', () => {
   it('syncs the complete content pack idempotently', () => {
     first = syncDatabase(dbPath)
     expect(first.ok).toBe(true)
-    expect(first.packVersion).toBe('2026.07.22.1')
-    expect(first.schemaVersion).toBe('0.1.17-multi-device-m4-safety-rekey')
+    expect(first.packVersion).toBe('2026.08.01.2')
+    expect(first.schemaVersion).toBe('0.1.19-job-skill-preview-contract-v1')
     expect(first.counts).toMatchObject({ BASE_ABILITY: 96, JOB_SPECIFIC: 298 })
 
     const second = syncDatabase(dbPath)
@@ -48,5 +52,17 @@ describe.sequential('database content pack', () => {
     expect(rebuilt.ok).toBe(true)
     expect(rebuilt.backupPath).not.toBeNull()
     expect(existsSync(rebuilt.backupPath)).toBe(true)
+  }, 90_000)
+
+  it('accepts only the fixed 24-question school-demo activation profile', () => {
+    execFileSync('sqlite3', [dbPath, buildJobSkillDemoActivationSql()])
+    const ready = verifyDatabase(dbPath)
+    expect(ready.ok).toBe(true)
+    expect(ready.contentProfile).toBe('SCHOOL_DEMO_READY')
+
+    execFileSync('sqlite3', [dbPath, `UPDATE question_bank SET status='ACTIVE'
+      WHERE question_id=(SELECT question_id FROM question_bank
+        WHERE bank_domain='JOB_SPECIFIC' AND status='DRAFT' ORDER BY question_id LIMIT 1);`])
+    expect(() => verifyDatabase(dbPath)).toThrow('题库语义哈希与内容包不一致')
   }, 90_000)
 })

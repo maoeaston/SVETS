@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { useActivationStore } from '../stores/activation'
 import type { AuthRole } from '@shared/types/auth'
 
 function homeForRole(role: AuthRole | null): string {
@@ -16,6 +17,11 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     { path: '/', redirect: '/login' },
+    {
+      path: '/activation',
+      meta: { activationPage: true },
+      component: () => import('../views/ActivationView.vue')
+    },
     {
       path: '/login',
       meta: { anonymousOnly: true },
@@ -42,6 +48,10 @@ const router = createRouter({
         {
           path: 'assessments',
           component: () => import('../views/teacher/AssessmentListView.vue')
+        },
+        {
+          path: 'question-bank',
+          component: () => import('../views/teacher/QuestionBankView.vue')
         },
         {
           path: 'assessments/new',
@@ -106,6 +116,10 @@ const router = createRouter({
         {
           path: 'strategies',
           component: () => import('../views/admin/StrategyListView.vue')
+        },
+        {
+          path: 'question-bank',
+          component: () => import('../views/teacher/QuestionBankView.vue')
         },
         {
           path: 'strategies/:strategyId',
@@ -174,7 +188,13 @@ const router = createRouter({
 // 全局路由守卫：先向主进程恢复一次可信会话，再按路由 meta 控制页面体验。
 // 主进程 auth_session 是最终权限来源；这里仅负责跳转体验，不代替 IPC 安全校验。
 router.beforeEach(async (to) => {
+  const activationStore = useActivationStore()
   const authStore = useAuthStore()
+
+  if (!activationStore.initialized) await activationStore.refresh()
+  const activationPage = to.matched.some((record) => record.meta.activationPage === true)
+  if (!activationStore.activated && !activationPage) return { path: '/activation' }
+  if (!activationStore.activated) return
 
   if (!authStore.initialized) {
     try {

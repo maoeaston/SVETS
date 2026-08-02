@@ -14,9 +14,30 @@ import type {
   StrategyInput,
   StrategyType
 } from '../../../../shared/types/strategy'
+import type { QuestionPolicyBaseAbility } from '../../../../shared/types/json-schemas'
 
 let db: MemoryAdapter
 let callerId: string
+
+const BASE_ABILITY_V12_POLICY: QuestionPolicyBaseAbility = {
+  schema_version: 'question-policy-v1.2',
+  module_scope: 'CROSS_MODULE',
+  eligible_bank_domains: ['BASE_ABILITY'],
+  online_quota_by_module: {
+    FINE_MOTOR: 7,
+    COGNITION: 7,
+    RULE_EXECUTION: 7,
+    EMOTION_REGULATION: 7,
+    BASIC_SOCIAL: 7,
+    SAFETY_OPERATION: 7
+  },
+  offline_total: 8,
+  eligible_item_usage: ['SCORED_ITEM'],
+  allowed_question_types: ['TRUE_FALSE', 'SINGLE_CHOICE', 'DRAG', 'OFFLINE_OPERATION'],
+  unsupported_interaction_policy: 'BLOCK',
+  sensory_filter_mode: 'SOFT',
+  fallback_strategy: 'BLOCK'
+}
 
 function baseParams(over: Partial<CreateStrategyVersionParams> = {}): CreateStrategyVersionParams {
   return {
@@ -135,6 +156,17 @@ describe('createVersion — 正常路径', () => {
       })
     )
     expect(r).toEqual({ success: true })
+  })
+
+  it('BASE_ABILITY question-policy-v1.2 通过共享 API 校验并持久化', () => {
+    const strategy = baseStrategyInput({ questionPolicy: BASE_ABILITY_V12_POLICY })
+
+    expect(createVersion(db, baseParams({ strategy }))).toEqual({ success: true })
+
+    const row = db
+      .prepare('SELECT question_policy_json FROM strategy_config WHERE strategy_id = ? AND version = ?')
+      .get(strategy.strategyId, strategy.version) as { question_policy_json: string }
+    expect(JSON.parse(row.question_policy_json)).toEqual(BASE_ABILITY_V12_POLICY)
   })
 })
 

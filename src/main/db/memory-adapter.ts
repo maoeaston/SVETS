@@ -37,7 +37,9 @@ export class MemoryAdapter implements DBAdapter {
    */
   async cloneForPlanning(): Promise<MemoryAdapter> {
     const SQL = await ensureSqlJs()
-    return new MemoryAdapter(new SQL.Database(this.db.export()))
+    const clone = new SQL.Database(this.db.export())
+    clone.exec('PRAGMA foreign_keys = ON')
+    return new MemoryAdapter(clone)
   }
 
   prepare(sql: string): DBStatement {

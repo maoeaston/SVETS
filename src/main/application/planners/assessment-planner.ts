@@ -12,6 +12,7 @@ import {
 import { canonicalJson, type CanonicalJsonValue } from '../../domain/event-batch/canonical-json'
 import { generatePaper, type QuestionBankRow } from '../../domain/paper-generator'
 import { calculateAbilityScore, readOfflineAbilityScoringCompletion } from '../../domain/ability-scoring'
+import { isPreviewAssessmentSession } from '../../domain/preview/preview-session-guard'
 
 export const ASSESSMENT_EVENT_PAYLOAD_VERSION = 2 as const
 export const ASSESSMENT_SNAPSHOT_VERSION = 'm5b-assessment-snapshot-v1'
@@ -404,6 +405,7 @@ function sessionSnapshot(db: DBAdapter, envelope: CommandEnvelopeV2, timestamp: 
   const sessionId = sessionIdFrom(envelope)
   const session = sessionRow(db, sessionId)
   if (!session) return noOpSnapshot(timestamp, { success: false, errorCode: 'NOT_FOUND' })
+  if (isPreviewAssessmentSession(db, sessionId)) return noOpSnapshot(timestamp, { success: false, errorCode: 'PREVIEW_RESULT_SUPPRESSED' })
   const payload = acceptedPayloadObject(envelope)
   const sequence = nextSequence(db, sessionId)
   const status = String(session.status)

@@ -27,8 +27,9 @@ vi.mock('electron', () => ({
 
 import type { IpcMainInvokeEvent } from 'electron'
 import type { MemoryAdapter } from '../../db/memory-adapter'
-import { createTestDb, seedCaller, seedStudent } from '../../db/test-helpers'
+import { createTestDb, seedCaller, seedStudent, seedLocalRuntimeContextFixture } from '../../db/test-helpers'
 import { applyEventBatchMigration } from '../../db/event-batch-migration'
+import { promotePreviewContractReady } from '../../domain/preview/preview-promotion'
 import {
   createApplicationRuntime,
   startApplicationRuntime,
@@ -36,11 +37,15 @@ import {
   type RuntimeScheduler
 } from '../../application/runtime/application-runtime'
 import {
+  bindPersistentAuthSessionToSender,
   clearAuthSessionBinding,
   issuePasswordAuthSession,
   replaceSenderAuthSession
 } from '../../utils/auth-session'
-import { registerCentralIpcHandlers } from '../handler-registry'
+import { registerCentralIpcHandlers, resolveTrustedStudentProfileId } from '../handler-registry'
+import { ACTIVATION_IPC_CHANNELS } from '../activation'
+import { QUESTION_BANK_CATALOG_IPC_CHANNELS } from '../question-bank-catalog'
+import { TEST_BUSINESS_ACCESS_GATE } from '../../test-helpers/business-access-gate'
 
 class InertScheduler implements RuntimeScheduler {
   setInterval(): object {
@@ -79,7 +84,7 @@ async function createM5bRuntime(): Promise<{ db: MemoryAdapter; runtime: Applica
       dataRoot: `/tmp/svets-m5b-handler-registry-${uuidv4()}`,
       dependencies: { scheduler: new InertScheduler() }
     },
-    registerBoundary: registerCentralIpcHandlers
+    registerBoundary: (runtime) => registerCentralIpcHandlers(runtime, TEST_BUSINESS_ACCESS_GATE)
   })
   runtimes.push(runtime)
   return { db, runtime }
@@ -163,15 +168,15 @@ afterEach(() => {
 })
 
 describe('M5B central IPC registry', () => {
-  it('installs the exact 75/29/46 set through one sealed registry', async () => {
+  it('installs the exact 92-channel and 35/62-command set through one sealed registry', async () => {
     const { runtime } = await createRuntime()
-    const boundary = registerCentralIpcHandlers(runtime)
+    const boundary = registerCentralIpcHandlers(runtime, TEST_BUSINESS_ACCESS_GATE)
 
-    expect(boundary.channels).toHaveLength(75)
-    expect(new Set(boundary.channels).size).toBe(75)
-    expect(electronState.handlers.size).toBe(75)
-    expect(boundary.registry.list().filter((item) => item.metadata.mode === 'READ')).toHaveLength(29)
-    expect(boundary.registry.list().filter((item) => item.metadata.mode === 'MUTATION')).toHaveLength(46)
+    expect(boundary.channels).toHaveLength(92)
+    expect(new Set(boundary.channels).size).toBe(92)
+    expect(electronState.handlers.size).toBe(92)
+    expect(boundary.registry.list().filter((item) => item.metadata.mode === 'READ')).toHaveLength(35)
+    expect(boundary.registry.list().filter((item) => item.metadata.mode === 'MUTATION')).toHaveLength(62)
     expect(boundary.registry.isSealed()).toBe(true)
 
     const mutationDefinitions = boundary.registry.list().filter((item) => item.metadata.mode === 'MUTATION')
@@ -182,10 +187,11 @@ describe('M5B central IPC registry', () => {
         'TRAINING_SYSTEM_ERROR',
         'ASSIGNMENT_SYSTEM_ERROR',
         'SAFETY_SYSTEM_ERROR',
-        'REPORT_SYSTEM_ERROR'
+        'REPORT_SYSTEM_ERROR',
+        'PREVIEW_CONTRACT_MIGRATION_REQUIRED'
       ]))
     expect(mutationDefinitions.every((item) => item.metadata.targetResolver.authoritativeFields.length > 0)).toBe(true)
-    expect(new Set(mutationDefinitions.map((item) => item.metadata.targetResolver.owner)).size).toBe(46)
+    expect(new Set(mutationDefinitions.map((item) => item.metadata.targetResolver.owner)).size).toBe(62)
     expect(mutationDefinitions.every((item) => item.metadata.targetResolver.owner === item.commandType)).toBe(true)
     expect(mutationDefinitions.every((item) =>
       item.metadata.targetResolver.canonicalTargetFields.length > 0
@@ -222,15 +228,33 @@ describe('M5B central IPC registry', () => {
     const preloadChannels = [...preloadSource.matchAll(/ipcRenderer\.invoke\('([^']+)'/g)]
       .map((match) => match[1])
       .sort()
-    expect(preloadChannels).toEqual([...boundary.channels].sort())
+    expect(preloadChannels).toEqual([
+      ...boundary.channels,
+      ...ACTIVATION_IPC_CHANNELS,
+      ...QUESTION_BANK_CATALOG_IPC_CHANNELS
+    ].sort())
 
     runtime.dispose()
     expect(electronState.handlers.size).toBe(0)
   })
 
+  it('keeps runtime health open while activation rejects every business channel', async () => {
+    const { runtime } = await createRuntime()
+    const gate = {
+      assertBusinessAccess: vi.fn(async () => { throw new Error('ACTIVATION_REQUIRED') })
+    }
+    registerCentralIpcHandlers(runtime, gate)
+
+    await expect(requireHandler('auth:getCurrentSession')(event(4099)))
+      .rejects.toThrow('ACTIVATION_REQUIRED')
+    expect(requireHandler('runtime:getHealth')(event(4099)))
+      .toMatchObject({ schemaVersion: 'runtime-health-v1' })
+    expect(gate.assertBusinessAccess).toHaveBeenCalledTimes(1)
+  })
+
   it('keeps mutation closed before runtime ready and performs no business write', async () => {
     const { db, runtime } = await createRuntime()
-    registerCentralIpcHandlers(runtime)
+    registerCentralIpcHandlers(runtime, TEST_BUSINESS_ACCESS_GATE)
     const senderId = 4101
     const adminId = bindUser(db, runtime, senderId, 'ADMIN')
     const before = {
@@ -261,7 +285,7 @@ describe('M5B central IPC registry', () => {
 
   it('routes READ through a pure session snapshot without heartbeat', async () => {
     const { db, runtime } = await createRuntime()
-    registerCentralIpcHandlers(runtime)
+    registerCentralIpcHandlers(runtime, TEST_BUSINESS_ACCESS_GATE)
     runtime.markBoundaryReady()
     const senderId = 4102
     const teacherId = bindUser(db, runtime, senderId, 'TEACHER')
@@ -283,7 +307,7 @@ describe('M5B central IPC registry', () => {
 
   it('keeps malformed direct mutation transport out of the durable executor', async () => {
     const { db, runtime } = await createRuntime()
-    registerCentralIpcHandlers(runtime)
+    registerCentralIpcHandlers(runtime, TEST_BUSINESS_ACCESS_GATE)
     runtime.markBoundaryReady()
     const senderId = 4103
     const adminId = bindUser(db, runtime, senderId, 'ADMIN')
@@ -398,7 +422,7 @@ describe('M5B central IPC registry', () => {
 
   it('returns a stable system failure when direct test transport omits preload metadata', async () => {
     const { db, runtime } = await createRuntime()
-    registerCentralIpcHandlers(runtime)
+    registerCentralIpcHandlers(runtime, TEST_BUSINESS_ACCESS_GATE)
     runtime.markBoundaryReady()
     const senderId = 4104
     const adminId = bindUser(db, runtime, senderId, 'ADMIN')
@@ -427,7 +451,52 @@ describe('M5B central IPC registry', () => {
     const { runtime } = await createRuntime()
     electronState.failOnChannel = 'auth:login'
 
-    expect(() => registerCentralIpcHandlers(runtime)).toThrow('injected registration failure')
+    expect(() => registerCentralIpcHandlers(runtime, TEST_BUSINESS_ACCESS_GATE)).toThrow('injected registration failure')
     expect(electronState.handlers.size).toBe(0)
+  })
+
+  it('keeps preview reads migration-gated and binds READY reads to the sender identity', async () => {
+    const { db, runtime } = await createM5bRuntime()
+    const senderId = 4107
+    const teacherId = seedCaller(db, 'TEACHER')
+    const topology = seedLocalRuntimeContextFixture(db, {
+      teacherUserId: teacherId
+    })
+    bindPersistentAuthSessionToSender(senderId, topology.teacherAuthSessionId, runtime.bindingOwnerId)
+
+    const beforeReady = await requireHandler('preview:listSources')(event(senderId), {
+      organizationId: topology.organizationId,
+      callerUserId: teacherId,
+      callerRole: 'TEACHER'
+    })
+    expect(beforeReady).toEqual({ success: false, errorCode: 'PREVIEW_CONTRACT_MIGRATION_REQUIRED' })
+
+    promotePreviewContractReady(db, '2026-08-01T02:00:00.000Z')
+
+    const spoofed = await requireHandler('preview:listSources')(event(senderId), {
+      organizationId: topology.organizationId,
+      callerUserId: 'forged-user',
+      callerRole: 'ADMIN'
+    })
+    expect(spoofed).toEqual({ success: false, errorCode: 'FORBIDDEN' })
+
+    const valid = await requireHandler('preview:listSources')(event(senderId), {})
+    expect(valid).toEqual([])
+  })
+
+  it('resolves a student preview scope through the associated ACTIVE profile id', async () => {
+    const { db } = await createRuntime()
+    const accountId = seedStudent(db)
+    const profileId = uuidv4()
+    db.prepare('DELETE FROM student_profile WHERE student_id = ?').run(accountId)
+    db.prepare(
+      `INSERT INTO student_profile (student_id, student_name, user_id, status)
+       VALUES (?, '关联档案', ?, 'ACTIVE')`
+    ).run(profileId, accountId)
+
+    expect(resolveTrustedStudentProfileId(db, accountId)).toBe(profileId)
+
+    db.prepare("UPDATE student_profile SET status = 'ARCHIVED' WHERE student_id = ?").run(profileId)
+    expect(resolveTrustedStudentProfileId(db, accountId)).toBeNull()
   })
 })

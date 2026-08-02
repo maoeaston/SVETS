@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { generatePaper } from '../paper-generator'
+import { generateBaseAbilityPaperV12, generatePaper } from '../paper-generator'
 import type { QuestionBankRow, GeneratePaperInput } from '../paper-generator'
 import type { AbilityTag } from '../../../shared/types/json-schemas'
+import type { QuestionPolicyBaseAbility } from '../../../shared/types/json-schemas'
 
 const MODULES: AbilityTag[] = [
   'FINE_MOTOR',
@@ -143,5 +144,109 @@ describe('generatePaper', () => {
     expect(r.questions.length).toBe(8)
     expect(r.questions.every(q => q.questionPhase === 'OFFLINE')).toBe(true)
     expect(r.questions.map(q => q.questionOrder)).toEqual([1, 2, 3, 4, 5, 6, 7, 8])
+  })
+})
+
+const V12_POLICY: QuestionPolicyBaseAbility = {
+  schema_version: 'question-policy-v1.2',
+  module_scope: 'CROSS_MODULE',
+  eligible_bank_domains: ['BASE_ABILITY'],
+  online_quota_by_module: { FINE_MOTOR: 7, COGNITION: 7, RULE_EXECUTION: 7, EMOTION_REGULATION: 7, BASIC_SOCIAL: 7, SAFETY_OPERATION: 7 },
+  offline_total: 8,
+  eligible_item_usage: ['SCORED_ITEM'],
+  allowed_question_types: ['TRUE_FALSE', 'SINGLE_CHOICE', 'DRAG', 'SOFTWARE_TASK', 'OFFLINE_OPERATION'],
+  unsupported_interaction_policy: 'BLOCK',
+  sensory_filter_mode: 'SOFT',
+  fallback_strategy: 'BLOCK'
+}
+
+const V12_ONLINE_TYPES = ['TRUE_FALSE', 'SINGLE_CHOICE', 'DRAG', 'SOFTWARE_TASK'] as const
+
+// v1.2 mock 题库：6 模块 × {7 白名单内线上 + 2 白名单外干扰} + 8 白名单内线下 + 2 白名单外干扰。
+function makeV12Bank(): { rows: QuestionBankRow[]; selectedIds: Set<string> } {
+  const rows: QuestionBankRow[] = []
+  const selectedIds = new Set<string>()
+  for (const m of MODULES) {
+    for (let k = 0; k < 7; k++) {
+      const id = `v12-${m}-${k}`
+      rows.push({ question_id: id, module_type: m, question_type: V12_ONLINE_TYPES[k % V12_ONLINE_TYPES.length], sensory_tags_json: null })
+      selectedIds.add(id)
+    }
+    for (let k = 0; k < 2; k++) {
+      rows.push({ question_id: `v12-out-${m}-${k}`, module_type: m, question_type: V12_ONLINE_TYPES[k % V12_ONLINE_TYPES.length], sensory_tags_json: null })
+    }
+  }
+  for (let k = 0; k < 8; k++) {
+    const id = `v12-offline-${k}`
+    rows.push({ question_id: id, module_type: MODULES[k % MODULES.length], question_type: 'OFFLINE_OPERATION', sensory_tags_json: null })
+    selectedIds.add(id)
+  }
+  for (let k = 0; k < 2; k++) {
+    rows.push({ question_id: `v12-offline-out-${k}`, module_type: MODULES[k % MODULES.length], question_type: 'OFFLINE_OPERATION', sensory_tags_json: null })
+  }
+  return { rows, selectedIds }
+}
+
+describe('generateBaseAbilityPaperV12', () => {
+  it('精确 42 ONLINE + 8 OFFLINE，每模块 7 道，白名单外题不入选，order 连续 1..50', () => {
+    const { rows, selectedIds } = makeV12Bank()
+    const r = generateBaseAbilityPaperV12({ policy: V12_POLICY, questionBankRows: rows, selectedQuestionIds: selectedIds, paperSeed: 'seed-1' })
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.questions).toHaveLength(50)
+    expect(r.questions.filter((q) => q.questionPhase === 'ONLINE')).toHaveLength(42)
+    expect(r.questions.filter((q) => q.questionPhase === 'OFFLINE')).toHaveLength(8)
+    for (const m of MODULES) {
+      expect(r.questions.filter((q) => q.moduleType === m && q.questionPhase === 'ONLINE')).toHaveLength(7)
+    }
+    expect(r.questions.every((q) => selectedIds.has(q.questionId))).toBe(true)
+    expect(r.questions.map((q) => q.questionOrder)).toEqual(Array.from({ length: 50 }, (_, i) => i + 1))
+  })
+
+  it('相同 paperSeed 重放输出完全一致', () => {
+    const { rows, selectedIds } = makeV12Bank()
+    const a = generateBaseAbilityPaperV12({ policy: V12_POLICY, questionBankRows: rows, selectedQuestionIds: selectedIds, paperSeed: 'same-seed' })
+    const b = generateBaseAbilityPaperV12({ policy: V12_POLICY, questionBankRows: rows, selectedQuestionIds: selectedIds, paperSeed: 'same-seed' })
+    expect(a.ok).toBe(true)
+    expect(b.ok).toBe(true)
+    if (!a.ok || !b.ok) return
+    expect(a.questions.map((q) => q.questionId)).toEqual(b.questions.map((q) => q.questionId))
+  })
+
+  it('某模块白名单内线上题不足 7 → QUESTION_BANK_INSUFFICIENT', () => {
+    const { rows, selectedIds } = makeV12Bank()
+    selectedIds.delete('v12-FINE_MOTOR-0')
+    const r = generateBaseAbilityPaperV12({ policy: V12_POLICY, questionBankRows: rows, selectedQuestionIds: selectedIds, paperSeed: 'seed-1' })
+    expect(r.ok).toBe(false)
+    if (r.ok) return
+    expect(r.errorCode).toBe('QUESTION_BANK_INSUFFICIENT')
+  })
+
+  it('线下白名单内不足 8 → QUESTION_BANK_INSUFFICIENT', () => {
+    const { rows, selectedIds } = makeV12Bank()
+    selectedIds.delete('v12-offline-6')
+    selectedIds.delete('v12-offline-7')
+    const r = generateBaseAbilityPaperV12({ policy: V12_POLICY, questionBankRows: rows, selectedQuestionIds: selectedIds, paperSeed: 'seed-1' })
+    expect(r.ok).toBe(false)
+    if (r.ok) return
+    expect(r.errorCode).toBe('QUESTION_BANK_INSUFFICIENT')
+  })
+
+  it('allowed_question_types 排除 SOFTWARE_TASK 致模块不足 → QUESTION_BANK_INSUFFICIENT', () => {
+    const { rows, selectedIds } = makeV12Bank()
+    const restrictedPolicy: QuestionPolicyBaseAbility = { ...V12_POLICY, allowed_question_types: ['TRUE_FALSE', 'SINGLE_CHOICE', 'DRAG', 'OFFLINE_OPERATION'] }
+    const r = generateBaseAbilityPaperV12({ policy: restrictedPolicy, questionBankRows: rows, selectedQuestionIds: selectedIds, paperSeed: 'seed-1' })
+    expect(r.ok).toBe(false)
+    if (r.ok) return
+    expect(r.errorCode).toBe('QUESTION_BANK_INSUFFICIENT')
+  })
+
+  it('INVALID_POLICY：schema_version 不对', () => {
+    const { rows, selectedIds } = makeV12Bank()
+    const bad = { ...V12_POLICY, schema_version: 'wrong' as unknown as 'question-policy-v1.2' }
+    const r = generateBaseAbilityPaperV12({ policy: bad, questionBankRows: rows, selectedQuestionIds: selectedIds, paperSeed: 'x' })
+    expect(r.ok).toBe(false)
+    if (r.ok) return
+    expect(r.errorCode).toBe('INVALID_POLICY')
   })
 })

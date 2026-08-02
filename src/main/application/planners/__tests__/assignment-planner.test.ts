@@ -74,6 +74,9 @@ function seedPreparedAssignment(harness: AssignmentBatchHarness, teacherId: stri
     offlineQuestionCount: 0,
     createdBy: teacherId
   })
+  harness.database.prepare(
+    'UPDATE assessment_session SET event_sequence_version = 1 WHERE session_id = ?'
+  ).run(sessionId)
   const firstQuestionId = uuidv4()
   harness.database.prepare(
     `INSERT INTO question_bank
@@ -145,6 +148,7 @@ describe('M5B-11 assignment planner', () => {
     })
     expect(plan.events).toHaveLength(1)
     expect(plan.events[0]?.eventType).toBe('ASSIGNMENT_CREATED')
+    expect(plan.events[0]?.eventSequence).toBe(2)
     expect(plan.operationalEffects).toEqual([expect.objectContaining({
       effectType: ASSIGNMENT_RUNTIME_EFFECT.effectType,
       effectVersion: ASSIGNMENT_RUNTIME_EFFECT.effectVersion

@@ -552,12 +552,15 @@ describe('TC-O: JOB_SKILL 线下评分录入', () => {
         offline_tool_brief: '稳定迷你货架；5件轻型训练商品',
         rubric_criteria: [{ criterion_id: 'r1', description: '商品全部放在中层' }],
         rubric: {
-          anchors: { 0: '任务未形成合格陈列', 1: '部分完成或需提示', 2: '独立完全达标' },
           sealed_admin_config: { expected_count: 5 }
         },
         safety: { proposed_stop_conditions: '货架晃动或出现攀爬时立即停止。' }
       }),
-      JSON.stringify({ scoring_type: 'OFFLINE_RUBRIC', max_score: 2 }),
+      JSON.stringify({
+        scoring_type: 'OFFLINE_RUBRIC',
+        max_score: 2,
+        score_labels: { 0: '任务未形成合格陈列', 1: '部分完成或需提示', 2: '独立完全达标' }
+      }),
       questionId
     )
 
@@ -588,10 +591,13 @@ describe('TC-O: JOB_SKILL 线下评分录入', () => {
     const questionId = bankIds.offlineIds[0]
     db.exec('DROP TRIGGER IF EXISTS trg_question_bank_active_semantic_immutable')
     db.exec('DROP TRIGGER IF EXISTS trg_question_bank_referenced_semantic_immutable')
-    db.prepare('UPDATE question_bank SET content_json = ? WHERE question_id = ?').run(
+    db.prepare('UPDATE question_bank SET content_json = ?, scoring_rule_json = ? WHERE question_id = ?').run(
       JSON.stringify({
-        question_type: 'OFFLINE_OPERATION', prompt: '线下任务', offline_tool_brief: '训练工具', rubric_criteria: [],
-        rubric: { anchors: { 0: '未完成', 1: '部分完成', 2: '完全达标' } }
+        question_type: 'OFFLINE_OPERATION', prompt: '线下任务', offline_tool_brief: '训练工具', rubric_criteria: []
+      }),
+      JSON.stringify({
+        scoring_type: 'OFFLINE_RUBRIC', max_score: 2,
+        score_labels: { 0: '未完成', 1: '部分完成', 2: '完全达标' }
       }),
       questionId
     )

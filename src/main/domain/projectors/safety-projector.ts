@@ -8,6 +8,7 @@ import {
   SAFETY_EVENT_PAYLOAD_VERSION,
   SAFETY_RESULT_RECIPE_VERSIONS
 } from '../../application/planners/safety-planner'
+import { assertFormalAssessmentSession } from '../preview/preview-session-guard'
 
 export const SAFETY_PROJECTOR_NAME = 'm5b-safety-prepared-projector-v1'
 
@@ -329,6 +330,12 @@ function projectRedlineTrainingSteps(context: PreparedProjectorContext, facts: R
 function projectCreated(context: PreparedProjectorContext): void {
   const p = context.event.record.payload
   const incidentId = text(p.incident_id, 'incident_id')
+  const redlineFacts = p.projection_kind === 'REDLINE' ? record(p.redline_projection, 'redline_projection') : null
+  if (redlineFacts) {
+    for (const binding of records(redlineFacts.assessment_bindings, 'assessment_bindings')) {
+      assertFormalAssessmentSession(context.database, text(binding.aggregate_id, 'assessment binding id'), 'formal safety redline')
+    }
+  }
   const existing = context.database.prepare('SELECT incident_id FROM safety_incident WHERE incident_id = ?').get(incidentId)
   if (existing) throw new Error('prepared safety incident already exists')
   context.database.prepare(
@@ -341,8 +348,8 @@ function projectCreated(context: PreparedProjectorContext): void {
     context.event.record.event_id, text(p.reason_code, 'reason_code'), nullableText(p.description, 'description'),
     text(p.reported_by, 'reported_by'), text(p.context_phase, 'context_phase'), exactTimestamp(p.occurred_at, 'occurred_at')
   )
-  if (p.projection_kind === 'REDLINE') {
-    const facts = record(p.redline_projection, 'redline_projection')
+  if (redlineFacts) {
+    const facts = redlineFacts
     assertBindings(context, incidentId, 'ASSESSMENT_SESSION', records(facts.assessment_bindings, 'assessment_bindings'))
     assertBindings(context, incidentId, 'TRAINING_SESSION', records(facts.training_bindings, 'training_bindings'))
     projectRedlineResults(context, incidentId, facts)
@@ -470,6 +477,11 @@ export function registerSafetyPreparedFacts(registry = new PreparedFactRegistry(
     registry.registerEvent({
       eventType,
       eventPayloadVersion: SAFETY_EVENT_PAYLOAD_VERSION,
+      ownership: {
+        aggregateType: 'SAFETY_INCIDENT',
+        contractVersion: null,
+        allowedShellKind: 'FORMAL_SHELL'
+      },
       projectorName: SAFETY_PROJECTOR_NAME,
       validatePayload: (payload) => validatePayload(eventType, payload),
       project,

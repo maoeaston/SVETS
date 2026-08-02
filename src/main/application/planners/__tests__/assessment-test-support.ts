@@ -19,6 +19,7 @@ import type { PreparedProjectorContext } from '../../../domain/event-batch/resul
 import { RuntimeCorruptionState } from '../../../domain/event-batch/runtime-corruption'
 import { FairWriterMutex } from '../../../domain/event-batch/writer-mutex'
 import {
+  projectPreparedAssessmentSessionStarted,
   readAssessmentSessionQuestionSnapshots,
   registerAssessmentPreparedFacts,
   type AssessmentPreparedProjectorDependencies
@@ -92,107 +93,35 @@ export function installAssessmentPreparedQuestionSnapshotGateForTests(database: 
   `)
 }
 
-function ensurePreparedBusinessSession(
-  database: PreparedProjectorContext['database'],
-  payload: Readonly<Record<string, CanonicalJsonValue>>,
-  event: PreparedProjectorContext['event']['record']
-): void {
-  const businessSessionId = text(payload.business_session_id, 'business_session_id')
-  const existing = database.prepare(
-    'SELECT session_type, student_id, job_code, task_code FROM business_session WHERE business_session_id = ?'
-  ).get(businessSessionId) as { session_type: string; student_id: string; job_code: string; task_code: string } | undefined
-  if (existing) {
-    if (
-      existing.session_type !== 'ASSESSMENT'
-      || existing.student_id !== payload.student_id
-      || existing.job_code !== payload.job_code
-      || existing.task_code !== payload.task_code
-    ) throw new Error(`business_session ${businessSessionId} conflicts with prepared assessment facts`)
-    return
-  }
-  database.prepare(
-    `INSERT INTO business_session
-       (business_session_id, session_type, student_id, job_code, task_code, created_by)
-     VALUES (?, 'ASSESSMENT', ?, ?, ?, ?)`
-  ).run(businessSessionId, payload.student_id, payload.job_code, payload.task_code, event.actor_id)
-}
-
 function projectPreparedSessionStarted(context: PreparedProjectorContext): void {
   const payload = context.event.record.payload
   const sessionId = text(payload.session_id, 'session_id')
   const existing = context.database.prepare('SELECT session_id FROM assessment_session WHERE session_id = ?').get(sessionId)
-  if (existing) return
-  if (text(payload.created_by, 'created_by') !== context.event.record.actor_id) {
-    throw new Error('SESSION_STARTED created_by conflicts with event actor')
-  }
-  const questions = readAssessmentSessionQuestionSnapshots(payload)
-  ensurePreparedBusinessSession(context.database, payload, context.event.record)
-  context.database.prepare(
-    `INSERT INTO assessment_session
-       (session_id, business_session_id, student_id, strategy_id, strategy_type, job_code, task_code,
-        strategy_version, status, delivery_phase, online_question_count, offline_question_count,
-        observation_template_id, created_by, started_at,
-        created_event_id, last_applied_event_id, last_status_event_id, event_sequence_version)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'INIT', ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)`
-  ).run(
-    sessionId,
-    payload.business_session_id,
-    payload.student_id,
-    payload.strategy_id,
-    payload.strategy_type,
-    payload.job_code,
-    payload.task_code,
-    payload.strategy_version,
-    payload.initial_delivery_phase ?? 'PREPARED',
-    payload.online_question_count,
-    payload.offline_question_count,
-    payload.observation_template_id ?? null,
-    context.event.record.actor_id,
-    context.event.record.event_id,
-    context.event.record.event_id,
-    context.event.record.event_id,
-    context.event.record.event_sequence
-  )
-  const insertPreparedFact = context.database.prepare(
-    `INSERT INTO event_batch_prepared_assessment_question_fact
-       (event_id, session_question_id, session_id, question_id, question_order, question_phase,
-        bank_domain, module_type, question_type, item_usage, job_module_code)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-  )
-  const insertSessionQuestion = context.database.prepare(
-    `INSERT INTO assessment_session_question
-       (session_question_id, session_id, question_id, question_order, question_phase,
-        bank_domain, module_type, question_type, item_usage, job_module_code, generated_event_id)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-  )
-  for (const question of questions) {
-    insertPreparedFact.run(
-      context.event.record.event_id,
-      question.sessionQuestionId,
-      sessionId,
-      question.questionId,
-      question.questionOrder,
-      question.questionPhase,
-      question.bankDomain,
-      question.moduleType,
-      question.questionType,
-      question.itemUsage,
-      question.jobModuleCode
+  if (!existing) {
+    const questions = readAssessmentSessionQuestionSnapshots(payload)
+    const insertPreparedFact = context.database.prepare(
+      `INSERT INTO event_batch_prepared_assessment_question_fact
+         (event_id, session_question_id, session_id, question_id, question_order, question_phase,
+          bank_domain, module_type, question_type, item_usage, job_module_code)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
-    insertSessionQuestion.run(
-      question.sessionQuestionId,
-      sessionId,
-      question.questionId,
-      question.questionOrder,
-      question.questionPhase,
-      question.bankDomain,
-      question.moduleType,
-      question.questionType,
-      question.itemUsage,
-      question.jobModuleCode,
-      context.event.record.event_id
-    )
+    for (const question of questions) {
+      insertPreparedFact.run(
+        context.event.record.event_id,
+        question.sessionQuestionId,
+        sessionId,
+        question.questionId,
+        question.questionOrder,
+        question.questionPhase,
+        question.bankDomain,
+        question.moduleType,
+        question.questionType,
+        question.itemUsage,
+        question.jobModuleCode
+      )
+    }
   }
+  projectPreparedAssessmentSessionStarted(context)
 }
 
 export const ASSESSMENT_PREPARED_PROJECTOR_DEPENDENCIES_FOR_TESTS: AssessmentPreparedProjectorDependencies = Object.freeze({

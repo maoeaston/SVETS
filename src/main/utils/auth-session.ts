@@ -6,7 +6,13 @@ import {
   assertInternalMutationCapability,
   type InternalMutationCapability
 } from '../application/runtime/internal-mutation-capability'
-import type { AuthRole, AuthSessionSnapshot, CurrentSessionResult } from '../../shared/types/auth'
+import type {
+  AuthRole,
+  AuthSessionSnapshot,
+  CurrentSessionResult,
+  TrustedCallerResult,
+  TrustedCallerSnapshot
+} from '../../shared/types/auth'
 
 interface SessionRow {
   auth_session_id: string
@@ -21,6 +27,19 @@ interface SessionRow {
 
 interface MaintenanceSessionRow extends SessionRow {
   token_hash: string
+}
+
+interface TrustedCallerRow extends SessionRow {
+  device_runtime_session_id: string | null
+  device_id: string | null
+  node_id: string | null
+  organization_id: string | null
+  runtime_status: string | null
+  device_status: string | null
+  device_trust_state: string | null
+  node_status: string | null
+  organization_status: string | null
+  capabilities_json: string
 }
 
 interface BoundAuthToken {
@@ -87,6 +106,53 @@ function readSessionRowById(db: DBAdapter, authSessionId: string): SessionRow | 
        WHERE s.auth_session_id = ?`
     )
     .get(authSessionId) as SessionRow | undefined
+}
+
+function readTrustedCallerRow(db: DBAdapter, authSessionId: string): TrustedCallerRow | undefined {
+  return db
+    .prepare(
+      `SELECT
+         s.auth_session_id,
+         s.user_id,
+         ua.role,
+         ua.display_name,
+         ua.status AS account_status,
+         s.status AS session_status,
+         s.expires_at,
+         CASE WHEN s.expires_at <= datetime('now') THEN 1 ELSE 0 END AS is_expired,
+         s.device_runtime_session_id,
+         drs.device_id,
+         d.node_id,
+         n.organization_id,
+         drs.status AS runtime_status,
+         d.status AS device_status,
+         d.trust_state AS device_trust_state,
+         n.status AS node_status,
+         o.status AS organization_status,
+         s.capabilities_json
+       FROM auth_session s
+       JOIN user_account ua ON ua.user_id = s.user_id
+       LEFT JOIN device_runtime_session drs
+         ON drs.device_runtime_session_id = s.device_runtime_session_id
+       LEFT JOIN device d ON d.device_id = drs.device_id
+       LEFT JOIN node n ON n.node_id = d.node_id
+       LEFT JOIN organization o ON o.organization_id = n.organization_id
+      WHERE s.auth_session_id = ?`
+    )
+    .get(authSessionId) as TrustedCallerRow | undefined
+}
+
+function parseCapabilities(value: string): readonly string[] | null {
+  try {
+    const parsed: unknown = JSON.parse(value)
+    if (!Array.isArray(parsed) || parsed.some((item) => typeof item !== 'string' || item.trim() !== item || item.length === 0)) {
+      return null
+    }
+    const values = [...new Set(parsed)]
+    return Object.freeze(values)
+  } catch {
+    return null
+  }
 }
 
 function toSnapshot(row: SessionRow): AuthSessionSnapshot {
@@ -291,6 +357,50 @@ export function resolveBoundAuthSessionSnapshot(
   if (binding.authSessionId) return resolveAuthSessionSnapshotById(db, binding.authSessionId)
   if (!binding.rawToken) return { success: false, errorCode: 'AUTH_REQUIRED' }
   return resolveAuthSessionSnapshotByToken(db, binding.rawToken)
+}
+
+/**
+ * Returns the sender-bound identity plus the durable device topology.  The
+ * query is read-only and deliberately does not accept user, role, principal,
+ * mapping, CLI or renderer supplied identity fields.
+ */
+export function resolveTrustedCallerSnapshot(
+  db: DBAdapter,
+  senderId: number
+): TrustedCallerResult {
+  const session = resolveBoundAuthSessionSnapshot(db, senderId)
+  if (!session.success) return { success: false, errorCode: 'FORBIDDEN' }
+  const row = readTrustedCallerRow(db, session.authSessionId)
+  if (!row) return { success: false, errorCode: 'FORBIDDEN' }
+  if (
+    row.session_status !== 'ACTIVE'
+    || row.is_expired === 1
+    || row.account_status !== 'ACTIVE'
+    || row.runtime_status === 'ENDED'
+    || row.device_status === 'DISABLED'
+    || row.device_status === 'DECOMMISSIONED'
+    || row.device_trust_state === 'REVOKED'
+    || row.node_status === 'DISABLED'
+    || row.node_status === 'DECOMMISSIONED'
+    || row.organization_status === 'DISABLED'
+    || row.organization_status === 'ARCHIVED'
+  ) return { success: false, errorCode: 'FORBIDDEN' }
+  const capabilities = parseCapabilities(row.capabilities_json)
+  if (!capabilities) return { success: false, errorCode: 'FORBIDDEN' }
+  const snapshot: TrustedCallerSnapshot = {
+    success: true,
+    authSessionId: row.auth_session_id,
+    userId: row.user_id,
+    role: row.role as AuthRole,
+    displayName: row.display_name,
+    expiresAt: row.expires_at,
+    deviceRuntimeSessionId: row.device_runtime_session_id,
+    deviceId: row.device_id,
+    nodeId: row.node_id,
+    organizationId: row.organization_id,
+    capabilities
+  }
+  return Object.freeze(snapshot)
 }
 
 /** Heartbeat is only available to code already holding an accepted command context. */

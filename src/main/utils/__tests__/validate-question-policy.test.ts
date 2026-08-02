@@ -134,3 +134,52 @@ describe('validateQuestionPolicy — 失败路径', () => {
     expect(validateQuestionPolicy([], ctx50).ok).toBe(false)
   })
 })
+
+const ctx42_8 = { onlineQuestionCount: 42, offlineQuestionCount: 8 }
+
+function v12Policy(over: Record<string, unknown> = {}): Record<string, unknown> {
+  return {
+    schema_version: 'question-policy-v1.2',
+    module_scope: 'CROSS_MODULE',
+    eligible_bank_domains: ['BASE_ABILITY'],
+    online_quota_by_module: {
+      FINE_MOTOR: 7, COGNITION: 7, RULE_EXECUTION: 7,
+      EMOTION_REGULATION: 7, BASIC_SOCIAL: 7, SAFETY_OPERATION: 7
+    },
+    offline_total: 8,
+    eligible_item_usage: ['SCORED_ITEM'],
+    allowed_question_types: ['TRUE_FALSE', 'SINGLE_CHOICE', 'DRAG', 'SOFTWARE_TASK', 'OFFLINE_OPERATION'],
+    unsupported_interaction_policy: 'BLOCK',
+    sensory_filter_mode: 'SOFT',
+    fallback_strategy: 'BLOCK',
+    ...over
+  }
+}
+
+describe('validateQuestionPolicy v1.2（QuestionPolicyBaseAbility）', () => {
+  it('合法 v1.2 policy（6 模块各 7 + offline 8）→ ok', () => {
+    expect(validateQuestionPolicy(v12Policy(), ctx42_8).ok).toBe(true)
+  })
+
+  it('online_quota_by_module 之和 != online_question_count → 失败', () => {
+    expect(validateQuestionPolicy(v12Policy({ online_quota_by_module: { FINE_MOTOR: 6, COGNITION: 7, RULE_EXECUTION: 7, EMOTION_REGULATION: 7, BASIC_SOCIAL: 7, SAFETY_OPERATION: 7 } }), ctx42_8).ok).toBe(false)
+  })
+
+  it('offline_total != offline_question_count → 失败', () => {
+    expect(validateQuestionPolicy(v12Policy({ offline_total: 7 }), ctx42_8).ok).toBe(false)
+  })
+
+  it('eligible_bank_domains 不是 ["BASE_ABILITY"] → 失败', () => {
+    expect(validateQuestionPolicy(v12Policy({ eligible_bank_domains: ['JOB_SPECIFIC'] }), ctx42_8).ok).toBe(false)
+    expect(validateQuestionPolicy(v12Policy({ eligible_bank_domains: ['BASE_ABILITY', 'JOB_SPECIFIC'] }), ctx42_8).ok).toBe(false)
+  })
+
+  it('allowed_question_types 含非法题型 → 失败', () => {
+    expect(validateQuestionPolicy(v12Policy({ allowed_question_types: ['TRUE_FALSE', 'BOGUS'] }), ctx42_8).ok).toBe(false)
+  })
+
+  it('无 schema_version → 走旧 v1 兼容分支（按 question_ratio 校验）', () => {
+    const noVersion = { module_scope: 'CROSS_MODULE' }
+    expect(validateQuestionPolicy(noVersion, ctx42_8).ok).toBe(false)
+  })
+})

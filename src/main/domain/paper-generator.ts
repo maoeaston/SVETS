@@ -9,7 +9,7 @@
 // - 全局题型可能偏离 ratio（如 14:14:14 → 每模块 3:2:2 → 全局 18:12:12），
 //   模块均衡优先于全局精确 ratio。
 
-import type { AbilityTag, QuestionPolicyJson } from '../../shared/types/json-schemas'
+import type { AbilityTag, QuestionPolicyBaseAbility, QuestionPolicyJson } from '../../shared/types/json-schemas'
 import { createHash } from 'crypto'
 
 /**
@@ -197,6 +197,117 @@ export function generatePaper(input: GeneratePaperInput): GeneratePaperOutput {
   })
   offlineQuestions.forEach((q, i) => {
     q.questionOrder = onlineQuestionCount + i + 1
+  })
+
+ return { ok: true, questions: [...onlineQuestions, ...offlineQuestions] }
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// v1.2 组卷（QuestionPolicyBaseAbility）
+// 取消旧 question_ratio 全局题型比例，改为按 online_quota_by_module 每模块固定配额。
+// 候选只接受 authority 选定集合（selectedQuestionIds 白名单），题型受 allowed_question_types 约束。
+// 线下固定 policy.offline_total 题。seed 稳定可复现。
+// ──────────────────────────────────────────────────────────────────────────
+
+export interface GenerateBaseAbilityPaperV12Input {
+  policy: QuestionPolicyBaseAbility
+  questionBankRows: QuestionBankRow[]
+  /** authority 冻结的选定集合 question_id 白名单（42 online + 8 offline）。 */
+  selectedQuestionIds: Set<string>
+  /** 可复现伪随机种子。 */
+  paperSeed: string
+}
+
+export type GenerateBaseAbilityPaperV12Output =
+  | { ok: true; questions: GeneratedQuestion[] }
+  | {
+      ok: false
+      errorCode: 'QUESTION_BANK_INSUFFICIENT' | 'INVALID_POLICY' | 'SELECTED_SET_MISMATCH'
+    }
+
+/**
+ * v1.2 组卷：按 online_quota_by_module 每模块独立配额选题，候选受 authority 白名单约束。
+ * 不使用 question_ratio（已废止）；模块内题型不限比例，只受 allowed_question_types 约束。
+ * 选中线上数必须等于 quota 总和，选中外题数必须等于 offline_total，否则返回错误。
+ */
+export function generateBaseAbilityPaperV12(
+  input: GenerateBaseAbilityPaperV12Input
+): GenerateBaseAbilityPaperV12Output {
+  const { policy, questionBankRows, selectedQuestionIds, paperSeed } = input
+
+  if (policy.schema_version !== 'question-policy-v1.2' || !policy.online_quota_by_module) {
+    return { ok: false, errorCode: 'INVALID_POLICY' }
+  }
+  const allowedTypes = new Set(policy.allowed_question_types)
+
+  const onlineQuestions: GeneratedQuestion[] = []
+
+  // 每模块按 online_quota_by_module 独立配额选题
+  for (const [moduleTypeRaw, quotaRaw] of Object.entries(policy.online_quota_by_module)) {
+    const quota = typeof quotaRaw === 'number' ? quotaRaw : 0
+    if (quota <= 0) continue
+    const moduleType = moduleTypeRaw as AbilityTag
+    const pool = questionBankRows.filter(
+      (r) =>
+        r.module_type === moduleType &&
+        selectedQuestionIds.has(r.question_id) &&
+        r.question_type !== 'OFFLINE_OPERATION' &&
+        allowedTypes.has(r.question_type)
+    )
+    const selected = takeStable(pool, quota, paperSeed)
+    if (!selected) {
+      return { ok: false, errorCode: 'QUESTION_BANK_INSUFFICIENT' }
+    }
+    for (const row of selected) {
+      onlineQuestions.push({
+        questionId: row.question_id,
+        questionPhase: 'ONLINE',
+        questionType: row.question_type,
+        moduleType: row.module_type,
+        questionOrder: 0
+      })
+    }
+  }
+
+  // 线下：OFFLINE_OPERATION + 白名单，固定 offline_total 题
+  const offlineQuestions: GeneratedQuestion[] = []
+  if (policy.offline_total > 0) {
+    const pool = questionBankRows.filter(
+      (r) => r.question_type === 'OFFLINE_OPERATION' && selectedQuestionIds.has(r.question_id)
+    )
+    const selected = takeStable(pool, policy.offline_total, paperSeed)
+    if (!selected) {
+      return { ok: false, errorCode: 'QUESTION_BANK_INSUFFICIENT' }
+    }
+    for (const row of selected) {
+      offlineQuestions.push({
+        questionId: row.question_id,
+        questionPhase: 'OFFLINE',
+        questionType: 'OFFLINE_OPERATION',
+        moduleType: row.module_type,
+        questionOrder: 0
+      })
+    }
+  }
+
+  // 总数校验：线上 = quota 之和，线下 = offline_total；不满足说明白名单/题库与策略不一致
+  const expectedOnline = Object.values(policy.online_quota_by_module).reduce(
+    (s, v) => s + (typeof v === 'number' ? v : 0),
+    0
+  )
+  if (
+    onlineQuestions.length !== expectedOnline ||
+    offlineQuestions.length !== policy.offline_total
+  ) {
+    return { ok: false, errorCode: 'SELECTED_SET_MISMATCH' }
+  }
+
+  // question_order：ONLINE 先（1..expectedOnline），OFFLINE 后
+  onlineQuestions.forEach((q, i) => {
+    q.questionOrder = i + 1
+  })
+  offlineQuestions.forEach((q, i) => {
+    q.questionOrder = onlineQuestions.length + i + 1
   })
 
   return { ok: true, questions: [...onlineQuestions, ...offlineQuestions] }

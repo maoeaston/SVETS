@@ -35,6 +35,7 @@ import {
   type ReportActorRole,
   type ReportGenerationSnapshotV1
 } from './report-plan-fragment'
+import { assertFormalAssessmentSession } from '../../domain/preview/preview-session-guard'
 
 export const REPORT_LIFECYCLE_SNAPSHOT_VERSION = 'm5b-report-lifecycle-snapshot-v1'
 
@@ -221,6 +222,22 @@ function buildReport(
   return buildSafetyReport(db, sourceId, generatedAt)
 }
 
+function assertFormalReportInput(
+  db: DBAdapter,
+  scope: 'BASE_ABILITY' | 'JOB_SKILL' | 'SAFETY',
+  sourceId: string
+): void {
+  if (scope !== 'JOB_SKILL') return
+  const source = db.prepare(
+    `SELECT source_aggregate_type, source_aggregate_id
+       FROM result_record
+      WHERE result_id = ?`
+  ).get(sourceId) as { source_aggregate_type?: string; source_aggregate_id?: string } | undefined
+  if (source?.source_aggregate_type === 'ASSESSMENT_SESSION' && typeof source.source_aggregate_id === 'string') {
+    assertFormalAssessmentSession(db, source.source_aggregate_id, 'formal report generation')
+  }
+}
+
 export function loadReportGenerationSnapshotValue(
   db: DBAdapter,
   input: Readonly<{
@@ -233,7 +250,11 @@ export function loadReportGenerationSnapshotValue(
   }>
 ): ReportGenerationSnapshotV1 {
   const timestamp = exactTimestamp(input.timestamp, 'timestamp')
+  assertFormalReportInput(db, input.reportScope, input.sourceId)
   const built = buildReport(db, input.reportScope, input.sourceId, timestamp)
+  if (built.sourceAggregateType === 'ASSESSMENT_SESSION') {
+    assertFormalAssessmentSession(db, built.sourceAggregateId, 'formal report generation')
+  }
   const generation = generationFacts(db, built)
   const existing = validReportForGenerationKey(db, generation.generationKey)
   return canonicalRecord({

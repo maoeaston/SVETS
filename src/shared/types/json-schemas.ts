@@ -1234,3 +1234,35 @@ export interface ValidationResult {
 
 /** 实现在 src/main/domain/validators/question-validator.ts（T3） */
 export type ValidateQuestionContractFn = (input: ValidateQuestionContractInput) => ValidationResult
+
+/** PREVIEW_CONTRACT_V1 read/export payloads. Private vault fields are absent by design. */
+export interface PreviewSessionSnapshotJson {
+  schema_version: 'preview-session-snapshot-v1'
+  contract_version: 'PREVIEW_CONTRACT_V1'
+  delivery_mode: 'PREVIEW_ONLY'
+  session_export_ref: string
+  subject_export_ref: string
+  job_code: string
+  task_code: string
+  pack_ref: string
+  source_ref: string
+  snapshot_root_hash: string
+  question_count: number
+  captured_at: string
+}
+
+export interface PreviewFeedbackExportJson {
+  schema_version: 'preview-feedback-export-v1'
+  contract_version: 'PREVIEW_CONTRACT_V1'
+  feedback_id: string
+  revision_no: number
+  session_export_ref: string
+  subject_export_ref: string
+  pack_ref: string
+  question_ref: string | null
+  issue_type: string
+  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+  body_hash: string
+  sanitized_text: string
+  submitted_at: string
+}

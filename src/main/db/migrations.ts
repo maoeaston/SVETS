@@ -24,6 +24,24 @@ export const F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID = '2026-07-24_f6_offline_score
 export { F7_REPORT_FRAMEWORK_MIGRATION_ID, F7_SCHEMA_VERSION }
 export { M4_SAFETY_REKEY_MIGRATION_ID, M4_SCHEMA_VERSION }
 
+export type SchemaMigrationLedgerEntry = Readonly<{
+  migrationId: string
+  schemaVersion: string
+}>
+
+// This is the historical ledger owned by the legacy schema migration chain.
+// M5B appends its own entry and must not silently replace these facts.
+export const LEGACY_SCHEMA_MIGRATION_LEDGER: readonly SchemaMigrationLedgerEntry[] = Object.freeze([
+  { migrationId: M1_MIGRATION_ID, schemaVersion: M1_SCHEMA_VERSION },
+  { migrationId: M2_MIGRATION_ID, schemaVersion: M2_SCHEMA_VERSION },
+  { migrationId: CURRENT_MIGRATION_ID, schemaVersion: CURRENT_SCHEMA_VERSION },
+  { migrationId: PHASE4_ASSET_ROLE_MIGRATION_ID, schemaVersion: CURRENT_SCHEMA_VERSION },
+  { migrationId: F4_SITTING_MIGRATION_ID, schemaVersion: CURRENT_SCHEMA_VERSION },
+  { migrationId: F6_SCORE_SCOPE_REQUIRED_MIGRATION_ID, schemaVersion: CURRENT_SCHEMA_VERSION },
+  { migrationId: F7_REPORT_FRAMEWORK_MIGRATION_ID, schemaVersion: F7_SCHEMA_VERSION },
+  { migrationId: M4_SAFETY_REKEY_MIGRATION_ID, schemaVersion: M4_SCHEMA_VERSION }
+])
+
 type MigrationOptions = {
   beforeMigrate?: (migrationIds: string[]) => void
   throughMigrationId?: string
@@ -333,10 +351,38 @@ const M2_TRIGGERS = [
 
 const M2_TRIGGER_SQL_BY_NAME = triggerSqlByName(M2_TRIGGER_SQL)
 
+// PREVIEW_CONTRACT_V1 keeps the historical trigger names but scopes the
+// assessment-session guards to formal shells. Accept that exact additive
+// variant while retaining the legacy SQL as the canonical M2 shape.
+const M2_FORMAL_SESSION_TRIGGER_NAMES = new Set([
+  'trg_assessment_delivery_phase_insert_prepared',
+  'trg_assessment_delivery_phase_frozen_on_abnormal',
+  'trg_assessment_finalized_completed_consistency_insert',
+  'trg_assessment_finalized_completed_consistency_update'
+])
+
+function withoutFormalSessionGuard(sql: string): string {
+  const normalized = normalizeSql(sql)
+  const guardedGroup = normalized.replace(
+    "when new.session_contract_kind = 'formal_shell' and ((",
+    'when ('
+  )
+  if (guardedGroup !== normalized) {
+    return guardedGroup.replace(/\)\)\) begin/, ')) begin')
+  }
+  return normalized.replace(
+    "when new.session_contract_kind = 'formal_shell' and ",
+    'when '
+  )
+}
+
 function triggerMatches(database: DBAdapter, triggerName: string): boolean {
   const expected = M2_TRIGGER_SQL_BY_NAME.get(triggerName)
   if (!expected) return false
-  return normalizeSql(sqliteObjectSql(database, 'trigger', triggerName)) === normalizeSql(expected)
+  const actual = normalizeSql(sqliteObjectSql(database, 'trigger', triggerName))
+  if (actual === normalizeSql(expected)) return true
+  return M2_FORMAL_SESSION_TRIGGER_NAMES.has(triggerName) &&
+    withoutFormalSessionGuard(actual) === normalizeSql(expected)
 }
 
 function sqlMatches(
@@ -614,11 +660,13 @@ const FUTURE_MULTI_DEVICE_TABLES = [
 function m3TriggerMatches(database: DBAdapter, triggerName: string): boolean {
   const expected = M3_TRIGGER_SQL_BY_NAME.get(triggerName)
   if (!expected) return false
-  if (sqlMatches(database, 'trigger', triggerName, expected)) return true
+  const actual = normalizeSql(sqliteObjectSql(database, 'trigger', triggerName))
+  if (actual === normalizeSql(expected)) return true
+  if (triggerName === 'trg_assessment_delivery_phase_forward_only' &&
+      withoutFormalSessionGuard(actual) === normalizeSql(expected)) return true
   // F4 在不放宽常规单调推进的前提下，为累计情绪崩溃兜底增加
   // ONLINE_IN_PROGRESS → FINALIZED 的受限终止分支。该升级后的触发器仍满足 M3 的全部约束。
   if (triggerName === 'trg_assessment_delivery_phase_forward_only') {
-    const actual = normalizeSql(sqliteObjectSql(database, 'trigger', triggerName))
     return actual.includes("new.delivery_phase = 'finalized' and new.status = 'completed'") &&
       actual.includes("old.delivery_phase = 'online_in_progress'")
   }
