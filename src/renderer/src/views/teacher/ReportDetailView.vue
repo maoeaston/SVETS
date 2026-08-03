@@ -4,7 +4,7 @@
       <div>
         <RouterLink to="/teacher/reports" class="back-link">返回报告列表</RouterLink>
         <p class="eyebrow">报告详情</p>
-        <h1>{{ store.detail?.reportTitle || '任务报告' }}</h1>
+        <h1>{{ reportTitleLabel(store.detail?.reportTitle) }}</h1>
         <p v-if="store.detail">{{ REPORT_SCOPE_LABELS[store.detail.reportScope] }} · {{ REPORT_TYPE_LABELS[store.detail.reportType] }} · 学生 {{ store.detail.studentId }}</p>
       </div>
       <button class="secondary-button" type="button" :disabled="store.loadingDetail" @click="reload">刷新</button>
@@ -13,8 +13,8 @@
     <PageState
       v-if="store.loadingDetail"
       kind="loading"
-      title="正在读取报告快照"
-      description="详情只调用 reports:get，不会触发生成或重算。"
+      title="正在读取报告记录"
+      description="详情只读取已保存的报告，不会重新生成或计算。"
     />
     <PageState
       v-else-if="store.detailError"
@@ -42,12 +42,12 @@
           <strong>{{ REPORT_STATUS_LABELS[store.detail.lifecycle.status] }}</strong>
         </div>
         <div>
-          <span>合同</span>
-          <strong>{{ store.detail.lifecycle.contractValidationStatus === 'VALID' ? '有效' : '需修复' }}</strong>
+          <span>内容状态</span>
+          <strong>{{ REPORT_CONTENT_STATUS_LABELS[store.detail.lifecycle.contractValidationStatus] }}</strong>
         </div>
         <div>
-          <span>修订</span>
-          <strong>{{ store.detail.lifecycle.reportRevision }}</strong>
+          <span>报告版本</span>
+          <strong>{{ reportRevisionLabel(store.detail.lifecycle.reportRevision) }}</strong>
         </div>
         <div>
           <span>最后导出</span>
@@ -59,7 +59,7 @@
         v-if="actionInfo.readonlyReason"
         kind="blocked"
         :title="actionInfo.readonlyReason"
-        description="历史、归档、失败或合同修复状态不会开放生命周期操作。"
+        description="历史、归档、失败或内容检查未通过的报告不会开放生命周期操作。"
         compact
       />
 
@@ -100,7 +100,7 @@
       <PageState
         v-if="store.detail.presentation === null"
         kind="blocked"
-        title="报告内容需要修复"
+        title="报告内容暂时无法展示"
         :description="contractErrorText"
       />
       <ReportSectionList
@@ -117,6 +117,7 @@ import { RouterLink, useRoute } from 'vue-router'
 import PageState from '../../components/PageState.vue'
 import ReportSectionList from '../../components/report/ReportSectionList.vue'
 import {
+  REPORT_CONTENT_STATUS_LABELS,
   REPORT_SCOPE_LABELS,
   REPORT_STATUS_LABELS,
   REPORT_TYPE_LABELS,
@@ -124,6 +125,7 @@ import {
   errorMessage
 } from '../../components/report/report-page-state'
 import { useReportStore } from '../../stores/report'
+import { reportRevisionLabel, reportTitleLabel } from '../../../../shared/report-presentation'
 
 const route = useRoute()
 const store = useReportStore()
@@ -148,8 +150,8 @@ const actionInfo = computed(() => {
 })
 const contractErrorText = computed(() => {
   const errors = store.detail?.contractErrors ?? []
-  if (errors.length === 0) return '主进程标记该快照需要修复，页面不会猜测渲染。'
-  return errors.slice(0, 3).map((item) => `${item.path}:${item.code}`).join('；')
+  if (errors.length === 0) return '这份报告的内容检查未通过，页面不会猜测渲染。'
+  return '这份报告的内容检查未通过，页面不会猜测渲染。请重新加载或联系管理员。'
 })
 
 async function reload(): Promise<void> {

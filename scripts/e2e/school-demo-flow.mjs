@@ -283,7 +283,10 @@ try {
   assert(report.session.success && report.session.session.status === 'COMPLETED', `session did not complete: ${JSON.stringify(report.session)}`)
   await page.screenshot({ path: join(outputRoot, '05-report-list.png'), fullPage: true })
   await page.evaluate((reportId) => { window.location.hash = `#/teacher/reports/${reportId}` }, report.item.reportId)
-  await page.getByRole('heading', { name: report.item.reportTitle }).waitFor({ timeout: 15_000 })
+  const displayedReportTitle = report.item.reportTitle
+    .replaceAll('SUPERMARKET_SHELVER', '超市理货员')
+    .replaceAll('专业岗位测评报告', '岗位技能测评报告')
+  await page.getByRole('heading', { name: displayedReportTitle }).waitFor({ timeout: 15_000 })
   await page.screenshot({ path: join(outputRoot, '06-report-detail.png'), fullPage: true })
 
   await page.evaluate(() => { window.location.hash = '#/activation' })

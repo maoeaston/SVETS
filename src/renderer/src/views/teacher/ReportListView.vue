@@ -2,16 +2,16 @@
   <div class="report-page">
     <header class="page-header">
       <div>
-        <p class="eyebrow">持久化快照</p>
+        <p class="eyebrow">历史记录</p>
         <h1>任务报告</h1>
-        <p>查看历史报告、处理待生成候选，并从主进程同步最新状态。</p>
+        <p>查看历史报告并处理待生成的报告。</p>
       </div>
       <button class="secondary-button" type="button" :disabled="store.loadingList" @click="reload">刷新</button>
     </header>
 
     <form class="filter-bar" @submit.prevent="reload">
       <label>
-        <span>学生 ID</span>
+        <span>学生编号</span>
         <input v-model.trim="store.filters.studentId" autocomplete="off" placeholder="可留空" />
       </label>
       <label>
@@ -30,7 +30,7 @@
           <option value="GENERATED">已生成</option>
           <option value="EXPORTED">已导出</option>
           <option value="LOCKED">已锁定</option>
-          <option value="SUPERSEDED">已被替换</option>
+          <option value="SUPERSEDED">{{ REPORT_STATUS_LABELS.SUPERSEDED }}</option>
           <option value="ARCHIVED">已归档</option>
           <option value="FAILED">生成失败</option>
         </select>
@@ -45,7 +45,7 @@
       v-if="store.loadingList"
       kind="loading"
       title="正在同步报告"
-      description="列表和候选均从主进程报告投影读取。"
+      description="正在读取报告列表和待处理事项。"
     />
     <PageState
       v-else-if="store.listError"
@@ -63,7 +63,7 @@
         v-if="store.operationMessage"
         kind="success"
         :title="store.operationMessage"
-        description="页面已重新读取主进程状态。"
+        description="报告状态已更新。"
         compact
       />
 
@@ -86,7 +86,7 @@
           >
             <span class="scope-chip">{{ REPORT_SCOPE_LABELS[item.reportScope] }}</span>
             <span class="report-copy">
-              <strong>{{ item.reportTitle }}</strong>
+              <strong>{{ reportTitleLabel(item.reportTitle) }}</strong>
               <small>{{ stableReportSummary(item) }}</small>
               <small>学生：{{ item.studentDisplayName || item.studentId }} · 生成：{{ formatDate(item.generatedAt) }}</small>
             </span>
@@ -104,7 +104,7 @@
           v-if="store.candidates.length === 0"
           kind="empty"
           title="当前没有待处理候选"
-          description="列表不会自动生成报告；候选只来自主进程读取模型。"
+          description="报告不会自动生成，请先确认需要处理的事项。"
           compact
         />
         <div v-else class="candidate-list">
@@ -151,6 +151,7 @@ import {
   listEmptyMessage,
   stableReportSummary
 } from '../../components/report/report-page-state'
+import { reportTitleLabel } from '../../../../shared/report-presentation'
 import { candidateKey, useReportStore } from '../../stores/report'
 import type { ReportGenerationCandidate } from '@shared/types/report'
 

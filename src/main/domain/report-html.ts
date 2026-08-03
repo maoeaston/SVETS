@@ -46,7 +46,7 @@ export function renderReportHtml(document: ReportPresentationDocument, metadata:
 <body>
   <main>
     <h1>${escapeHtml(title)}</h1>
-    <p class="meta">报告 ID：${escapeHtml(metadata.reportId)}<br>导出时间：${escapeHtml(metadata.exportedAt)}<br>内容 Hash：${escapeHtml(metadata.contentHash)}</p>
+    <p class="meta">报告编号：${escapeHtml(metadata.reportId)}<br>导出时间：${escapeHtml(metadata.exportedAt)}<br>内容校验码：${escapeHtml(metadata.contentHash)}</p>
     ${sections}
   </main>
 </body>

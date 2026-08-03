@@ -3,7 +3,11 @@ import { existsSync, linkSync, readFileSync, rmSync, unlinkSync, writeFileSync }
 import { basename, dirname, join } from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import type { DBAdapter } from '../db/interface'
-import { buildReportExportPresentation, buildReportPresentation } from '../../shared/report-presentation'
+import {
+  buildReportExportPresentation,
+  buildReportPresentation,
+  reportTitleLabel
+} from '../../shared/report-presentation'
 import { parseReportContent } from './report-contract'
 import { sha256CanonicalJson } from './report-canonical'
 import { renderReportHtml } from './report-html'
@@ -124,6 +128,7 @@ export function prepareReportHtmlExport(
   const pageDocument = buildReportPresentation(content, row.report_id)
   const exportDocument = buildReportExportPresentation(pageDocument, row.student_id)
   const presentationHash = sha256CanonicalJson(exportDocument)
+  const displayTitle = reportTitleLabel(row.report_title)
   const html = renderReportHtml(exportDocument, {
     reportId: row.report_id,
     exportedAt,
@@ -136,8 +141,8 @@ export function prepareReportHtmlExport(
     status: row.status as ActiveReportStatus,
     contentHash: row.content_hash!,
     presentationHash,
-    reportTitle: row.report_title,
-    suggestedFileName: `${safeFileStem(row.report_title || row.report_id)}-${row.report_id.slice(-8)}.html`,
+    reportTitle: displayTitle,
+    suggestedFileName: `${safeFileStem(displayTitle || row.report_id)}-${row.report_id.slice(-8)}.html`,
     htmlBytes,
     fileHash: sha256Bytes(htmlBytes),
     fileSizeBytes: htmlBytes.byteLength,

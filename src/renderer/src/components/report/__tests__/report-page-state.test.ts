@@ -26,9 +26,10 @@ const noCapabilities: ReportLifecycleCapabilities = {
 describe('report page state mapping', () => {
   it('keeps historical and repair reports read-only', () => {
     expect(readonlyReasonFor('SUPERSEDED', false)).toContain('历史报告')
+    expect(readonlyReasonFor('SUPERSEDED', false)).toContain('新版本')
     expect(readonlyReasonFor('ARCHIVED', false)).toContain('归档')
     expect(readonlyReasonFor('FAILED', false)).toContain('生成失败')
-    expect(readonlyReasonFor('GENERATED', true)).toContain('合同需要修复')
+    expect(readonlyReasonFor('GENERATED', true)).toContain('内容需要检查')
     expect(readonlyReasonFor('LOCKED', false)).toBeNull()
   })
 
@@ -66,13 +67,16 @@ describe('report page state mapping', () => {
 
   it('maps forbidden, repair and conflict errors to stable page states', () => {
     expect(errorMessage('FORBIDDEN')).toMatchObject({ kind: 'forbidden' })
-    expect(errorMessage('REPORT_CONTRACT_INVALID')).toMatchObject({ kind: 'blocked' })
+    expect(errorMessage('REPORT_CONTRACT_INVALID')).toMatchObject({
+      kind: 'blocked',
+      title: '报告内容需要检查'
+    })
     expect(errorMessage('REPORT_STATE_CONFLICT')).toMatchObject({ kind: 'blocked' })
     expect(errorMessage('REPORT_EXPORT_FAILED')).toMatchObject({ kind: 'error' })
   })
 
   it('distinguishes empty list states', () => {
-    expect(listEmptyMessage(false, 0).description).toContain('候选')
+    expect(listEmptyMessage(false, 0).description).toContain('报告')
     expect(listEmptyMessage(false, 2).description).toContain('下方')
     expect(listEmptyMessage(true, 2).title).toContain('筛选')
   })
@@ -96,7 +100,9 @@ describe('report page state mapping', () => {
     }
 
     expect(candidateTitle(base)).toBe('确认基础任务闭环')
-    expect(candidateDescription(base)).toContain('ABILITY_SCORE:r-a')
+    expect(candidateDescription(base)).toBe('学生 student-1 的能力测评、训练完成度、实操达标率待教师确认。')
+    expect(candidateDescription(base)).not.toContain('ABILITY_SCORE')
+    expect(candidateDescription(base)).not.toContain('r-a')
     expect(candidateActionLabel(waiting)).toBe('查看安全事件')
   })
 
@@ -118,7 +124,7 @@ describe('report page state mapping', () => {
       generatedAt: '2026-07-26T00:00:00.000Z',
       canExport: true
     }
-    expect(stableReportSummary(item)).toBe('岗位技能 · 已锁定 · 修订 2 · job-skill-report-v1.0')
+    expect(stableReportSummary(item)).toBe('岗位技能 · 已锁定 · 第 2 版 · 岗位技能报告 1.0')
     expect(actionState('LOCKED', 'VALID', noCapabilities).readonlyReason).toBeNull()
   })
 })

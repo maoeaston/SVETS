@@ -7,6 +7,7 @@ import type {
   ReportListItem
 } from '@shared/types/report'
 import type { ReportScope, ReportType } from '@shared/types/json-schemas'
+import { reportRevisionLabel, reportSchemaVersionLabel } from '../../../../shared/report-presentation'
 
 export type ReportPageStateKind =
   | 'loading'
@@ -46,9 +47,14 @@ export const REPORT_STATUS_LABELS: Record<ReportLifecycleStatus, string> = {
   GENERATED: '已生成',
   EXPORTED: '已导出',
   LOCKED: '已锁定',
-  SUPERSEDED: '已被替换',
+  SUPERSEDED: '已被新版本替代',
   ARCHIVED: '已归档',
   FAILED: '生成失败'
+}
+
+export const REPORT_CONTENT_STATUS_LABELS: Record<ReportContractValidationStatus, string> = {
+  VALID: '内容完整',
+  REPAIR_REQUIRED: '需要检查'
 }
 
 export function errorMessage(errorCode: ReportErrorCode): ReportStateMessage {
@@ -56,14 +62,14 @@ export function errorMessage(errorCode: ReportErrorCode): ReportStateMessage {
     return {
       kind: 'forbidden',
       title: '当前账号不能查看报告',
-      description: '报告内容只开放给有效教师账号，操作权限仍由主进程校验。'
+      description: '报告内容只开放给有效教师账号，系统会根据账号权限控制查看范围。'
     }
   }
   if (errorCode === 'REPORT_CONTRACT_INVALID') {
     return {
       kind: 'blocked',
-      title: '报告合同需要修复',
-      description: '当前快照没有通过运行时合同校验，页面不会猜测渲染内容。',
+      title: '报告内容需要检查',
+      description: '这份报告暂时无法安全展示，请重新加载或联系管理员。',
       actionLabel: '重新加载'
     }
   }
@@ -71,7 +77,7 @@ export function errorMessage(errorCode: ReportErrorCode): ReportStateMessage {
     return {
       kind: 'blocked',
       title: '报告状态已变化',
-      description: '主进程拒绝了这次操作，请重新读取最新状态后再处理。',
+      description: '报告状态发生了变化，请重新读取最新状态后再处理。',
       actionLabel: '重新加载'
     }
   }
@@ -110,14 +116,14 @@ export function listEmptyMessage(hasFilters: boolean, candidateCount: number): R
   if (candidateCount > 0) {
     return {
       kind: 'empty',
-      title: '还没有持久化报告',
+      title: '还没有保存的报告',
       description: '下方有可处理候选，生成动作需要教师明确确认。'
     }
   }
   return {
     kind: 'empty',
-    title: '当前没有报告快照',
-    description: '完成测评、训练、安全事实确认后，候选会从主进程同步。'
+    title: '当前没有报告记录',
+    description: '完成测评、训练和安全事实确认后，系统会显示可处理的报告。'
   }
 }
 
@@ -138,8 +144,8 @@ export function actionState(
 }
 
 export function readonlyReasonFor(status: ReportLifecycleStatus, repairRequired: boolean): string | null {
-  if (repairRequired) return '报告合同需要修复，生命周期操作已关闭。'
-  if (status === 'SUPERSEDED') return '这是历史报告，已被新修订替换。'
+  if (repairRequired) return '报告内容需要检查，生命周期操作已关闭。'
+  if (status === 'SUPERSEDED') return '这是历史报告，已被新版本替代。'
   if (status === 'ARCHIVED') return '这是已归档报告，仅供追溯查看。'
   if (status === 'FAILED') return '这次报告生成失败，请从候选区重试。'
   return null
@@ -155,19 +161,24 @@ export function candidateTitle(candidate: ReportGenerationCandidate): string {
 
 export function candidateDescription(candidate: ReportGenerationCandidate): string {
   if (candidate.kind === 'BASE_RESULTS') {
-    const ids = candidate.results.map((result) => `${result.resultType}:${result.resultId}`).join(' / ')
-    return `学生 ${candidate.studentId} 的三类结果待教师确认：${ids}`
+    const resultLabels: Record<string, string> = {
+      ABILITY_SCORE: '能力测评',
+      TRAINING_COMPLETION: '训练完成度',
+      OPERATION_PASS_RATE: '实操达标率'
+    }
+    const results = candidate.results.map((result) => resultLabels[result.resultType] ?? '测评结果').join('、')
+    return `学生 ${candidate.studentId} 的${results}待教师确认。`
   }
   if (candidate.kind === 'BASE_CLOSURE') {
-    return `学生 ${candidate.studentId}，第 ${candidate.cycleNo} 轮闭环，修订 ${candidate.closureRevision}。`
+    return `学生 ${candidate.studentId}，第 ${candidate.cycleNo} 轮教学闭环，${reportRevisionLabel(candidate.closureRevision)}。`
   }
   if (candidate.kind === 'JOB_SKILL') {
-    return `学生 ${candidate.studentId}，来源结果 ${candidate.resultId}。`
+    return `学生 ${candidate.studentId} 的岗位技能测评结果待生成报告。`
   }
   if (candidate.kind === 'SAFETY_WAITING_CONFIRMATION') {
-    return `学生 ${candidate.studentId} 的安全事件 ${candidate.incidentId} 需要先确认事实。`
+    return `学生 ${candidate.studentId} 有一项安全事实待教师确认。`
   }
-  return `学生 ${candidate.studentId}，安全事件 ${candidate.incidentId} 可生成或重试。`
+  return `学生 ${candidate.studentId} 有一项安全事实，可生成或重试报告。`
 }
 
 export function candidateActionLabel(candidate: ReportGenerationCandidate): string {
@@ -188,6 +199,6 @@ export function hasActiveFilters(filters: {
 export function stableReportSummary(item: ReportListItem): string {
   const scope = REPORT_SCOPE_LABELS[item.reportScope]
   const status = REPORT_STATUS_LABELS[item.status]
-  const schema = item.reportSchemaVersion || '未知合同'
-  return `${scope} · ${status} · 修订 ${item.reportRevision} · ${schema}`
+  const schema = reportSchemaVersionLabel(item.reportSchemaVersion)
+  return `${scope} · ${status} · ${reportRevisionLabel(item.reportRevision)} · ${schema}`
 }

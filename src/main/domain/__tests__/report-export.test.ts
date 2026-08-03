@@ -190,6 +190,29 @@ class FailNextProjectionInsertAdapter implements DBAdapter {
 }
 
 describe('report export partial-failure ownership', () => {
+  it('uses school-facing report labels in the exported HTML', () => {
+    const reportId = seedExportableReport()
+    const prepared = prepareReportHtmlExport(db, reportId, ISO)
+    const html = prepared.htmlBytes.toString('utf8')
+
+    expect(prepared.reportTitle).toBe('超市理货员 安全终止报告')
+    expect(prepared.suggestedFileName).toContain('超市理货员')
+    expect(prepared.suggestedFileName).not.toContain('SUPERMARKET_SHELVER')
+    expect(html).toContain('超市理货员')
+    expect(html).toContain('拆箱与上架')
+    expect(html).toContain('刀具朝向自己')
+    expect(html).toContain('线下评分')
+    expect(html).toContain('已确认')
+    expect(html).toContain('因安全红线终止，本次不形成普通能力结论')
+    expect(html).toContain('内容校验码')
+    expect(html).not.toContain('SUPERMARKET_SHELVER')
+    expect(html).not.toContain('SHELVE_TASK')
+    expect(html).not.toContain('BLADE_TOWARD_SELF')
+    expect(html).not.toContain('OFFLINE_SCORING')
+    expect(html).not.toContain('LEVEL_FAIL_BY_SAFETY')
+    expect(html).not.toContain('内容 Hash')
+  })
+
   it('cleans only its temporary file when rename fails', async () => {
     const reportId = seedExportableReport()
     const outputDir = tempDir('svets-report-export-rename-failure-')
